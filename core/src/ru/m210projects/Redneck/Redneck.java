@@ -16,6 +16,7 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Config.Show_Console;
 import static ru.m210projects.Redneck.Animlib.*;
 import static ru.m210projects.Redneck.Actors.*;
@@ -42,8 +43,8 @@ import static ru.m210projects.Redneck.Gameutils.toCharArray;
 import static ru.m210projects.Redneck.LoadSave.*;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Redneck.Main.gpmanager;
-import static ru.m210projects.Redneck.Menus.DukeMenu.MAIN;
-import static ru.m210projects.Redneck.Menus.DukeMenu.NETWORKGAME;
+import static ru.m210projects.Redneck.Menus.RRMenu.MAIN;
+import static ru.m210projects.Redneck.Menus.RRMenu.NETWORKGAME;
 import static ru.m210projects.Redneck.Menus.MENU.mClose;
 import static ru.m210projects.Redneck.Menus.MENU.mDrawMenu;
 import static ru.m210projects.Redneck.Menus.MENU.mKeyHandler;
@@ -70,23 +71,21 @@ import static ru.m210projects.Redneck.Screen.mGetAlign;
 import static ru.m210projects.Redneck.Screen.menutext;
 import static ru.m210projects.Redneck.Screen.scrReset;
 import static ru.m210projects.Redneck.Screen.screensize;
-import static ru.m210projects.Redneck.Screen.setgamepalette;
 import static ru.m210projects.Redneck.Screen.tinc;
 import static ru.m210projects.Redneck.Types.Demo.demofiles;
 import static ru.m210projects.Redneck.Config.Menu_open;
 import static ru.m210projects.Redneck.Config.Screenshot;
 import static ru.m210projects.Redneck.Controls.ctrlGetInputKey;
-import static ru.m210projects.Redneck.Menus.DukeMenu.GAME;
+import static ru.m210projects.Redneck.Menus.RRMenu.GAME;
 import static ru.m210projects.Redneck.Types.RTS.*;
 import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Types.Demo.*;
-import static ru.m210projects.Redneck.Menus.DukeMenu.mInit;
+import static ru.m210projects.Redneck.Menus.RRMenu.mInit;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Animate.*;
-import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.View.*;
 
 import java.io.File;
@@ -105,7 +104,6 @@ import com.badlogic.gdx.Gdx;
 
 import ru.m210projects.Build.Scriptfile;
 import ru.m210projects.Build.Audio.BAudio;
-import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
@@ -135,11 +133,6 @@ public class Redneck {
 	public static int soundanm = 0;
 	public static int scenestatus = 0;
 	
-	public static Source scenevoice;
-	public static int scenevoices[] = {
-		ENDSEQVOL3SND5, ENDSEQVOL3SND6, ENDSEQVOL3SND7, ENDSEQVOL3SND8, ENDSEQVOL3SND9
-	};
-
 	public static boolean gShowMenu;
 	
 	public static void InitUserDefs()
@@ -170,9 +163,7 @@ public class Redneck {
 			engine.inittimer(TICRATE);
 			
 			engine.loadpics("tiles000.art");
-			
-			//readsavenames();
-			
+
 			tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
 			
 			for(int i=0;i<MAXPLAYERS;i++) 
@@ -372,19 +363,47 @@ public class Redneck {
 
 			if((gm & MODE_CUTSCENE)!= 0)
 			{
-				if(scenestatus != 2) {
-//					engine.handleevents();
-//					if(gpmanager != null)
-//						gpmanager.handler();
-				}
-
 				boolean skip;
 				if(scenestatus == 0)
 					skip = getInput().getKey(ANYKEY) != 0;
 				else skip = getInput().getKey(ANYKEY) != 0 || scenestatus == 2;
 				int playing = playanm();
 				
-				if((gm & MODE_EOL) == MODE_EOL) { //end cutscene XXX
+				if((gm & MODE_EOL) == MODE_EOL)
+				{ 
+					if(ud.multimode < 2)
+                    {
+						if(scenestatus == 1)
+						{
+							engine.clearview(0);
+							engine.rotatesprite(0,0,65536,0,LOADSCREEN,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+							
+							if(ud.volume_number == 0) {
+					    		ud.level_number = 0;
+					            ud.volume_number = 1;
+					            ud.eog = 0;
+					            
+					            closeanm();
+					            gm = MODE_EOL;
+					    	}
+						}
+						
+						if(scenestatus == 0) 
+						{
+	                    	if(anmInited() && playing == 0)
+	                    		skip = true;
+	    					
+	                    	if(skip && bonuscnt == 0)
+    						{
+                    			closeanm();
+                    			StopAllSounds();
+                    			scenestatus = 1;
+                    			bonuscnt = 1;
+                    			return;
+    						}
+						}
+                    } else 
+                    	skip = true;
 					
 					if(skip) {
                 		scenestatus = 2;
@@ -395,8 +414,8 @@ public class Redneck {
                     		backtomenu();
     					}
                 	}
+					return;
 				}
-				return;
 			}
 
 			switch(gm)
@@ -575,28 +594,21 @@ public class Redneck {
 	                    totalclock = 0;
 	                    tinc = 0;
 	                    bonuscnt = 0;
-	                    if(ud.volume_number != 0)
-	                    	sndStopMusic();
+	                    
+	                    sndStopMusic();
+	                    StopAllSounds();
 	                    if(ud.multimode < 2)
 	                    {
 	                    	switch(ud.volume_number)
 						    {
 						   		case 0:
-									scenestatus = 1;
-									setgamepalette(ps[myconnectindex], endingpal, 3);	// JBF 20040308
+									scenestatus = 0;
+									initanm("turdmov.anm",5,5);
 									break;
-//								case 1: //XXX
-//									scenestatus = 0;
-//									initanm("cineov2.anm",1);
-//									break;
-//								case 2:
-//									scenestatus = 0;
-//									initanm("cineov3.anm",2);
-//									break;
-//								case 3:
-//									scenestatus = 0;
-//									initanm("vol4e1.anm",8);
-//									break;
+								case 1:
+									scenestatus = 0;
+									initanm("rr_outro.anm",5,4);
+									break;
 								default:
 									scenestatus = 2;
 									break;

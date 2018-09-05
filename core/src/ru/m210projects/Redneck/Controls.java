@@ -14,7 +14,7 @@ import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.LoadSave.*;
 import static ru.m210projects.Redneck.Menus.MENU.*;
-import static ru.m210projects.Redneck.Menus.DukeMenu.*;
+import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Types.RTS.*;

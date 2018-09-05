@@ -28,7 +28,7 @@ public class DesktopLauncher {
 		"redneck.grp",
 	};
 	
-	public static void main (String[] arg) {
+	public static void main(String[] arg) {
 		try {
 			LaunchCallback callback = new LaunchCallback("rrgdx.ver", Main.release) {
 				@Override

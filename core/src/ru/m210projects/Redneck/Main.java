@@ -29,16 +29,9 @@ import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
 
 /*
- * босс не работает
- * bowling copytile
- * end cutscene ep1 и ep2
+ * usermap flag - boardfilename bug
+ * sound pitch underwater
  * запись демок не работает
- * quit text
- * не показываются ключи в миниhud
- * boardmap мешает загрузке старой игры
- * 3dgeometry after load game
- * проверить save numambients numtouches ...
- * 
  * CD muisc doincrement
  */
 

@@ -12,7 +12,7 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1746;
+	public static final int sizeof = 1744;
 	
 	public int zoom,exitx,exity,loogiex[] = new int[64],loogiey[] = new int[64],numloogs,loogcnt;
 	public int posx, posy, posz, ohorizoff, invdisptime;
@@ -33,7 +33,7 @@ public class PlayerStruct {
 	public short beer_amount,newowner,hurt_delay,hbomb_hold_delay;
 	public short jumping_counter,airleft,knee_incs,access_incs;
 	public short fta,ftq,access_wallnum,access_spritenum;
-	public short kickback_pic,got_access,weapon_ang,whishkey_amount;
+	public short kickback_pic,weapon_ang,whishkey_amount;
 	public short somethingonplayer,on_crane,i,one_parallax_sectnum;
 	public short over_shoulder_on,random_club_frame,fist_incs;
 	public short one_eighty_count,cheat_phase;
@@ -159,7 +159,6 @@ public class PlayerStruct {
 		this.access_wallnum = src.access_wallnum;
 		this.access_spritenum = src.access_spritenum;
 		this.kickback_pic = src.kickback_pic;
-		this.got_access = src.got_access;
 		this.weapon_ang = src.weapon_ang;
 		this.whishkey_amount = src.whishkey_amount;
 		this.somethingonplayer = src.somethingonplayer;
@@ -332,8 +331,7 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, ftq); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, access_wallnum); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, access_spritenum); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, kickback_pic); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, got_access); ptr+=2;	
+		LittleEndian.putShort(buf, ptr, kickback_pic); ptr+=2;		
 		LittleEndian.putShort(buf, ptr, weapon_ang); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, whishkey_amount); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, somethingonplayer); ptr+=2;	
@@ -523,7 +521,6 @@ public class PlayerStruct {
 		access_wallnum = bb.getShort();	
 		access_spritenum = bb.getShort();	
 		kickback_pic = bb.getShort();	
-		got_access = bb.getShort();	
 		weapon_ang = bb.getShort();	
 		whishkey_amount = bb.getShort();	
 		somethingonplayer = bb.getShort();	

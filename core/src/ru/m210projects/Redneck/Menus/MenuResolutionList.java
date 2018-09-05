@@ -9,7 +9,7 @@ import static ru.m210projects.Redneck.Names.LOADSCREEN;
 import static ru.m210projects.Redneck.Names.SPINNINGNUKEICON;
 import static ru.m210projects.Redneck.SoundDefs.KICK_HIT;
 import static ru.m210projects.Redneck.Sounds.sound;
-import static ru.m210projects.Redneck.Menus.DukeMenu.*;
+import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Build.Engine.getInput;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.xdim;

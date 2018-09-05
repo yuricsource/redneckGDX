@@ -6,7 +6,6 @@ import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Redneck.Globals.ps;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Animate.*;
@@ -23,6 +22,9 @@ import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Weapons.*;
+
+import java.util.Arrays;
+
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
@@ -5880,15 +5882,134 @@ public class Actors {
 		return false;
 	}
 	
+	private static boolean pinstay[] = new boolean[10];
 	public static int BowlCheck(int nSprite)
 	{
-		int pinums = 0;
+		Arrays.fill(pinstay, false);
+		int pinums = 0, bowline = 0;
 		for (int i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
-			if(sprite[i].picnum == 3440) //pin sprite
+			if(sprite[i].picnum == 3440) { //pin sprite
+				pinstay[sprite[i].lotag] = true;
 				pinums++;
+			}
+			if(sprite[i].picnum == 280)
+				bowline = sprite[i].hitag;
+		}
+
+		if(bowline != 0)
+		{
+			engine.copytilepiece(2024, 0, 0, 128, 64, bowline + 2024, 0, 0);
+			for(int i = 0; i < 10; i++)
+			{
+				int x = 0, y = 0;
+				if(pinstay[i]) {
+					switch(i)
+					{
+					case 0:
+						x = 64;
+						y = 48;
+						break;
+					case 1:
+						x = 56;
+						y = 40;
+						break;
+					case 2:
+						x = 72;
+						y = 40;
+						break;
+					case 3:
+						x = 48;
+						y = 32;
+						break;
+					case 4:
+						x = 64;
+						y = 32;
+						break;
+					case 5:
+						x = 80;
+						y = 32;
+						break;
+					case 6:
+						x = 40;
+						y = 24;
+						break;
+					case 7:
+						x = 56;
+						y = 24;
+						break;
+					case 8:
+						x = 72;
+						y = 24;
+						break;
+					case 9:
+						x = 88;
+						y = 24;
+						break;
+					}
+					engine.copytilepiece(2023, 0, 0, 8, 8, bowline + 2024, x - 4, y - 10);
+				}
+			}
+			engine.invalidatetile(bowline + 2024, 0, 1<<4);
 		}
 		
 		return pinums;
+	}
+	
+	public static void BowlReset()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			engine.copytilepiece(2024, 0, 0, 128, 64, i + 2025, 0, 0);
+			for(int j = 0; j < 10; j++)
+			{
+				int x = 0, y = 0;
+				switch(j)
+				{
+				case 0:
+					x = 64;
+					y = 48;
+					break;
+				case 1:
+					x = 56;
+					y = 40;
+					break;
+				case 2:
+					x = 72;
+					y = 40;
+					break;
+				case 3:
+					x = 48;
+					y = 32;
+					break;
+				case 4:
+					x = 64;
+					y = 32;
+					break;
+				case 5:
+					x = 80;
+					y = 32;
+					break;
+				case 6:
+					x = 40;
+					y = 24;
+					break;
+				case 7:
+					x = 56;
+					y = 24;
+					break;
+				case 8:
+					x = 72;
+					y = 24;
+					break;
+				case 9:
+					x = 88;
+					y = 24;
+					break;
+				}
+				engine.copytilepiece(2023, 0, 0, 8, 8, i + 2025, x - 4, y - 10);
+			}
+			engine.invalidatetile(i + 2025, 0, 1<<4);
+		}
 	}
 	
 	public static void BowlUpdate(int nSprite)
@@ -5898,7 +6019,7 @@ public class Actors {
 				engine.deletesprite(i);
 		}
 		
-//		int bowline = -1;
+		int bowline = 0;
 		for (int i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
 			if(sprite[i].picnum == 283) //pinid sprite
 			{
@@ -5916,10 +6037,62 @@ public class Actors {
 				sprite[spawnid].ang -= ((rand & 0x20) - (engine.krand() & 0x40)) & kAngleMask;
 			}
 			
-//			if(sprite[i].picnum == 280)
-//			{
-//				bowline = sprite[i].hitag;
-//			}
+			if(sprite[i].picnum == 280)
+				bowline = sprite[i].hitag;
+		}
+		
+		if(bowline != -1)
+		{
+			engine.copytilepiece(2024, 0, 0, 128, 64, bowline + 2024, 0, 0);
+			for(int i = 0; i < 10; i++)
+			{
+				int x = 0, y = 0;
+				switch(i)
+				{
+				case 0:
+					x = 64;
+					y = 48;
+					break;
+				case 1:
+					x = 56;
+					y = 40;
+					break;
+				case 2:
+					x = 72;
+					y = 40;
+					break;
+				case 3:
+					x = 48;
+					y = 32;
+					break;
+				case 4:
+					x = 64;
+					y = 32;
+					break;
+				case 5:
+					x = 80;
+					y = 32;
+					break;
+				case 6:
+					x = 40;
+					y = 24;
+					break;
+				case 7:
+					x = 56;
+					y = 24;
+					break;
+				case 8:
+					x = 72;
+					y = 24;
+					break;
+				case 9:
+					x = 88;
+					y = 24;
+					break;
+				}
+				engine.copytilepiece(2023, 0, 0, 8, 8, bowline + 2024, x - 4, y - 10);
+			}
+			engine.invalidatetile(bowline + 2024, 0, 1<<4);
 		}
 	}
 	
@@ -5947,5 +6120,4 @@ public class Actors {
 			}
 		}
 	}
-
 }

@@ -57,7 +57,7 @@ import ru.m210projects.Build.Render.VideoMode;
 import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Redneck.Types.SaveManager;
 
-public class DukeMenu {
+public class RRMenu {
 	
 	public static final int TA_LEFT	= 0;
 	public static final int	TA_CENTER = 1;
@@ -2034,7 +2034,7 @@ public class DukeMenu {
 	
 	public static void mQuit(int nMenuId)
 	{
-		MenuTitle question = new MenuTitle("Are you sure you want to quit?", 1, 160, 90, -1);
+		MenuTitle question = new MenuTitle("QUIT: You ain't done yet", 1, 160, 90, -1);
 		MenuVariants QuitVariants = new MenuVariants("[Y/N]", 1, 160, 99) {
 			@Override
 			public void positive() {

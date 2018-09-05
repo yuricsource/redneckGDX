@@ -122,14 +122,9 @@ public class Globals {
 	public static int musicvolume, musiclevel;
 	
 	public static short gEndGame;
-	public static short word_D7FB4;
+	public static short gEndFirstEpisode;
 	public static int dword_D7FAC;
 	public static byte byte_D7FE8;
-	public static int dword_18D464;
-	public static short word_18B7A8;
-	public static byte byte_18D46F;
-	public static byte byte_18D471;
-	public static short word_18D46A;
 	
 	public static PlayerOrig po[] = new PlayerOrig[MAXPLAYERS];
 	public static PlayerStruct ps[] = new PlayerStruct[MAXPLAYERS];
@@ -278,7 +273,6 @@ public class Globals {
 	public static final int kAngle180 = 1024;
 	public static final int kAngle360 = 2048;
 	
-
 	public static String exceptionHandler(Exception e)
 	{
 		if (e instanceof ArithmeticException) 

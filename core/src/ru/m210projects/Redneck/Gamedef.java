@@ -14,7 +14,7 @@ import static ru.m210projects.Redneck.Globals.MODE_RESTART;
 import static ru.m210projects.Redneck.Globals.gm;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.LoadSave.lastload;
-import static ru.m210projects.Redneck.Menus.DukeMenu.LOADGAME;
+import static ru.m210projects.Redneck.Menus.RRMenu.LOADGAME;
 import static ru.m210projects.Redneck.Menus.MENU.mMenus;
 import static ru.m210projects.Redneck.Menus.MENU.mOpen;
 import static ru.m210projects.Build.Net.Mmulti.*;

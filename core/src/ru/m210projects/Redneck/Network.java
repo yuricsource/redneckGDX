@@ -1,6 +1,6 @@
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Redneck.Menus.DukeMenu.*;
+import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Menus.MENU.mClose;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Gameutils.*;

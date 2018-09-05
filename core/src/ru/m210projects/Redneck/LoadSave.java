@@ -11,6 +11,7 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Sounds.*;
+import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.CEILZ;
 import static ru.m210projects.Redneck.Types.ANIMATION.FLOORZ;
 import static ru.m210projects.Redneck.Types.ANIMATION.WALLX;
@@ -225,7 +226,7 @@ public class LoadSave {
 					+ 2 + 64 * 4 + show2dsector.length
 					+ MAXSECTORS + 4 + 22 * MAXJAILDOORS +  4 + 22 * MAXMINECARDS
 					+ 4 + 5 * MAXTORCHES + 4 + 4 * MAXLIGHTNINS + 4 + 6 * MAXAMBIENTS
-					+ 30 * MAXGEOMETRY + 4 + 1;
+					+ 30 * MAXGEOMETRY + 15;
 
 		ByteBuffer bb = ByteBuffer.allocate(bufsize);
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
@@ -328,8 +329,13 @@ public class LoadSave {
 			bb.putInt(geomz2[i]);
 		}
 		
-		bb.put((byte) (plantProcess?1:0));
+		bb.putShort((short)word_18B7A4);
+		bb.putShort((short)word_18B7A6);
+		bb.putShort((short)word_18B7AA);
 
+		bb.putShort(gEndFirstEpisode);
+		bb.putShort(gEndGame);
+		bb.put((byte) (plantProcess?1:0));
 
 		Bwrite(fil,bb.array(),bb.capacity());
 	}
@@ -625,7 +631,7 @@ public class LoadSave {
 			ambientid[i] = bb.getShort();
 			ambienthitag[i] = bb.getShort();
 		}
-		
+
 		numgeomeffects = bb.getInt();
 		for(int i = 0; i < MAXGEOMETRY; i++)
 		{
@@ -641,6 +647,19 @@ public class LoadSave {
 			geomz2[i] = bb.getInt();
 		}
 		
+		word_18B7A4 = bb.getShort();
+		word_18B7A6 = bb.getShort();
+		word_18B7AA = bb.getShort();
+		
+		gEndFirstEpisode = bb.getShort();
+		gEndGame = bb.getShort();
+
+		tilesizy[0] = 0;
+	    tilesizx[0] = 0;
+	    waloff[0] = null;
+	    
+	    BowlReset();
+	    
 		plantProcess = bb.get() == 1;
 	}
 	
@@ -649,6 +668,7 @@ public class LoadSave {
 		byte[] buf = new byte[144];
 		bb.get(buf);
 		
+		boardfilename = null;
 		String name = new String(buf).trim();
 		if(!name.isEmpty()) boardfilename = name;
 		
@@ -811,6 +831,9 @@ public class LoadSave {
 		Arrays.fill(playerquitflag, 1);
 
 		resetmys();
+		
+		if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
+			setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
 
 		clearfifo();
 		

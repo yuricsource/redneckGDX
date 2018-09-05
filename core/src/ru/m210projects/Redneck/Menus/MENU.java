@@ -12,7 +12,7 @@ import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Config.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
-import static ru.m210projects.Redneck.Menus.DukeMenu.*;
+import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Controls.*;
 
 import com.badlogic.gdx.Application.ApplicationType;

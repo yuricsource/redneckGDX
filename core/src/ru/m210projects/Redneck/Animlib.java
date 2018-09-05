@@ -93,7 +93,7 @@ public class Animlib {
 			anmtime += dt;
 			
 			float rate = 1000f;
-			if(filename.equalsIgnoreCase("redneck.anm")) 
+			if(filename.equalsIgnoreCase("redneck.anm") || filename.equalsIgnoreCase("rr_outro.anm")) 
 				rate = 700f;
 			
 			float tick = rate / anmfil.getRate();

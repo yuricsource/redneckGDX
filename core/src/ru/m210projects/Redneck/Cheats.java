@@ -52,7 +52,6 @@ public class Cheats {
                     ps[myconnectindex].cowpie_amount 	=          	600;
                     ps[myconnectindex].whishkey_amount 	=         	(short) max_player_health;
 
-                    ps[myconnectindex].got_access = 7;
                     Arrays.fill(ps[myconnectindex].gotkey, (short)1);
                     FTA(5,ps[myconnectindex]);
                     ps[myconnectindex].inven_icon = 1;

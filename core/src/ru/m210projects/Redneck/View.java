@@ -59,7 +59,7 @@ import static ru.m210projects.Redneck.Interpolation.dointerpolations;
 import static ru.m210projects.Redneck.Interpolation.restoreinterpolations;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Menus.MENU.*;
-import static ru.m210projects.Redneck.Menus.DukeMenu.*;
+import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Weapons.*;
 
 import java.io.File;
@@ -229,8 +229,15 @@ public class View {
 	                    if(ud.screen_size > 0) a = 145;
 	                    else a = 182;
 
-	                    minitext(5,a,volume_names[ud.volume_number],65536, 0,0,8+16+256);
-	                    minitext(5,a+6,level_names[ud.volume_number*11 + ud.level_number],65536,0,0,8+16+256);
+	                    if(gEndGame != 0)
+	                    {
+	                    	Arrays.fill(buffer, (char)0);
+	                    	buildString(buffer, 0, "Close Encounters");
+		                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
+	                    } else {
+		                    minitext(5,a,volume_names[ud.volume_number],65536, 0,0,8+16+256);
+		                    minitext(5,a+6,level_names[ud.volume_number*11 + ud.level_number],65536,0,0,8+16+256);
+	                    }
 	                    
 	                    if ( cfg.gShowStat == 2 ) {
 	                    	int k = 0;
@@ -286,8 +293,13 @@ public class View {
 			if(cfg.showMapInfo != 0 && !gShowMenu)
 			{	
 				char[] mapname;
-				if(boardfilename == null)
-					mapname = level_names[(ud.volume_number*11)+ud.level_number];
+				if(boardfilename == null) {
+					if(gEndGame != 0)
+					{
+						buildString(buffer, 0, "Close Encounters");
+						mapname = buffer;
+					} else mapname = level_names[(ud.volume_number*11)+ud.level_number];
+				}
 				else {
 					Arrays.fill(buffer, (char)0);
 					int index = boardfilename.lastIndexOf(File.separator);
@@ -531,7 +543,7 @@ public class View {
 		        x += tilesizx[AMMOBOX] / 2 + 2;
 	        }
 	        
-	        if(p.got_access != 0) {
+	        if((p.gotkey[0]|p.gotkey[1]|p.gotkey[2]) != 0) {
 	        	engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,AMMOBOX,0,21,26|256,0,0,xdim-1,ydim-1);
 		        engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,9216,0,21,10+16+256,0,0,xdim-1,ydim-1);
 		        
@@ -1737,9 +1749,6 @@ public class View {
 
 	public static void displaygeom3d(int sectnum, int cposx, int cposy, int cposz,  float choriz, float cang, int csect, int smoothratio)
 	{
-		
-		//1 upper
-		//2 lower
 		if(sector[sectnum].lotag == 848)
 		{
 	        int geomsect = 0;
@@ -1837,7 +1846,7 @@ public class View {
 	        else xoff += 65;
 	    }
 
-        if(p.got_access != 0) 
+	    if((p.gotkey[0]|p.gotkey[1]|p.gotkey[2]) != 0)
 	        xoff += tilesizx[9216] / 4;
         
 	    while( j <= 9 )
@@ -1886,20 +1895,29 @@ public class View {
         	engine.rotatesprite(
     	            (320 - (tilesizx[3374] >> 1) - 15) << 16,
     	            (200 - (tilesizy[3374] >> 1) + (sintable[totalclock & 0x7FF] >> 10)) << 16,
-    	            49152,0,3374,0,p,18,
+    	            49152,0,3374,0,p,10 | 16 |512,
     	            windowx1, windowy1, windowx2, windowy2);
+        	
+        	int framesx = xdim / tilesizx[3377];
+			
+			int x = -tilesizx[3377]/2;
+			for(int i = 0; i <= framesx; i++) {
+				engine.rotatesprite(x<<16, (-1)<<16, 65536, 0, 3377, 0, p, 10 | 16, 0, 0, xdim-1, ydim-1);
+	        	engine.rotatesprite(x<<16, 200<<16, 65536, 0, 3377, 0, p, 4 | 10| 16, 0, 0, xdim-1, ydim-1);
+		    	x += tilesizx[3377] - 1;
+		    }
+			
     	    engine.rotatesprite(
     	            (320 - (tilesizx[3378])) << 16,
     	            (200 - (tilesizy[3378])) << 16,
-    	            65536, 0, 3378, 0, p, 18,
+    	            65536, 0, 3378, 0, p, 10 | 16 |512,
     	            windowx1, windowy1, windowx2, windowy2);
     	    engine.rotatesprite(
     	            tilesizx[3378] << 16,
     	            (200 - (tilesizy[3378])) << 16,
-    	            65536,1024,3378,0,p,22,
+    	            65536,1024,3378,0,p, 4 | 10 | 16 |256,
     	            windowx1, windowy1, windowx2, windowy2);
-    		engine.rotatesprite(2293760, 0xFFFF0000, 65536, 0, 3377, 0, p, 18, windowx1, windowy1, windowx2, windowy2);
-        	engine.rotatesprite(18677760, 13107200, 65536, 1024, 3377, 0, p, 18, windowx1, windowy1, windowx2, windowy2);
+    		
 		}
 	}
 }

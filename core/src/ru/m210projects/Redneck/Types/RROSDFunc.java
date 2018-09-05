@@ -22,7 +22,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 	public RROSDFunc(Engine engine) {
 		super(engine);
 		
-		BGTILE = 0;
+		BGTILE = LOADSCREEN;
 		BGCTILE = INGAMELNRDTHREEDEE;
 		BORDTILE = VIEWBORDER;
 

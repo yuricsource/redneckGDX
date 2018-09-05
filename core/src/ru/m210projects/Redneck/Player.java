@@ -43,7 +43,6 @@ public class Player {
 			slimepal = new byte[768], titlepal = new byte[768], 
 			drealms = new byte[768], endingpal = new byte[768];
 	
-
 	public static void setpal(PlayerStruct p)
 	{
 	    if(p.heat_on != 0) p.palette = slimepal;
@@ -461,6 +460,8 @@ public class Player {
 		                    spritesound(DUKE_CRACK,p.i);
 		                else spritesound(DUKE_CRACK2,p.i);
 		            }
+	        		
+	        		return true;
 	        	}
 	        	
 	        	int snd = -1;
@@ -745,12 +746,12 @@ public class Player {
 	                FTA(102,p);
 	            }
 	        }
-	        else if(p.timebeforeexit == 2)
+	        else if(p.timebeforeexit == 1)
 	        {
 	            LeaveMap();
 	            
 	            if ( ud.level_number == 6 && ud.volume_number == 0 )
-	                word_D7FB4 = 1;
+	                gEndFirstEpisode = 1;
 	            
                 ud.level_number++;
                 ud.m_level_number = ud.level_number;

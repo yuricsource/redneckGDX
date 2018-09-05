@@ -353,9 +353,6 @@ public class Premap {
 	    p.rapid_fire_hold  = 0;
 	    p.toggle_key_flag  = 0;
 	    p.access_spritenum = -1;
-	    if(ud.multimode > 1 && ud.coop != 1 )
-	        p.got_access = 7;
-	    else p.got_access      = 0;
 	    p.random_club_frame= 0;
 	    p.on_warping_sector = 0;
 	    p.spritebridge      = 0;
@@ -437,8 +434,7 @@ public class Premap {
 	    p.field_count = 0;
 	    dword_D7FAC = 0;
 	    p.detonate_count = 0;
-//	    sub_2FEE8(); //XXX
-	    dword_18D464 = 0;
+	    BowlReset();
 	    if ( numplayers >= 2 )
 	    {
 	    	word_18B7A4 = 32;
@@ -525,7 +521,7 @@ public class Premap {
 	    p.detonate_count = 0;
 	    p.kickback = 0;
 	    p.field_count = 0;
-//	    sub_2FEE8();
+	    BowlReset();
 	    if ( numplayers >= 2 )
 	    {
 	    	word_18B7A4 = 32;
@@ -635,7 +631,7 @@ public class Premap {
 	    p.detonate_count = 0;
 	    p.kickback = 0;
 	    p.field_count = 0;
-//	    sub_2FEE8();
+	    BowlReset();
 	    if ( numplayers >= 2 )
 	    {
 	    	word_18B7A4 = 32;
@@ -651,24 +647,7 @@ public class Premap {
 	     	word_18B7AA = ud.m_player_skill + 1;
 	    }
 	}
-	
-	//2808
-	//2560
-	//2382
-	//2577
-	//2974
-	//3220
-	//2092
-	//3111
-	//3599
-	//1934
-	//2908
-	//2382
-	//3725
-	//3727
-	//3680
-	//3810
-	//2013
+
 	public static void setupbackdrop(short sky)
 	{
 		Arrays.fill(pskyoff, (short)0);
@@ -1120,13 +1099,14 @@ public class Premap {
 	    }
 	    
 	    if ( haveLigthning == 0 )
-	    {
-//	    	engine.setbrightness((ud.brightness >> 2) & 0xFF, palette);
+	    { 
+//XXX	    	engine.setbrightness((ud.brightness >> 2) & 0xFF, palette);
 	    	visibility = ps[screenpeek].visibility;
 	    }
 	    
 	    tilesizy[0] = 0;
 	    tilesizx[0] = 0;
+	    waloff[0] = null;
 	    
 	    gNameShowTime = 500;
 	}
@@ -1139,6 +1119,8 @@ public class Premap {
 	    ready2send = false;
 	    setgamepalette(ps[myconnectindex], palette, 3);
 
+	    gEndFirstEpisode = 0;
+	    gEndGame = 0;
 	    ud.level_number =   ln;
 	    ud.volume_number =  vn;
 	    ud.player_skill =   sk;
@@ -1329,6 +1311,35 @@ public class Premap {
 	    waterpal[765] = waterpal[766] = waterpal[767] = 0;
 
 	    kClose(fp);
+	    
+	    for(int i = 0; i < 768; i++)
+	    	tempbuf[i] = (byte) i;
+	    for(int i = 0; i < 32; i++)
+	    	tempbuf[i] = (byte) (i + 32);
+	    engine.makepalookup(7,tempbuf,0,0,0,1);
+	    for(int i = 0; i < 768; i++)
+	    	tempbuf[i] = (byte) i;
+	    engine.makepalookup(30, tempbuf, 0, 0, 0, 1);
+	    engine.makepalookup(31, tempbuf, 0, 0, 0, 1);
+	    engine.makepalookup(32, tempbuf, 0, 0, 0, 1);
+	    engine.makepalookup(33, tempbuf, 0, 0, 0, 1);
+	    
+	    int col = 63;
+	    for(int i = 64; i < 80; i++) {
+	    	tempbuf[i] = (byte) (--col);
+	    	tempbuf[i+16] = (byte) (i - 24);
+	    }
+	    for(int i = 0; i < 32; i++) 
+	    	tempbuf[i] = (byte) (i + 32);
+	    engine.makepalookup(34, tempbuf, 0, 0, 0, 1);
+	    
+	    for(int i = 0; i < 768; i++)
+	    	tempbuf[i] = (byte) i;
+	    for(int i = 0; i < 16; i++)
+	    	tempbuf[i] = (byte) (i - 127);
+	    for(int i = 16; i < 32; i++) 
+	    	tempbuf[i] = (byte) (i - 64);
+	    engine.makepalookup(35, tempbuf, 0, 0, 0, 1);
 	}
 
 	public static void dofrontscreens()

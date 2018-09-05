@@ -604,10 +604,12 @@ public class Screen {
 	 
 	    if(!bonusonly && (ud.multimode < 2 || ud.coop == 1)) {
 	    	int level = ud.level_number;
-	    	if(level == 0) level = 1;
 	    	if ( ud.volume_number != 0 )
 	    		gfx = 408 + level;
-	        else gfx = 402 + level;
+	        else {
+	        	if(level == 0) level = 1;
+	        	gfx = 402 + level;
+	        }
 	        
 	    	if ( gEndGame != 0 || word_D7D74 != 0)
 	    		gfx = 416;
@@ -618,10 +620,10 @@ public class Screen {
 				engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
 			} else {
 				engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
-				if ( gEndGame != 0 && ud.volume_number == 2 || word_D7D74 != 0 ) {
+				if ( gEndGame != 0 && ud.volume_number == 1 || word_D7D74 != 0 ) {
 					lastmapname = "CLOSE ENCOUNTERS".toCharArray();
 				}
-				else if ( word_D7FB4 != 0)
+				else if ( gEndFirstEpisode != 0)
 					lastmapname = "SMELTING PLANT".toCharArray();
 				else
 					lastmapname = level_names[(ud.volume_number*11)+ud.last_level-1];
