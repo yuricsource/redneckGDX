@@ -864,7 +864,7 @@ public class Sector {
 	        	i = getanimationgoal(sptr, FLOORZ);
 	            if (i >= 0)
 	            {
-	                if (gAnimationData[sn].goal == sptr.ceilingz)
+	                if (gAnimationData[i].goal == sptr.ceilingz)
 	                	gAnimationData[i].goal = sector[engine.nextsectorneighborz(sn,sptr.ceilingz,1,1)].floorz;
 	                else gAnimationData[i].goal = sptr.ceilingz;
 	                j = gAnimationData[i].goal;

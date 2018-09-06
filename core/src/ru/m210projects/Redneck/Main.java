@@ -29,7 +29,8 @@ import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
 
 /*
- * Freezes
+ * dobonus - wrong level name (gEndGame, gEndFirstEp)
+ * Freezes cache
  * CD muisc doincrement
  * Dobonus text tweak
  */
