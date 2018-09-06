@@ -178,25 +178,16 @@ public class Redneck {
 			SoundStartup();
 			MusicStartup();
 
-			if(boardfilename != null)
-		    {
-		        ud.m_level_number = 7;
-		        ud.m_volume_number = 0;
-		        ud.warp_on = 1;
-		    }
-
 		    ud.last_level = -1;
 		    
 		    genspriteremaps();
-		    
-		    ud.warp_on = 0;
 		    
 		    initinterpolations();
 		    initanimations();
 		    demoscan();
 		    
 		    mInit();
-		    
+		    ud.user_name[myconnectindex] = cfg.pName;
 		    
 		    for(int i = 0; i < MAXPLAYERS; i++) {
 		    	ps[i] = new PlayerStruct();  
@@ -669,7 +660,7 @@ public class Redneck {
 				
 				char[] mapname;
 				boolean usermap = false;
-				if(boardfilename == null)
+				if(ud.warp_on == 0 || boardfilename == null)
 					mapname = level_names[(ud.volume_number*11)+ud.level_number];
 				else {
 					Arrays.fill(buf, (char)0);

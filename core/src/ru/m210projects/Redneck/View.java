@@ -293,7 +293,7 @@ public class View {
 			if(cfg.showMapInfo != 0 && !gShowMenu)
 			{	
 				char[] mapname;
-				if(boardfilename == null) {
+				if(ud.warp_on == 0 || boardfilename == null) {
 					if(gEndGame != 0)
 					{
 						buildString(buffer, 0, "Close Encounters");
@@ -344,7 +344,7 @@ public class View {
 	{
 		if(Console.IsShown()) return;
 		
-		int j = 200-8;
+		int j = 200-10;
 		if (ud.screen_size > 0) j = 200-45;
 		
 		char[] buf = getInput().getMessageBuffer();
@@ -361,10 +361,10 @@ public class View {
 	{
 	     int i, j, k;
 
-	     if(ud.screen_size > 0) j = 200-45; else j = 200-8;
+	     if(ud.screen_size > 0) j = 200-45; else j = 200-10;
 	     quotebot = Math.min(quotebot,j);
 	     quotebotgoal = Math.min(quotebotgoal,j);
-	     if(MODE_TYPE) j -= 8;
+	     if(MODE_TYPE) j -= 10;
 	     quotebotgoal = j; j = quotebot;
 	     for(i=0;i<MAXUSERQUOTES;i++)
 	     {
@@ -373,7 +373,7 @@ public class View {
 	              gametext(320>>1,j,user_quote[i],65536,0,0,8+16);
 	         else if (k > 2) gametext(320>>1,j,user_quote[i],65536,0,0,8+16+1);
 	             else gametext(320>>1,j,user_quote[i],65536,0,0,8+16+1+32);
-	         j -= 8;
+	         j -= 10;
 	     }
 
 	     if (ps[screenpeek].fta <= 1) return;

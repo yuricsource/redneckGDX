@@ -1419,7 +1419,7 @@ public class Premap {
 		    
 	    Gdx.app.postRunnable(new Runnable() {
 			public void run() {
-			    if( boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2 )
+			    if( ud.warp_on == 1 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2 )
 			    {
 			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 )
 			            dassert("Map " + boardfilename + " not found!");

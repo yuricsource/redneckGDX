@@ -111,7 +111,7 @@ public class Demo {
 			dem.recsync = new Input[ud.reccnt][MAXPLAYERS];
 			int dasizeof = Input.sizeof(version)*ud.multimode;
 			byte[] recsyncbuf = new byte[dasizeof * RECSYNCBUFSIZ];
-			
+
 			int reccnt = 0;
 			for(int c = 0; c <= ud.reccnt / RECSYNCBUFSIZ; c++)
 			{
@@ -300,11 +300,7 @@ public class Demo {
 			Bwrite(recfilep, tempbuf, 32);
 		}
 
-		Bwrite(recfilep, ud.auto_run, 4);
-		int MAX_PATH = 128;
-		if (nVersion >= GDXBYTEVERSION)
-			MAX_PATH = 260;
-
+		int MAX_PATH = 260;
 		if (boardfilename != null)
 			Bwrite(recfilep, boardfilename.toCharArray(), MAX_PATH);
 		else Bwrite(recfilep, new byte[MAX_PATH], MAX_PATH);

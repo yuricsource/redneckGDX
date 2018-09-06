@@ -281,7 +281,7 @@ public class Sounds {
 	            break;
 	        default:
 	            if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
-	                pitch = -768;
+	                pitch = -768; //XXX
 	            if( sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
 	                return null;
 	            break;
@@ -317,12 +317,12 @@ public class Sounds {
 	    if( (soundm[num]&1) != 0)
 	    {
 	        if(Sound[num].num > 0) return null;
-        	voice = engine.getAudio().newSound(Sound[num].ptr, Sound[num].rate + pitch, Sound[num].bits, soundpr[num]);
+        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, soundpr[num]);
         	if(voice != null)
         		voice.setLooping(true, 0, -1);
 	    }
 	    else
-        	voice = engine.getAudio().newSound(Sound[num].ptr, Sound[num].rate + pitch, Sound[num].bits, soundpr[num]);
+        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, soundpr[num]);
 
 	    if ( voice != null )
 	    {

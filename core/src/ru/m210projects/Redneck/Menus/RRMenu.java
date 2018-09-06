@@ -102,19 +102,21 @@ public class RRMenu {
 	public static final int RESETCSETUP = 33;
 	
 	public static boolean mUseFakeMultiplayer;
+	private static int mUserFlag;
 	
 	public static void mContentUpdate(FileEntry file)
 	{
-		ud.warp_on = 0;
+		System.err.println("mContentUpdate");
 		boardfilename = null;
 		mContent = file;
+		mUserFlag = 0;
 		if(file != null) {
 			if(file.getExtension().equals("map")) 
 			{
 				boardfilename = file.getPath();
 				ud.m_level_number = 3;
 		        ud.m_volume_number = 2;
-				ud.warp_on = 1;
+		        mUserFlag = 1;
 				if (!mFromNetworkSetup())
 					mOpen(mMenus[DIFFICULTY], -1);
 			}
@@ -128,7 +130,7 @@ public class RRMenu {
 	{
 		System.err.println("mResetContent");
 		mContent = null;
-		ud.warp_on = 0;
+		mUserFlag = 0;
 		ud.m_level_number = 0;
         ud.m_volume_number = 0;
 		boardfilename = null;
@@ -311,6 +313,7 @@ public class RRMenu {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuButton but = (MenuButton) pItem;
+				mUserFlag = 0;
 				if (but.specialOpt > -1)
 					ud.m_volume_number = but.specialOpt;
 			}
@@ -360,6 +363,8 @@ public class RRMenu {
 
                 ud.m_respawn_items = false;
                 ud.m_respawn_inventory = false;
+                
+                ud.warp_on = mUserFlag;
 
                 if(ud.warp_on == 0)
                 	ud.m_level_number = 0;
@@ -369,11 +374,10 @@ public class RRMenu {
                 ud.multimode = 1;
                 if(numplayers > 1)
                 	NetDisconnect(myconnectindex);
-				
+                
 				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
 				
 				enterlevel(MODE_GAME);
-				ud.warp_on = 0;
 				mClose();
 			}
 		};
@@ -2900,7 +2904,7 @@ public class RRMenu {
 				num = 11*ud.m_volume_number+ud.m_level_number;
 				super.draw();
 				num = onum;
-				mCheckEnableItem(this, ud.warp_on != 1);
+				mCheckEnableItem(this, mUserFlag != 1);
 			}
 		};
 		
@@ -2923,7 +2927,7 @@ public class RRMenu {
 			@Override
 			public void draw() {
 				super.draw();
-				mCheckEnableItem(this, ud.warp_on != 1);
+				mCheckEnableItem(this, mUserFlag != 1);
 			}
 		};
 		
@@ -2989,7 +2993,9 @@ public class RRMenu {
 			@Override
 			public void run(MenuItem pItem) {
 				
-				tempbuf[0] = 5;
+				ud.warp_on = mUserFlag;
+				
+				tempbuf[0] = kPacketLevelStart;
                 tempbuf[1] = (byte)ud.m_level_number;
                 tempbuf[2] = (byte)ud.m_volume_number;
                 tempbuf[3] = (byte)(ud.m_player_skill);

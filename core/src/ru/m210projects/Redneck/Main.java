@@ -29,12 +29,10 @@ import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
 
 /*
- * usermap flag - boardfilename bug
- * sound pitch underwater
- * запись демок не работает
+ * Freezes
  * CD muisc doincrement
+ * Dobonus text tweak
  */
-
 
 public class Main extends ApplicationAdapter {
 
@@ -110,7 +108,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void pause() {
-		if(ud.multimode < 2) {
+		if(ud.multimode < 2 && ud.recstat == 0) {
 			ud.pause_on = 1;
 			if(currMusic != null)
         		currMusic.pause();
@@ -121,7 +119,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void resume() {
-		if(ud.multimode < 2) {
+		if(ud.multimode < 2 && ud.recstat == 0) {
 			ud.pause_on = 0;
 			if(cfg.MusicToggle && currMusic != null) 
 				currMusic.resume();

@@ -178,6 +178,7 @@ public class LoadSave {
 	
 	public static void MapSave(int fil)
 	{
+		Bwrite(fil, ud.warp_on, 1);
 		if(boardfilename != null)
 			Bwrite(fil, boardfilename.toCharArray(), 144);
 		else Bwrite(fil, new byte[144], 144);
@@ -665,9 +666,9 @@ public class LoadSave {
 	
 	public static void MapLoad(ByteBuffer bb)
 	{
+		ud.warp_on = bb.get();
 		byte[] buf = new byte[144];
 		bb.get(buf);
-		
 		boardfilename = null;
 		String name = new String(buf).trim();
 		if(!name.isEmpty()) boardfilename = name;
