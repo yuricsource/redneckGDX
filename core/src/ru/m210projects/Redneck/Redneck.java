@@ -63,6 +63,7 @@ import static ru.m210projects.Redneck.Network.getnames;
 import static ru.m210projects.Redneck.Network.getpackets;
 import static ru.m210projects.Redneck.Network.netStartWaiting;
 import static ru.m210projects.Redneck.Premap.enterlevel;
+import static ru.m210projects.Redneck.Redneck.gShowMenu;
 import static ru.m210projects.Redneck.Screen.alignx;
 import static ru.m210projects.Redneck.Screen.bonuscnt;
 import static ru.m210projects.Redneck.Screen.dobonus;
@@ -326,9 +327,11 @@ public class Redneck {
 				kGameCrash = false;
 			}
 			
-			engine.handleevents();
-			if(gpmanager != null)
-				gpmanager.handler();
+			if(gm != MODE_GAME || gShowMenu || Console.IsShown()) {
+				engine.handleevents();
+				if(gpmanager != null)
+					gpmanager.handler();
+			}
 			
 			if( ctrlGetInputKey(Screenshot, true)  )
 		    {
@@ -651,7 +654,6 @@ public class Redneck {
 					break;
 			}
 			
-
 			if(gm == MODE_LOADING)
 			{
 				ready2send = false;

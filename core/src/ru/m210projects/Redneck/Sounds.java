@@ -12,8 +12,7 @@ import static ru.m210projects.Build.Audio.BAudio.DIGITYPE;
 import static ru.m210projects.Build.Audio.BAudio.MIDITYPE;
 import static ru.m210projects.Build.Audio.BAudio.MUSICDRV;
 import static ru.m210projects.Build.Audio.BAudio.SOUNDDRV;
-import static ru.m210projects.Build.Engine.sector;
-import static ru.m210projects.Build.Engine.sprite;
+import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
 import static ru.m210projects.Build.FileHandle.Cache1D.kFileLength;
 import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
@@ -621,7 +620,7 @@ public class Sounds {
                 for(int tempj=0;tempj<tempk;tempj++)
             {
                 int tempi = SoundOwner[num][tempj].i;
-                if(sprite[tempi].picnum == MUSICANDSFX && sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999)
+                if(sprite[tempi].picnum == MUSICANDSFX && sprite[tempi].sectnum < MAXSECTORS && sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999)
                 {
                     hittype[tempi].temp_data[0] = 0;
                     if( (tempj + 1) < tempk )

@@ -1798,13 +1798,13 @@ public class Weapons {
 	                {
 	                	myospal(weapon_xoffset+184-(p.look_ang>>1),
 	                			looking_arc+240-gun_pos,44040,(kb & 2) + BUZSAW,gs,
-	                			o,0);
+	                			o,pal);
 	                }
 	                else
 	                {
 	                	myospal(weapon_xoffset+184-(p.look_ang>>1),
 	                			looking_arc+240-gun_pos,44040, 3384+ weap8_frames[kb],gs,
-	                			o,0);
+	                			o,pal);
 	                }
 	            }
 	            break;

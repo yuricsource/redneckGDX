@@ -30,9 +30,11 @@ import ru.m210projects.Redneck.Types.RREngine;
 
 /*
  * ART sprites
- * mouse dwheel
- * end cutscene speed
- * circle pal
+ * RR66 E2M2 удаляется шотган после взрыва
+ * RR66 баг с отображением ключа в HUD
+ * user content выделить и опустить пониже
+ * RR66 штаны больше 100%
+ * Можно левую часть большим шрифтом, а правую так оставить.
  */
 
 public class Main extends ApplicationAdapter {

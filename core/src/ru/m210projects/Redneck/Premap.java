@@ -34,6 +34,7 @@ import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
 
+import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
@@ -104,8 +105,103 @@ public class Premap {
 
 	public static void tloadtile(int tilenume)
 	{
-		if(tilesizx[tilenume] != 0 && tilesizy[tilenume] != 0)
+		if(tilesizx[tilenume] != 0 && tilesizy[tilenume] != 0) {
 			gotpic[tilenume>>3] |= (1<<(tilenume&7));
+			int tiles = picanm[tilenume] & 63;
+		    for(int j = tilenume; j <= (tilenume+tiles); j++) 
+		    	gotpic[j>>3] |= (1<<(j&7));
+		}
+	}
+	
+	public static void cacheenemies(int i)
+	{
+		int pic = sprite[i].picnum, j;
+
+	    if(pic >= 4060 && pic <= 4094) { //DOG
+	    	for(j = 4060; j <= 4094; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4260 && pic <= 4339) { //DOG
+	    	for(j = 4260; j <= 4339; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 3845 && pic <= 4059) { //LEONARD
+	    	for(j = 3845; j <= 4059; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4096 && pic <= 4248) { //BILLYRAY
+	    	for(j = 4096; j <= 4248; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4352 && pic <= 4462) { //LTH (CHERIFF)
+	    	for(j = 4352; j <= 4462; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4464 && pic <= 4523) { //BUBBA
+	    	for(j = 4464; j <= 4523; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4608 && pic <= 4762) { //HULK
+	    	for(j = 4608; j <= 4762; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4770 && pic <= 4825) { //SBOSS1
+	    	for(j = 4770; j <= 4825; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4861 && pic <= 4901) { //HEN
+	    	for(j = 4861; j <= 4901; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4916 && pic <= 4921) { //MOSQUITO
+	    	for(j = 4916; j <= 4921; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 4925 && pic <= 5012) { //PIG
+	    	for(j = 4925; j <= 5012; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 5015 && pic <= 5114) { //SBOSS1
+	    	for(j = 5015; j <= 5114; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 5120 && pic <= 5259) { //MINION
+	    	for(j = 5120; j <= 5259; j++) 
+		    	tloadtile(j);
+	    	
+	    	for(j = 5290; j <= 5304; j++) //MINION JIBS
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 5317 && pic <= 5372) { //COW
+	    	for(j = 5317; j <= 5372; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 5376 && pic <= 5593) { //COOT
+	    	for(j = 5376; j <= 5593; j++) 
+		    	tloadtile(j);
+	    	for(j = 5602; j <= 5620; j++) //COOT JIBS
+		    	tloadtile(j);
+	    	return;
+	    }
+	    if(pic >= 5635 && pic <= 5870) { //VIXEN
+	    	for(j = 5635; j <= 5870; j++) 
+		    	tloadtile(j);
+	    	return;
+	    }
 	}
 	
 	public static void cachespritenum(int i)
@@ -113,7 +209,9 @@ public class Premap {
 	    short j;
 
 	    if(ud.monsters_off && badguy(sprite[i])) return;
-
+	    
+	    cacheenemies(i);
+	    
 	    int maxc = 1;
 	    switch(sprite[i].picnum)
 	    {
@@ -136,29 +234,6 @@ public class Premap {
 	        case TORNADO:
 	        	maxc = 4;
 	        	break;
-	        case LTH:
-	        	maxc = 4462 - LTH;
-	        	break;
-	        case DOGRUN:
-	        	maxc = 4339 - DOGRUN;
-	        	break;
-	        case HULK:
-		    case HULKSTAYPUT:
-		    	maxc = 4746 - sprite[i].picnum;
-		    	break;
-		    case MOSQUITO:
-		    	maxc = 6;
-		    	break;
-		    case PIG:
-		    	maxc = 5012 - PIG;
-		    	break;
-		    case SBMOVE:
-		    	maxc = 5114 - SBMOVE;
-		    	break;
-		    case MINION:
-		    case MINIONSTAYPUT:
-		    	maxc = 5259 - sprite[i].picnum;
-		    	break;
 		    case UFO1:
 		    case UFO2:
 		    case UFO3:
@@ -166,26 +241,9 @@ public class Premap {
 		    case UFO5:
 		    	maxc = 4;
 		    	break;
-		    case COOT:
-		    case COOTSTAYPUT:
-		    	maxc = 5593 - sprite[i].picnum;
-		    	break;
-		    case VIXEN:
-		    	maxc = 5870 - VIXEN;
-		    	break;
-		    case HEN:
-		    	maxc = 4901 - HEN;
-		    	break;
-		    	
-		    	
-
-		    case BILLYRAYSTAYPUT:
-		    	break;
-		    case BUBBASTAND:
-		    	break;
 	    }
 
-	    for(j = sprite[i].picnum; j < (sprite[i].picnum+maxc); j++)
+	    for(j = sprite[i].picnum; j < (sprite[i].picnum+maxc); j++) 
 	    	tloadtile(j);
 	}
 
@@ -200,7 +258,7 @@ public class Premap {
             tloadtile(FRAGBAR);
             tloadtile(KILLSICON);
         }
-        for( i = DIGITALNUM; i < DIGITALNUM+9; i++)
+        for( i = DIGITALNUM; i < DIGITALNUM+10; i++)
 	    	tloadtile(i);
         
         for( i = 3374; i < 3379; i++) //MASK
@@ -237,13 +295,15 @@ public class Premap {
 	    //WEAPONS
 	    for( i = NEWCROWBAR; i < NEWCROWBAR+8; i++ )
 	    	tloadtile(i);
-	    for( i = NEWPISTOL; i < NEWPISTOL+10; i++ )
+	    for( i = NEWPISTOL; i < NEWPISTOL+11; i++ )
 	    	tloadtile(i);
-	    for( i = NEWSHOTGUN; i < NEWSHOTGUN+8 ; i++ )
+	    for( i = NEWSHOTGUN; i < NEWSHOTGUN+9 ; i++ )
 	    	tloadtile(i);
 	    for( i = 3370; i < 3373; i++ )
 	    	tloadtile(i);
 	    for( i = RIFLE; i < RIFLE+3 ; i++ )
+	    	tloadtile(i);
+	    for( i = SHELL; i < SHELL+2 ; i++ ) //Dynamite
 	    	tloadtile(i);
 	    for( i = 1752; i < 1757 ; i++ ) //Dynamite
 	    	tloadtile(i);
@@ -287,9 +347,11 @@ public class Premap {
 	    	tloadtile(i);
 	    for( i = JIBS6; i < (JIBS6+8); i++)
 	    	tloadtile(i);
-	    for( i = SCRAP1; i < (SCRAP1+19); i++)
+	    for( i = SCRAP6; i < (SCRAP1+19); i++)
 	    	tloadtile(i);
 	    for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++)
+	    	tloadtile(i);
+	    for( i = BLOOD; i < (BLOOD+4); i++)
 	    	tloadtile(i);
 	}
 
@@ -1651,7 +1713,8 @@ public class Premap {
 			     clearfrags();
 			    
 			     resettimevars();  // Here we go
-			     
+
+			     Console.Println("Enterlevel()");
 			     if(ud.recstat == 2)
 		    		 gm = MODE_DEMO;
 

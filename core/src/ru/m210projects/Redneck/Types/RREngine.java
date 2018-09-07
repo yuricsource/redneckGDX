@@ -1,6 +1,7 @@
 package ru.m210projects.Redneck.Types;
 
 import static java.lang.Math.*;
+import static ru.m210projects.Redneck.Main.gpmanager;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
@@ -101,21 +102,24 @@ public class RREngine extends Engine {
 	        if (i != myconnectindex)
 	            if (movefifoend[i] < movefifoend[myconnectindex]-200) return;
 
-	     getinput(myconnectindex);
+	    handleevents();
+		if(gpmanager != null)
+			gpmanager.handler();
+		getinput(myconnectindex);
 
-	     avgfvel += loc.fvel;
-	     avgsvel += loc.svel;
-	     avgavel += loc.avel;
-	     avghorz += loc.horz;
-	     avgbits |= loc.bits;
+		avgfvel += loc.fvel;
+		avgsvel += loc.svel;
+		avgavel += loc.avel;
+		avghorz += loc.horz;
+		avgbits |= loc.bits;
 
-	     if ((movefifoend[myconnectindex]&(movesperpacket-1)) != 0)
-	     {
-	          inputfifo[movefifoend[myconnectindex]&(MOVEFIFOSIZ-1)][myconnectindex].
-	          copy(inputfifo[(movefifoend[myconnectindex]-1)&(MOVEFIFOSIZ-1)][myconnectindex]);
-	          movefifoend[myconnectindex]++;
-	          return;
-	     }
+		if ((movefifoend[myconnectindex]&(movesperpacket-1)) != 0)
+		{
+			inputfifo[movefifoend[myconnectindex]&(MOVEFIFOSIZ-1)][myconnectindex].
+			copy(inputfifo[(movefifoend[myconnectindex]-1)&(MOVEFIFOSIZ-1)][myconnectindex]);
+			movefifoend[myconnectindex]++;
+			return;
+		}
 	     
 	     nsyn = inputfifo[movefifoend[myconnectindex]&(MOVEFIFOSIZ-1)];
 	     nsyn[myconnectindex].fvel = (short) (avgfvel/movesperpacket);
