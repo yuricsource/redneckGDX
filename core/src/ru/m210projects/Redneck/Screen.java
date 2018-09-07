@@ -28,6 +28,7 @@ import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Premap.*;
 
 import com.badlogic.gdx.Gdx;
 
@@ -487,7 +488,6 @@ public class Screen {
 	private static char[] bonusbuf = new char[128];
 	public static boolean showbonus = false;
 	public static int bonuscnt = 0, tinc = 0;
-	public static int word_D7D74;
 	
 	private static int[] checkSound = {
 		8, 23, 24, 26 //Bubba pain
@@ -498,7 +498,7 @@ public class Screen {
 		int t, gfx;
 	    int i, y,xfragtotal,yfragtotal;
 		int clockpad = 2;
-		char[] lastmapname;
+		char[] mapname;
 		
 		if(!showbonus)
 		{
@@ -611,26 +611,23 @@ public class Screen {
 	        	gfx = 402 + level;
 	        }
 	        
-	    	if ( gEndGame != 0 || word_D7D74 != 0)
+	    	if ( gEndGame != 0 )
 	    		gfx = 416;
 
 		    if (boardfilename != null) {
 				FileEntry file = cache.checkFile(boardfilename);
-				lastmapname = file.getName().toCharArray();
+				mapname = file.getName().toCharArray();
 				engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
 			} else {
 				engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
-				if ( gEndGame != 0 && ud.volume_number == 1 || word_D7D74 != 0 ) {
-					lastmapname = "CLOSE ENCOUNTERS".toCharArray();
-				}
-				else if ( gEndFirstEpisode != 0)
-					lastmapname = "SMELTING PLANT".toCharArray();
-				else
-					lastmapname = level_names[(ud.volume_number*11)+ud.last_level-1];
+				mapname = lastmapname;
+				
+				if ( gEndGame != 0 && ud.last_level != 7 && ud.volume_number == 1 ) 
+					mapname = "Close Encounters".toCharArray();
 			}
 		    
-		    mGetAlign(2, lastmapname);
-		    menutext(160-alignx/2,20-6,0,0,lastmapname, 0);
+		    mGetAlign(2, mapname);
+		    menutext(160-alignx/2,20-6,0,0,mapname, 0);
 
 		    buildString(bonusbuf, 0, "PRESS ANY KEY TO CONTINUE");
 		    mGetAlign(2, bonusbuf);
@@ -651,33 +648,36 @@ public class Screen {
                 { 
                     bonuscnt++;
                     sound(425);
+                    Source voice = null;
                     switch(engine.rand()&3)
                     {
                         case 0:
-                            sound(BONUS_SPEECH1);
+                        	voice = sound(BONUS_SPEECH1);
                             break;
                         case 1:
-                            sound(BONUS_SPEECH2);
+                        	voice = sound(BONUS_SPEECH2);
                             break;
                         case 2:
-                            sound(BONUS_SPEECH3);
+                        	voice = sound(BONUS_SPEECH3);
                             break;
                         case 3:
-                            sound(BONUS_SPEECH4);
+                        	voice = sound(BONUS_SPEECH4);
                             break;
                     }
+                    while(voice != null && voice.isActive());
                 }
             }
             else if( totalclock > (10240+120) ) { showbonus = false; return true; }
-
+			
+			int pos = 40;
             if( totalclock > (60*3) )
             {
             	buildString(bonusbuf, 0, "Yer Time:");
-            	menutext(30,48,0,0,bonusbuf,8+16);
+            	menutext(30,pos,0,0,bonusbuf,8+16);
                 buildString(bonusbuf, 0, "Par time:");
-                menutext(30,64,0,0,bonusbuf,8+16);
+                menutext(30,pos+=19,0,0,bonusbuf,8+16);
                 buildString(bonusbuf, 0, "Xatrix Time:");
-                menutext(30,80,0,0,bonusbuf,8+16);
+                menutext(30,pos+=19,0,0,bonusbuf,8+16);
                 if(bonuscnt == 0)
                     bonuscnt++;
 
@@ -689,25 +689,28 @@ public class Screen {
                         sound(404);
                     }
                     
+                    pos = 40;
                     int num = Bitoa(ps[myconnectindex].player_par/(26*60), bonusbuf, 2);
                     buildString(bonusbuf, num, " : ", (ps[myconnectindex].player_par/26)%60, 2);
-                    menutext(211,48,0,0,bonusbuf,8+16);
+                    menutext(211,pos,0,0,bonusbuf,8+16);
                     
                     num = Bitoa(partime[ud.volume_number*11+ud.last_level-1]/(26*60), bonusbuf, 2);
                     buildString(bonusbuf, num, " : ", (partime[ud.volume_number*11+ud.last_level-1]/26)%60, 2);
-                    menutext(211,64,0,0,bonusbuf,8+16);
+                    menutext(211,pos+=19,0,0,bonusbuf,8+16);
 
                     num = Bitoa(designertime[ud.volume_number*11+ud.last_level-1]/(26*60), bonusbuf, 2);
                     buildString(bonusbuf, num, " : ", (designertime[ud.volume_number*11+ud.last_level-1]/26)%60, 2);
-                    menutext(211,80,0,0,bonusbuf,8+16);
+                    menutext(211,pos+=19,0,0,bonusbuf,8+16);
                 }
             }
+
             if( totalclock > (60*6) )
             {
+            	pos = 106;
             	buildString(bonusbuf, 0, "Varmints Killed:");
-            	menutext(30,112,0,0,bonusbuf,8+16);
+            	menutext(30,pos,0,0,bonusbuf,8+16);
                 buildString(bonusbuf, 0, "Varmints Left:");
-                menutext(30,128,0,0,bonusbuf,8+16);
+                menutext(30,pos+=19,0,0,bonusbuf,8+16);
 
                 if(bonuscnt == 2)
                     bonuscnt++;
@@ -719,29 +722,31 @@ public class Screen {
                         bonuscnt++;
                         sound(422);
                     } 
-                    
+                    pos = 106;
                     Bitoa(ps[connecthead].actors_killed, bonusbuf);
-                    menutext(251,112,0,0,bonusbuf,8+16);
+                    menutext(251,pos,0,0,bonusbuf,8+16);
                     if(ud.player_skill > 3 )
                     {
                     	buildString(bonusbuf, 0, "N/A");
-                    	menutext(251,128,0,0,bonusbuf,8+16);
+                    	menutext(251,pos+=19,0,0,bonusbuf,8+16);
                     }
                     else
                     {
                         if( (ps[connecthead].max_actors_killed-ps[connecthead].actors_killed) < 0 )
                         	Bitoa(0, bonusbuf);
                         else Bitoa(ps[connecthead].max_actors_killed-ps[connecthead].actors_killed, bonusbuf);
-                        menutext(251,128,0,0,bonusbuf,8+16);
+                        menutext(251,pos+=19,0,0,bonusbuf,8+16);
                     }
                 }
             }
+            
             if( totalclock > (60*9) )
             {
+            	pos = 148;
             	buildString(bonusbuf, 0, "Secrets Found:");
-            	menutext(30,144,0,0,bonusbuf,8+16);
+            	menutext(30,pos,0,0,bonusbuf,8+16);
                 buildString(bonusbuf, 0, "Secrets Missed:");
-                menutext(30,160,0,0,bonusbuf,8+16);
+                menutext(30,pos+=19,0,0,bonusbuf,8+16);
                 if(bonuscnt == 4) bonuscnt++;
 
                 if( totalclock > (60*10) )
@@ -751,10 +756,11 @@ public class Screen {
                         bonuscnt++;
                         sound(404);
                     }
+                    pos = 148;
                     Bitoa(ps[myconnectindex].secret_rooms, bonusbuf);
-                    menutext(251,144,0,0,bonusbuf,8+16);
+                    menutext(251,pos,0,0,bonusbuf,8+16);
                     Bitoa(ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms, bonusbuf);
-                    menutext(251,160,0,0,bonusbuf,8+16);
+                    menutext(251,pos+=19,0,0,bonusbuf,8+16);
                 }
             }
 

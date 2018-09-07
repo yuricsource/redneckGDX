@@ -6,6 +6,7 @@ import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.*;
+import static ru.m210projects.Redneck.Interpolation.setinterpolation;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Animate.*;
@@ -96,16 +97,13 @@ public class Actors {
 	    {
 		    case BOULDER:
 		    case BOULDER1:
-		    case 1147:
-		    case 1344:
 		    case TORNADO:
 		    case BILLYCOCK:
 		    case BILLYSHOOT:
 		    case BILLYRAYSTAYPUT:
-		    case 4249:
 		    case DOGRUN:
 		    case LTH:
-		    case 4429:
+		    case 4429: //LTH
 		    case BUBBASTAND:
 		    case HULK:
 		    case HULKSTAYPUT:
@@ -1635,9 +1633,11 @@ public class Actors {
 
 					if (t[3] == 1) {
 						if (x >= t[2]) {
+							setinterpolation(sector[sect], FLOORZ);
 							sector[sect].floorz = x;
 							t[1] = 0;
 						} else {
+							setinterpolation(sector[sect], FLOORZ);
 							sector[sect].floorz += sector[sect].extra;
 							p = checkcursectnums(sect);
 							if (p >= 0)
@@ -1645,9 +1645,11 @@ public class Actors {
 						}
 					} else {
 						if (x <= s.z) {
+							setinterpolation(sector[sect], FLOORZ);
 							sector[sect].floorz = s.z;
 							t[1] = 0;
 						} else {
+							setinterpolation(sector[sect], FLOORZ);
 							sector[sect].floorz -= sector[sect].extra;
 							p = checkcursectnums(sect);
 							if (p >= 0)
@@ -3853,6 +3855,7 @@ public class Actors {
 
 						if (sc.floorz > s.z) // z's are touching
 						{
+							setinterpolation(sc, FLOORZ);
 							sc.floorz -= 512;
 							zchange = -512;
 							if (sc.floorz < s.z)
@@ -3861,6 +3864,7 @@ public class Actors {
 
 						else if (sc.floorz < s.z) // z's are touching
 						{
+							setinterpolation(sc, FLOORZ);
 							sc.floorz += 512;
 							zchange = 512;
 							if (sc.floorz > s.z)
@@ -3881,6 +3885,7 @@ public class Actors {
 						if (sc.floorz > hittype[i].temp_data[3]) // z's are
 																	// touching
 						{
+							setinterpolation(sc, FLOORZ);
 							sc.floorz -= 512;
 							zchange = -512;
 							if (sc.floorz < hittype[i].temp_data[3])
@@ -3890,6 +3895,7 @@ public class Actors {
 						else if (sc.floorz < hittype[i].temp_data[3]) // z's are
 																		// touching
 						{
+							setinterpolation(sc, FLOORZ);
 							sc.floorz += 512;
 							zchange = 512;
 							if (sc.floorz > hittype[i].temp_data[3])
@@ -4638,7 +4644,9 @@ public class Actors {
 				}
 
 				s.z += s.zvel;
+				setinterpolation(sc, CEILZ);
 				sc.ceilingz += s.zvel;
+				setinterpolation(sector[t[0]], CEILZ);
 				sector[t[0]].ceilingz += s.zvel;
 				ms(i);
 				engine.setsprite(i, s.x, s.y, s.z);
@@ -4888,17 +4896,21 @@ public class Actors {
 
 					if (s.ang == 512) {
 						if (s.owner != 0) {
+							setinterpolation(sc, CEILZ);
 							if (klabs(t[0] - sc.ceilingz) >= j)
 								sc.ceilingz += sgn(t[0] - sc.ceilingz) * j;
 							else
 								sc.ceilingz = t[0];
 						} else {
+							setinterpolation(sc, FLOORZ);
 							if (klabs(t[1] - sc.floorz) >= j)
 								sc.floorz += sgn(t[1] - sc.floorz) * j;
 							else
 								sc.floorz = t[1];
 						}
 					} else {
+						setinterpolation(sc, CEILZ);
+						setinterpolation(sc, FLOORZ);
 						if (klabs(t[1] - sc.floorz) >= j)
 							sc.floorz += sgn(t[1] - sc.floorz) * j;
 						else
@@ -4997,6 +5009,7 @@ public class Actors {
 						s.shade = 1;
 				}
 
+				setinterpolation(sc, CEILZ);
 				if (s.shade != 0)
 					sc.ceilingz += 1024;
 				else
@@ -5011,6 +5024,8 @@ public class Actors {
 
 				q = t[0] * (sprite[i].yvel << 2);
 
+				setinterpolation(sc, FLOORZ);
+                setinterpolation(sc, CEILZ);
 				sc.ceilingz += q;
 				sc.floorz += q;
 
@@ -5118,6 +5133,7 @@ public class Actors {
 				if (t[0] != 0) {
 					if (s.pal != 0) {
 						if (s.ang == 512) {
+							setinterpolation(sc, CEILZ);
 							sc.ceilingz -= sc.extra;
 							if (sc.ceilingz <= t[1]) {
 								sc.ceilingz = t[1];
@@ -5125,6 +5141,7 @@ public class Actors {
 								continue;
 							}
 						} else {
+							setinterpolation(sc, FLOORZ);
 							sc.floorz += sc.extra;
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
@@ -5148,6 +5165,7 @@ public class Actors {
 						}
 					} else {
 						if (s.ang == 512) {
+							setinterpolation(sc, CEILZ);
 							sc.ceilingz += sc.extra;
 							if (sc.ceilingz >= s.z) {
 								sc.ceilingz = s.z;
@@ -5155,6 +5173,7 @@ public class Actors {
 								continue;
 							}
 						} else {
+							setinterpolation(sc, FLOORZ);
 							sc.floorz -= sc.extra;
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
@@ -5204,6 +5223,7 @@ public class Actors {
 							}
 					}
 
+					 setinterpolation(sc, CEILZ);
 					if (sc.ceilingz < sc.floorz)
 						sc.ceilingz += sprite[i].yvel;
 					else {
@@ -5355,10 +5375,14 @@ public class Actors {
 
 					if (klabs(l - s.z) < 1024) {
 						l = s.z;
-						if (s.ang == 1536)
+						if (s.ang == 1536) {
+							setinterpolation(sc, CEILZ);
 							sc.ceilingz = l;
-						else
+						}
+						else {
+							setinterpolation(sc, FLOORZ);
 							sc.floorz = l;
+						}
 						engine.deletesprite(i);
 						continue;
 					}
@@ -5369,8 +5393,10 @@ public class Actors {
 			case 22:
 
 				if (t[1] != 0) {
-					if (getanimationgoal(sector[t[0]], CEILZ) >= 0)
+					if (getanimationgoal(sector[t[0]], CEILZ) >= 0) {
+						setinterpolation(sc, CEILZ);
 						sc.ceilingz += sc.extra * 9;
+					}
 					else
 						t[1] = 0;
 				}
@@ -5465,6 +5491,8 @@ public class Actors {
 
 				switch (t[0]) {
 				case 0:
+					setinterpolation(sc, FLOORZ);
+                	setinterpolation(sc, CEILZ);
 					sc.ceilingz += s.yvel;
 					if (sc.ceilingz > sc.floorz)
 						sc.floorz = sc.ceilingz;
@@ -5472,6 +5500,7 @@ public class Actors {
 						t[0]++;
 					break;
 				case 1:
+					setinterpolation(sc, CEILZ);
 					sc.ceilingz -= (s.yvel << 2);
 					if (sc.ceilingz < t[4]) {
 						sc.ceilingz = t[4];
@@ -5491,6 +5520,7 @@ public class Actors {
 				else if (sc.ceilingz <= t[3])
 					s.shade = 1;
 
+				setinterpolation(sc, CEILZ);
 				if (s.shade != 0) {
 					sc.ceilingz += sprite[i].yvel << 4;
 					if (sc.ceilingz > sc.floorz)
@@ -5510,6 +5540,7 @@ public class Actors {
 				x = (s.xvel * sintable[s.ang & 2047]) >> 14;
 
 				s.shade++;
+				setinterpolation(sc, FLOORZ);
 				if (s.shade > 7) {
 					s.x = t[3];
 					s.y = t[4];
@@ -5601,6 +5632,7 @@ public class Actors {
 			case 29:
 				s.hitag += 64;
 				l = mulscale((int) s.yvel, sintable[s.hitag & 2047], 12);
+				setinterpolation(sc, FLOORZ);
 				sc.floorz = s.z + l;
 				break;
 
@@ -5613,6 +5645,7 @@ public class Actors {
 						break;
 					}
 
+					setinterpolation(sc, FLOORZ);
 					if (t[2] == 1) // Retract
 					{
 						if (sprite[i].ang != 1536) {
@@ -5728,6 +5761,7 @@ public class Actors {
 				if (t[0] == 1) {
 					// Choose dir
 
+					setinterpolation(sc, CEILZ);
 					if (t[2] == 1) // Retract
 					{
 						if (sprite[i].ang != 1536) {

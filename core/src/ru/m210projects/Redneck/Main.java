@@ -29,16 +29,16 @@ import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
 
 /*
- * dobonus - wrong level name (gEndGame, gEndFirstEp)
- * Freezes cache
- * CD muisc doincrement
- * Dobonus text tweak
+ * ART sprites
+ * mouse dwheel
+ * end cutscene speed
+ * circle pal
  */
 
 public class Main extends ApplicationAdapter {
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.500";
+	public static final String sversion = "v0.750";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();

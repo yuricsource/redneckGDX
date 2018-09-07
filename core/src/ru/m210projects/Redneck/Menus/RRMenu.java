@@ -1932,9 +1932,10 @@ public class RRMenu {
 			@Override
 			public void open(MENU pMenu) {
 				if (this.list == null) {
-					this.list = new char[2][];
+					this.list = new char[3][];
 					this.list[0] = "midi".toCharArray();
 					this.list[1] = "external".toCharArray();
+					this.list[2] = "cd audio".toCharArray();
 				}
 				cdaudio = ocdaudio = num = cfg.musicType;
 			}

@@ -660,7 +660,6 @@ public class LoadSave {
 	    waloff[0] = null;
 	    
 	    BowlReset();
-	    
 		plantProcess = bb.get() == 1;
 	}
 	

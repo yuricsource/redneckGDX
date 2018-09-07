@@ -41,8 +41,46 @@ public class Sounds {
 	public static final int NUM_SOUNDS = 500;
 	public static int backflag,numenvsnds;
 	
+	public static int currTrack = -1;
 	public static MusicSource currMusic;
 	public static String currSong;
+	
+	public static final String track[] = {
+		"track02.ogg",
+		"track03.ogg",
+		"track04.ogg",
+		"track05.ogg",
+		"track06.ogg",
+		"track07.ogg",
+		"track08.ogg",
+		"track09.ogg"
+	};
+	
+	public static void checkTrack()
+	{
+		if ( cfg.musicType == 2 )
+		{
+			if(currMusic != null && !currMusic.isPlaying()) {
+				currTrack++;
+				if(currTrack >= track.length)
+					currTrack = 0;
+				
+				System.err.println("Change music to" + currTrack);
+				sndPlayTrack(currTrack);
+			} else if(currMusic == null) {
+				if ( cfg.musicType == 2 )
+				{
+					for(int i = 0; i < track.length; i++)
+						if(sndPlayTrack(i)) {
+							System.err.println("Start music " + i);
+							return;
+						}
+					Console.Println("Music tracks not found!");
+					cfg.musicType = 1;
+				}
+			}
+		}
+	}
 	
 	public static void check_fta_sounds(int i)
 	{
@@ -75,7 +113,9 @@ public class Sounds {
 	{
 		if(currMusic != null)
 			currMusic.stop();
+		
 		currMusic = null;
+		currTrack = -1;
 		currSong = null;
 	}
 	
@@ -84,9 +124,7 @@ public class Sounds {
 		if(cfg.MusicToggle)
 			engine.getAudio().setVolume(MUSICDRV, cfg.musicVolume);
 		else engine.getAudio().setVolume(MUSICDRV, 0);
-		
-		
-		
+
 		if ( cfg.musicType == 1) { //music from def file
 			String himus = Highmusic.checkDigitalMusic(name);
 			if(himus != null)
@@ -103,7 +141,26 @@ public class Sounds {
 			} 
 		}
 		
-		playmusic(name);
+		if(!sndPlayTrack(currTrack)) 
+			playmusic(name);
+	}
+	
+	public static boolean sndPlayTrack(int nTrack)
+	{
+		if ( cfg.musicType != 2 )
+			return false;
+		
+		if(currMusic != null && currMusic.isPlaying() && currTrack == nTrack)
+			return true;
+		
+		sndStopMusic();
+		if(nTrack >= 0 && nTrack < track.length && (currMusic = engine.getAudio().newMusic(DIGITYPE, track[nTrack])) != null) {
+			currTrack = nTrack;
+			currMusic.play(false);
+			return true;
+		}
+		
+		return false;
 	}
 
 	private static void playmusic(String fn) {
@@ -281,7 +338,7 @@ public class Sounds {
 	            break;
 	        default:
 	            if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
-	                pitch = -768; //XXX
+	                pitch = -768;
 	            if( sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
 	                return null;
 	            break;

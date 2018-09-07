@@ -660,8 +660,11 @@ public class Redneck {
 				
 				char[] mapname;
 				boolean usermap = false;
-				if(ud.warp_on == 0 || boardfilename == null)
+				if(ud.warp_on == 0 || boardfilename == null) {
 					mapname = level_names[(ud.volume_number*11)+ud.level_number];
+					if(gEndGame != 0)
+						mapname = "CLOSE ENCOUNTERS".toCharArray();
+				}
 				else {
 					Arrays.fill(buf, (char)0);
 					int index = boardfilename.lastIndexOf(File.separator);

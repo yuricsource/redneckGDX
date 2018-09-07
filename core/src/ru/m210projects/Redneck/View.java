@@ -229,7 +229,7 @@ public class View {
 	                    if(ud.screen_size > 0) a = 145;
 	                    else a = 182;
 
-	                    if(gEndGame != 0)
+	                    if(gEndGame != 0 && ud.last_level != 7)
 	                    {
 	                    	Arrays.fill(buffer, (char)0);
 	                    	buildString(buffer, 0, "Close Encounters");
@@ -294,7 +294,7 @@ public class View {
 			{	
 				char[] mapname;
 				if(ud.warp_on == 0 || boardfilename == null) {
-					if(gEndGame != 0)
+					if(gEndGame != 0 && ud.last_level != 7)
 					{
 						buildString(buffer, 0, "Close Encounters");
 						mapname = buffer;

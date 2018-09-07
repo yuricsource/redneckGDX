@@ -31,7 +31,6 @@ import static ru.m210projects.Redneck.Network.*;
 import static ru.m210projects.Redneck.View.*;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 import com.badlogic.gdx.Gdx;
 
@@ -44,6 +43,7 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Premap {
 	
+	public static char[] lastmapname;
 	public static boolean shadeEffect[] = new boolean[MAXSECTORS];
 
 	public static final int MAXJAILDOORS = 32;
@@ -104,18 +104,17 @@ public class Premap {
 
 	public static void tloadtile(int tilenume)
 	{
-	    gotpic[tilenume>>3] |= (1<<(tilenume&7));
+		if(tilesizx[tilenume] != 0 && tilesizy[tilenume] != 0)
+			gotpic[tilenume>>3] |= (1<<(tilenume&7));
 	}
 	
 	public static void cachespritenum(int i)
 	{
-	    char maxc;
 	    short j;
 
 	    if(ud.monsters_off && badguy(sprite[i])) return;
 
-	    maxc = 1;
-
+	    int maxc = 1;
 	    switch(sprite[i].picnum)
 	    {
 	        case APLAYER:
@@ -134,6 +133,56 @@ public class Premap {
 	        case OOZFILTER:
 	            maxc = 3;
 	            break;
+	        case TORNADO:
+	        	maxc = 4;
+	        	break;
+	        case LTH:
+	        	maxc = 4462 - LTH;
+	        	break;
+	        case DOGRUN:
+	        	maxc = 4339 - DOGRUN;
+	        	break;
+	        case HULK:
+		    case HULKSTAYPUT:
+		    	maxc = 4746 - sprite[i].picnum;
+		    	break;
+		    case MOSQUITO:
+		    	maxc = 6;
+		    	break;
+		    case PIG:
+		    	maxc = 5012 - PIG;
+		    	break;
+		    case SBMOVE:
+		    	maxc = 5114 - SBMOVE;
+		    	break;
+		    case MINION:
+		    case MINIONSTAYPUT:
+		    	maxc = 5259 - sprite[i].picnum;
+		    	break;
+		    case UFO1:
+		    case UFO2:
+		    case UFO3:
+		    case UFO4:
+		    case UFO5:
+		    	maxc = 4;
+		    	break;
+		    case COOT:
+		    case COOTSTAYPUT:
+		    	maxc = 5593 - sprite[i].picnum;
+		    	break;
+		    case VIXEN:
+		    	maxc = 5870 - VIXEN;
+		    	break;
+		    case HEN:
+		    	maxc = 4901 - HEN;
+		    	break;
+		    	
+		    	
+
+		    case BILLYRAYSTAYPUT:
+		    	break;
+		    case BUBBASTAND:
+		    	break;
 	    }
 
 	    for(j = sprite[i].picnum; j < (sprite[i].picnum+maxc); j++)
@@ -143,52 +192,103 @@ public class Premap {
 	public static void cachegoodsprites()
 	{
 	    short i;
-
-	    if(ud.screen_size >= 8)
-	    {
-	        tloadtile(BOTTOMSTATUSBAR);
-	        if( ud.multimode > 1)
-	        {
-	            tloadtile(FRAGBAR);
-	            for(i=MINIFONT;i<MINIFONT+63;i++)
-	            	tloadtile(i);
-	        }
-	    }
-
+	    
+	    //HUD
+	    tloadtile(BOTTOMSTATUSBAR);
+        if( ud.multimode > 1)
+        {
+            tloadtile(FRAGBAR);
+            tloadtile(KILLSICON);
+        }
+        for( i = DIGITALNUM; i < DIGITALNUM+9; i++)
+	    	tloadtile(i);
+        
+        for( i = 3374; i < 3379; i++) //MASK
+	    	tloadtile(i);
+        
+        tloadtile(ARROW);
+        tloadtile(INVENTORYBOX);
+        tloadtile(HEALTHBOX);
+        tloadtile(AMMOBOX);
+    	tloadtile(WHISHKEY_ICON);
+    	tloadtile(BOOT_ICON);
+    	tloadtile(COWPIE_ICON);
+    	tloadtile(SNORKLE_ICON);
+    	tloadtile(MOONSHINE_ICON);
+    	tloadtile(BEER_ICON);
+    	tloadtile(ACCESS_ICON);
+    	tloadtile(NEWCROSSHAIR);
+    	tloadtile(CROSSHAIR);
+    	tloadtile(FRAGBAR-1);
+        
+    	for(i=920;i<924;i++)
+	    	tloadtile(i);
+    	for(i=930;i<939;i++)
+	    	tloadtile(i);
+	    
+    	//FONTS
 	    for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++)
 	    	tloadtile(i);
-
-	    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++)
-	    	tloadtile(i);
-
 	    for( i = BIGALPHANUM; i < BIGALPHANUM+82; i++)
 	    	tloadtile(i);
-
-	    for( i = BURNING; i < BURNING+14; i++)
+	    for(i=MINIFONT;i<MINIFONT+63;i++)
+        	tloadtile(i);
+	    
+	    //WEAPONS
+	    for( i = NEWCROWBAR; i < NEWCROWBAR+8; i++ )
 	    	tloadtile(i);
-
-	    for( i = BURNING2; i < BURNING2+14; i++)
-	    	tloadtile(i);
-
 	    for( i = NEWPISTOL; i < NEWPISTOL+10; i++ )
 	    	tloadtile(i);
-
-	    for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ )
-	    	tloadtile(i);
-
-	    tloadtile(BULLETHOLE);
-
 	    for( i = NEWSHOTGUN; i < NEWSHOTGUN+8 ; i++ )
 	    	tloadtile(i);
-
-	    tloadtile(FOOTPRINTS);
-
+	    for( i = 3370; i < 3373; i++ )
+	    	tloadtile(i);
+	    for( i = RIFLE; i < RIFLE+3 ; i++ )
+	    	tloadtile(i);
+	    for( i = 1752; i < 1757 ; i++ ) //Dynamite
+	    	tloadtile(i);
+	    for( i = NEWDYNAMITE; i < NEWDYNAMITE+7; i++ )
+	    	tloadtile(i);
+	    for( i = CIRCLESTUCK-5; i < CIRCLESTUCK; i++ )
+	    	tloadtile(i);
+	    for( i = BUZSAW; i < BUZSAW+3; i++ )
+	    	tloadtile(i);
+	    for( i = 3415; i < 3419; i++ )
+	    	tloadtile(i);
+	    for( i = 3427; i < 2429; i++ )
+	    	tloadtile(i);
+	    tloadtile(3438);
+	    for( i = 3445; i < 3448; i++ )
+	    	tloadtile(i);
+	    for( i = 3452; i < 3459; i++ )
+	    	tloadtile(i);
+	    
+	    //PICKUPS
+	    for( i = FIRSTGUNSPRITE; i <= ALIENARMGUN; i++ )
+	    	tloadtile(i);
+	    for( i = AMMO; i <= BOOTS+1; i++ )
+	    	tloadtile(i);
+	    tloadtile(TEATAMMO);
+	    
+	    
+	    
+	    for( i = SHOTSPARK1; i <= SHOTSPARK1+3; i++ )
+	    	tloadtile(i);
+	    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++)
+	    	tloadtile(i);
+	    for( i = BURNING; i < BURNING+14; i++)
+	    	tloadtile(i);
+	    for( i = BURNING2; i < BURNING2+14; i++)
+	    	tloadtile(i);
+	    for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ )
+	    	tloadtile(i);
+	    tloadtile(BULLETHOLE);
 	    for( i = JIBS1; i < (JIBS5+5); i++)
 	    	tloadtile(i);
-
+	    for( i = JIBS6; i < (JIBS6+8); i++)
+	    	tloadtile(i);
 	    for( i = SCRAP1; i < (SCRAP1+19); i++)
 	    	tloadtile(i);
-
 	    for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++)
 	    	tloadtile(i);
 	}
@@ -204,8 +304,7 @@ public class Premap {
 	    int l = kFileLength( fp );
 	    soundsiz[num] = l;
 
-	    if( (ud.level_number == 0 && ud.volume_number == 0 && (num == 189 || num == 232 || num == 99 || num == 233 || num == 17 ) ) ||
-	        ( l < 12288 ) )
+//	    if( (ud.level_number == 0 && ud.volume_number == 0 && (num == 189 || num == 232 || num == 99 || num == 233 || num == 17 ) ) || ( l < 12288 ) )
 	    {
 	        Sound[num].lock = 2;
 	        
@@ -243,7 +342,6 @@ public class Premap {
 	            tloadtile(wall[i].overpicnum);
 	    }
 	    
-
 	    for(int i=0;i<numsectors;i++)
 	    {
             tloadtile( sector[i].floorpicnum );
@@ -257,22 +355,45 @@ public class Premap {
 	            j = nextspritesect[j];
 	        }
 	    }
-
 	}
 	
+//	private static HashSet<Short> picnums = new HashSet<Short>();
 	public static void docacheit()
 	{
 	    int j = 0;
-
-	    for(int i=0;i<MAXTILES;i++)
-	        if( (gotpic[i>>3]&(1<<(i&7))) != 0 && waloff[i] == null)
-	    {
-	        engine.loadtile(i);
-	        j++;
-	        if((j&7) == 0) getpackets();
+	    for(int i=0;i<MAXTILES;i++) {
+	        if( (gotpic[i>>3]&(1<<(i&7))) != 0 )
+		    {
+	        	if (waloff[i] == null) {
+	        		engine.loadtile(i);
+	        		engine.invalidatetile(i, 0, 1<<4);
+	        	}
+		        j++;
+		        if((j&7) == 0) getpackets();
+		    } 
 	    }
 
 	    Arrays.fill(gotpic, (byte)0);
+	    
+//	    picnums.clear();
+//	    for(int i = 0; i < numsectors; i++)
+//	    {
+//	    	SECTOR s = sector[i];
+//	    	picnums.add(s.floorpicnum);
+//	    	picnums.add(s.ceilingpicnum);
+//	    	for(int w = s.wallptr; w < s.wallptr + s.wallnum; w++)
+//	    		picnums.add(wall[w].picnum);
+//	    }
+//	    for(int i = 0; i < numsprites; i++)
+//	    	picnums.add(sprite[i].picnum);
+//	    
+//	    for(int i = 0; i < picnums.size(); i++) {
+//	    	Short tile = (Short)picnums.toArray()[i];
+//	    	if(waloff[tile] == null) {
+//		    	engine.loadtile(tile);
+//		    	engine.invalidatetile(tile, 0, 1<<4);
+//	    	}
+//	    }
 	}
 	
 	public static void xyzmirror(int i,int wn)
@@ -434,7 +555,6 @@ public class Premap {
 	    p.field_count = 0;
 	    dword_D7FAC = 0;
 	    p.detonate_count = 0;
-	    BowlReset();
 	    if ( numplayers >= 2 )
 	    {
 	    	word_18B7A4 = 32;
@@ -521,7 +641,6 @@ public class Premap {
 	    p.detonate_count = 0;
 	    p.kickback = 0;
 	    p.field_count = 0;
-	    BowlReset();
 	    if ( numplayers >= 2 )
 	    {
 	    	word_18B7A4 = 32;
@@ -631,7 +750,7 @@ public class Premap {
 	    p.detonate_count = 0;
 	    p.kickback = 0;
 	    p.field_count = 0;
-	    BowlReset();
+
 	    if ( numplayers >= 2 )
 	    {
 	    	word_18B7A4 = 32;
@@ -702,6 +821,8 @@ public class Premap {
 	    numambients = 0;
 	    haveLigthning = 0;
 	    plantProcess = false;
+	    
+	    BowlReset();
 	    
 	    int distance = 0, speed = 0, sound = 0;
 	    for(i=0;i<numsectors;i++)
@@ -1165,6 +1286,8 @@ public class Premap {
 		ready2send = false;
 		gLoadingTicks = 0.0f;
 		closedemowrite();
+		
+		lastmapname = level_names[(ud.volume_number*11)+ud.level_number];
 	}
 	
 	public static PlayerInfo[] info = new PlayerInfo[MAXPLAYERS];
@@ -1395,8 +1518,6 @@ public class Premap {
 	private static int[] posx = new int[1], posy = new int[1], posz = new int[1];
 	private static short[] sect = new short[1], ang = new short[1];
 	
-	private static HashSet<Short> picnums = new HashSet<Short>();
-	
 	public static void enterlevel(final int g)
 	{
 		if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
@@ -1426,8 +1547,10 @@ public class Premap {
 			    }
 			    else {
 			    	String map = new String(level_file_names[ (ud.volume_number*11)+ud.level_number]).trim();
-			    	if(gEndGame != 0) 
+			    	if(gEndGame != 0) {
 			    		map = "endgame.map";
+			    		ud.level_number = 0;
+			    	}
 			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1)
 			    		dassert("Map " + map + " not found!");
 			    }
@@ -1453,24 +1576,7 @@ public class Premap {
 		
 			    cacheit();
 			    docacheit();
-			    picnums.clear();
-			    for(int i = 0; i < numsectors; i++)
-			    {
-			    	SECTOR s = sector[i];
-			    	picnums.add(s.floorpicnum);
-			    	picnums.add(s.ceilingpicnum);
-			    	for(int w = s.wallptr; w < s.wallptr + s.wallnum; w++)
-			    		picnums.add(wall[w].picnum);
-			    }
-			    for(int i = 0; i < numsprites; i++)
-			    	picnums.add(sprite[i].picnum);
-			    
-			    for(int i = 0; i < picnums.size(); i++) {
-			    	Short tile = (Short)picnums.toArray()[i];
-			    	engine.loadtile(tile);
-			    	engine.invalidatetile(tile, 0, 1<<4);
-			    }
-		
+
 			    if(ud.recstat != 2)
 			    {
 			    	musicvolume = ud.volume_number;

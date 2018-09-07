@@ -252,6 +252,7 @@ public class Player {
 	    int snum = sprite[p.i].yvel;
 
 	    p.player_par++;
+	    checkTrack();
 	    
 	    if(p.field_count != 0)
 	    	p.field_count--;
