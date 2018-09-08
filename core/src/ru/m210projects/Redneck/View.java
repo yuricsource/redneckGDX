@@ -124,7 +124,7 @@ public class View {
 	    int cr = 0, cg = 0, cb = 0, cf = 0;
 	    boolean dotint = false;
 
-	    if((gScreenCapture || gShowMenu) && pp.newowner < 0)
+	    if((gScreenCapture || (gShowMenu && !isOpened(mMenus[HUDST]))) && pp.newowner < 0)
 			return;
 	    
 	    if( changepalette != 0 )
@@ -543,7 +543,7 @@ public class View {
 		        x += tilesizx[AMMOBOX] / 2 + 2;
 	        }
 	        
-	        if((p.gotkey[0]|p.gotkey[1]|p.gotkey[2]) != 0) {
+	        if((p.gotkey[1]|p.gotkey[2]|p.gotkey[3]) != 0) {
 	        	engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,AMMOBOX,0,21,26|256,0,0,xdim-1,ydim-1);
 		        engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,9216,0,21,10+16+256,0,0,xdim-1,ydim-1);
 		        
@@ -585,7 +585,7 @@ public class View {
                 case 4: i = ((p.cowpie_amount)/100); break;
                 case 5: i = p.empty_amount/12; break;
                 case 6: i = ((p.snorkle_amount+63)>>6); break;
-                case 7: i = (p.boot_amount >> 1); break;
+                case 7: i = (p.boot_amount / 10 >> 1); break;
 	            }
 	            invennum(x+27, 194, i, 0, 8 | 256);
 	        }

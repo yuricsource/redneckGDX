@@ -281,11 +281,11 @@ LABEL_11:
 	        		sound(479);
 	            break;
 	        case 5:
-	        	if(fr == 1)
+	        	if(fr == 1 && GameCON != RR66) 
 	        		sound(35);
 	            break;
 	        case 6:
-	        	if(fr == 1)
+	        	if(fr == 1 && GameCON != RR66)
 	        		sound(82);
 	            break;
 	    }

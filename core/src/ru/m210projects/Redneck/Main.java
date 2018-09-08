@@ -31,10 +31,6 @@ import ru.m210projects.Redneck.Types.RREngine;
 /*
  * ART sprites
  * RR66 E2M2 удаляется шотган после взрыва
- * RR66 баг с отображением ключа в HUD
- * user content выделить и опустить пониже
- * RR66 штаны больше 100%
- * Можно левую часть большим шрифтом, а правую так оставить.
  */
 
 public class Main extends ApplicationAdapter {
@@ -68,15 +64,7 @@ public class Main extends ApplicationAdapter {
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 			
-			if(Gdx.graphics instanceof BGraphics 
-					&& !((BGraphics)Gdx.graphics).setDisplayConfiguration(
-							cfg.gamma, cfg.brightness, cfg.contrast)) {
-				
-				((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
-				cfg.gamma = 1.0f;
-				cfg.brightness = 0.0f;
-				cfg.contrast = 1.0f;
-			}
+			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 
 			gm = MODE_LOGO;
@@ -126,6 +114,20 @@ public class Main extends ApplicationAdapter {
 			ud.pause_on = 0;
 			if(cfg.MusicToggle && currMusic != null) 
 				currMusic.resume();
+		}
+		updateColorCorrection();
+	}
+	
+	public void updateColorCorrection()
+	{
+		if(Gdx.graphics instanceof BGraphics 
+				&& !((BGraphics)Gdx.graphics).setDisplayConfiguration(
+						cfg.gamma, cfg.brightness, cfg.contrast)) {
+			
+			((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
+			cfg.gamma = 1.0f;
+			cfg.brightness = 0.0f;
+			cfg.contrast = 1.0f;
 		}
 	}
 

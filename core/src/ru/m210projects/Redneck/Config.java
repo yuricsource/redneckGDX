@@ -369,7 +369,7 @@ public class Config extends BConfig {
 	public int gShowStat = 1;
 
 	public int showMapInfo = 1;
-	public IniFile Dukcfg;
+	public IniFile RRcfg;
 	public String cfgname;
 	public int musicType = 2;
 	
@@ -404,74 +404,74 @@ public class Config extends BConfig {
 
 		if(data != null)
 		{
-			Dukcfg = new IniFile(data, cfgname, null);
-			if(Dukcfg.set("Main")) {
-				startup = Dukcfg.GetKeyInt("Startup") == 1;
-				String respath = Dukcfg.GetKeyString("Path");
+			RRcfg = new IniFile(data, cfgname, null);
+			if(RRcfg.set("Main")) {
+				startup = RRcfg.GetKeyInt("Startup") == 1;
+				String respath = RRcfg.GetKeyString("Path");
 				if(respath != null && !respath.isEmpty())
 					this.path = respath;
-				int check = Dukcfg.GetKeyInt("CheckNewVersion");
+				int check = RRcfg.GetKeyInt("CheckNewVersion");
 				if(check != -1)
 					checkVersion = (check == 1);
-				int afolder = Dukcfg.GetKeyInt("AutoloadFolder");
+				int afolder = RRcfg.GetKeyInt("AutoloadFolder");
 				if(afolder != -1)
 					autoloadFolder = (afolder == 1);
-				int ufolder = Dukcfg.GetKeyInt("Use_Userhome_folder");
+				int ufolder = RRcfg.GetKeyInt("Use_Userhome_folder");
 				if(ufolder != -1)
 					userfolder = (ufolder == 1);
 			}
 			
-			if(Dukcfg.set("ScreenSetup")) {
-				fullscreen = Dukcfg.GetKeyInt("Fullscreen");
-				ScreenWidth = Dukcfg.GetKeyInt("ScreenWidth");
-				ScreenHeight = Dukcfg.GetKeyInt("ScreenHeight");
-				screen_size = Dukcfg.GetKeyInt("Size");
-				crosshair = Dukcfg.GetKeyInt("Crosshair");
+			if(RRcfg.set("ScreenSetup")) {
+				fullscreen = RRcfg.GetKeyInt("Fullscreen");
+				ScreenWidth = RRcfg.GetKeyInt("ScreenWidth");
+				ScreenHeight = RRcfg.GetKeyInt("ScreenHeight");
+				screen_size = RRcfg.GetKeyInt("Size");
+				crosshair = RRcfg.GetKeyInt("Crosshair");
 				
-				gVSync = Dukcfg.GetKeyInt("VSync") == 1;
-				fpslimit = Dukcfg.GetKeyInt("FPSLimit");
-				borderless = Dukcfg.GetKeyInt("BorderlessMode") == 1;
+				gVSync = RRcfg.GetKeyInt("VSync") == 1;
+				fpslimit = RRcfg.GetKeyInt("FPSLimit");
+				borderless = RRcfg.GetKeyInt("BorderlessMode") == 1;
 				
-				cfg_texturemode = Dukcfg.GetKeyInt("GLFilterMode"); 
-				int anisotr = Dukcfg.GetKeyInt("GLAnisotropy");
+				cfg_texturemode = RRcfg.GetKeyInt("GLFilterMode"); 
+				int anisotr = RRcfg.GetKeyInt("GLAnisotropy");
 				if(anisotr != -1) anisotropy = anisotr;
-				int ws = Dukcfg.GetKeyInt("WideScreen");
+				int ws = RRcfg.GetKeyInt("WideScreen");
 				if(ws != -1) widescreen = ws;
 				
-				int gm = Dukcfg.GetKeyInt("Gamma");
+				int gm = RRcfg.GetKeyInt("Gamma");
 				if( gm != -1) gamma = gm / 4096.0f;
-				int bg = Dukcfg.GetKeyInt("Brightness");
+				int bg = RRcfg.GetKeyInt("Brightness");
 				if( bg != -1) brightness = bg / 4096.0f;
-				int ct = Dukcfg.GetKeyInt("Contrast");
+				int ct = RRcfg.GetKeyInt("Contrast");
 				if( ct != -1) contrast = ct / 4096.0f;
 			}
 			
-			if(Dukcfg.set("SoundSetup")) {
-				SoundToggle = Dukcfg.GetKeyInt("SoundToggle") == 1;
-				MusicToggle = Dukcfg.GetKeyInt("MusicToggle") == 1;
-				int snd = Dukcfg.GetKeyInt("SoundDriver");
+			if(RRcfg.set("SoundSetup")) {
+				SoundToggle = RRcfg.GetKeyInt("SoundToggle") == 1;
+				MusicToggle = RRcfg.GetKeyInt("MusicToggle") == 1;
+				int snd = RRcfg.GetKeyInt("SoundDriver");
 				if(snd != -1) snddrv = snd;
-				soundVolume = Dukcfg.GetKeyInt("SoundVolume") / 256.0f;
-				NumVoices = Dukcfg.GetKeyInt("MaxVoices");
-				musicVolume = Dukcfg.GetKeyInt("MusicVolume") / 256.0f;
-				int mid = Dukcfg.GetKeyInt("MidiDriver");
+				soundVolume = RRcfg.GetKeyInt("SoundVolume") / 256.0f;
+				NumVoices = RRcfg.GetKeyInt("MaxVoices");
+				musicVolume = RRcfg.GetKeyInt("MusicVolume") / 256.0f;
+				int mid = RRcfg.GetKeyInt("MidiDriver");
 				if(mid != -1) middrv = mid;
-				midiSynth = Dukcfg.GetKeyString("MidiSynth");
-				int type = Dukcfg.GetKeyInt("MusicType");
+				midiSynth = RRcfg.GetKeyString("MidiSynth");
+				int type = RRcfg.GetKeyInt("MusicType");
 				if(type != -1) musicType = type;
 			}
 			
-			if(Dukcfg.set("KeyDefinitions")) {
+			if(RRcfg.set("KeyDefinitions")) {
 				for(int i = 0; i < keynames.length; i++) {
 					primarykeys[i] = defkeys[i];
 					secondkeys[i] = 0;
 					mousekeys[i] = 0;
 					gpadkeys[i] = -1;
 					
-					String primary = Dukcfg.GetKeyString(keynames[i], 0);
-					String secondary = Dukcfg.GetKeyString(keynames[i], 1);
-					String mouse = Dukcfg.GetKeyString(keynames[i], 2);
-					String joystick = Dukcfg.GetKeyString(keynames[i], 3);
+					String primary = RRcfg.GetKeyString(keynames[i], 0);
+					String secondary = RRcfg.GetKeyString(keynames[i], 1);
+					String mouse = RRcfg.GetKeyString(keynames[i], 2);
+					String joystick = RRcfg.GetKeyString(keynames[i], 3);
 					
 					if(primary != null) 
 						primarykeys[i] = Keymap.valueOf(primary);
@@ -483,108 +483,108 @@ public class Config extends BConfig {
 						gpadkeys[i] = ButtonMap.valueOf(joystick);
 				}
 				
-				String left = Dukcfg.GetKeyString("MouseDigitalAxes0_0");
+				String left = RRcfg.GetKeyString("MouseDigitalAxes0_0");
 				if(left != null)
 					mouseaxis[AXISLEFT] = getKeyIndex(left);
-				String right = Dukcfg.GetKeyString("MouseDigitalAxes0_1");
+				String right = RRcfg.GetKeyString("MouseDigitalAxes0_1");
 				if(right != null)
 					mouseaxis[AXISRIGHT] = getKeyIndex(right);
-				String up = Dukcfg.GetKeyString("MouseDigitalAxes1_0");
+				String up = RRcfg.GetKeyString("MouseDigitalAxes1_0");
 				if(up != null)
 					mouseaxis[AXISUP] = getKeyIndex(up);
-				String down = Dukcfg.GetKeyString("MouseDigitalAxes1_1");
+				String down = RRcfg.GetKeyString("MouseDigitalAxes1_1");
 				if(down != null)
 					mouseaxis[AXISDOWN] = getKeyIndex(down);
 			}
 			
-			if(Dukcfg.set("Controls")) {
-				int value = Dukcfg.GetKeyInt("UseMouse");
+			if(RRcfg.set("Controls")) {
+				int value = RRcfg.GetKeyInt("UseMouse");
 				if(value != -1) useMouse = value == 1;
-				value = Dukcfg.GetKeyInt("UseMouseInMenu");
+				value = RRcfg.GetKeyInt("UseMouseInMenu");
 				if(value != -1) menuMouse = value == 1;
-				value = Dukcfg.GetKeyInt("MouseSensitivity");
+				value = RRcfg.GetKeyInt("MouseSensitivity");
 				if(value != -1) gSensitivity = value;
-				value = Dukcfg.GetKeyInt("MouseAiming");
+				value = RRcfg.GetKeyInt("MouseAiming");
 				if(value != -1) 
 					gMouseAim = value == 1;
-				value = Dukcfg.GetKeyInt("MouseAimingFlipped");
+				value = RRcfg.GetKeyInt("MouseAimingFlipped");
 				if(value != -1) gInvertmouse = value == 1;
-				value = Dukcfg.GetKeyInt("MouseTurnSpeed");
+				value = RRcfg.GetKeyInt("MouseTurnSpeed");
 				if(value != -1) gMouseTurnSpeed = value;
-				value = Dukcfg.GetKeyInt("MouseLookSpeed");
+				value = RRcfg.GetKeyInt("MouseLookSpeed");
 				if(value != -1) gMouseLookSpeed = value;
-				value = Dukcfg.GetKeyInt("MouseMoveSpeed");
+				value = RRcfg.GetKeyInt("MouseMoveSpeed");
 				if(value != -1) gMouseMoveSpeed = value;
-				value = Dukcfg.GetKeyInt("MouseStrafeSpeed");
+				value = RRcfg.GetKeyInt("MouseStrafeSpeed");
 				if(value != -1) gMouseStrafeSpeed = value;
-				value = Dukcfg.GetKeyInt("MouseCursor");
+				value = RRcfg.GetKeyInt("MouseCursor");
 				if(value != -1) gMouseCursor = value;
-				value = Dukcfg.GetKeyInt("MouseCursorSize");
+				value = RRcfg.GetKeyInt("MouseCursorSize");
 				if(value != -1) gMouseCursorSize = value;
-				value = Dukcfg.GetKeyInt("UseJoystick");
+				value = RRcfg.GetKeyInt("UseJoystick");
 				if(value != -1) useJoystick = value == 1;
-				value = Dukcfg.GetKeyInt("JoyTurnAxis");
+				value = RRcfg.GetKeyInt("JoyTurnAxis");
 				if(value != -1) gJoyTurnAxis = value;
-				value = Dukcfg.GetKeyInt("JoyMoveAxis");
+				value = RRcfg.GetKeyInt("JoyMoveAxis");
 				if(value != -1) gJoyMoveAxis = value;
-				value = Dukcfg.GetKeyInt("JoyStrafeAxis");
+				value = RRcfg.GetKeyInt("JoyStrafeAxis");
 				if(value != -1) gJoyStrafeAxis = value;
-				value = Dukcfg.GetKeyInt("JoyLookAxis");
+				value = RRcfg.GetKeyInt("JoyLookAxis");
 				if(value != -1) gJoyLookAxis = value;
-				value = Dukcfg.GetKeyInt("JoyTurnSpeed");
+				value = RRcfg.GetKeyInt("JoyTurnSpeed");
 				if(value != -1) gJoyTurnSpeed = value;
-				value = Dukcfg.GetKeyInt("JoyLookSpeed");
+				value = RRcfg.GetKeyInt("JoyLookSpeed");
 				if(value != -1) gJoyLookSpeed = value;
-				value = Dukcfg.GetKeyInt("JoyInvertLook");
+				value = RRcfg.GetKeyInt("JoyInvertLook");
 				if(value != -1) gJoyInvert = value == 1;
-				value = Dukcfg.GetKeyInt("JoyDeadZone");
+				value = RRcfg.GetKeyInt("JoyDeadZone");
 				if(value != -1) gJoyDeadZone = value;
 			}
 			
-			if(Dukcfg.set("Options")) {
-				gAutoAim = Dukcfg.GetKeyInt("Autoaim") == 1;
-				screen_tilting = Dukcfg.GetKeyInt("Tilt");
-				auto_run = Dukcfg.GetKeyInt("AutoRun");
-				gInterpolation = Dukcfg.GetKeyInt("Interpolation");
-				gShowFPS = Dukcfg.GetKeyInt("ShowFPS") == 1;
-				fta_on = Dukcfg.GetKeyInt("MessageState");
+			if(RRcfg.set("Options")) {
+				gAutoAim = RRcfg.GetKeyInt("Autoaim") == 1;
+				screen_tilting = RRcfg.GetKeyInt("Tilt");
+				auto_run = RRcfg.GetKeyInt("AutoRun");
+				gInterpolation = RRcfg.GetKeyInt("Interpolation");
+				gShowFPS = RRcfg.GetKeyInt("ShowFPS") == 1;
+				fta_on = RRcfg.GetKeyInt("MessageState");
 				
-				gStatSize = Dukcfg.GetKeyInt("StatSize");
+				gStatSize = RRcfg.GetKeyInt("StatSize");
 				if(gStatSize < 16384) gStatSize = 16384;
-				gCrossSize = Dukcfg.GetKeyInt("CrossSize");
+				gCrossSize = RRcfg.GetKeyInt("CrossSize");
 				if(gCrossSize < 16384) gCrossSize = 16384;
-				gShowStat = Dukcfg.GetKeyInt("ShowStat");
-				showMapInfo = Dukcfg.GetKeyInt("showMapInfo");
-				int scale = Dukcfg.GetKeyInt("OSDTextScale");
+				gShowStat = RRcfg.GetKeyInt("ShowStat");
+				showMapInfo = RRcfg.GetKeyInt("showMapInfo");
+				int scale = RRcfg.GetKeyInt("OSDTextScale");
 				if(scale != -1)
 					Console.setTextScale(scale);
 				
-				int voxels = Dukcfg.GetKeyInt("UseVoxels");
+				int voxels = RRcfg.GetKeyInt("UseVoxels");
 				if(voxels != -1)
 					usevoxels = (voxels == 1);
-				int models = Dukcfg.GetKeyInt("UseModels");
+				int models = RRcfg.GetKeyInt("UseModels");
 				if(models != -1)
 					usemodels = (models == 1);
-				int hires = Dukcfg.GetKeyInt("UseHightiles");
+				int hires = RRcfg.GetKeyInt("UseHightiles");
 				if(hires != -1)
 					usehightile = (hires == 1);
 				
-				int demos = Dukcfg.GetKeyInt("DemoSequence");
+				int demos = RRcfg.GetKeyInt("DemoSequence");
 				if(demos != -1)
 					gDemoSeq = demos;
 				
-				String name = Dukcfg.GetKeyString("Player_name");
+				String name = RRcfg.GetKeyString("Player_name");
 				if(name != null)
 					pName = name;
 				
-				String ip = Dukcfg.GetKeyString("IP_Address");
+				String ip = RRcfg.GetKeyString("IP_Address");
 				if(ip != null)
 					mAddress = ip;
-				int port = Dukcfg.GetKeyInt("Port");
+				int port = RRcfg.GetKeyInt("Port");
 				if(port != -1)
 					mPort = port;
 			}
-			Dukcfg.close();
+			RRcfg.close();
 		} 
 		else
 		{

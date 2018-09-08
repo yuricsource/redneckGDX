@@ -34,9 +34,9 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 public class Actors {
 	public static int actor_tog = 0;
 	
-	public static int word_18B7A4;
-	public static int word_18B7A6;
-	public static int word_18B7AA;
+	public static int UFO_SpawnCount;
+	public static int UFO_SpawnTime;
+	public static int UFO_SpawnHulk;
 	
 	public static boolean checkaddkills(SPRITE s)
 	{
@@ -4010,14 +4010,14 @@ public class Actors {
 						t[4] = 0;
 						s.xvel = k;
 
-						if (word_18B7AA != 0) {
-							word_18B7AA--;
+						if (UFO_SpawnHulk != 0) {
+							UFO_SpawnHulk--;
 							int nSpawn = spawn(i, HULK);
 
 							sprite[nSpawn].z = sector[sprite[nSpawn].sectnum].ceilingz;
 							sprite[nSpawn].pal = 33;
 
-							if (word_18B7AA == 0) {
+							if (UFO_SpawnHulk == 0) {
 								nSpawn = EGS(s.sectnum, s.x, s.y,
 										sector[s.sectnum].ceilingz + 119428,
 										3677, -8, 16, 16, 0, 0, 0, i, 5);
@@ -4039,10 +4039,10 @@ public class Actors {
 				int count = 0;
 				j = headspritesect[s.sectnum];
 				while (j >= 0) {
-					if (sprite[j].picnum == UFOBEAM && count != word_18B7A4
-							&& ++word_18B7A6 == 64) {
-						word_18B7A6 = count;
-						--word_18B7A4;
+					if (sprite[j].picnum == UFOBEAM && count != UFO_SpawnCount
+							&& ++UFO_SpawnTime == 64) {
+						UFO_SpawnTime = count;
+						--UFO_SpawnCount;
 						int spawntile = 0;
 						switch (engine.krand() & 3) {
 						case 0:

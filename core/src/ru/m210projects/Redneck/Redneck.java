@@ -63,7 +63,6 @@ import static ru.m210projects.Redneck.Network.getnames;
 import static ru.m210projects.Redneck.Network.getpackets;
 import static ru.m210projects.Redneck.Network.netStartWaiting;
 import static ru.m210projects.Redneck.Premap.enterlevel;
-import static ru.m210projects.Redneck.Redneck.gShowMenu;
 import static ru.m210projects.Redneck.Screen.alignx;
 import static ru.m210projects.Redneck.Screen.bonuscnt;
 import static ru.m210projects.Redneck.Screen.dobonus;
@@ -597,10 +596,20 @@ public class Redneck {
 						    {
 						   		case 0:
 									scenestatus = 0;
+									if(GameCON == RR66) {
+										initanm("turd66.anm",5,5);
+										break;
+									}
+									
 									initanm("turdmov.anm",5,5);
 									break;
 								case 1:
 									scenestatus = 0;
+									if(GameCON == RR66) {
+										initanm("end66.anm",5,4);
+										break;
+									}
+									
 									initanm("rr_outro.anm",5,4);
 									break;
 								default:

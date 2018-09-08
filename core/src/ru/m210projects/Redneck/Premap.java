@@ -619,17 +619,17 @@ public class Premap {
 	    p.detonate_count = 0;
 	    if ( numplayers >= 2 )
 	    {
-	    	word_18B7A4 = 32;
-	    	word_18B7A6 = 0;
-	    	word_18B7AA = 2;
+	    	UFO_SpawnCount = 32;
+	    	UFO_SpawnTime = 0;
+	    	UFO_SpawnHulk = 2;
 	    }
 	    else
 	    {
-	    	 word_18B7A4 = (ud.m_player_skill << 2) + 1;
-	    	 if ( word_18B7A4 > 32 )
-	    		 word_18B7A4 = 32;
-	    	 word_18B7A6 = 0;
-	    	 word_18B7AA = ud.m_player_skill + 1;
+	    	 UFO_SpawnCount = (ud.m_player_skill << 2) + 1;
+	    	 if ( UFO_SpawnCount > 32 )
+	    		 UFO_SpawnCount = 32;
+	    	 UFO_SpawnTime = 0;
+	    	 UFO_SpawnHulk = ud.m_player_skill + 1;
 	    }
 	}
 	
@@ -705,17 +705,17 @@ public class Premap {
 	    p.field_count = 0;
 	    if ( numplayers >= 2 )
 	    {
-	    	word_18B7A4 = 32;
-	    	word_18B7A6 = 0;
-	    	word_18B7AA = 2;
+	    	UFO_SpawnCount = 32;
+	    	UFO_SpawnTime = 0;
+	    	UFO_SpawnHulk = 2;
 	    }
 	    else
 	    {
-	    	word_18B7A4 = (ud.m_player_skill << 2) + 1;
-	    	if ( word_18B7A4 > 32 )
-	    		word_18B7A4 = 32;
-	    	word_18B7A6 = 0;
-	    	word_18B7AA = ud.m_player_skill + 1;
+	    	UFO_SpawnCount = (ud.m_player_skill << 2) + 1;
+	    	if ( UFO_SpawnCount > 32 )
+	    		UFO_SpawnCount = 32;
+	    	UFO_SpawnTime = 0;
+	    	UFO_SpawnHulk = ud.m_player_skill + 1;
 	    }
 	}
 
@@ -815,17 +815,17 @@ public class Premap {
 
 	    if ( numplayers >= 2 )
 	    {
-	    	word_18B7A4 = 32;
-	    	word_18B7A6 = 0;
-	    	word_18B7AA = 2;
+	    	UFO_SpawnCount = 32;
+	    	UFO_SpawnTime = 0;
+	    	UFO_SpawnHulk = 2;
 	    }
 	    else
 	    {
-	     	word_18B7A4 = (ud.m_player_skill << 2) + 1;
-	     	if ( word_18B7A4 > 32 )
-	     		word_18B7A4 = 32;
-	     	word_18B7A6 = 0;
-	     	word_18B7AA = ud.m_player_skill + 1;
+	     	UFO_SpawnCount = (ud.m_player_skill << 2) + 1;
+	     	if ( UFO_SpawnCount > 32 )
+	     		UFO_SpawnCount = 32;
+	     	UFO_SpawnTime = 0;
+	     	UFO_SpawnHulk = ud.m_player_skill + 1;
 	    }
 	}
 

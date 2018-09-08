@@ -330,7 +330,7 @@ public class RRMenu {
 			}
 		}
 		
-		MenuButton mUser = new MenuButton("< USER CONTENT >", 2, 0, pos+=19, 320, 1, 0, mMenus[USERCONTENT], -1, null, -1);
+		MenuButton mUser = new MenuButton("< USER CONTENT >", 2, 0, pos+=25, 320, 1, 2, mMenus[USERCONTENT], -1, null, -1);
 		mAddItem(mMenus[nMenuId], mUser, epnum == 0);
 	}
 	
@@ -1778,14 +1778,46 @@ public class RRMenu {
 	public static int cdaudio;
 	public static int ocdaudio;
 	
+	private static void SndDriverDraw(MenuConteiner m)
+	{
+		int px = m.x, py = m.y;
+		int shade = 8;
+		char[] key = null;
+		if(m.list != null && m.num != -1 && m.num < m.list.length) 
+			key = m.list[m.num];	
+
+		boolean focused = mGetFocusedItem(m.m_pMenu, m);
+		if ( focused ) 
+			shade = 8 - (totalclock & 0x3F);
+		
+		int pal = m.pal;
+
+		int yoff = 0;
+	    if(m.textStyle == 2) yoff = 13;
+			
+		mDrawText(1, m.text, px, py+yoff-3, shade, pal, 0, 0);
+		if(key == null) return;
+		
+		mGetAlign(m.textStyle, key);
+		mDrawText(m.textStyle, key, m.x + m.width - 1 - alignx, py+yoff, shade, pal, 0, 0);
+		
+		int scale = 4096;
+		int yoffset = -4;
+		if(m.textStyle == 1) yoffset = -6;
+		if(m.textStyle == 2) { yoffset = 6 - yoff; scale = 8192; }
+		if ( focused )
+			engine.rotatesprite((m.x-10)<<16, (m.y - yoffset) << 16,scale,0,SPINNINGNUKEICON+(((totalclock>>3))&15),shade,0,10,0,0,xdim-1,ydim-1);
+		
+	}
+	
 	public static void mSounds(int nMenuId)
 	{
 		MenuTitle title = new MenuTitle("AUDIO SETUP", 2, 160, 19, MENUBAR);
 		mAddItem(mMenus[nMenuId], title, false);
 		
-		int posx = 46;
+		int posx = 37;
 		int posy = 30;
-		int width = 230;
+		int width = 250;
 		int style = 1;
 		
 		final MenuConteiner sSoundDrv = new MenuConteiner("Sound driver:", 0, posx, posy += 10, width, null, 0,
@@ -1809,6 +1841,11 @@ public class RRMenu {
 				} else
 					list[num] = "initialization failed".toCharArray();
 			}
+			
+			@Override
+			public void draw() {
+				SndDriverDraw(this);
+			}
 		};
 		final MenuConteiner sMusicDrv = new MenuConteiner("Midi driver:", 0, posx, posy += 10, width, null, 0,
 				new MENUPROC() {
@@ -1830,6 +1867,10 @@ public class RRMenu {
 					list[num] = mxdrivers[num].getName().toCharArray();
 				} else
 					list[num] = "initialization failed".toCharArray();
+			}
+			@Override
+			public void draw() {
+				SndDriverDraw(this);
 			}
 		};
 

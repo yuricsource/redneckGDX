@@ -24,6 +24,12 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 
 public class Globals {
 	
+	public static final int RR = 0;
+	public static final int RR66 = 1;
+	public static final int RRRA = 2;
+	
+	public static int GameCON = RR;
+	
 	public static final int BYTEVERSIONRR = 108;
 	public static final int GDXBYTEVERSION = 147;
 	

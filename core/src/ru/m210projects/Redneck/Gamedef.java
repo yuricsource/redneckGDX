@@ -40,6 +40,7 @@ import ru.m210projects.Build.Types.SPRITE;
 public class Gamedef {
 	
 	public static String confilename = "GAME.CON";
+	public static int conweigth = 10;
 	
 	// Defines the motion characteristics of an actor;
 	public static final int face_player = 1;
@@ -838,6 +839,17 @@ public class Gamedef {
 	            byte[] buf = new byte[j+1];
 
 	            Console.Println("Including: '" + name + "'.");
+	            if(name.equalsIgnoreCase("gator66.con") 
+	            		|| name.equalsIgnoreCase("pig66.con") 
+	            		|| name.equalsIgnoreCase("bubba66.con"))
+	            	conweigth += 1;
+	            
+	            if(conweigth == 3 && GameCON != RRRA )
+	            {
+	            	 Console.Println("Looks like Redneck Rampage: Suckin' Grits on Route 66 Edition CON files.");
+	            	 GameCON = RR66;
+	            	 conweigth = 0;
+	            }
 
 	            temp_line_number = line_number;
 	            line_number = 1;
@@ -3482,11 +3494,12 @@ public class Gamedef {
 	
 	public static void compilecons()
 	{
-	   loadefs(confilename);
-	   if( loadfromgrouponly != 0 )
-	   {
-	       Console.Println("  * Writing defaults to current directory.");
-	       loadefs(confilename);
-	   }
+		conweigth = 0;
+		loadefs(confilename);
+		if( loadfromgrouponly != 0 )
+		{
+			Console.Println("  * Writing defaults to current directory.");
+			loadefs(confilename);
+		}
 	}
 }

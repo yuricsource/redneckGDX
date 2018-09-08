@@ -344,8 +344,10 @@ public class MENU {
 	}
 	
 	public static void mDrawMenu() {
-		engine.setpalettefade(0, 0, 0, 32);
-		engine.showfade();
+		if(!isOpened(mMenus[COLORCORR])) {
+			engine.setpalettefade(0, 0, 0, 32);
+			engine.showfade();
+		}
 		
 		if(mMenuHistory[0] != null) 
 			mDraw(mMenuHistory[0]);

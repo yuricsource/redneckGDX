@@ -1749,7 +1749,7 @@ public class Sector {
 	        }
 	    }
 
-	   if( ( (wal.cstat&16)!= 0 || wal.overpicnum == BIGFORCE ) && wal.nextsector >= 0 )
+	    if( ( (wal.cstat&16)!= 0 || wal.overpicnum == BIGFORCE ) && wal.nextsector >= 0 )
 	       if( sector[wal.nextsector].floorz > z )
 	           if( sector[wal.nextsector].floorz-sector[wal.nextsector].ceilingz != 0 )
 	               switch(wal.overpicnum)
@@ -1824,6 +1824,7 @@ public class Sector {
             	            sector[sprite[i].sectnum].lotag = 0;
             	            stopsound(sprite[i].lotag);
                             spritesound(400, i);
+                            System.err.println("delete1");
                             engine.deletesprite(i);
                     	}
                     	i = next;

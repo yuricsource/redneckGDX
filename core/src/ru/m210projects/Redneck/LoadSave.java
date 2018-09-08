@@ -330,9 +330,9 @@ public class LoadSave {
 			bb.putInt(geomz2[i]);
 		}
 		
-		bb.putShort((short)word_18B7A4);
-		bb.putShort((short)word_18B7A6);
-		bb.putShort((short)word_18B7AA);
+		bb.putShort((short)UFO_SpawnCount);
+		bb.putShort((short)UFO_SpawnTime);
+		bb.putShort((short)UFO_SpawnHulk);
 
 		bb.putShort(gEndFirstEpisode);
 		bb.putShort(gEndGame);
@@ -361,7 +361,7 @@ public class LoadSave {
 		Bwrite(fil,bb.array(),bb.capacity());
 	}
 	
-	public static void Stuff2Save(int fil) //XXX funcname
+	public static void GameInfoSave(int fil) 
 	{
 		ByteBuffer bb = ByteBuffer.allocate(1113);
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
@@ -449,7 +449,7 @@ public class LoadSave {
 		StuffSave(fil);
 		ConSave(fil);
 		AnimationSave(fil);
-		Stuff2Save(fil);
+		GameInfoSave(fil);
 		
 		Bclose(fil);
 		
@@ -507,7 +507,7 @@ public class LoadSave {
 			hittype[i].set(bb);
 	}
 	
-	public static void Stuff2Load(ByteBuffer bb)
+	public static void GameInfoLoad(ByteBuffer bb)
 	{
 		pskybits = bb.getShort();
 		parallaxyscale = bb.getInt();
@@ -648,9 +648,9 @@ public class LoadSave {
 			geomz2[i] = bb.getInt();
 		}
 		
-		word_18B7A4 = bb.getShort();
-		word_18B7A6 = bb.getShort();
-		word_18B7AA = bb.getShort();
+		UFO_SpawnCount = bb.getShort();
+		UFO_SpawnTime = bb.getShort();
+		UFO_SpawnHulk = bb.getShort();
 		
 		gEndFirstEpisode = bb.getShort();
 		gEndGame = bb.getShort();
@@ -736,7 +736,7 @@ public class LoadSave {
 			StuffLoad(bb);
 			ConLoad(bb);
 			AnimationLoad(bb);
-			Stuff2Load(bb);
+			GameInfoLoad(bb);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return false;
