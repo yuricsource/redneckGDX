@@ -1804,32 +1804,32 @@ public class Sector {
 	            case 3644: 
 	            case 3645: 
 	            case 3646: 
-	            	i = headspritesect[wal.nextsector];
-                    while(i >= 0)
-                    {
-                    	int next = nextspritesect[i];
-                    	
-                    	if(sprite[i].lotag == 6)
-                    	{
-                    		for(int k = 0; k < 16; k++)
-                    			RANDOMSCRAP(sprite[i],i);
-                    	}
-                    	sprite[i].detail++;
-                    	if(sprite[i].detail == 25)
-                    	{
-                    		int startwall = sector[sprite[i].sectnum].wallptr;
-            	            int endwall = startwall + sector[sprite[i].sectnum].wallnum;
-            	            for(int k=startwall;k<endwall;k++)
-            	            	sector[wall[k].nextsector].lotag = 0;
-            	            sector[sprite[i].sectnum].lotag = 0;
-            	            stopsound(sprite[i].lotag);
-                            spritesound(400, i);
-                            System.err.println("delete1");
-                            engine.deletesprite(i);
-                    	}
-                    	i = next;
-                        
-                    }
+	            	if(wal.nextwall != -1) {
+	            		i = headspritesect[wall[wal.nextwall].nextsector];
+	            		while(i >= 0)
+	                    {
+	                    	int next = nextspritesect[i+1];
+	                    	SPRITE nspr = sprite[i];
+	                    	if(nspr.lotag == 6)
+	                    	{
+	                    		for(int k = 0; k < 16; k++)
+	                    			RANDOMSCRAP(nspr,i);
+	                    	}
+	                    	nspr.detail++;
+	                    	if(nspr.detail == 25 && nspr.sectnum < MAXSECTORS)
+	                    	{
+	                    		int startwall = sector[nspr.sectnum].wallptr;
+	            	            int endwall = startwall + sector[nspr.sectnum].wallnum;
+	            	            for(int k=startwall;k<endwall && wall[k].nextsector != -1;k++)
+	            	            	sector[wall[k].nextsector].lotag = 0;
+	            	            sector[nspr.sectnum].lotag = 0;
+	            	            stopsound(nspr.lotag);
+	                            spritesound(400, i);
+	                            engine.deletesprite(i);
+	                    	}
+	                    	i = next;
+	                    }
+	            	}
 	            	return;
 
 	            case 164: 

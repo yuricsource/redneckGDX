@@ -30,7 +30,6 @@ import ru.m210projects.Redneck.Types.RREngine;
 
 /*
  * ART sprites
- * RR66 E2M2 удаляется шотган после взрыва
  */
 
 public class Main extends ApplicationAdapter {
@@ -106,6 +105,7 @@ public class Main extends ApplicationAdapter {
             engine.getAudio().getSound().stopAllSounds();
             clearsoundlocks();
 		}
+		((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
 	}
 
 	@Override

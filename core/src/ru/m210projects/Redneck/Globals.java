@@ -129,7 +129,7 @@ public class Globals {
 	
 	public static short gEndGame;
 	public static short gEndFirstEpisode;
-	public static int dword_D7FAC;
+	public static int dword_D7FAC; //rename XXX
 	public static byte byte_D7FE8;
 	
 	public static PlayerOrig po[] = new PlayerOrig[MAXPLAYERS];
