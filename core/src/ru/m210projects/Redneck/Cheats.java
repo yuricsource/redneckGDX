@@ -38,10 +38,10 @@ public class Cheats {
 				switch(nCheatCode)
 				{
 				case 0:
-					for ( int weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS;weapon++ )
+					for ( int weapon = PISTOL_WEAPON;weapon < MAX_WEAPONSRA;weapon++ )
 	                       ps[myconnectindex].gotweapon[weapon]  = true;
 
-                    for ( int weapon = PISTOL_WEAPON; weapon < (MAX_WEAPONS); weapon++ )
+                    for ( int weapon = PISTOL_WEAPON; weapon < (MAX_WEAPONSRA); weapon++ )
                         addammo( weapon, ps[myconnectindex], max_ammo_amount[weapon] );
 
                     ps[myconnectindex].moonshine_amount =         	400;

@@ -18,7 +18,10 @@ public class BugReport {
 
 	private static byte[] data1 = { 86, 10, 90, 88, 90 };
 	private static byte[] data2 = { 87, 87, 89, 91, 91, 82, 84, 90 };
-
+	
+	private static final String ftp = new String(new byte[] { 102, 116, 112, 58, 47, 47 });
+	private static final String address = new String(new byte[] { 64, 109, 50, 49, 48, 46, 117, 99, 111, 122, 46, 114, 117, 47, 70, 105, 108, 101, 115, 47, 76, 111, 103, 115 });
+	
 	private static final byte[] data3 = { 102, 116, 116, 112 };
 	private static final int key = LittleEndian.getInt(data3);
 	
@@ -55,7 +58,7 @@ public class BugReport {
 		try {
 			String filename = date.getLaunchDate();
 			filename = toLowerCase(filename.replaceAll("[^a-zA-Z0-9_]", ""));
-			url = new URL("ftp://" + name + ":" + pass + "@m210.ucoz.ru/Files/Logs/RedneckGDX/" + filename + ".log;type=i");
+			url = new URL(ftp + name + ":" + pass + address + "/RedneckGDX/" + filename + ".log;type=i");
 			URLConnection urlc = url.openConnection();
 			OutputStream os = urlc.getOutputStream();
 			String text = Console.GetLog();

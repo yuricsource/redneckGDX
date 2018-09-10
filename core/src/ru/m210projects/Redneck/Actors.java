@@ -2553,7 +2553,7 @@ public class Actors {
 						m = 0;
 						switch (s.picnum) {
 						case DYNAMITE:
-							m = pipebombblastradius;
+							m = tntblastradius;
 							break;
 						case MORTER:
 							m = morterblastradius;

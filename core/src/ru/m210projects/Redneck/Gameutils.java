@@ -190,6 +190,21 @@ public class Gameutils {
 		
 		return buf;
 	}
+	
+	public static final int[][] replace = {
+		{ 3363, 9217 }, 
+		{ 3364, 9218 }, 
+		{ 3415, 9219 }, 
+		{ 3416, 9220 }, 
+		{ 3417, 9221 }, 
+		{ 3418, 9222 }, 
+		{ 3453, 9223 },
+		{ 3454, 9224 },
+		{ 3455, 9225 },
+		{ 3456, 9226 },
+		{ 3457, 9227 },
+		{ 3458, 9228 },
+	};
 
 	public static void LoadUserRes()
 	{
@@ -225,6 +240,17 @@ public class Gameutils {
 			}
 			bb.clear();
 			bb = null;
+			
+			for(int i = 0; i < replace.length; i++)
+			{
+				int tilenume = replace[i][0];
+				int newtile = replace[i][1];
+				waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
+				System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
+				tilesizx[tilenume] = tilesizx[newtile];
+				tilesizy[tilenume] = tilesizy[newtile];
+				picanm[tilenume] = picanm[newtile];
+			}
 		}
 	}
 }

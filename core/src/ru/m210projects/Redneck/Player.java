@@ -452,7 +452,7 @@ public class Player {
 	        p.knuckle_incs ++;
 	        if(p.knuckle_incs==9)
 	        {
-	        	if ( dword_D7FAC != 0 )
+	        	if ( LeonardCrack != 0 )
 	        	{
 	        		if(totalclock > 1024)
 		                if(snum == screenpeek || ud.coop == 1)
@@ -466,7 +466,7 @@ public class Player {
 	        	}
 	        	
 	        	int snd = -1;
-	        	dword_D7FAC = 1;
+	        	LeonardCrack = 1;
 	        	if ( gEndGame != 0 )
 	        	{
 	        		snd = 391;
@@ -1333,7 +1333,7 @@ public class Player {
 			         p.hard_landing != 0 ||
 			         p.access_incs > 0 ||
 			         p.knee_incs > 0 ||
-			         (p.curr_weapon == TRIPBOMB_WEAPON &&
+			         (p.curr_weapon == POWDERKEG_WEAPON &&
 			          p.kickback_pic > 1 &&
 			          p.kickback_pic < 4 ) )
 			    {
@@ -1814,12 +1814,12 @@ public class Player {
 	        case SHOTGUNSPRITE: return(120);
 	        case 29: return(120);
 
-	        case 42: if (ps[snum].ammo_amount[FREEZE_WEAPON] < max_ammo_amount[FREEZE_WEAPON]) return(25); else return(0);
+	        case 42: if (ps[snum].ammo_amount[TIT_WEAPON] < max_ammo_amount[TIT_WEAPON]) return(25); else return(0);
 	        case AMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < max_ammo_amount[SHOTGUN_WEAPON]) return(10); else return(0);
-	        case 41: if (ps[snum].ammo_amount[CHAINGUN_WEAPON] < max_ammo_amount[CHAINGUN_WEAPON]) return(20); else return(0);
-	        case 37: if (ps[snum].ammo_amount[DEVISTATOR_WEAPON] < max_ammo_amount[DEVISTATOR_WEAPON]) return(10); else return(0);
-	        case 44: if (ps[snum].ammo_amount[RPG_WEAPON] < max_ammo_amount[RPG_WEAPON]) return(50); else return(0);
-	        case 46: if (ps[snum].ammo_amount[CIRCLESAW_WEAPON] < max_ammo_amount[CIRCLESAW_WEAPON]) return(10); else return(0);
+	        case 41: if (ps[snum].ammo_amount[RIFLEGUN_WEAPON] < max_ammo_amount[RIFLEGUN_WEAPON]) return(20); else return(0);
+	        case 37: if (ps[snum].ammo_amount[ALIENBLASTER_WEAPON] < max_ammo_amount[ALIENBLASTER_WEAPON]) return(10); else return(0);
+	        case 44: if (ps[snum].ammo_amount[DYNAMITE_WEAPON] < max_ammo_amount[DYNAMITE_WEAPON]) return(50); else return(0);
+	        case 46: if (ps[snum].ammo_amount[THROWSAW_WEAPON] < max_ammo_amount[THROWSAW_WEAPON]) return(10); else return(0);
 	        case HBOMBAMMO: if (ps[snum].ammo_amount[4] < max_ammo_amount[4]) return(30); else return(0);
 	        case SHOTGUNAMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < max_ammo_amount[SHOTGUN_WEAPON]) return(25); else return(0);
 
@@ -1987,10 +1987,10 @@ public class Player {
 	        if ((p.curr_weapon == CROSSBOW_WEAPON) && ((engine.rand()&7)) == 0)
 	            syn.bits &= ~(1<<2);
 
-	        if (p.curr_weapon == TRIPBOMB_WEAPON)
+	        if (p.curr_weapon == POWDERKEG_WEAPON)
 	            syn.bits |= ((engine.rand()%MAX_WEAPONS)<<8);
 
-	        if (p.curr_weapon == RPG_WEAPON)
+	        if (p.curr_weapon == DYNAMITE_WEAPON)
 	        {
 	        	engine.hitscan(x1,y1,z1-PHEIGHT,damysect,sintable[((int)(damyang+512))&2047],sintable[(int)damyang&2047],
 	                (100-(int)p.horiz-p.horizoff)*32,pHitInfo,CLIPMASK1);

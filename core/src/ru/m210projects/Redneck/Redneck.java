@@ -1147,7 +1147,7 @@ public class Redneck {
 
 	                k = -1;
 
-	                if( j == RPG_WEAPON && p.ammo_amount[RPG_WEAPON] == 0 )
+	                if( j == DYNAMITE_WEAPON && p.ammo_amount[DYNAMITE_WEAPON] == 0 )
 	                {
 	                	k = headspritestat[1];
 	                    while(k >= 0)
@@ -1163,13 +1163,13 @@ public class Redneck {
 	                }
 
 	                
-	                if(j == CIRCLESAW_WEAPON)
+	                if(j == THROWSAW_WEAPON)
 	                {
-	                    if( p.curr_weapon != CIRCLESAW_WEAPON && p.ammo_amount[BUZSAW_WEAPON] != 0)
+	                    if( p.curr_weapon != THROWSAW_WEAPON && p.ammo_amount[BUZSAW_WEAPON] != 0)
 	                    {
                             if( (p.subweapon&(1<<BUZSAW_WEAPON)) != 0 || p.ammo_amount[BUZSAW_WEAPON] == 0 )
                             {
-                                j = CIRCLESAW_WEAPON;
+                                j = THROWSAW_WEAPON;
                                 p.subweapon = 0;
                             }
 	                    }
@@ -1180,14 +1180,14 @@ public class Redneck {
 	                    }
 	                }
 	                
-	                if(j == TRIPBOMB_WEAPON)
+	                if(j == POWDERKEG_WEAPON)
 	                {
 	                	
-	                	if ( p.curr_weapon != TRIPBOMB_WEAPON && p.ammo_amount[TRIPBOMB_WEAPON] != 0 )
+	                	if ( p.curr_weapon != POWDERKEG_WEAPON && p.ammo_amount[POWDERKEG_WEAPON] != 0 )
 	                	{
 	                		if ( (p.subweapon&(1<<BOWLING_WEAPON)) != 0 || p.ammo_amount[BOWLING_WEAPON] == 0 )
 	                		{
-	                			j = TRIPBOMB_WEAPON;
+	                			j = POWDERKEG_WEAPON;
 	                        	p.subweapon = 0;
 	                		}
 	                    }
@@ -1226,41 +1226,41 @@ public class Redneck {
 	                        }
 	                        addweapon( p, SHOTGUN_WEAPON);
 	                        break;
-	                    case CHAINGUN_WEAPON:
-	                        if( p.ammo_amount[CHAINGUN_WEAPON] == 0 && p.show_empty_weapon == 0)
+	                    case RIFLEGUN_WEAPON:
+	                        if( p.ammo_amount[RIFLEGUN_WEAPON] == 0 && p.show_empty_weapon == 0)
 	                        {
 	                            p.last_full_weapon = p.curr_weapon;
 	                            p.show_empty_weapon = 32;
 	                        }
-	                        addweapon( p, CHAINGUN_WEAPON);
+	                        addweapon( p, RIFLEGUN_WEAPON);
 	                        break;
-	                    case RPG_WEAPON:
-	                        if( p.ammo_amount[RPG_WEAPON] == 0 )
+	                    case DYNAMITE_WEAPON:
+	                        if( p.ammo_amount[DYNAMITE_WEAPON] == 0 )
 	                            if(p.show_empty_weapon == 0)
 	                        {
 	                            p.last_full_weapon = p.curr_weapon;
 	                            p.show_empty_weapon = 32;
 	                        }
-	                        addweapon( p, RPG_WEAPON );
+	                        addweapon( p, DYNAMITE_WEAPON );
 	                        break;
-	                    case DEVISTATOR_WEAPON:
-	                        if( p.ammo_amount[DEVISTATOR_WEAPON] == 0 && p.show_empty_weapon == 0 )
+	                    case ALIENBLASTER_WEAPON:
+	                        if( p.ammo_amount[ALIENBLASTER_WEAPON] == 0 && p.show_empty_weapon == 0 )
 	                        {
 	                            p.last_full_weapon = p.curr_weapon;
 	                            p.show_empty_weapon = 32;
 	                        }
-	                        addweapon( p, DEVISTATOR_WEAPON );
+	                        addweapon( p, ALIENBLASTER_WEAPON );
 	                        break;
-	                    case FREEZE_WEAPON:
-	                        if( p.ammo_amount[FREEZE_WEAPON] == 0 && p.show_empty_weapon == 0)
+	                    case TIT_WEAPON:
+	                        if( p.ammo_amount[TIT_WEAPON] == 0 && p.show_empty_weapon == 0)
 	                        {
 	                            p.last_full_weapon = p.curr_weapon;
 	                            p.show_empty_weapon = 32;
 	                        }
-	                        addweapon( p, FREEZE_WEAPON );
+	                        addweapon( p, TIT_WEAPON );
 	                        break;
 	                    case BUZSAW_WEAPON:
-	                    case CIRCLESAW_WEAPON:
+	                    case THROWSAW_WEAPON:
 
 	                        if( p.ammo_amount[j] == 0 && p.show_empty_weapon == 0)
 	                        {
@@ -1282,7 +1282,7 @@ public class Redneck {
 	                        if( p.ammo_amount[CROSSBOW_WEAPON] > 0 && p.gotweapon[CROSSBOW_WEAPON] )
 	                            addweapon( p, CROSSBOW_WEAPON );
 	                        break;
-	                    case TRIPBOMB_WEAPON:
+	                    case POWDERKEG_WEAPON:
 	                    case BOWLING_WEAPON:
 	                    	if( p.ammo_amount[j] == 0 && p.show_empty_weapon == 0)
 	                    	{
@@ -1739,7 +1739,7 @@ public class Redneck {
 		                     myhardlanding != 0 ||
 		                     p.access_incs > 0 ||
 		                     p.knee_incs > 0 ||
-		                     (p.curr_weapon == TRIPBOMB_WEAPON &&
+		                     (p.curr_weapon == POWDERKEG_WEAPON &&
 		                      p.kickback_pic > 1 &&
 		                      p.kickback_pic < 4 ) )
 		        {

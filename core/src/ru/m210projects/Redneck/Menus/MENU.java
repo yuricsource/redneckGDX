@@ -194,9 +194,9 @@ public class MENU {
 		if(mCount > 1) {
 			//Back button
 			int zoom = scale(16384, ydim, 200);
-			int size = mulscale(tilesizx[3084], zoom, 16);
+			int size = mulscale(tilesizx[9235], zoom, 16);
 			int bx = 0;
-			int by = ydim - size / 2;
+			int by = ydim - size;
 			if(mx >= bx && mx < bx + size)
 				if(my >= by && my < by + size) 
 					if(ctrlKeyStatusOnce(MOUSE_LBUTTON)) {
@@ -239,8 +239,8 @@ public class MENU {
 		int zoom = scale(16384, ydim, 200);
 		if(cfg.menuMouse && mCount > 1) {
 			//Back button
-			int shade = 16 + mulscale(16, sintable[(20 * totalclock) & kAngleMask], 16);
-			engine.rotatesprite(0, (ydim-mulscale(tilesizy[3084], zoom, 16))<<16, zoom, 0, 3084, shade, 0, 8|16, 0, 0, mulscale(zoom, tilesizx[3084]-1, 16), ydim-1);
+			int shade = 4 + mulscale(16, sintable[(20 * totalclock) & kAngleMask], 16);
+			engine.rotatesprite(0, (ydim-mulscale(tilesizy[9235], zoom, 16))<<16, zoom, 0, 9235, shade, 0, 8|16, 0, 0, mulscale(zoom, tilesizx[9235]-1, 16), ydim-1);
 		}
 
 		cfg.gMouseCursor = ClipRange(cfg.gMouseCursor, 0, mCursorTile.length - 1);

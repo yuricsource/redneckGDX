@@ -3,7 +3,7 @@ package ru.m210projects.Redneck.Types;
 import ru.m210projects.Redneck.Config;
 
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Redneck.Globals.MAX_WEAPONS;
+import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.Globals.ud;
 
 public class UserDefs {
@@ -27,7 +27,7 @@ public class UserDefs {
 
 	public int entered_name,screen_tilting = 1,shadows,fta_on = 1,executions,auto_run;
 	public int coords,m_coop,coop,screen_size=2,lockout,crosshair=1, playerai;
-	public int[][] wchoice = new int[MAXPLAYERS][MAX_WEAPONS];
+	public int[][] wchoice = new int[MAXPLAYERS][MAX_WEAPONSRA];
 
 	public int recstat,brightness, m_recstat, detail;
 	public boolean monsters_off;

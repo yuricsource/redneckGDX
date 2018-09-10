@@ -615,7 +615,7 @@ public class Premap {
 	    p.field_57C = 0;
 	    p.kickback = 0;
 	    p.field_count = 0;
-	    dword_D7FAC = 0;
+	    LeonardCrack = 0;
 	    p.detonate_count = 0;
 	    if ( numplayers >= 2 )
 	    {
@@ -638,9 +638,9 @@ public class Premap {
 	    int  weapon;
 	    PlayerStruct p = ps[snum];
 
-	    for ( weapon = PISTOL_WEAPON; weapon < MAX_WEAPONS; weapon++ )
+	    for ( weapon = PISTOL_WEAPON; weapon < MAX_WEAPONSRA; weapon++ )
 	        p.gotweapon[weapon] = false;
-	    for ( weapon = PISTOL_WEAPON; weapon < MAX_WEAPONS; weapon++ )
+	    for ( weapon = PISTOL_WEAPON; weapon < MAX_WEAPONSRA; weapon++ )
 	        p.ammo_amount[weapon] = 0;
 
 	    p.weapon_pos = 6;
@@ -1737,8 +1737,8 @@ class PlayerInfo
 	public int aimmode;
 	public int autoaim;
 
-	public int[] ammo_amount = new int[MAX_WEAPONS];
-	public boolean[] gotweapon = new boolean[MAX_WEAPONS];
+	public int[] ammo_amount = new int[MAX_WEAPONSRA];
+	public boolean[] gotweapon = new boolean[MAX_WEAPONSRA];
 	
    	public short shield_amount;
    	public short curr_weapon;
@@ -1759,7 +1759,7 @@ class PlayerInfo
 
         if(ud.multimode > 1 && ud.coop == 1 && ud.last_level >= 0)
         {
-            for(int j=0;j<MAX_WEAPONS;j++)
+            for(int j=0;j<MAX_WEAPONSRA;j++)
             {
                 ammo_amount[j] = p.ammo_amount[j];
                 gotweapon[j] = p.gotweapon[j];
@@ -1785,7 +1785,7 @@ class PlayerInfo
 
         if(ud.multimode > 1 && ud.coop == 1 && ud.last_level >= 0)
         {
-            for(int j=0;j<MAX_WEAPONS;j++)
+            for(int j=0;j<MAX_WEAPONSRA;j++)
             {
                 p.ammo_amount[j] = ammo_amount[j];
                 p.gotweapon[j] = gotweapon[j];

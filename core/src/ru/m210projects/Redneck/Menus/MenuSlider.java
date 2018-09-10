@@ -88,7 +88,7 @@ public class MenuSlider extends MenuItem
 			mDrawText(textStyle, text, x, y, shade, pal, 0, 0);
 
 		int scale = 32768;
-		int cx = (int) (x + width - tilesizx[background] / 2 + mulscale(10, scale, 16));
+		int cx = (x + width - tilesizx[background] / 2 + mulscale(10, scale, 16));
 		if(textStyle != 2) cx += tilesizx[background] / 4;
 
 		engine.rotatesprite((cx - mulscale(11, scale, 16)) << 16, aly / 3 - yoff + y - mulscale(1, scale, 16) << 16, scale, 0, background, 0, pal, 10, 0, 0, xdim - 1, ydim - 1);
@@ -192,8 +192,8 @@ public class MenuSlider extends MenuItem
 			{
 				int scale = 16384;
 				if(textStyle == 2) scale = 32768;
-				int x1 = x + width - mulscale(tilesizx[background] + 2, scale, 16);
-				float dr = (float)(touchX - x1) / (mulscale(tilesizx[background] - 4, scale, 16));
+				int x1 = x + width - mulscale(tilesizx[background] + 2, scale, 16) - 10;
+				float dr = (float)(touchX - x1) / (mulscale(tilesizx[background] - 2, scale, 16));
 				value = (int) BClipRange(min + (dr * (max-min)), min, max);
 				if(callback != null) 
 					callback.run(this);
@@ -232,21 +232,23 @@ public class MenuSlider extends MenuItem
 			mGetAlign(textStyle, text);
 			if(mx > x && mx < x + alignx)
 			{
-				if(my > cy && my < cy + aligny) 
+				if(my > cy && my < cy + aligny) {
 					return true;
+				}
 			}
 		}
 
 		int scale = 16384;
 		if(textStyle == 2) scale = 32768;
-		int cx = x + width - mulscale(tilesizx[background] - 1, scale, 16);
-
+		int cx = x + width - tilesizx[background] / 2 + mulscale(10, scale, 16);
+		
 		mGetAlign(textStyle, text);
-		if(mx > cx && mx < cx + mulscale(tilesizx[background], scale, 16) )
+		if(mx > cx && mx < cx + mulscale(tilesizx[background], scale, 15) )
 			if(my > cy && my < cy + aligny) {
 				isTouched = true;
-				if(Gdx.input.isTouched())
+				if(Gdx.input.isTouched()) {
 					touchedObj = this;
+				}
 			}
 		
 		return isTouched;

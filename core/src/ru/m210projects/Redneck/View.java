@@ -251,7 +251,7 @@ public class View {
 		               	         else if (j > 8 && j <= 12) k += 16;
 		               	         else if (j > 12) k += 24;
 	                    	}
-	            	    	viewDrawStats(10, 35+k, cfg.gStatSize);
+	            	    	viewDrawStats(5, 5+k, cfg.gStatSize);
 	                    }
 	                }
 	        }
@@ -281,7 +281,7 @@ public class View {
        	         else if (j > 8 && j <= 12) k += 16;
        	         else if (j > 12) k += 24;
         	}
-	    	viewDrawStats(10, 35+k, cfg.gStatSize);
+	    	viewDrawStats(5, 5+k, cfg.gStatSize);
 	    }
 
 	    if((gm&MODE_GAME) != 0 && totalclock < gNameShowTime)
@@ -1609,8 +1609,8 @@ public class View {
 		buildString(buffer, 0, "kills:   ");
 		mGetAlign(1, buffer);
 		
-		int yoffset = (int) (2 * (aligny + 10) * viewzoom);
-		y -= yoffset;
+		//int yoffset = (int) (2 * (aligny + 10) * viewzoom);
+		//y -= yoffset;
 		
 		int statx = x;
 		int staty = y;

@@ -39,6 +39,7 @@ import ru.m210projects.Build.Types.SPRITE;
 
 public class Gamedef {
 	
+	public static final int[] params = new int[35];
 	public static String confilename = "GAME.CON";
 	public static int conweigth = 10;
 	
@@ -85,7 +86,7 @@ public class Gamedef {
 	public static final int pfacing = 65536;
 		
 	public static final int MAXSCRIPTSIZE = 20460;
-	public static final int NUMKEYWORDS = 131;
+	public static final int NUMKEYWORDS = 147;
 	private static char[] tempbuf = new char[2048];
 	
 	private static char[] text;
@@ -245,6 +246,24 @@ public class Gamedef {
 	    "ifsounddist".toCharArray(),		// 128 Crickets
 	    "ifonmud".toCharArray(),			// 129 GAME
 	    "ifcoop".toCharArray(),				// 130 BUBBA
+	    
+	    //RR RIDES AGAIN CMDS
+	    "ifmotofast".toCharArray(),			//131 GAME
+	    "ifwind".toCharArray(),				//132 --no
+	    "smacksprite".toCharArray(),		//133 RABBIT
+	    "ifonmoto".toCharArray(),			//134 GAME
+	    "ifonboat".toCharArray(),			//135 GAME
+	    "fakebubba".toCharArray(),			//136 BUBBA
+	    "mamatrigger".toCharArray(),		//137 MAMA
+	    "mamaspawn".toCharArray(),			//138 MAMA
+	    "mamaquake".toCharArray(),			//139 MAMA
+	    "clipdist".toCharArray(),			//140 --no
+	    "mamaend".toCharArray(),			//141 MAMA
+	    "newpic".toCharArray(),				//142 GAME
+	    "garybanjo".toCharArray(),			//143 COOTPLAY
+	    "motoloopsnd".toCharArray(),		//144 BIKERB
+	    "ifsizedown".toCharArray(),			//145 MAMAC
+	    "rndmove".toCharArray(),			//146 MAMAC
 	};
 
 	public static short total_lines,line_number;
@@ -1113,6 +1132,9 @@ public class Gamedef {
 	        case 105:
 	        case 113:
 	        case 114:
+	        	
+	        case 140: //RA
+	        case 142:
 	            transnum();
 	            return false;
 
@@ -1202,7 +1224,13 @@ public class Gamedef {
 	        case 112:
 	        case 129:
 	        case 130:
-
+	        
+	        case 131: //RA
+	        case 132:
+	        case 134:
+	        case 135:
+	        case 145:
+	        
 	            if(tw == 51)
 	            {
 	                j = 0;
@@ -1479,7 +1507,6 @@ public class Gamedef {
 	        case 97:
 	        case 104:
 	        case 106:
-	        	
 	        case 115:
 	        case 116:
 	        case 117:
@@ -1490,80 +1517,76 @@ public class Gamedef {
 	        case 124:
 	        case 125:
 	        case 126:
+	        	
+	        case 133: //RA
+	        case 136:
+	        case 137:
+	        case 138:
+	        case 139:
+	        case 141:
+	        case 144:
+	        case 143:
+	        case 146:
 	            return false;
 	        case 60:
-	            j = 0;
-	            while(j < 31)
-	            {
-	                transnum();
-	                scriptptr--;
-	                switch(j)
-	                {
-	                    case 0:
-	                        ud.const_visibility = script[scriptptr];
-	                        break;
-	                    case 1:
-	                        impact_damage = script[scriptptr];
-	                        break;
-	                    case 2:
-	                        max_player_health = script[scriptptr];
-	                        break;
-	                    case 3:
-	                        max_armour_amount = script[scriptptr];
-	                        break;
-	                    case 4:
-	                        respawnactortime = script[scriptptr];break;
-	                    case 5:
-	                        respawnitemtime = script[scriptptr];break;
-	                    case 6:
-	                        dukefriction = script[scriptptr];break;
-	                    case 7:
-	                        gc = script[scriptptr];break;
-	                    case 8:rpgblastradius = script[scriptptr];break;
-	                    case 9:pipebombblastradius = script[scriptptr];break;
-	                    case 10:shrinkerblastradius = script[scriptptr]; break;
-	                    case 11:tripbombblastradius = script[scriptptr]; break;
-	                    case 12:morterblastradius = script[scriptptr];break;
-	                    case 13:powderblastradius = script[scriptptr];break;
-	                    case 14:seenineblastradius = script[scriptptr];break;
+	        	for(j = 0; j < 34; j++)
+	        	{
+	        		 transnum();
+	        		 scriptptr--;
+	        		 params[j] = script[scriptptr];
+	        		 
+	        		 if (j != 30) continue;
+	        		 
+	        		 if (keyword() != -1) {
+	        			 Console.Println("Looks like Redneck Rampage Edition CON files.");
+		            	 GameCON = RR;
+	        			 break;
+	        		 } else {
+	        			 Console.Println("Looks like Redneck Rampage: Rides Again Edition CON files.");
+	        			 GameCON = RRRA;
+	        		 }
+	        	}
+	        	
+	        	j = 0;
+	    		ud.const_visibility = params[j++];
+	    		impact_damage = params[j++];
+	    		max_player_health = params[j++];
+	    		max_armour_amount = params[j++];
+	    		respawnactortime = params[j++];
+	    		respawnitemtime = params[j++];
+	    		dukefriction = params[j++];
+	    		gc = params[j++];
+	    		crossbowblastradius = params[j++];
+	    		tntblastradius = params[j++];
+	    		shrinkerblastradius = params[j++];
+	    		powderblastradius = params[j++];
+	    		morterblastradius = params[j++];
+	    		bouncemineblastradius = params[j++];
+	    		seenineblastradius = params[j++];
+	    		max_ammo_amount[PISTOL_WEAPON] = params[j++];
+	    		max_ammo_amount[SHOTGUN_WEAPON] = params[j++];
+	    		max_ammo_amount[RIFLEGUN_WEAPON] = params[j++];
+	    		max_ammo_amount[CROSSBOW_WEAPON] = params[j++];
+	    		max_ammo_amount[DYNAMITE_WEAPON] = params[j++];
+	    		max_ammo_amount[THROWSAW_WEAPON] = params[j++];
+	    		max_ammo_amount[ALIENBLASTER_WEAPON] = params[j++];
+	    		max_ammo_amount[POWDERKEG_WEAPON] = params[j++];
+	    		max_ammo_amount[TIT_WEAPON] = params[j++];
+	    		max_ammo_amount[BUZSAW_WEAPON] = params[j++];
+	    		max_ammo_amount[BOWLING_WEAPON] = params[j++];
+	    		camerashitable = (char)params[j++];
+	    		numfreezebounces = params[j++];
+	    		freezerhurtowner = (char)params[j++];
+	    		spriteqamount = (short)ClipRange(params[j++], 0, 1024);
+    			dildoblase = (char)params[j++];
+    			
+    			if(GameCON == RRRA)
+    			{
+    				max_ammo_amount[MOTO_WEAPON] = params[j++];
+    	    		max_ammo_amount[BOAT_WEAPON] = params[j++];
+    	    		max_ammo_amount[CHICKENBOW_WEAPON] = params[j++];
+    			}
 
-	                    case 15:
-	                    case 16:
-	                    case 17:
-	                    case 18:
-	                    case 19:
-	                    case 20:
-	                    case 21:
-	                    case 22:
-	                    case 23:
-	                    case 24:
-	                    case 25:
-	                        if(j == 24)
-	                            max_ammo_amount[11] = script[scriptptr];
-	                        else if(j == 25)
-	                            max_ammo_amount[12] = script[scriptptr];
-	                        else max_ammo_amount[j-14] = script[scriptptr];
-	                        break;
-	                    case 26:
-	                        camerashitable = (char) script[scriptptr];
-	                        break;
-	                    case 27:
-	                        numfreezebounces = script[scriptptr];
-	                        break;
-	                    case 28:
-	                        freezerhurtowner = (char) script[scriptptr];
-	                        break;
-	                    case 29:
-	                        spriteqamount = (short) script[scriptptr];
-	                        if(spriteqamount > 1024) spriteqamount = 1024;
-	                        else if(spriteqamount < 0) spriteqamount = 0;
-	                        break;
-	                    case 30:
-	                        lasermode = (char) script[scriptptr];
-	                        break;
-	                }
-	                j++;
-	            }
 	            scriptptr++;
 	            return false;
 	    }
@@ -3390,13 +3413,108 @@ public class Gamedef {
 	            break;
 
 	        case 109:
-
 	            for(j=1;j<NUM_SOUNDS;j++)
 	                if( SoundOwner[j][0].i == g_i )
 	                    break;
 
 	            parseifelse( j == NUM_SOUNDS );
-	            break;
+	            break; 
+	        case 131: //ifmotofast
+	        	parseifelse(ps[g_p].Motospeed > 60);
+	        	break;
+	        case 132: //ifwind
+	        	parseifelse(WindTime > 0);
+	        	break;
+	        case 133: //smacksprite
+	        	if((engine.krand() & 1) != 0)
+	        		g_sp.ang = (short) ((g_sp.ang - (engine.krand() & 1)) & kAngleMask);
+	        	else
+	        		g_sp.ang = (short) ((g_sp.ang + 512 + (engine.krand() & 1)) & kAngleMask);
+	        	insptr++;
+	        	break;
+	        case 134: //ifonmoto
+	        	parseifelse(ps[g_p].OnMotorcycle); 
+	        	break;
+	        case 135: //ifonboat
+	        	parseifelse(ps[g_p].OnBoat);
+	        	break;
+	        case 136: //fakebubba XXX
+	
+	        	insptr++;
+	        	break;
+	        case 137: //mamatrigger
+//	        	sub_56430(667, ps[g_p].i); XXX
+	        	insptr++;
+	        	break;
+	        case 138: //mamaspawn XXX
+//	        	if (	word_119BDA != 0 )
+//	            {
+//	        		word_119BDA--;
+//	        		sub_76710(g_i, 7280);
+//	            }
+	        	insptr++;
+	        	break;
+	        case 139: //mamaquake XXX
+//	        	if ( g_sp.pal == 31 )
+//	        		byte_1D7E72 = 4;
+//	            else if ( g_sp.pal == 32 )
+//	            	byte_1D7E72 = 6;
+	        	insptr++;
+	        	break;
+	        case 140:
+	        	insptr++;
+	        	g_sp.clipdist = script[insptr];
+	        	insptr++;
+	        	break;
+	        case 141: //mamaend
+	        	insptr++;
+	        	ps[myconnectindex].field_609 = 150;
+	        	break;
+	        case 142:
+	        	insptr++;
+	        	g_sp.picnum = (short) script[insptr];
+	        	insptr++;
+	        	break;
+	        case 143: //garybanjo
+	        	if ( BellSound != 0)
+	            {
+	              if ( Sound[BellSound].num == 0 )
+	                spritesound(BellSound, g_i);
+	            }
+	        	else 
+	            {
+	        		switch((engine.krand() & 3) + 1)
+	        		{
+		        		case 1:
+		        			spritesound(272, g_i);
+		        			BellSound = 272;
+		        			break;
+		        		case 4:
+		        			spritesound(262, g_i);
+		        			BellSound = 262;
+		        			break;
+		        		default:
+		        			spritesound(273, g_i);
+		        			BellSound = 273;
+		        			break;
+	        		}
+	            }
+	        	break;
+	        case 144: //motoloopsnd
+	        	if ( Sound[411].num == 0 )
+	        		spritesound(411, g_i);
+	        	insptr++;
+	        	break;
+	        case 145: //ifsizedown
+	        	g_sp.xrepeat--;
+	        	g_sp.yrepeat--;
+	        	parseifelse(g_sp.xrepeat <= 5);
+	        	break;
+	        case 146: //rndmove
+	        	g_sp.ang = (short) (engine.krand() & kAngleMask);
+	        	g_sp.xvel = 25;
+	        	insptr++;
+	        	break;
 	        default:
 	            killit_flag = 1;
 	            break;

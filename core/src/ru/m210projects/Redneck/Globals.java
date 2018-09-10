@@ -45,9 +45,15 @@ public class Globals {
 	
 	public static int VIEWSCR_Lock = 199;
 	
+	//XXX RA
+	public static int BellSound = 0;
+	public static int WindDir;
+	public static int WindTime;
+	
 	public static int numepisodes, numlevels[] = new int[3];
 	
 	public static final int MAX_WEAPONS = 13;
+	public static final int MAX_WEAPONSRA = 17;
 	
 	public static final int MAXANIMWALLS = 512;
 	public static final int NUMOFFIRSTTIMEACTIVE = 192;
@@ -113,24 +119,27 @@ public class Globals {
 	public static final int KNEE_WEAPON         = 0;
 	public static final int PISTOL_WEAPON       = 1;
 	public static final int SHOTGUN_WEAPON      = 2;
-	public static final int CHAINGUN_WEAPON     = 3;
-	public static final int RPG_WEAPON          = 4;
+	public static final int RIFLEGUN_WEAPON     = 3;
+	public static final int DYNAMITE_WEAPON     = 4;
 	public static final int CROSSBOW_WEAPON     = 5;
-	public static final int CIRCLESAW_WEAPON     = 6;
-	public static final int DEVISTATOR_WEAPON   = 7;
-	public static final int TRIPBOMB_WEAPON     = 8;
-	public static final int FREEZE_WEAPON       = 9;
+	public static final int THROWSAW_WEAPON     = 6;
+	public static final int ALIENBLASTER_WEAPON = 7;
+	public static final int POWDERKEG_WEAPON    = 8;
+	public static final int TIT_WEAPON       	= 9;
 	public static final int HANDREMOTE_WEAPON   = 10;
-	public static final int BUZSAW_WEAPON         = 11;
-	public static final int BOWLING_WEAPON         = 12;
+	public static final int BUZSAW_WEAPON       = 11;
+	public static final int BOWLING_WEAPON      = 12;
+	
+	public static final int MOTO_WEAPON      = 14;
+	public static final int BOAT_WEAPON      = 15;
+	public static final int CHICKENBOW_WEAPON  = 16;
 	
 	public static boolean kGameCrash;
 	public static int musicvolume, musiclevel;
 	
 	public static short gEndGame;
 	public static short gEndFirstEpisode;
-	public static int dword_D7FAC; //rename XXX
-	public static byte byte_D7FE8;
+	public static int LeonardCrack;
 	
 	public static PlayerOrig po[] = new PlayerOrig[MAXPLAYERS];
 	public static PlayerStruct ps[] = new PlayerStruct[MAXPLAYERS];
@@ -147,7 +156,7 @@ public class Globals {
 	public static short global_random;
 	public static short neartagsector, neartagwall, neartagsprite;
 
-	public static int numframes, gc=176,neartaghitdist,lockclock,max_player_health,max_armour_amount, max_ammo_amount[] = new int[MAX_WEAPONS];
+	public static int numframes, gc=176,neartaghitdist,lockclock,max_player_health,max_armour_amount, max_ammo_amount[] = new int[MAX_WEAPONSRA];
 
 	public static short spriteq[] = new short[1024],spriteqloc,spriteqamount=64,moustat;
 	public static Animwalltype animwall[] = new Animwalltype[MAXANIMWALLS];
@@ -256,12 +265,12 @@ public class Globals {
 	public static float myhorizbak[] = new float[MOVEFIFOSIZ];
 	public static float[] myangbak = new float[MOVEFIFOSIZ];
 
-	public static char camerashitable,freezerhurtowner=0,lasermode;
+	public static char camerashitable,freezerhurtowner=0,dildoblase;
 	// CTW - MODIFICATION
 	// char networkmode = 255, movesperpacket = 1,gamequit = 0,playonten = 0,everyothertime;
 	public static char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
 	// CTW END - MODIFICATION
-	public static int numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,powderblastradius,seenineblastradius;
+	public static int numfreezebounces=3,crossbowblastradius,tntblastradius,bouncemineblastradius,shrinkerblastradius,morterblastradius,powderblastradius,seenineblastradius;
 
 	public static int myminlag[] = new int[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
 	public static int totalmemory = 0;

@@ -1,6 +1,6 @@
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Redneck.Globals.MAX_WEAPONS;
+import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.SoundDefs.DUKE_SCREAM;
 import static ru.m210projects.Redneck.Sounds.spritesound;
 
@@ -12,7 +12,7 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1744;
+	public static final int sizeof = 1756;
 	
 	public int zoom,exitx,exity,loogiex[] = new int[64],loogiey[] = new int[64],numloogs,loogcnt;
 	public int posx, posy, posz, ohorizoff, invdisptime;
@@ -27,7 +27,7 @@ public class PlayerStruct {
 
 	public short cursectnum,look_ang,last_extra,subweapon;
 	public short wackedbyactor, frag, fraggedself;
-	public int ammo_amount[] = new int[MAX_WEAPONS];
+	public int ammo_amount[] = new int[MAX_WEAPONSRA];
 			
 	public short curr_weapon, last_weapon, tipincs, horizoff, wantweaponfire;
 	public short beer_amount,newowner,hurt_delay,hbomb_hold_delay;
@@ -59,7 +59,7 @@ public class PlayerStruct {
 	public short scuba_on,footprintpal,heat_on;
 
 	public short  holster_weapon,falling_counter;
-	public boolean  gotweapon[] = new boolean[MAX_WEAPONS],refresh_inventory;
+	public boolean  gotweapon[] = new boolean[MAX_WEAPONSRA],refresh_inventory;
 	public byte[] palette;
 
 	public short toggle_key_flag,knuckle_incs;
@@ -92,6 +92,13 @@ public class PlayerStruct {
 	public byte shotgun_splitshot;
 	public short kickback;
 	public short field_count;
+	
+	//RA
+	public short field_609;
+	public boolean OnBoat;
+	public boolean OnMotorcycle;
+	public short Motospeed;
+
 
 	public void copy(PlayerStruct src)
 	{
@@ -140,7 +147,7 @@ public class PlayerStruct {
 		this.wackedbyactor = src.wackedbyactor;
 		this.frag = src.frag;
 		this.fraggedself = src.fraggedself;
-		System.arraycopy(src.ammo_amount, 0, this.ammo_amount, 0, MAX_WEAPONS);
+		System.arraycopy(src.ammo_amount, 0, this.ammo_amount, 0, MAX_WEAPONSRA);
 		this.curr_weapon = src.curr_weapon;
 		this.last_weapon = src.last_weapon;
 		this.tipincs = src.tipincs;
@@ -213,7 +220,7 @@ public class PlayerStruct {
 		this.heat_on = src.heat_on;
 		this.holster_weapon = src.holster_weapon;
 		this.falling_counter = src.falling_counter;
-		System.arraycopy(src.gotweapon, 0, this.gotweapon, 0, MAX_WEAPONS);
+		System.arraycopy(src.gotweapon, 0, this.gotweapon, 0, MAX_WEAPONSRA);
 		this.refresh_inventory = src.refresh_inventory;
 		this.palette = src.palette;
 		this.toggle_key_flag = src.toggle_key_flag;
@@ -310,7 +317,7 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, wackedbyactor); ptr+=2;
 		LittleEndian.putShort(buf, ptr, frag); ptr+=2;
 		LittleEndian.putShort(buf, ptr, fraggedself); ptr+=2;
-		for(int i = 0; i < MAX_WEAPONS; i++)
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
 		{
 			LittleEndian.putShort(buf, ptr, (short)ammo_amount[i]); ptr+=2;
 		}
@@ -392,7 +399,7 @@ public class PlayerStruct {
 		buf[ptr++] = (byte)heat_on;	
 		buf[ptr++] = (byte)holster_weapon;	
 		buf[ptr++] = (byte)falling_counter;	
-		for(int i = 0; i < MAX_WEAPONS; i++)
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
 			buf[ptr++] = gotweapon[i]?(byte)1:0;
 		buf[ptr++] = refresh_inventory?(byte)1:0;
 		System.arraycopy(palette, 0, buf, ptr, 768); ptr += 768;
@@ -499,7 +506,7 @@ public class PlayerStruct {
 		wackedbyactor = bb.getShort();
 		frag = bb.getShort();
 		fraggedself = bb.getShort();
-		for(int i = 0; i < MAX_WEAPONS; i++)
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
 			ammo_amount[i] = bb.getShort();
 		curr_weapon = bb.getShort();
 		
@@ -582,7 +589,7 @@ public class PlayerStruct {
 		heat_on = bb.get();	
 		holster_weapon = bb.get();
 		falling_counter = bb.get();	
-		for(int i = 0; i < MAX_WEAPONS; i++)
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
 			gotweapon[i] = bb.get() == 1;
 		refresh_inventory = bb.get() == 1;
 		this.palette = new byte[768];

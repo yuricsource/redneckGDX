@@ -144,6 +144,10 @@ public class RRPolymost extends Polymost {
 					if ((sprite[i].cstat&48) == 32)
 					{
 						if ((sprite[i].cstat&(64+8)) == (64+8)) continue;
+						if (tsprite[sortnum] == null)
+							tsprite[sortnum] = new SPRITE();
+						tsprite[sortnum].set(sprite[i]);
+						
 						tsprite[sortnum++].owner = (short) i;
 					}
 

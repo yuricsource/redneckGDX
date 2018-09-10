@@ -11,6 +11,7 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Screen.setup3dscreen;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.currMusic;
+
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Gameutils.*;
 
@@ -28,25 +29,27 @@ import ru.m210projects.Redneck.Types.RRPolymost;
 import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
 
-/*
- * ART sprites
- */
-
 public class Main extends ApplicationAdapter {
+	/*
+	 * Gamedef case128 ambient check
+	 * Globals rename variables
+	 * Vixel lasers
+	 * должен запускаться следующий трек.
+	 */
 
 	public static final String appname = "RedneckGDX";
 	public static final String sversion = "v0.750";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();
-	public static boolean release = false;
+	public static boolean release = true;
 	
 	public static RREngine engine;
 	public static Config cfg;
 	public static Sound[] fxdrivers;
 	public static Music[] mxdrivers;
 	public static GPManager gpmanager;
-	
+
 	public Main(BConfig cfg, Message message)
 	{
 		Main.cfg = (Config) cfg;

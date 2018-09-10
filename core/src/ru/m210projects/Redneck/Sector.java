@@ -2378,7 +2378,7 @@ public class Sector {
 		                    if( (sprite[i].picnum == APLAYER && sprite[i].pal == 1 ) )
 		                        return;
 		                    
-		                    if ( byte_D7FE8 == 0 )
+		                    if ( freezerhurtowner == 0 )
 		                    {
 		                    	if ( sprite[sn].owner == i)
 		                    		return;

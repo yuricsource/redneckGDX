@@ -33,19 +33,20 @@ import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Redneck.Gameutils.rnd;
 import static ru.m210projects.Redneck.Globals.AUTO_AIM_ANGLE;
 import static ru.m210projects.Redneck.Globals.BUZSAW_WEAPON;
-import static ru.m210projects.Redneck.Globals.CHAINGUN_WEAPON;
-import static ru.m210projects.Redneck.Globals.CIRCLESAW_WEAPON;
+import static ru.m210projects.Redneck.Globals.RIFLEGUN_WEAPON;
+import static ru.m210projects.Redneck.Globals.THROWSAW_WEAPON;
 import static ru.m210projects.Redneck.Globals.CROSSBOW_WEAPON;
-import static ru.m210projects.Redneck.Globals.DEVISTATOR_WEAPON;
-import static ru.m210projects.Redneck.Globals.FREEZE_WEAPON;
+import static ru.m210projects.Redneck.Globals.ALIENBLASTER_WEAPON;
+import static ru.m210projects.Redneck.Globals.TIT_WEAPON;
 import static ru.m210projects.Redneck.Globals.HANDREMOTE_WEAPON;
 import static ru.m210projects.Redneck.Globals.KNEE_WEAPON;
 import static ru.m210projects.Redneck.Globals.MAX_WEAPONS;
 import static ru.m210projects.Redneck.Globals.PISTOL_WEAPON;
-import static ru.m210projects.Redneck.Globals.RPG_WEAPON;
+import static ru.m210projects.Redneck.Globals.DYNAMITE_WEAPON;
 import static ru.m210projects.Redneck.Globals.SHOTGUN_WEAPON;
 import static ru.m210projects.Redneck.Globals.Sound;
-import static ru.m210projects.Redneck.Globals.TRIPBOMB_WEAPON;
+import static ru.m210projects.Redneck.Globals.POWDERKEG_WEAPON;
+import static ru.m210projects.Redneck.Globals.BOWLING_WEAPON;
 import static ru.m210projects.Redneck.Globals.gc;
 import static ru.m210projects.Redneck.Globals.global_random;
 import static ru.m210projects.Redneck.Globals.hittype;
@@ -58,7 +59,7 @@ import static ru.m210projects.Redneck.Globals.max_ammo_amount;
 import static ru.m210projects.Redneck.Globals.max_player_health;
 import static ru.m210projects.Redneck.Globals.numfreezebounces;
 import static ru.m210projects.Redneck.Globals.ps;
-import static ru.m210projects.Redneck.Globals.rpgblastradius;
+import static ru.m210projects.Redneck.Globals.crossbowblastradius;
 import static ru.m210projects.Redneck.Globals.sync;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Main.engine;
@@ -309,7 +310,7 @@ public class Weapons {
 	            spawn(p.i,weapon_sprites[cw]);
 	        else switch(cw)
 	        {
-	            case RPG_WEAPON:
+	            case DYNAMITE_WEAPON:
 	            case CROSSBOW_WEAPON:
 	                spawn(p.i,EXPLOSION2);
 	                break;
@@ -1391,11 +1392,11 @@ public class Weapons {
 
 							if (s.xrepeat >= 10) {
 								x = s.extra;
-								hitradius(i, rpgblastradius, x >> 2, x >> 1, x
+								hitradius(i, crossbowblastradius, x >> 2, x >> 1, x
 										- (x >> 2), x);
 							} else {
 								x = s.extra + (global_random & 3);
-								hitradius(i, (rpgblastradius >> 1), x >> 2,
+								hitradius(i, (crossbowblastradius >> 1), x >> 2,
 										x >> 1, x - (x >> 2), x);
 							}
 						}
@@ -1497,8 +1498,8 @@ public class Weapons {
                 		looking_arc+200-(244 - crowbar_y[crowbar_frames[kb]]) - gun_pos, 32768, 3340+crowbar_frames[kb],gs,o,pal);
 	            break;
 
-	        case TRIPBOMB_WEAPON: //Barrel
-	        case 12: //Boyling
+	        case POWDERKEG_WEAPON:
+	        case BOWLING_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
 	            else
@@ -1518,7 +1519,7 @@ public class Weapons {
 	            		return;
 	                }
 	            } 
-	            else if ( p.ammo_amount[TRIPBOMB_WEAPON] != 0 ) 
+	            else if ( p.ammo_amount[POWDERKEG_WEAPON] != 0 ) 
 	            {
 	            	myospal(weapon_xoffset + 180 - (p.look_ang>>1), posy + ((kb)<<3), 36700, 3438, gs, o, pal);
 	            	myospal(weapon_xoffset + 90 - (p.look_ang>>1), posy + ((kb)<<3), 36700, 3438, gs, o | 4, pal);
@@ -1643,7 +1644,7 @@ public class Weapons {
 	            }
 	            break;
 	            
-	        case CHAINGUN_WEAPON:
+	        case RIFLEGUN_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
 	            else
@@ -1714,15 +1715,14 @@ public class Weapons {
             	}
             	break;
 	            
-	        case RPG_WEAPON:
+	        case DYNAMITE_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
 	            else pal = sector[p.cursectnum].floorpal;
 
 	            weapon_xoffset -= sintable[(768+((kb)<<7))&2047]>>11;
 	            gun_pos -= 9 * kb;
-	            myospal(weapon_xoffset+190-(p.look_ang>>1),looking_arc+260-gun_pos,
-	            		36700, 3360,gs,o,pal);
+	            myospal(weapon_xoffset+190-(p.look_ang>>1),looking_arc+260-gun_pos,36700,3360,gs,o,pal);
 	            break;
 
 	        case HANDREMOTE_WEAPON:
@@ -1733,7 +1733,6 @@ public class Weapons {
 	        		else pal = sector[p.cursectnum].floorpal;
 	        		posx = weapon_xoffset + 290;
 	        		posy = looking_arc + 258 - gun_pos - 64;
-	        		
 	        		if(kb == 0 || kb < 5 )
 	        			myospal(posx - (p.look_ang>>1) - 25, posy + p.detonate_count - 20, 36700, 1752, 0, o, pal);
 	        		
@@ -1744,8 +1743,8 @@ public class Weapons {
 	        	}
 	        	break;
 	        	
-	        case FREEZE_WEAPON:
-	            if(sprite[p.i].pal == 1)
+	        case TIT_WEAPON:
+	        	if(sprite[p.i].pal == 1)
 	                pal = 1;
 	            else
 	                pal = sector[p.cursectnum].floorpal;
@@ -1756,7 +1755,7 @@ public class Weapons {
 
 	            break;	
 	        	
-	        case DEVISTATOR_WEAPON:
+	        case ALIENBLASTER_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
 	            else
@@ -1773,7 +1772,7 @@ public class Weapons {
 
 	        
 
-	        case CIRCLESAW_WEAPON:
+	        case THROWSAW_WEAPON:
 	        case BUZSAW_WEAPON:
 	            weapon_xoffset += 28;
 	            looking_arc += 18;
@@ -1824,7 +1823,7 @@ public class Weapons {
 		
 		int psectlotag = sector[p.cursectnum].lotag;
 		
-		 if( p.curr_weapon == CIRCLESAW_WEAPON || p.curr_weapon == BUZSAW_WEAPON )
+		 if( p.curr_weapon == THROWSAW_WEAPON || p.curr_weapon == BUZSAW_WEAPON )
 		        p.random_club_frame += 64; // Glowing
 		    if ( p.curr_weapon == 8 || p.curr_weapon == 12 )
 		        p.random_club_frame += 64;
@@ -1872,8 +1871,8 @@ public class Weapons {
 		                break;
 
 
-		            case CHAINGUN_WEAPON:
-		                if( p.ammo_amount[CHAINGUN_WEAPON] > 0 )
+		            case RIFLEGUN_WEAPON:
+		                if( p.ammo_amount[RIFLEGUN_WEAPON] > 0 )
 		                    (p.kickback_pic)=1;
 		                break;
 
@@ -1882,8 +1881,8 @@ public class Weapons {
 		                    (p.kickback_pic)=1;
 		                break;
 
-		            case TRIPBOMB_WEAPON:
-		            case 12:
+		            case POWDERKEG_WEAPON:
+		            case BOWLING_WEAPON:
 		            	if ( p.curr_weapon == 12 )
 		            	{
 		            		if ( p.ammo_amount[12] > 0 )
@@ -1895,7 +1894,7 @@ public class Weapons {
 		            	}
 		                break;
 
-		            case CIRCLESAW_WEAPON:
+		            case THROWSAW_WEAPON:
 		            case BUZSAW_WEAPON:
 		                if( p.curr_weapon == BUZSAW_WEAPON )
 		                {
@@ -1905,27 +1904,27 @@ public class Weapons {
 		                        spritesound(431,pi);
 		                    }
 		                }
-		                else if( p.ammo_amount[CIRCLESAW_WEAPON] > 0)
+		                else if( p.ammo_amount[THROWSAW_WEAPON] > 0)
 		                {
 		                    (p.kickback_pic) = 1;
 		                    spritesound(SHRINKER_FIRE,pi);
 		                }
 		                break;
 
-		            case FREEZE_WEAPON:
-		                if( p.ammo_amount[FREEZE_WEAPON] > 0 )
+		            case TIT_WEAPON:
+		                if( p.ammo_amount[TIT_WEAPON] > 0 )
 		                {
 		                    (p.kickback_pic) = 1;
 		                    p.hbomb_hold_delay ^= 1;
 		                }
 		                break;
-		            case DEVISTATOR_WEAPON:
-		                if( p.ammo_amount[DEVISTATOR_WEAPON] > 0 )
+		            case ALIENBLASTER_WEAPON:
+		                if( p.ammo_amount[ALIENBLASTER_WEAPON] > 0 )
 		                    (p.kickback_pic) = 1;
 		                break;
 
-		            case RPG_WEAPON:
-		                if ( p.ammo_amount[RPG_WEAPON] > 0)
+		            case DYNAMITE_WEAPON:
+		                if ( p.ammo_amount[DYNAMITE_WEAPON] > 0)
 		                    (p.kickback_pic) = 1;
 		                break;
 
@@ -1938,7 +1937,7 @@ public class Weapons {
 		    {
 		        switch( p.curr_weapon )
 		        {
-			        case RPG_WEAPON:
+			        case DYNAMITE_WEAPON:
 		                (p.kickback_pic)++;
 		                if( (p.kickback_pic) == 1 )
 		                	sound(401);
@@ -2181,7 +2180,7 @@ public class Weapons {
 		                	}
 		                }
 		                break;
-			        case CHAINGUN_WEAPON:
+			        case RIFLEGUN_WEAPON:
 
 		                (p.kickback_pic)++;
 		                p.horiz++;
@@ -2191,7 +2190,7 @@ public class Weapons {
 		                {
 		                    if( ((p.kickback_pic)%3) == 0 )
 		                    {
-		                        p.ammo_amount[CHAINGUN_WEAPON]--;
+		                        p.ammo_amount[RIFLEGUN_WEAPON]--;
 
 		                        if( (p.kickback_pic%3) == 0 )
 		                        {
@@ -2233,7 +2232,7 @@ public class Weapons {
 
 		                break;     
 		                
-			        case CIRCLESAW_WEAPON:
+			        case THROWSAW_WEAPON:
 		            case BUZSAW_WEAPON:
 
 		                if(p.curr_weapon == BUZSAW_WEAPON)
@@ -2252,7 +2251,7 @@ public class Weapons {
 		                {
 		                    if( (p.kickback_pic) == 1)
 		                    {
-		                        p.ammo_amount[CIRCLESAW_WEAPON]--;
+		                        p.ammo_amount[THROWSAW_WEAPON]--;
 		                        shoot(pi,CIRCLESAW);
 		                        checkavailweapon(p);
 		                    }
@@ -2264,7 +2263,7 @@ public class Weapons {
 		                }
 		                break;   
 		                
-		            case FREEZE_WEAPON:
+		            case TIT_WEAPON:
 		            	(p.kickback_pic)++;
 		            	if( (p.kickback_pic) == 2 || (p.kickback_pic) == 4 )
 		            	{
@@ -2274,7 +2273,7 @@ public class Weapons {
 		            		shoot(pi,SHOTSPARK1);
 		            		p.field_290 = 0x4000;
 		            		sub_64EF0(snum);
-		            		p.ammo_amount[FREEZE_WEAPON]--;
+		            		p.ammo_amount[TIT_WEAPON]--;
 		            		checkavailweapon(p);
 		            	}
 		            	if ( p.kickback_pic == 2 )
@@ -2287,7 +2286,7 @@ public class Weapons {
 		            		p.kickback_pic = 0;
 		            	break;	
 		            	
-		            case DEVISTATOR_WEAPON:
+		            case ALIENBLASTER_WEAPON:
 		            	(p.kickback_pic)++;
 		            	if ( p.kickback_pic >= 7 && p.kickback_pic <= 11 )
 		            		shoot(pi, FIRELASER);
@@ -2299,7 +2298,7 @@ public class Weapons {
 		                }
 		            	else if ( p.kickback_pic == 9 )
 		            	{
-		            		p.ammo_amount[DEVISTATOR_WEAPON]--;
+		            		p.ammo_amount[ALIENBLASTER_WEAPON]--;
 		            		p.visibility = 0;
 		            		lastvisinc = totalclock+32;
 		            		checkavailweapon(p);
@@ -2394,8 +2393,8 @@ public class Weapons {
 		            	{
 		            	case 4:
 		                    p.ammo_amount[CROSSBOW_WEAPON]--;
-		                    if ( p.ammo_amount[RPG_WEAPON] != 0 )
-		                    	p.ammo_amount[RPG_WEAPON]--;
+		                    if ( p.ammo_amount[DYNAMITE_WEAPON] != 0 )
+		                    	p.ammo_amount[DYNAMITE_WEAPON]--;
 		                    lastvisinc = totalclock + 32;
 		                    p.visibility = 0;
 		                    shoot(pi, CROSSBOW);

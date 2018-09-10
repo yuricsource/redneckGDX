@@ -330,7 +330,7 @@ public class RRMenu {
 			}
 		}
 		
-		MenuButton mUser = new MenuButton("< USER CONTENT >", 2, 0, pos+=25, 320, 1, 2, mMenus[USERCONTENT], -1, null, -1);
+		MenuButton mUser = new MenuButton("USER CONTENT", 2, 0, pos+=25, 320, 1, 2, mMenus[USERCONTENT], -1, null, -1);
 		mAddItem(mMenus[nMenuId], mUser, epnum == 0);
 	}
 	
@@ -947,41 +947,6 @@ public class RRMenu {
 			}
 		}, "Yes", "No");
 
-		MenuSwitch mMenuEnab = new MenuSwitch("Enable mouse in menu:", 1, 22, pos += 12, 280, cfg.menuMouse,
-				new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuSwitch sw = (MenuSwitch) pItem;
-						cfg.menuMouse = sw.value;
-					}
-				}, "Yes", "No");
-
-		MenuConteiner mMenuCursor = new MenuConteiner("Mouse cursor style:", 1, 22, pos += 12, 280, null, 0,
-				new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuConteiner item = (MenuConteiner) pItem;
-						cfg.gMouseCursor = item.num;
-					}
-				}) {
-			@Override
-			public void open(MENU pMenu) {
-				if (this.list == null) {
-					this.list = new char[1][];
-					this.list[0] = "Arrow".toCharArray();
-				}
-				num = cfg.gMouseCursor;
-			}
-		};
-		MenuSlider mCurSize = new MenuSlider("Mouse cursor size:", 1, false, 22, pos += 12, 280, cfg.gMouseCursorSize,
-				0x1000, 0x28000, 4096, new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuSlider slider = (MenuSlider) pItem;
-						cfg.gMouseCursorSize = slider.value;
-					}
-				}, -1, -1, false);
-
 		pos += 5;
 		MenuSlider mSens = new MenuSlider("Mouse Sensitivity:", 1, false, 22, pos += 12, 280, cfg.gSensitivity, 0x1000,
 				0x28000, 512, new MENUPROC() {
@@ -1058,9 +1023,6 @@ public class RRMenu {
 				mMenus[ADVANCEDMOUSESET], -1, null, 0);
 
 		mAddItem(mMenus[nMenuId], mEnable, true);
-		mAddItem(mMenus[nMenuId], mMenuEnab, false);
-		mAddItem(mMenus[nMenuId], mMenuCursor, false);
-		mAddItem(mMenus[nMenuId], mCurSize, false);
 		mAddItem(mMenus[nMenuId], mSens, false);
 
 		mAddItem(mMenus[nMenuId], mTurn, false);
@@ -1232,7 +1194,7 @@ public class RRMenu {
 	}
 	
 	private static void mHUDSet(int nMenuId) {
-		MenuTitle mTitle = new MenuTitle("HUD Setup", 2, 160, 19, MENUBAR);
+		MenuTitle mTitle = new MenuTitle("Interface Setup", 2, 160, 19, MENUBAR);
 		int pos = 30;
 
 		MenuSwitch messages = new MenuSwitch("Messages:", 1, 47, pos += 12, 240, ud.fta_on==1, new MENUPROC() {
@@ -1254,6 +1216,40 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						ud.screen_size = slider.value;
+					}
+				}, -1, -1, false);
+		
+//		MenuConteiner mMenuCursor = new MenuConteiner("Mouse cursor style:", 1, 47, pos += 12, 240, null, 0,
+//		new MENUPROC() {
+//			@Override
+//			public void run(MenuItem pItem) {
+//				MenuConteiner item = (MenuConteiner) pItem;
+//				cfg.gMouseCursor = item.num;
+//			}
+//		}) {
+//	@Override
+//	public void open(MENU pMenu) {
+//		if (this.list == null) {
+//			this.list = new char[1][];
+//			this.list[0] = "Arrow".toCharArray();
+//		}
+//		num = cfg.gMouseCursor;
+//	}
+//};
+		MenuSwitch mMenuEnab = new MenuSwitch("Mouse in menu:", 1, 47, pos += 12, 240, cfg.menuMouse,
+				new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuSwitch sw = (MenuSwitch) pItem;
+						cfg.menuMouse = sw.value;
+					}
+				}, "Yes", "No");
+		MenuSlider mCurSize = new MenuSlider("Mouse cursor size:", 1, false, 47, pos += 12, 240, cfg.gMouseCursorSize,
+				0x1000, 0x28000, 4096, new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuSlider slider = (MenuSlider) pItem;
+						cfg.gMouseCursorSize = slider.value;
 					}
 				}, -1, -1, false);
 		
@@ -1308,8 +1304,7 @@ public class RRMenu {
 					}
 				}, -1, -1, false);
 		pos += 5;
-		
-		
+
 		MenuSwitch sShowMapName = new MenuSwitch("Info at level startup:", 1, 47, pos += 12, 240, cfg.showMapInfo==1, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
@@ -1330,6 +1325,9 @@ public class RRMenu {
 
 		mAddItem(mMenus[nMenuId], messages, true);
 		mAddItem(mMenus[nMenuId], sScreenSize, false);
+		mAddItem(mMenus[nMenuId], mMenuEnab, false);
+//		mAddItem(mMenus[nMenuId], mMenuCursor, false);
+		mAddItem(mMenus[nMenuId], mCurSize, false);
 		mAddItem(mMenus[nMenuId], sCrosshair, false);
 		mAddItem(mMenus[nMenuId], sCrossSize, false);
 		mAddItem(mMenus[nMenuId], sShowStat, false);
@@ -1516,7 +1514,7 @@ public class RRMenu {
 
 			    mDrawText(textStyle, text, px, py, shade, pal, 0, 0);
 				mGetAlign(textStyle, key);
-				mDrawText(textStyle, key, x + width - 1 - alignx, y, shade, pal, 0, 0);
+				mDrawText(textStyle, key, x + width - 12 - alignx, y, shade, pal, 0, 0);
 				
 				int yoffset = -4;
 				if(textStyle == 1) yoffset = -6;
@@ -2066,7 +2064,7 @@ public class RRMenu {
 		
 		int pos = 35;
 		MenuButton bGameSetup = new MenuButton("GAME SETUP", 2, 0, pos += 20, 320, 1, 0, mMenus[GAMEST], 1, null, 0);
-		MenuButton bHUDSetup = new MenuButton("HUD SETUP", 2, 0, pos += 20, 320, 1, 0, mMenus[HUDST], 1, null, 0);
+		MenuButton bHUDSetup = new MenuButton("INTERFACE SETUP", 2, 0, pos += 20, 320, 1, 0, mMenus[HUDST], 1, null, 0);
 		MenuButton bSoundSetup = new MenuButton("AUDIO SETUP", 2, 0, pos += 20, 320, 1, 0, mMenus[SOUNDST], 1, null, 0);
 		MenuButton bVideoSetup = new MenuButton("VIDEO SETUP", 2, 0, pos += 20, 320, 1, 0, mMenus[VIDEOST], 1, null, 0);
 		MenuButton bKeySetup = new MenuButton("CONTROL SETUP", 2, 0, pos += 20, 320, 1, 0,  mMenus[CTRLST], 1, null, 0);
