@@ -1304,6 +1304,8 @@ public class Premap {
 
 	    gEndFirstEpisode = 0;
 	    gEndGame = 0;
+	    currTrack = 0;
+	    
 	    ud.level_number =   ln;
 	    ud.volume_number =  vn;
 	    ud.player_skill =   sk;

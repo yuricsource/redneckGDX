@@ -46,16 +46,16 @@ public class UserDefs {
 		
 		ud.rtsname = "REDNECK.RTS";
 
-	    ridecule[0] = "An inspiration for birth control. \0".toCharArray();
-	    ridecule[1] = "You're gonna die for that! \0".toCharArray();
-	    ridecule[2] = "It hurts to be you. \0".toCharArray();
-	    ridecule[3] = "Lucky Son of a Bitch. \0".toCharArray();
-	    ridecule[4] = "Hmmm....Payback time. \0".toCharArray();
-	    ridecule[5] = "You bottom dwelling scum sucker. \0".toCharArray();
-	    ridecule[6] = "Damn = you're ugly. \0".toCharArray();
-	    ridecule[7] = "Ha ha ha...Wasted! \0".toCharArray();
-	    ridecule[8] = "You suck! \0".toCharArray();
-	    ridecule[9] = "AARRRGHHHHH!!! \0".toCharArray();
+	    ridecule[0] = "Yer as ugly as mud fence! \0".toCharArray();
+	    ridecule[1] = "Duck you pecker-head! \0".toCharArray();
+	    ridecule[2] = "You like that boy? \0".toCharArray();
+	    ridecule[3] = "Yer lower that catfish crap! \0".toCharArray();
+	    ridecule[4] = "Eat lead, you shit monkey! \0".toCharArray();
+	    ridecule[5] = "You dumb-ass! \0".toCharArray();
+	    ridecule[6] = "Yer slower'n a three legged dog! \0".toCharArray();
+	    ridecule[7] = "Come on...Squeal like a pig! \0".toCharArray();
+	    ridecule[8] = "Haw, haw, haw! \0".toCharArray();
+	    ridecule[9] = "Now you gone and done it! \0".toCharArray();
 	    
 	    screen_size = cfg.screen_size;
 	    crosshair = cfg.crosshair;

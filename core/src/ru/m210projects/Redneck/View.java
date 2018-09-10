@@ -361,7 +361,10 @@ public class View {
 	{
 	     int i, j, k;
 
-	     if(ud.screen_size > 0) j = 200-45; else j = 200-10;
+	     if(ud.screen_size <= 1) j = 200-10;
+	     else if(ud.screen_size == 2) j = 200-45;
+	     else j = 200-53;
+	     
 	     quotebot = Math.min(quotebot,j);
 	     quotebotgoal = Math.min(quotebotgoal,j);
 	     if(MODE_TYPE) j -= 10;

@@ -390,7 +390,7 @@ public class Controls {
             return;
 		}
 		
-		if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.CONTROL_LEFT))
+		if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.SHIFT_LEFT))
 		{
 			if(cfg.SoundToggle && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && cfg.VoiceToggle)
 			{
@@ -441,7 +441,7 @@ public class Controls {
 						}
 					}
 					
-					if(ctrlKeyStatus(Keys.CONTROL_LEFT))
+					if(ctrlKeyStatus(Keys.SHIFT_LEFT))
 					{
 						adduserquote(ud.ridecule[fkey]);
 

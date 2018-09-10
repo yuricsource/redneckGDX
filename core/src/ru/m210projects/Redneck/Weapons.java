@@ -276,8 +276,9 @@ public class Weapons {
 		}
 
 		p.kickback_pic = 0;
-		if(p.last_used_weapon != p.curr_weapon)
+		if(p.last_used_weapon != p.curr_weapon && p.curr_weapon != weapon)
 			p.last_used_weapon = (byte) p.curr_weapon;
+		
 		p.curr_weapon = (short) weapon;
 
 		switch (weapon) {

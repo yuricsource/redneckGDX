@@ -114,7 +114,9 @@ public class Sounds {
 			currMusic.stop();
 		
 		currMusic = null;
-		currTrack = -1;
+		currTrack++;
+		if(currTrack >= track.length)
+			currTrack = 0;
 		currSong = null;
 	}
 	

@@ -30,11 +30,13 @@ import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
 
 public class Main extends ApplicationAdapter {
+	
 	/*
 	 * Gamedef case128 ambient check
 	 * Globals rename variables
-	 * Vixel lasers
-	 * должен запускаться следующий трек.
+	 * Vixen lasers
+	 * при отключенной мыши в меню курсор все равно видно и он не пропадает.
+	 * баг с пилой. в оригинале даже если у тебя нет патронов, то можно использовать альт огонь. в порте он просто не выбирается.
 	 */
 
 	public static final String appname = "RedneckGDX";
