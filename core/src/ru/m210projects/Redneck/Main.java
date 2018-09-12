@@ -1,3 +1,20 @@
+// This file is part of RedneckGDX.
+// Copyright (C) 2017-2018  Kirill Klimenko-KLIMaka 
+// and Alexander Makarov-[M210] (m210-2007@mail.ru)
+//
+// RedneckGDX is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// RedneckGDX is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
+
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Redneck.Animlib.initanm;
@@ -37,6 +54,8 @@ public class Main extends ApplicationAdapter {
 	 * Vixen lasers
 	 * при отключенной мыши в меню курсор все равно видно и он не пропадает.
 	 * баг с пилой. в оригинале даже если у тебя нет патронов, то можно использовать альт огонь. в порте он просто не выбирается.
+	 * I can't hear the truck's engine sound in the first map though
+	 * проблема со скоростями при толкании секторов
 	 */
 
 	public static final String appname = "RedneckGDX";
