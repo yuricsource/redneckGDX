@@ -1,6 +1,5 @@
 // This file is part of RedneckGDX.
-// Copyright (C) 2017-2018  Kirill Klimenko-KLIMaka 
-// and Alexander Makarov-[M210] (m210-2007@mail.ru)
+// Copyright (C) 2017-2018  Alexander Makarov-[M210] (m210-2007@mail.ru)
 //
 // RedneckGDX is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

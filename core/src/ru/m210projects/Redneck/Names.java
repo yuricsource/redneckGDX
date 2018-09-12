@@ -19,8 +19,7 @@
 //
 //Original Source: 1996 - Todd Replogle
 //Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
-//This file has been modified by Jonathon Fowler (jf@jonof.id.au)
-//and Alexander Makarov-[M210] (m210-2007@mail.ru)
+//This file has been modified by Alexander Makarov-[M210] (m210-2007@mail.ru)
 
 package ru.m210projects.Redneck;
 
