@@ -48,6 +48,10 @@ import ru.m210projects.Redneck.Types.RREngine;
 public class Main extends ApplicationAdapter {
 	
 	/*
+	 * v0.751
+	 * Crash and bugs fixes
+	 * Colored keys
+	 * 
 	 * Globals rename variables
 	 * Vixen lasers
 	 * Green vixen damage
