@@ -92,4 +92,31 @@ public class Weaponhit {
 		 for(int i = 0; i < 6; i++) 
 			 temp_data[i] = bb.getInt();
 	 }
+	 
+	 public void copy(Weaponhit src)
+	 {
+		 cgg = src.cgg;
+		 picnum = src.picnum;
+		 
+		 ang = src.ang;
+		 extra = src.extra;
+		 owner = src.owner;
+		 movflag = src.movflag;
+		 
+		 tempang = src.tempang;
+		 actorstayput = src.actorstayput;
+		 dispicnum = src.dispicnum;
+		 
+		 timetosleep = src.timetosleep;
+		 
+		 floorz = src.floorz;
+		 ceilingz = src.ceilingz;
+		 lastvx = src.lastvx;
+		 lastvy = src.lastvy;
+		 bposx = src.bposx;
+		 bposy = src.bposy;
+		 bposz = src.bposz;
+		 
+		 System.arraycopy(src.temp_data, 0, temp_data, 0, 6);
+	 }
 }

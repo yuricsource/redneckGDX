@@ -221,7 +221,7 @@ public class Weapons {
 		                            a = ((klabs(scale(sprite[i].z-s.z,10,sdist)-((int)ps[s.yvel].horiz+ps[s.yvel].horizoff-100)) < 100)?1:0);
 		                        else a = 1;
 
-		                        if( a != 0 && engine.cansee(sprite[i].x,sprite[i].y,sprite[i].z-(32<<8),sprite[i].sectnum,s.x,s.y,s.z-(32<<8),s.sectnum) != 0 )
+		                        if( a != 0 && engine.cansee(sprite[i].x,sprite[i].y,sprite[i].z-(32<<8),sprite[i].sectnum,s.x,s.y,s.z-(32<<8),s.sectnum) )
 		                        {
 		                            smax = sdist;
 		                            j = i;
@@ -260,9 +260,9 @@ public class Weapons {
 	            	  int va = engine.krand()&2047;
 	            	  int vy = 4+(engine.krand()&3);
 	            	  int vx = 4+(engine.krand()&3);
-	                  EGS(sect,x1,y1,z1,WATERBUBBLE,-32,vx,vy,va,0,0,ps[0].i,5);
+	                  EGS(sect,x1,y1,z1,WATERBUBBLE,-32,vx,vy,va,0,0,ps[0].i,(short)5);
 	              } else
-	                  EGS(sect,x1,y1,z1,SMALLSMOKE,-32,14,14,0,0,0,ps[0].i,5);
+	                  EGS(sect,x1,y1,z1,SMALLSMOKE,-32,14,14,0,0,0,ps[0].i,(short)5);
 	          }
 		 }
 	}
@@ -364,8 +364,9 @@ public class Weapons {
 	    short sect, l, sa, p, j, k, scount;
 	    int sx, sy, sz, vel = 0, zvel, x, oldzvel, dal, sp;
 	    short sizx,sizy;
-	    int hitsect, hitsprite, hitwall, hitx, hity, hitz;
-
+	    int hitx, hity, hitz;
+	    short hitsect, hitsprite, hitwall;
+	    
 	    SPRITE s = sprite[i];
 	    sect = s.sectnum;
 	    zvel = 0;
@@ -501,7 +502,7 @@ public class Weapons {
 	            {
 	                if(hitwall >= 0 || hitsprite >= 0)
 	                {
-	                    j = (short) EGS(hitsect,hitx,hity,hitz,NEWCROWBAR,-15,0,0,sa,32,0,i,4);
+	                    j = EGS(hitsect,hitx,hity,hitz,NEWCROWBAR,-15,0,0,sa,32,0,i,(short)4);
 	                    sprite[j].extra += (engine.krand()&7);
 	                    if(p >= 0)
 	                    {
@@ -541,7 +542,7 @@ public class Weapons {
 	                    sprite[j].y = hity;
 	                    sprite[j].ang = (short) ps[p].ang; // Total tweek
 	                    sprite[j].xvel = 32;
-	                    ssp(i,CLIPMASK0);
+	                    ssp((short)i,CLIPMASK0);
 	                    sprite[j].xvel = 0;
 
 	                }
@@ -626,7 +627,7 @@ public class Weapons {
 
 	            if(p >= 0)
 	            {
-	                k = (short) EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,10,10,sa,0,0,i,4);
+	                k = EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,10,10,sa,0,0,i,(short)4);
 	                sprite[k].extra = (short) script[actorscrptr[atwith]];
 	                sprite[k].extra += (engine.krand()%6);
 
@@ -745,7 +746,7 @@ public class Weapons {
 	            }
 	            else
 	            {
-	                k = (short) EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,24,24,sa,0,0,i,4);
+	                k = EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,24,24,sa,0,0,i,(short)4);
 	                sprite[k].extra = (short) script[actorscrptr[atwith]]; 
 
 	                if( hitsprite >= 0 )
@@ -821,7 +822,7 @@ public class Weapons {
 
 	            while(scount > 0)
 	            {
-	                j = (short) EGS(sect,sx,sy,sz,atwith,-127,sizx,sizy,sa,vel,zvel,i,4);
+	                j = EGS(sect,sx,sy,sz,atwith,-127,sizx,sizy,sa,vel,zvel,i,(short)4);
 	                sprite[j].extra += (engine.krand()&7);
 	                sprite[j].cstat = 128;
 	                sprite[j].clipdist = 4;
@@ -920,7 +921,7 @@ public class Weapons {
 
 	            while(scount > 0)
 	            {
-	                j = (short) EGS(sect,sx,sy,sz,atwith,-127,sizx,sizy,sa,vel,zvel,i,4);
+	                j = EGS(sect,sx,sy,sz,atwith,-127,sizx,sizy,sa,vel,zvel,i,(short)4);
 	                sprite[j].extra += (engine.krand()&7);
 
 	                if(atwith == FIRELASER)
@@ -989,11 +990,11 @@ public class Weapons {
 	               l = j;
 	            else l = -1;
 
-	            j = (short) EGS(sect,
+	            j = EGS(sect,
 	                sx+(sintable[(348+sa+512)&2047]/448),
 	                sy+(sintable[(sa+348)&2047]/448),
-	                sz-(1<<8),atwith,0,14,14,sa,vel,zvel,i,4);
-
+	                sz-(1<<8),atwith,0,14,14,sa,vel,zvel,i,(short)4);
+	            
 	            sprite[j].extra += (engine.krand()&7);
 	            if(atwith != ALIENBLAST)
 	                sprite[j].yvel = l;
@@ -1064,7 +1065,7 @@ public class Weapons {
 	            EGS(sect,
 	                sx+(sintable[(512+sa+512)&2047]>>8),
 	                sy+(sintable[(sa+512)&2047]>>8),
-	                sz+(6<<8),atwith,-64,32,32,sa,vel,zvel,i,1);
+	                sz+(6<<8),atwith,-64,32,32,sa,vel,zvel,i,(short)1);
 	            break;
             case BOWLINGBALL:
                 sp = spawn(i, atwith);
@@ -1106,8 +1107,8 @@ public class Weapons {
 		int dax, day, daz, x, ll;
 		int qq;
 
-		int i = headspritestat[4];
-		int nexti = i >= 0 ? nextspritestat[i] : 0;
+		short i = headspritestat[4];
+		short nexti = i >= 0 ? nextspritestat[i] : 0;
 
 		for (; i >= 0; i = nexti) {
 			nexti = nextspritestat[i];
@@ -1151,7 +1152,7 @@ public class Weapons {
 							s.x + ((k * sintable[(s.ang + 512) & 2047]) >> 9),
 							s.y + ((k * sintable[s.ang & 2047]) >> 9),
 							(int) (s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 12))),
-							TONGUE, -40 + (k << 1), 8, 8, 0, 0, 0, i, 5);
+							TONGUE, -40 + (k << 1), 8, 8, 0, 0, 0, i, (short)5);
 					sprite[q].cstat = 128;
 					sprite[q].pal = 8;
 				}
@@ -1159,7 +1160,7 @@ public class Weapons {
 						s.x + ((k * sintable[(s.ang + 512) & 2047]) >> 9),
 						s.y + ((k * sintable[s.ang & 2047]) >> 9),
 						(int) (s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 12))),
-						INNERJAW, -40, 32, 32, 0, 0, 0, i, 5);
+						INNERJAW, -40, 32, 32, 0, 0, 0, i, (short)5);
 				sprite[q].cstat = 128;
 				if (hittype[i].temp_data[1] > 512
 						&& hittype[i].temp_data[1] < (1024))
@@ -1248,7 +1249,7 @@ public class Weapons {
 								s.y + ((k * sintable[s.ang & 2047]) >> 9),
 								(int) (s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 24))),
 								FIRELASER, shade, s.xrepeat, s.yrepeat, 0, 0,
-								0, s.owner, 5);
+								0, s.owner, (short)5);
 
 						sprite[x].cstat = 128;
 						sprite[x].pal = s.pal;
@@ -1274,7 +1275,7 @@ public class Weapons {
 								continue;
 							}
 
-						checkhitsprite(j, i);
+						checkhitsprite((short)j, i);
 
 						if (sprite[j].picnum == APLAYER) {
 							p = sprite[j].yvel;
@@ -2014,7 +2015,7 @@ public class Weapons {
 		                        p.posx+(sintable[((int)p.ang+512)&2047]>>6),
 		                        p.posy+(sintable[(int)p.ang&2047]>>6),
 		                        p.posz,DYNAMITE,-16,9,9,
-		                        (int)p.ang,2*(k+(p.hbomb_hold_delay<<5)),i,pi,1);
+		                        (int)p.ang,2*(k+(p.hbomb_hold_delay<<5)),i,pi,(short)1);
 
 		                    if(k == 15)
 		                    {
@@ -2225,7 +2226,7 @@ public class Weapons {
 		                            sprite[j].ang &= 2047;
 		                            sprite[j].xvel += 32;
 		                            sprite[j].z += (3<<8);
-		                            ssp(j,CLIPMASK0);
+		                            ssp((short)j,CLIPMASK0);
 		                        }
 
 		                        spritesound(CHAINGUN_FIRE,pi);
@@ -2362,7 +2363,7 @@ public class Weapons {
 		     	                        p.posx+(sintable[((int)p.ang+512)&2047]>>6),
 		     	                        p.posy+(sintable[(int)p.ang&2047]>>6),
 		     	                        p.posz,27,-16,9,9,
-		     	                       (int)p.ang,2 * k,i,pi,1);
+		     	                       (int)p.ang,2 * k,i,pi,(short)1);
 		            		}
 		            		p.kickback_pic++;
 		            		if((p.kickback_pic) > 20)

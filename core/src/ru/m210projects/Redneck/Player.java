@@ -910,10 +910,12 @@ public class Player {
 	        
 	        engine.pushmove(p.posx,p.posy,p.posz,p.cursectnum,128,(4<<8),(20<<8),CLIPMASK0);
 
-	        p.posx = pushmove_x;
-            p.posy = pushmove_y;
-            p.posz = pushmove_z;
-            p.cursectnum = (short) pushmove_sectnum;
+	        if(pushmove_sectnum != -1) {
+		        p.posx = pushmove_x;
+	            p.posy = pushmove_y;
+	            p.posz = pushmove_z;
+	            p.cursectnum = (short) pushmove_sectnum;
+	        }
             
 	        if( fz > cz+(16<<8) && s.pal != 1)
 	            p.rotscrnang = (short) ((p.dead_flag + ( (fz+p.posz)>>7))&2047);
@@ -1567,6 +1569,12 @@ public class Player {
 	        		if (wall[nwall].lotag < 44)
 	        			pushwall(nwall, p.cursectnum, snum);
 	        		engine.pushmove(p.posx,p.posy,p.posz,p.cursectnum,172,(4<<8),(4<<8),CLIPMASK0);
+	        		if(pushmove_sectnum != -1) {  //v0.751
+		        		p.posx = pushmove_x;
+			            p.posy = pushmove_y;
+			            p.posz = pushmove_z;
+		            	p.cursectnum = (short) pushmove_sectnum;
+	        		}
 	        	}
 	        }
 	        if ((j&kHitTypeMask) == kHitSprite)
@@ -1581,7 +1589,7 @@ public class Player {
 	        				spritesound(404, nspr);
 	        			else
 	        				check_fta_sounds(nspr);
-	        			engine.changespritestat(nspr, 1);
+	        			engine.changespritestat((short)nspr, (short)1);
 	        	   	}
 	        	} else if ( sprite[nspr].picnum == 3410 )
 	        	    {
@@ -1616,7 +1624,7 @@ public class Player {
 	        if( psectlotag < 3 )
 	        {
 	            psect = s.sectnum;
-	            if( !ud.clipping && sector[psect].lotag == 31)
+	            if( !ud.clipping && psect >= 0 && psect < MAXSECTORS && sector[psect].lotag == 31)
 	            {
 	                if( sprite[sector[psect].hitag].xvel != 0 && hittype[sector[psect].hitag].temp_data[0] == 0)
 	                {
@@ -1638,11 +1646,12 @@ public class Player {
 	        	if(s.clipdist == 64)
 	        		j = ( engine.pushmove(p.posx,p.posy,p.posz,p.cursectnum,128,(4<<8),(4<<8),CLIPMASK0) < 0 && furthestangle(pi,8) < 512 )?1:0;
 	        	else j = ( engine.pushmove(p.posx,p.posy,p.posz,p.cursectnum,16,(4<<8),(4<<8),CLIPMASK0) < 0 && furthestangle(pi,8) < 512 )?1:0;
-	        	p.posx = pushmove_x;
-	            p.posy = pushmove_y;
-	            p.posz = pushmove_z;
-	            if(pushmove_sectnum != -1)
+	        	if(pushmove_sectnum != -1) {
+		        	p.posx = pushmove_x;
+		            p.posy = pushmove_y;
+		            p.posz = pushmove_z;
 	            	p.cursectnum = (short) pushmove_sectnum;
+	        	}
 	        }
 	        else j = 0;
 	
@@ -1923,7 +1932,7 @@ public class Player {
 	        y2 = sprite[ps[goalplayer[snum]].i].y;
 	        z2 = sprite[ps[goalplayer[snum]].i].z;
 	        
-	        if (engine.cansee(x1,y1,z1-(48<<8),damysect,x2,y2,z2-(48<<8),sprite[ps[goalplayer[snum]].i].sectnum) == 0)
+	        if (!engine.cansee(x1,y1,z1-(48<<8),damysect,x2,y2,z2-(48<<8),sprite[ps[goalplayer[snum]].i].sectnum))
 	            goalplayer[snum] = snum;
 	    }
 
@@ -1938,7 +1947,7 @@ public class Player {
 	                x2 = sprite[ps[i].i].x;
 	                y2 = sprite[ps[i].i].y;
 	                z2 = sprite[ps[i].i].z;
-	                if (engine.cansee(x1,y1,z1-(48<<8),damysect,x2,y2,z2-(48<<8),sprite[ps[i].i].sectnum) == 0)
+	                if (!engine.cansee(x1,y1,z1-(48<<8),damysect,x2,y2,z2-(48<<8),sprite[ps[i].i].sectnum))
 	                    dist <<= 1;
 
 	                if (dist < j) { j = dist; goalplayer[snum] = i; }
@@ -2002,9 +2011,9 @@ public class Player {
 	    }
 
 	    if ((ps[goalplayer[snum]].dead_flag == 0) &&
-	        (	(engine.cansee(x1,y1,z1,damysect,x2,y2,z2,sprite[ps[goalplayer[snum]].i].sectnum)) != 0 ||
-	         	(engine.cansee(x1,y1,z1-(24<<8),damysect,x2,y2,z2-(24<<8),sprite[ps[goalplayer[snum]].i].sectnum) != 0) ||
-	         	(engine.cansee(x1,y1,z1-(48<<8),damysect,x2,y2,z2-(48<<8),sprite[ps[goalplayer[snum]].i].sectnum)) != 0)	)
+	        (	(engine.cansee(x1,y1,z1,damysect,x2,y2,z2,sprite[ps[goalplayer[snum]].i].sectnum)) ||
+	         	(engine.cansee(x1,y1,z1-(24<<8),damysect,x2,y2,z2-(24<<8),sprite[ps[goalplayer[snum]].i].sectnum)) ||
+	         	(engine.cansee(x1,y1,z1-(48<<8),damysect,x2,y2,z2-(48<<8),sprite[ps[goalplayer[snum]].i].sectnum)))	)
 	    {
 	        syn.bits |= (1<<2);
 
@@ -2233,7 +2242,7 @@ public class Player {
 	                {
 	                    if ((sprite[j].xrepeat <= 0) || (sprite[j].yrepeat <= 0)) continue;
 	                    if (getspritescore(snum,sprite[j].picnum) <= 0) continue;
-	                    if (engine.cansee(x1,y1,z1-(32<<8),damysect,sprite[j].x,sprite[j].y,sprite[j].z-(4<<8),(short)i) != 0)
+	                    if (engine.cansee(x1,y1,z1-(32<<8),damysect,sprite[j].x,sprite[j].y,sprite[j].z-(4<<8),(short)i))
 	                        { goalx[snum] = sprite[j].x; goaly[snum] = sprite[j].y; goalz[snum] = sprite[j].z; goalsprite[snum] = j; break; }
 	                }
 	            }

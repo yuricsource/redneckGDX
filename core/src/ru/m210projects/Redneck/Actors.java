@@ -50,6 +50,7 @@ import static ru.m210projects.Redneck.Weapons.*;
 
 import java.util.Arrays;
 
+import ru.m210projects.Build.Engine.Point;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
@@ -233,13 +234,13 @@ public class Actors {
 	public static final short tempshort[] = new short[MAXSECTORS];
 	public static final byte statlist[] = { 0, 1, 6, 10, 12, 2, 5 };
 
-	public static void hitradius(int i, int r, int hp1, int hp2, int hp3,
+	public static void hitradius(short i, int r, int hp1, int hp2, int hp3,
 			int hp4) {
 		SPRITE s, sj;
 		WALL wal;
 		int d, q, x1, y1;
-		int sectcnt, sectend, dasect, startwall, endwall, nextsect, x;
-		short j, k, p, nextj, sect = 0;
+		int sectcnt, sectend, endwall, x;
+		short j, k, p, nextj, sect = 0, dasect, startwall, nextsect;
 
 		s = sprite[i];
 
@@ -273,18 +274,18 @@ public class Actors {
 					if ((klabs(wal.x - s.x) + klabs(wal.y - s.y)) < r) {
 						nextsect = wal.nextsector;
 						if (nextsect >= 0) {
-							for (dasect = sectend - 1; dasect >= 0; dasect--)
+							for (dasect = (short) (sectend - 1); dasect >= 0; dasect--)
 								if (tempshort[dasect] == nextsect)
 									break;
 							if (dasect < 0)
-								tempshort[sectend++] = (short) nextsect;
+								tempshort[sectend++] = nextsect;
 						}
 						x1 = (((wal.x + wall[wal.point2].x) >> 1) + s.x) >> 1;
 						y1 = (((wal.y + wall[wal.point2].y) >> 1) + s.y) >> 1;
 						sect = engine.updatesector(x1, y1, sect);
 						if (sect >= 0
 								&& engine.cansee(x1, y1, s.z, sect, s.x, s.y,
-										s.z, s.sectnum) != 0)
+										s.z, s.sectnum))
 							checkhitwall(i, x, wal.x, wal.y, s.z, s.picnum);
 					}
 				}
@@ -306,9 +307,9 @@ public class Actors {
 					if ((sj.cstat & 257) != 0)
 						if (dist(s, sj) < r) {
 							if (badguy(sj)
-									&& engine.cansee(sj.x, sj.y, sj.z + q,
+									&& !engine.cansee(sj.x, sj.y, sj.z + q,
 											sj.sectnum, s.x, s.y, s.z + q,
-											s.sectnum) == 0)
+											s.sectnum))
 								continue;
 							checkhitsprite(j, i);
 						}
@@ -329,7 +330,7 @@ public class Actors {
 					if (d < r
 							&& engine.cansee(sj.x, sj.y, sj.z - (8 << 8),
 									sj.sectnum, s.x, s.y, s.z - (12 << 8),
-									s.sectnum) != 0) {
+									s.sectnum)) {
 						hittype[j].ang = engine
 								.getangle(sj.x - s.x, sj.y - s.y);
 
@@ -399,7 +400,7 @@ public class Actors {
 		}
 	}
 
-	public static int movesprite(int spritenum, int xchange, int ychange,
+	public static int movesprite(short spritenum, int xchange, int ychange,
 			int zchange, int cliptype) {
 		int retval;
 
@@ -416,7 +417,7 @@ public class Actors {
 			return 0;
 		}
 
-		int dasectnum = sprite[spritenum].sectnum;
+		short dasectnum = sprite[spritenum].sectnum;
 
 		int daz = sprite[spritenum].z;
 		int h = ((tilesizy[sprite[spritenum].picnum] * sprite[spritenum].yrepeat) << 1);
@@ -496,7 +497,7 @@ public class Actors {
 		return (retval);
 	}
 
-	public static boolean ssp(int i, int cliptype) // The set sprite function
+	public static boolean ssp(short i, int cliptype) // The set sprite function
 	{
 		SPRITE s = sprite[i];
 
@@ -530,20 +531,19 @@ public class Actors {
 		int startwall = sector[s.sectnum].wallptr;
 		int endwall = startwall + sector[s.sectnum].wallnum;
 		for (int x = startwall; x < endwall; x++) {
-			engine.rotatepoint(0, 0, msx[j], msy[j], (short) (k & 2047));
+			Point out = engine.rotatepoint(0, 0, msx[j], msy[j], (short) (k & 2047));
 
-			DragPoint(x, (int) (s.x + rotatepoint.x),
-					(int) (s.y + rotatepoint.y));
+			DragPoint(x, s.x + out.getX(), s.y + out.getY());
 			j++;
 		}
 	}
 
 	public static void movefta() {
-		int px, py, sx, sy;
-		int j, p, psect, ssect, nexti;
+		int p, px, py, sx, sy;
+		short psect, ssect, nexti;
 		SPRITE s;
 
-		int i = headspritestat[2];
+		short i = headspritestat[2];
 		while (i >= 0) {
 			nexti = nextspritestat[i];
 
@@ -555,6 +555,7 @@ public class Actors {
 			if (sprite[ps[p].i].extra > 0) {
 				if (player_dist < 30000) {
 					hittype[i].timetosleep++;
+					boolean cansee;
 					if (hittype[i].timetosleep >= (player_dist >> 8)) {
 						if (badguy(s)) {
 							px = ps[p].oposx + 64 - (engine.krand() & 127);
@@ -571,19 +572,19 @@ public class Actors {
 								i = nexti;
 								continue;
 							}
-							j = engine.cansee(sx, sy, s.z
+							cansee = engine.cansee(sx, sy, s.z
 									- (engine.krand() % (52 << 8)), s.sectnum,
 									px, py, ps[p].oposz
 											- (engine.krand() % (32 << 8)),
 									ps[p].cursectnum);
 						} else
-							j = engine.cansee(s.x, s.y, s.z
+							cansee = engine.cansee(s.x, s.y, s.z
 									- ((engine.krand() & 31) << 8), s.sectnum,
 									ps[p].oposx, ps[p].oposy, ps[p].oposz
 											- ((engine.krand() & 31) << 8),
 									ps[p].cursectnum);
 
-						if (j != 0)
+						if (cansee)
 							switch (s.picnum) {
 							case 1251:
 							case 1268:
@@ -601,12 +602,12 @@ public class Actors {
 									s.shade = sector[s.sectnum].floorshade;
 
 								hittype[i].timetosleep = 0;
-								engine.changespritestat(i, 6);
+								engine.changespritestat(i, (short) 6);
 								break;
 							default:
 								hittype[i].timetosleep = 0;
 								check_fta_sounds(i);
-								engine.changespritestat(i, 1);
+								engine.changespritestat(i, (short) 1);
 								break;
 							}
 						else
@@ -628,7 +629,7 @@ public class Actors {
 						{
 							hittype[i].timetosleep = 0;
 							check_fta_sounds(i);
-							engine.changespritestat(i, 1);
+							engine.changespritestat(i, (short) 1);
 						}
 						break;
 					}
@@ -788,7 +789,7 @@ public class Actors {
 	public static void movedummyplayers() {
 		short p, nexti;
 
-		int i = headspritestat[13];
+		short i = headspritestat[13];
 		while (i >= 0) {
 			nexti = nextspritestat[i];
 
@@ -949,15 +950,15 @@ public class Actors {
 	}
 
 	public static void movefx() {
-		int i, j, nexti, p;
+		int j, p;
 		int x, ht;
 		SPRITE s;
 
-		i = headspritestat[11];
+		short i = headspritestat[11];
 		while (i >= 0) {
 			s = sprite[i];
 
-			nexti = nextspritestat[i];
+			short nexti = nextspritestat[i];
 
 			switch (s.picnum) {
 			case RESPAWN:
@@ -1045,9 +1046,9 @@ public class Actors {
 	}
 
 	public static void movefallers() {
-		int i, nexti, sect, j;
+		short i, nexti, sect;
 		SPRITE s;
-		int x;
+		int x, j;
 
 		i = headspritestat[12];
 		while (i >= 0) {
@@ -1130,7 +1131,7 @@ public class Actors {
 		}
 	}
 
-	private static void Detonate(SPRITE s, int i, int[] t) {
+	private static void Detonate(SPRITE s, short i, int[] t) {
 		earthquaketime = 16;
 
 		int j = headspritestat[3];
@@ -1168,11 +1169,11 @@ public class Actors {
 	}
 
 	public static void movestandables() {
-		int j, nextj, p = 0, sect;
-		int l = 0, x;
+		int p = 0, sect;
+		int l = 0, x, j;
 
-		int i = headspritestat[6];
-		int nexti = i >= 0 ? nextspritestat[i] : 0;
+		short i = headspritestat[6], nextj;
+		short nexti = i >= 0 ? nextspritestat[i] : 0;
 
 		BOLT: for (; i >= 0; i = nexti) {
 			nexti = nextspritestat[i];
@@ -1209,7 +1210,7 @@ public class Actors {
 						case 10:
 							s.ang = (short) engine.getangle(
 									msx[t[4] + 1] - s.x, msy[t[4] + 1] - s.y);
-							engine.setsprite(j, msx[t[4] + 1], msy[t[4] + 1],
+							engine.setsprite((short) j, msx[t[4] + 1], msy[t[4] + 1],
 									sprite[j].z);
 							t[0]++;
 							continue BOLT;
@@ -1309,7 +1310,7 @@ public class Actors {
 				else if (t[0] == 9)
 					t[0] = 0;
 
-				engine.setsprite(msy[t[4] + 2], s.x, s.y, s.z - (34 << 8));
+				engine.setsprite((short) msy[t[4] + 2], s.x, s.y, s.z - (34 << 8));
 
 				if (s.owner != -1) {
 					p = findplayer(s);
@@ -1858,7 +1859,7 @@ public class Actors {
 								ps[p].oposz = ps[p].posz = sprite[sprite[i].owner].z
 										- PHEIGHT;
 
-								engine.changespritesect(j,
+								engine.changespritesect((short)j,
 										sprite[sprite[i].owner].sectnum);
 								ps[p].cursectnum = sprite[j].sectnum;
 
@@ -1892,7 +1893,7 @@ public class Actors {
 								hittype[ps[p].i].bposy = ps[p].posy;
 								hittype[ps[p].i].bposz = ps[p].posz;
 
-								engine.changespritesect(j,
+								engine.changespritesect((short)j,
 										sprite[sprite[i].owner].sectnum);
 								ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
 
@@ -1949,7 +1950,7 @@ public class Actors {
 								ps[p].transporter_hold = -2;
 							ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
 
-							engine.changespritesect(j,
+							engine.changespritesect((short)j,
 									sprite[sprite[i].owner].sectnum);
 							engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy,
 									ps[p].posz + PHEIGHT);
@@ -2075,7 +2076,7 @@ public class Actors {
 												}
 
 												engine.changespritesect(
-														j,
+														(short)j,
 														sprite[sprite[i].owner].sectnum);
 											}
 										} else {
@@ -2088,7 +2089,7 @@ public class Actors {
 											hittype[j].bposz = sprite[j].z;
 
 											engine.changespritesect(
-													j,
+													(short)j,
 													sprite[sprite[i].owner].sectnum);
 										}
 										break;
@@ -2102,7 +2103,7 @@ public class Actors {
 										hittype[j].bposy = sprite[j].y;
 										hittype[j].bposz = sprite[j].z;
 
-										engine.changespritesect(j,
+										engine.changespritesect((short)j,
 												sprite[sprite[i].owner].sectnum);
 
 										break;
@@ -2116,7 +2117,7 @@ public class Actors {
 										hittype[j].bposy = sprite[j].y;
 										hittype[j].bposz = sprite[j].z;
 
-										engine.changespritesect(j,
+										engine.changespritesect((short)j,
 												sprite[sprite[i].owner].sectnum);
 
 										break;
@@ -2288,7 +2289,7 @@ public class Actors {
 							engine.changespritesect(ps[p].i, s.sectnum);
 							ps[p].cursectnum = sprite[p].sectnum;
 							spritesound(TELEPORTER, j);
-							engine.deletesprite(j);
+							engine.deletesprite((short)j);
 						}
 						j = nextj;
 					}
@@ -2296,8 +2297,8 @@ public class Actors {
 			}
 		}
 
-		int i = headspritestat[1];
-		int nexti = i >= 0 ? nextspritestat[i] : 0;
+		short i = headspritestat[1];
+		short nexti = i >= 0 ? nextspritestat[i] : 0;
 
 		BOLT: for (; i >= 0; i = nexti) {
 			nexti = nextspritestat[i];
@@ -2389,7 +2390,7 @@ public class Actors {
 							s.ang = (short) (((k << 1) - s.ang) & 2047);
 						} else if (nHitObject == kHitSprite) {
 							j &= kHitIndexMask;
-							checkhitsprite(i, j);
+							checkhitsprite(i, (short)j);
 						}
 					}
 					s.xvel--;
@@ -2617,14 +2618,14 @@ public class Actors {
 						&& s.xvel == 0)
 					if (engine.cansee(s.x, s.y, s.z - (8 << 8), s.sectnum,
 							ps[p].posx, ps[p].posy, ps[p].posz,
-							ps[p].cursectnum) != 0)
+							ps[p].cursectnum))
 						if (ps[p].ammo_amount[3] < max_ammo_amount[3]) {
 							if (ud.coop >= 1 && s.owner == i) {
 								for (j = 0; j < ps[p].weapreccnt; j++)
 									if (ps[p].weaprecs[j] == s.picnum)
-										continue;
+										continue BOLT; //v0.751
 
-								if (ps[p].weapreccnt < 255)
+								if (ps[p].weapreccnt < 16) //v0.751
 									ps[p].weaprecs[ps[p].weapreccnt++] = s.picnum;
 							}
 
@@ -2834,15 +2835,15 @@ public class Actors {
 					case 7:
 					case 10:
 					case 15:
-						j = headspritesect[sect];
-						while (j >= 0) {
-							l = nextspritesect[j];
+						short jj = headspritesect[sect];
+						while (jj >= 0) {
+							short ll = nextspritesect[jj];
 
-							if (j != i) {
-								engine.deletesprite(j);
+							if (jj != i) {
+								engine.deletesprite(jj);
 								break;
 							}
-							j = l;
+							jj = ll;
 						}
 						break;
 					}
@@ -2902,10 +2903,10 @@ public class Actors {
 						s.ang = (short) (((k << 1) - s.ang) & 2047);
 					} else if ((j & kHitTypeMask) == kHitSprite) {
 						j &= kHitIndexMask;
-						checkhitsprite(j, i);
+						checkhitsprite((short)j, i);
 						if (sprite[j].picnum == HEN) {
 							int ss = spawn(j, HENSTAND);
-							engine.deletesprite(j);
+							engine.deletesprite((short)j);
 
 							sprite[ss].xvel = 32;
 							sprite[ss].lotag = 40;
@@ -3112,9 +3113,9 @@ public class Actors {
 						s.ang = (short) a;
 					}
 					if (t[2] > (26 * 3)
-							|| engine.cansee(s.x, s.y, s.z - (16 << 8),
+							|| !engine.cansee(s.x, s.y, s.z - (16 << 8),
 									s.sectnum, ps[p].posx, ps[p].posy,
-									ps[p].posz, ps[p].cursectnum) == 0) {
+									ps[p].posz, ps[p].cursectnum)) {
 						t[0] = 0;
 						t[2] = 0;
 					} else
@@ -3138,9 +3139,9 @@ public class Actors {
 					} else {
 						t[2]++;
 						if (t[2] > (26 * 3)
-								|| engine.cansee(s.x, s.y, s.z - (16 << 8),
+								|| !engine.cansee(s.x, s.y, s.z - (16 << 8),
 										s.sectnum, ps[p].posx, ps[p].posy,
-										ps[p].posz, ps[p].cursectnum) == 0) {
+										ps[p].posz, ps[p].cursectnum)) {
 							t[0] = 1;
 							t[2] = 0;
 						} else if ((t[2] & 15) == 0) {
@@ -3246,12 +3247,12 @@ public class Actors {
 
 	public static void moveexplosions() // STATNUM 5
 	{
-		int j, sect, p;
+		int p;
 		int l, x, t[];
 		SPRITE s;
 
-		int i = headspritestat[5];
-		int nexti = i >= 0 ? nextspritestat[i] : 0;
+		short i = headspritestat[5], sect, j;
+		short nexti = i >= 0 ? nextspritestat[i] : 0;
 
 		for (; i >= 0; i = nexti) {
 			nexti = nextspritestat[i];
@@ -3753,7 +3754,7 @@ public class Actors {
 				s.yrepeat = (short) l;
 				s.shade = (byte) ((l >> 1) - 48);
 
-				for (j = t[0]; j > 0; j--)
+				for (j = (short) t[0]; j > 0; j--)
 					ssp(i, CLIPMASK0);
 				continue;
 
@@ -3812,7 +3813,7 @@ public class Actors {
 					s.z += s.zvel;
 				} else {
 					if (s.picnum == SCRAP1 && s.yvel > 0) {
-						j = spawn(i, s.yvel);
+						j = (short) spawn(i, s.yvel);
 						engine.setsprite(j, s.x, s.y, s.z);
 						getglobalz(j);
 						sprite[j].hitag = sprite[j].lotag = 0;
@@ -3828,13 +3829,13 @@ public class Actors {
 	{
 		int q = 0, l, m, x, st, j, t[];
 		int startwall, endwall;
-		short k, nextk, p, sh, nextj;
+		short k, nextk, p, sh, nextj, jj, ll;
 		SPRITE s;
 
 		fricxv = fricyv = 0;
 
-		int i = headspritestat[3];
-		int nexti = i >= 0 ? nextspritestat[i] : 0;
+		short i = headspritestat[3];
+		short nexti = i >= 0 ? nextspritestat[i] : 0;
 
 		BOLT: for (; i >= 0; i = nexti) {
 			nexti = nextspritestat[i];
@@ -3959,11 +3960,12 @@ public class Actors {
 
 							ps[p].posz += zchange;
 
-							engine.rotatepoint(sprite[j].x, sprite[j].y,
+							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y,
 									ps[p].posx, ps[p].posy, (short) (q * l));
 
-							m = (int) rotatepoint.x;
-							x = (int) rotatepoint.y;
+							m = out.getX();
+							x = out.getY();
+							
 							ps[p].bobposx += m - ps[p].posx;
 							ps[p].bobposy += x - ps[p].posy;
 
@@ -3992,10 +3994,10 @@ public class Actors {
 	
 							sprite[p].z += zchange;
 	
-							engine.rotatepoint(sprite[j].x, sprite[j].y,
+							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y,
 									sprite[p].x, sprite[p].y, (short) (q * l));
-							sprite[p].x = (int) rotatepoint.x;
-							sprite[p].y = (int) rotatepoint.y;
+							sprite[p].x = out.getX();
+							sprite[p].y = out.getY();
 						}
 						p = nextspritesect[p];
 					}
@@ -4044,7 +4046,7 @@ public class Actors {
 							if (UFO_SpawnHulk == 0) {
 								nSpawn = EGS(s.sectnum, s.x, s.y,
 										sector[s.sectnum].ceilingz + 119428,
-										3677, -8, 16, 16, 0, 0, 0, i, 5);
+										3677, -8, 16, 16, 0, 0, 0, i, (short)5);
 								sprite[nSpawn].cstat = 514;
 								sprite[nSpawn].yrepeat = 255;
 								sprite[nSpawn].pal = 7;
@@ -4139,11 +4141,9 @@ public class Actors {
 					s.ang += q;
 
 					if (s.xvel == sc.extra) {
-						if ((sc.floorstat & 1) == 0
-								&& (sc.ceilingstat & 1) == 0) {
-							if (Sound[hittype[i].lastvx].num == 0)
-								spritesound(hittype[i].lastvx, i);
-						} else if (!ud.monsters_off && sc.floorpal == 0
+						if (Sound[hittype[i].lastvx].num == 0)
+							spritesound(hittype[i].lastvx, i);
+						if (!ud.monsters_off && sc.floorpal == 0
 								&& (sc.floorstat & 1) != 0 && rnd(8)) {
 							p = (short) findplayer(s);
 							x = player_dist;
@@ -4184,17 +4184,16 @@ public class Actors {
 					x = (s.xvel * sintable[s.ang & 2047]) >> 14;
 
 					for (p = connecthead; p >= 0; p = connectpoint2[p])
-						if (sector[ps[p].cursectnum].lotag != 2) {
+						if (ps[p].cursectnum != -1 && sector[ps[p].cursectnum].lotag != 2) { //v0.751
 							if (po[p].os == s.sectnum) {
 								po[p].ox += m;
 								po[p].oy += x;
 							}
 
 							if (s.sectnum == sprite[ps[p].i].sectnum) {
-								engine.rotatepoint(s.x, s.y, ps[p].posx,
-										ps[p].posy, (short) q);
-								ps[p].posx = (int) rotatepoint.x;
-								ps[p].posy = (int) rotatepoint.y;
+								Point out = engine.rotatepoint(s.x, s.y, ps[p].posx, ps[p].posy, (short) q);
+								ps[p].posx = out.getX();
+								ps[p].posy = out.getY();
 
 								ps[p].posx += m;
 								ps[p].posy += x;
@@ -4220,10 +4219,10 @@ public class Actors {
 								&& sector[sprite[j].sectnum].lotag != 2
 								&& sprite[j].picnum != SECTOREFFECTOR
 								&& sprite[j].picnum != LOCATORS) {
-							engine.rotatepoint(s.x, s.y, sprite[j].x,
+							Point out = engine.rotatepoint(s.x, s.y, sprite[j].x,
 									sprite[j].y, (short) q);
-							sprite[j].x = (int) rotatepoint.x;
-							sprite[j].y = (int) rotatepoint.y;
+							sprite[j].x = out.getX();
+							sprite[j].y = out.getY();
 
 							sprite[j].x += m;
 							sprite[j].y += x;
@@ -4246,8 +4245,7 @@ public class Actors {
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
 								if (sprite[ps[p].i].extra > 0) {
 									k = ps[p].cursectnum;
-									k = engine.updatesector(ps[p].posx,
-											ps[p].posy, k);
+									k = engine.updatesector(ps[p].posx, ps[p].posy, k);
 									if ((k == -1 && !ud.clipping)
 											|| (k == s.sectnum && ps[p].cursectnum != s.sectnum)) {
 										ps[p].oposx = ps[p].posx = s.x;
@@ -4259,23 +4257,23 @@ public class Actors {
 									}
 								}
 
-						j = headspritesect[sprite[sprite[i].owner].sectnum];
-						while (j >= 0) {
-							l = nextspritesect[j];
-							if (sprite[j].statnum == 1 && badguy(sprite[j])
-									&& sprite[j].picnum != SECTOREFFECTOR
-									&& sprite[j].picnum != LOCATORS) {
-								k = sprite[j].sectnum;
-								k = engine.updatesector(sprite[j].x,
-										sprite[j].y, k);
-								if (sprite[j].extra >= 0 && k == s.sectnum) {
-									gutsdir(sprite[j], JIBS6, 72,
+						jj = headspritesect[sprite[sprite[i].owner].sectnum];
+						while (jj >= 0) {
+							ll = nextspritesect[jj];
+							if (sprite[jj].statnum == 1 && badguy(sprite[jj])
+									&& sprite[jj].picnum != SECTOREFFECTOR
+									&& sprite[jj].picnum != LOCATORS) {
+								k = sprite[jj].sectnum;
+								k = engine.updatesector(sprite[jj].x,
+										sprite[jj].y, k);
+								if (sprite[jj].extra >= 0 && k == s.sectnum) {
+									gutsdir(sprite[jj], JIBS6, 72,
 											myconnectindex);
 									spritesound(SQUISHED, i);
-									engine.deletesprite(j);
+									engine.deletesprite(jj);
 								}
 							}
-							j = l;
+							jj = ll;
 						}
 					}
 				}
@@ -4417,27 +4415,27 @@ public class Actors {
 									}
 								}
 
-						j = headspritesect[sprite[sprite[i].owner].sectnum];
-						while (j >= 0) {
-							l = nextspritesect[j];
-							if (sprite[j].statnum == 1 && badguy(sprite[j])
-									&& sprite[j].picnum != SECTOREFFECTOR
-									&& sprite[j].picnum != LOCATORS) {
+						jj = headspritesect[sprite[sprite[i].owner].sectnum];
+						while (jj >= 0) {
+							ll = nextspritesect[jj];
+							if (sprite[jj].statnum == 1 && badguy(sprite[jj])
+									&& sprite[jj].picnum != SECTOREFFECTOR
+									&& sprite[jj].picnum != LOCATORS) {
 								// if(sprite[j].sectnum != s.sectnum)
 								{
-									k = sprite[j].sectnum;
-									k = engine.updatesector(sprite[j].x,
-											sprite[j].y, k);
-									if (sprite[j].extra >= 0 && k == s.sectnum) {
-										gutsdir(sprite[j], JIBS6, 24,
+									k = sprite[jj].sectnum;
+									k = engine.updatesector(sprite[jj].x,
+											sprite[jj].y, k);
+									if (sprite[jj].extra >= 0 && k == s.sectnum) {
+										gutsdir(sprite[jj], JIBS6, 24,
 												myconnectindex);
-										spritesound(SQUISHED, j);
-										engine.deletesprite(j);
+										spritesound(SQUISHED, jj);
+										engine.deletesprite(jj);
 									}
 								}
 
 							}
-							j = l;
+							jj = ll;
 						}
 					}
 				}
@@ -4486,17 +4484,17 @@ public class Actors {
 							ps[p].bobposy += x;
 						}
 
-					j = headspritesect[s.sectnum];
-					while (j >= 0) {
-						nextj = nextspritesect[j];
+					jj = headspritesect[s.sectnum];
+					while (jj >= 0) {
+						nextj = nextspritesect[jj];
 
-						if (sprite[j].picnum != SECTOREFFECTOR) {
-							sprite[j].x += m;
-							sprite[j].y += x;
-							engine.setsprite(j, sprite[j].x, sprite[j].y,
-									sprite[j].z);
+						if (sprite[jj].picnum != SECTOREFFECTOR) {
+							sprite[jj].x += m;
+							sprite[jj].y += x;
+							engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
+									sprite[jj].z);
 						}
-						j = nextj;
+						jj = nextj;
 					}
 					ms(i);
 					engine.setsprite(i, s.x, s.y, s.z);
@@ -5334,20 +5332,20 @@ public class Actors {
 						break;
 					}
 
-					j = headspritesect[s.sectnum];
-					while (j >= 0) {
-						nextj = nextspritesect[j];
+					jj = headspritesect[s.sectnum];
+					while (jj >= 0) {
+						nextj = nextspritesect[jj];
 
-						if (sprite[j].statnum != 3 && sprite[j].zvel == 0) {
-							sprite[j].x += x;
-							sprite[j].y += l;
-							engine.setsprite(j, sprite[j].x, sprite[j].y,
-									sprite[j].z);
-							if ((sector[sprite[j].sectnum].floorstat & 2) != 0)
-								if (sprite[j].statnum == 2)
-									makeitfall(j);
+						if (sprite[jj].statnum != 3 && sprite[jj].zvel == 0) {
+							sprite[jj].x += x;
+							sprite[jj].y += l;
+							engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
+									sprite[jj].z);
+							if ((sector[sprite[jj].sectnum].floorstat & 2) != 0)
+								if (sprite[jj].statnum == 2)
+									makeitfall(jj);
 						}
-						j = nextj;
+						jj = nextj;
 					}
 
 					DragPoint(t[1], wall[t[1]].x + x, wall[t[1]].y + l);
@@ -5437,13 +5435,13 @@ public class Actors {
 
 				k = 0;
 
-				j = headspritesect[s.sectnum];
-				while (j >= 0) {
-					nextj = nextspritesect[j];
-					if (sprite[j].zvel >= 0)
-						switch (sprite[j].statnum) {
+				jj = headspritesect[s.sectnum];
+				while (jj >= 0) {
+					nextj = nextspritesect[jj];
+					if (sprite[jj].zvel >= 0)
+						switch (sprite[jj].statnum) {
 						case 5:
-							switch (sprite[j].picnum) {
+							switch (sprite[jj].picnum) {
 							case BLOODPOOL:
 							case FOOTPRINTS:
 							case FOOTPRINTS2:
@@ -5454,39 +5452,39 @@ public class Actors {
 							case BLOODSPLAT2:
 							case BLOODSPLAT3:
 							case BLOODSPLAT4:
-								sprite[j].xrepeat = sprite[j].yrepeat = 0;
-								j = nextj;
+								sprite[jj].xrepeat = sprite[jj].yrepeat = 0;
+								jj = nextj;
 								continue;
 							}
 						case 6:
 						case 1:
 						case 0:
-							if (sprite[j].picnum == BOLT1
-									|| sprite[j].picnum == BOLT1 + 1
-									|| sprite[j].picnum == BOLT1 + 2
-									|| sprite[j].picnum == BOLT1 + 3
-									|| wallswitchcheck(j))
+							if (sprite[jj].picnum == BOLT1
+									|| sprite[jj].picnum == BOLT1 + 1
+									|| sprite[jj].picnum == BOLT1 + 2
+									|| sprite[jj].picnum == BOLT1 + 3
+									|| wallswitchcheck(jj))
 								break;
 
-							if (!(sprite[j].picnum >= CRANE && sprite[j].picnum <= (CRANE + 3))) {
-								if (sprite[j].z > (hittype[j].floorz - (16 << 8))) {
-									hittype[j].bposx = sprite[j].x;
-									hittype[j].bposy = sprite[j].y;
+							if (!(sprite[jj].picnum >= CRANE && sprite[jj].picnum <= (CRANE + 3))) {
+								if (sprite[jj].z > (hittype[jj].floorz - (16 << 8))) {
+									hittype[jj].bposx = sprite[jj].x;
+									hittype[jj].bposy = sprite[jj].y;
 
-									sprite[j].x += x >> 2;
-									sprite[j].y += l >> 2;
+									sprite[jj].x += x >> 2;
+									sprite[jj].y += l >> 2;
 
-									engine.setsprite(j, sprite[j].x,
-											sprite[j].y, sprite[j].z);
+									engine.setsprite(jj, sprite[jj].x,
+											sprite[jj].y, sprite[jj].z);
 
-									if ((sector[sprite[j].sectnum].floorstat & 2) != 0)
-										if (sprite[j].statnum == 2)
-											makeitfall(j);
+									if ((sector[sprite[jj].sectnum].floorstat & 2) != 0)
+										if (sprite[jj].statnum == 2)
+											makeitfall(jj);
 								}
 							}
 							break;
 						}
-					j = nextj;
+					jj = nextj;
 				}
 
 				p = myconnectindex;
@@ -5573,21 +5571,21 @@ public class Actors {
 				} else
 					sc.floorz += s.zvel;
 
-				j = headspritesect[s.sectnum];
-				while (j >= 0) {
-					nextj = nextspritesect[j];
-					if (sprite[j].statnum != 3 && sprite[j].statnum != 10) {
-						hittype[j].bposx = sprite[j].x;
-						hittype[j].bposy = sprite[j].y;
+				jj = headspritesect[s.sectnum];
+				while (jj >= 0) {
+					nextj = nextspritesect[jj];
+					if (sprite[jj].statnum != 3 && sprite[jj].statnum != 10) {
+						hittype[jj].bposx = sprite[jj].x;
+						hittype[jj].bposy = sprite[jj].y;
 
-						sprite[j].x += l;
-						sprite[j].y += x;
+						sprite[jj].x += l;
+						sprite[jj].y += x;
 
-						sprite[j].z += s.zvel;
-						engine.setsprite(j, sprite[j].x, sprite[j].y,
-								sprite[j].z);
+						sprite[jj].z += s.zvel;
+						engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
+								sprite[jj].z);
 					}
-					j = nextj;
+					jj = nextj;
 				}
 
 				p = myconnectindex;
@@ -5621,7 +5619,7 @@ public class Actors {
 					} else if (ud.recstat == 2 && ps[p].newowner == -1) {
 						if (engine.cansee(s.x, s.y, s.z, sprite[i].sectnum,
 								ps[p].posx, ps[p].posy, ps[p].posz,
-								ps[p].cursectnum) != 0) {
+								ps[p].cursectnum)) {
 							if (x < (sh & 0xFFFF)) {
 								ud.camerasprite = i;
 								t[0] = 999;
@@ -6072,7 +6070,7 @@ public class Actors {
 	
 	public static void BowlUpdate(int nSprite)
 	{
-		for (int i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
+		for (short i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
 			if(sprite[i].picnum == 3440) //pin sprite
 				engine.deletesprite(i);
 		}

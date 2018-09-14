@@ -146,7 +146,7 @@ public class RREngine extends Engine {
 	     avgfvel = avgsvel = avgbits = 0;
 	     avghorz = avgavel = 0;
 	     movefifoend[myconnectindex]++;
-
+	
 	     if (numplayers < 2)
 	     {
 	          if (ud.multimode > 1) for(int i=connecthead;i>=0;i=connectpoint2[i])

@@ -139,7 +139,7 @@ public class Gameutils {
 		int sz = s.z-(8<<8)-(engine.krand()&8191);
 		int sy = s.y+(engine.krand()&255)-128;
 		int sx = s.x+(engine.krand()&255)-128;
-		EGS(s.sectnum,sx,sy,sz,pn,-8,16,16,va,ve,vz,i,5);
+		EGS(s.sectnum,sx,sy,sz,pn,-8,16,16,va,ve,vz,i,(short)5);
 	}
 	
 	public static boolean IFWITHIN(SPRITE s, int B, int E) {

@@ -340,7 +340,7 @@ public class Sounds {
 
 	    sndist += soundvo[num];
 	    if(sndist < 0) sndist = 0;
-	    if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && engine.cansee(cx,cy,cz-(24<<8),cs,sprite[i].x,sprite[i].y,sprite[i].z-(24<<8),sprite[i].sectnum) == 0 )
+	    if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx,cy,cz-(24<<8),cs,sprite[i].x,sprite[i].y,sprite[i].z-(24<<8),sprite[i].sectnum) )
 	        sndist += sndist>>2;
 
 	    switch(num)
@@ -575,14 +575,16 @@ public class Sounds {
 	        else
 	        {
 	            sndist = FindDistance3D((cx-sx),(cy-sy),(cz-sz)>>4);
-	            if( i >= 0 && (soundm[j]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag&0xff) < 9 )
-	                sndist = (int) divscale(sndist,(sprite[i].hitag+1), 14);
+	            if(sprite[i].sectnum >= 0 && sprite[i].sectnum < MAXSECTORS) { //0.751
+		            if( i >= 0 && (soundm[j]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag&0xff) < 9 )
+		                sndist = (int) divscale(sndist,(sprite[i].hitag+1), 14);
+	            }
 	        }
 
 	        sndist += soundvo[j];
 	        if(sndist < 0) sndist = 0;
 
-	        if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && engine.cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),sprite[i].sectnum) == 0 )
+	        if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),sprite[i].sectnum) )
 	            sndist += sndist>>5;
 
 	        if(sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999)

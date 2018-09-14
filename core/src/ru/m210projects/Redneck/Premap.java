@@ -697,22 +697,22 @@ public class Premap {
 	    p.moonshine_amount = 0;
 	    p.inven_icon = 0;
 	    
-	    if ( ud.multimode <= 1 || ud.coop == 1 )
-	    {
-	    	p.gotkey[0] = 0;
-	    	p.gotkey[1] = 0;
-	    	p.gotkey[2] = 0;
-	    	p.gotkey[3] = 0;
-	    	p.gotkey[4] = 0;
-	    }
-	    else
-	    {
-	    	p.gotkey[0] = 1;
-	    	p.gotkey[1] = 1;
-	    	p.gotkey[2] = 1;
-	    	p.gotkey[3] = 1;
-	    	p.gotkey[4] = 1;
-	    }
+//	    if ( ud.multimode <= 1 || ud.coop == 1 ) //v0.751
+//	    {
+//	    	p.gotkey[0] = 0;
+//	    	p.gotkey[1] = 0;
+//	    	p.gotkey[2] = 0;
+//	    	p.gotkey[3] = 0;
+//	    	p.gotkey[4] = 0;
+//	    }
+//	    else
+//	    {
+//	    	p.gotkey[0] = 1;
+//	    	p.gotkey[1] = 1;
+//	    	p.gotkey[2] = 1;
+//	    	p.gotkey[3] = 1;
+//	    	p.gotkey[4] = 1;
+//	    }
 
 	    p.alcohol_meter = 1647;
 	    p.gut_meter = 1647;
@@ -806,22 +806,22 @@ public class Premap {
 	    p.field_Y = 0x20000;
 	    p.field_28E = 0;
 	    p.field_290 = 0;
-	    if ( ud.multimode <= 1 || ud.coop == 1 )
-	    {
-	    	p.gotkey[0] = 0;
-	    	p.gotkey[1] = 0;
-	    	p.gotkey[2] = 0;
-	    	p.gotkey[3] = 0;
-	    	p.gotkey[4] = 0;
-	    }
-	    else
-	    {
-	    	p.gotkey[0] = 1;
-	    	p.gotkey[1] = 1;
-	    	p.gotkey[2] = 1;
-	    	p.gotkey[3] = 1;
-	    	p.gotkey[4] = 1;
-	    }
+//	    if ( ud.multimode <= 1 || ud.coop == 1 ) //v0.751
+//	    {
+//	    	p.gotkey[0] = 0;
+//	    	p.gotkey[1] = 0;
+//	    	p.gotkey[2] = 0;
+//	    	p.gotkey[3] = 0;
+//	    	p.gotkey[4] = 0;
+//	    }
+//	    else
+//	    {
+//	    	p.gotkey[0] = 1;
+//	    	p.gotkey[1] = 1;
+//	    	p.gotkey[2] = 1;
+//	    	p.gotkey[3] = 1;
+//	    	p.gotkey[4] = 1;
+//	    }
 
 	    p.alcohol_meter = 1647;
 	    p.gut_meter = 1647;
@@ -974,7 +974,7 @@ public class Premap {
 	     	            	distance = sprite[j].lotag << 4;
 	     	            	speed = sprite[j].hitag;
 	     	            	
-	     	            	for(int k = 0; k < MAXSPRITES; k++)
+	     	            	for(short k = 0; k < MAXSPRITES; k++)
 	     	            	{
 	     	            		if ( sprite[k].picnum == 66 )
 	     	            		{
@@ -1385,7 +1385,7 @@ public class Premap {
 	    short i, j, nexti;
 
 	    EGS(ps[0].cursectnum,ps[0].posx,ps[0].posy,ps[0].posz,
-	        APLAYER,0,0,0,(short)ps[0].ang,0,0,0,10);
+	        APLAYER,0,0,0,(short)ps[0].ang,0,0,0,(short)10);
 
 	    if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++)
 	    {

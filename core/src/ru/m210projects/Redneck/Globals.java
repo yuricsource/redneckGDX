@@ -60,6 +60,7 @@ public class Globals {
 	public static final int TILE_VIEWSCR = MAXTILES - 4;
 	
 	public static int VIEWSCR_Lock = 199;
+	public static int[] zofslope = new int[2];
 	
 	//XXX RA
 	public static int BellSound = 0;

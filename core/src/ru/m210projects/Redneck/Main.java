@@ -48,17 +48,17 @@ import ru.m210projects.Redneck.Types.RREngine;
 public class Main extends ApplicationAdapter {
 	
 	/*
-	 * Gamedef case128 ambient check
 	 * Globals rename variables
 	 * Vixen lasers
-	 * при отключенной мыши в меню курсор все равно видно и он не пропадает.
-	 * баг с пилой. в оригинале даже если у тебя нет патронов, то можно использовать альт огонь. в порте он просто не выбирается.
-	 * I can't hear the truck's engine sound in the first map though
-	 * проблема со скоростями при толкании секторов
+	 * Green vixen damage
+	 * Когда пьяный, можно отлить
+	 * keys multiplayer bug
+	 * drop dynamite insteadof crowbar
+	 * max_kills multiplayer coop
 	 */
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.750";
+	public static final String sversion = "v0.751";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();

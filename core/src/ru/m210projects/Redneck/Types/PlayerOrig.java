@@ -45,4 +45,13 @@ public class PlayerOrig {
     	oa = bb.getShort();
     	os = bb.getShort();
     }
+    
+    public void copy(PlayerOrig src)
+    {
+    	ox = src.ox;
+    	oy = src.oy;
+    	oz = src.oz;
+    	oa = src.oa;
+    	os = src.os;
+    }
 }

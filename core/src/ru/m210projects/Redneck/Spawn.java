@@ -26,6 +26,7 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.CLIPMASK0;
 import static ru.m210projects.Build.Engine.MAXSPRITES;
+import static ru.m210projects.Build.Engine.MAXSECTORS;
 import static ru.m210projects.Build.Engine.MAXSTATUS;
 import static ru.m210projects.Build.Engine.headspritestat;
 import static ru.m210projects.Build.Engine.nextspritestat;
@@ -66,10 +67,12 @@ import ru.m210projects.Build.Types.SPRITE;
 
 public class Spawn {
 	
-	public static int EGS(int whatsect,int s_x,int s_y,int s_z,int s_pn, int s_s,int s_xr,int s_yr,int s_a,int s_ve,int s_zv,int s_ow,int s_ss)
+	public static short EGS(short whatsect,int s_x,int s_y,int s_z,int s_pn, int s_s,int s_xr,int s_yr,int s_a,int s_ve,int s_zv,int s_ow,short s_ss)
 	{
-	    int i = engine.insertsprite(whatsect,s_ss);
-
+		if(whatsect < 0 || whatsect >= MAXSECTORS)
+			dassert("Wrong sector! " + whatsect);
+		
+	    short i = engine.insertsprite(whatsect,s_ss);
 	    if( i < 0 )
 	    	dassert(" Too many sprites spawned.");
 
@@ -142,19 +145,20 @@ public class Spawn {
 	public static int tempwallptr;
 	public static int spawn( int j, int pn )
 	{
-	    int i, s, startwall, endwall, sect, clostest = 0;
+	    int endwall, clostest = 0;
 	    int x, y, d;
+	    short i, s, startwall, sect;
 	    SPRITE sp;
 
 	    if(j >= 0)
 	    {
 	        i = EGS(sprite[j].sectnum,sprite[j].x,sprite[j].y,sprite[j].z
-	            ,pn,0,0,0,0,0,0,j,0);
+	            ,pn,0,0,0,0,0,0,j,(short)0);
 	        hittype[i].picnum = sprite[j].picnum;
 	    }
 	    else
 	    {
-	        i = pn;
+	        i = (short) pn;
 
 	        hittype[i].picnum = sprite[i].picnum;
 	        hittype[i].timetosleep = 0;
@@ -201,7 +205,7 @@ public class Spawn {
 
 	            if( sprite[i].hitag != 0 )
 	            {
-	                engine.changespritestat(i,12);
+	                engine.changespritestat(i,(short)12);
 	                sprite[i].cstat |=  257;
 	                sprite[i].extra = (short) impact_damage;
 	                return i;
@@ -235,7 +239,7 @@ public class Spawn {
 	                    if( j == -1 && sp.lotag > ud.player_skill )
 	                    {
 	                        sp.xrepeat=sp.yrepeat=0;
-	                        engine.changespritestat(i,5);
+	                        engine.changespritestat(i,(short)5);
 	                        break;
 	                    }
 
@@ -248,7 +252,7 @@ public class Spawn {
 	                        if( ud.monsters_off )
 	                        {
 	                            sp.xrepeat=sp.yrepeat=0;
-	                            engine.changespritestat(i,5);
+	                            engine.changespritestat(i,(short)5);
 	                            break;
 	                        }
 
@@ -265,15 +269,15 @@ public class Spawn {
 	                        {
 	                            if(sprite[j].picnum == RESPAWN)
 	                                hittype[i].tempang = sprite[i].pal = sprite[j].pal;
-	                            engine.changespritestat(i,1);
+	                            engine.changespritestat(i,(short)1);
 	                        }
-	                        else engine.changespritestat(i,2);
+	                        else engine.changespritestat(i,(short)2);
 	                    }
 	                    else
 	                    {
 	                        sp.clipdist = 40;
 	                        sp.owner = (short) i;
-	                        engine.changespritestat(i,1);
+	                        engine.changespritestat(i,(short)1);
 	                    }
 
 	                    hittype[i].timetosleep = 0;
@@ -295,18 +299,18 @@ public class Spawn {
                             {
                             	s1 = engine.updatesector(sp.x-108,sp.y+108,s1);
                                 if(s1 >= 0 && sector[s1].floorz != sector[sp.sectnum].floorz)
-                                { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,5);break;}
+                                { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,(short)5);break;}
                             }
-                            else { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,5);break;}
+                            else { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,(short)5);break;}
                         }
-                        else { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,5);break;}
+                        else { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,(short)5);break;}
                     }
-                    else { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,5);break;}
+                    else { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,(short)5);break;}
                 }
 
                 if( sector[sprite[i].sectnum].lotag == 1 )
                 {
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
 
@@ -336,7 +340,7 @@ public class Spawn {
                 if(j >= 0 && sprite[j].pal == 6)
                     sp.pal = 6;
                 insertspriteq(i);
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 break; 
                 
             case BULLETHOLE: 
@@ -351,7 +355,7 @@ public class Spawn {
                      sp.xrepeat = sp.yrepeat = 8;
                      sp.ang = (short) (engine.krand()&2047);
                 }
-            	engine.changespritestat(i, 5);
+            	engine.changespritestat(i,(short) 5);
             	break;
 
             case 1441: 
@@ -395,7 +399,7 @@ public class Spawn {
                         sp.z = x-(12<<8);
                 }
 
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 break;        
 	                
             case 1268: 
@@ -420,19 +424,19 @@ public class Spawn {
                 if( ud.monsters_off && sp.picnum == 1147 )
                 {
                     sp.xrepeat = sp.yrepeat = 0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                 }
                 else
                 {
                     if(sp.picnum == 1147)
                         sp.clipdist = 24;
                     sp.cstat = (short) (257|(engine.krand()&4));
-                    engine.changespritestat(i,2);
+                    engine.changespritestat(i,(short)2);
                 }
                 break;        
             case 1272:
                 sp.lotag = 9999;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;
             case CRANE:
 
@@ -475,7 +479,7 @@ public class Spawn {
                 tempwallptr += 3;
                 sp.owner = -1;
                 sp.extra = 8;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;
             case 210: 
             case 234: 
@@ -530,7 +534,7 @@ public class Spawn {
             case 2215: 
             	sp.clipdist = 32;
                 sp.cstat |= 257;
-                engine.changespritestat(i,0);
+                engine.changespritestat(i,(short)0);
             	break;
             case WATERSPLASH2:
             case MUD:
@@ -594,11 +598,11 @@ public class Spawn {
             		sp.xrepeat >>= 1;
                     sp.yrepeat >>= 1;
             	}
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 break;    
             case 1196:
             	sp.shade = -16;
-            	engine.changespritestat(i, 6);
+            	engine.changespritestat(i,(short) 6);
             	break;
             case 1247:
             	hittype[i].temp_data[0] = sp.x;
@@ -611,7 +615,7 @@ public class Spawn {
             case TIRE:
             	sprite[i].cstat = 257; // Make it hitable
                 sprite[i].extra = 1;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
             	break;
 
             case LNRDLYINGDEAD:
@@ -640,7 +644,7 @@ public class Spawn {
             case 1170:
                 if(sp.picnum == 1170)
                     sp.yvel = sp.hitag;
-                engine.changespritestat(i,1);
+                engine.changespritestat(i,(short)1);
                 break;
             case FOOTPRINTS:
             case FOOTPRINTS2:
@@ -659,7 +663,7 @@ public class Spawn {
                             {
                             	s1 = engine.updatesector(sp.x-84,sp.y+84,s1);
                                 if(s1 >= 0 && sector[s1].floorz != sector[sp.sectnum].floorz)
-                                { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,5);break;}
+                                { sp.xrepeat = sp.yrepeat = 0;engine.changespritestat(i,(short)5);break;}
                             }
                             else { sp.xrepeat = sp.yrepeat = 0;break;}
                         }
@@ -676,7 +680,7 @@ public class Spawn {
                     sp.xrepeat = sp.yrepeat = 32;
 
                 insertspriteq(i);
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 break;
             case BOLT1:
             case BOLT1+1:
@@ -688,7 +692,7 @@ public class Spawn {
                 if(sp.picnum == MASTERSWITCH)
                     sp.cstat |= 32768;
                 sp.yvel = 0;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;   
             case WATERDRIP:
                 if(j >= 0 && (sprite[j].statnum == 10 || sprite[j].statnum == 1))
@@ -715,7 +719,7 @@ public class Spawn {
                     sp.ang = (short) (engine.krand()&2047);
                 sp.xrepeat = 24;
                 sp.yrepeat = 24;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;
                 
             case CRACK1:
@@ -727,19 +731,19 @@ public class Spawn {
                 if( ud.multimode < 2 && sp.pal != 0)
                 {
                     sp.xrepeat = sp.yrepeat = 0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
                 sp.pal = 0;
                 sp.owner = (short) i;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 sp.xvel = 8;
                 ssp(i,CLIPMASK0);
                 break;    
             case 1097: 
             case 1106: 
             	sp.cstat &= ~257;
-            	engine.changespritestat(i, 0);
+            	engine.changespritestat(i,(short) 0);
             	break;
             case 285: 
             case 286: 
@@ -756,7 +760,7 @@ public class Spawn {
                 sp.clipdist = 0;
                 sp.cstat |= 32768;
                 sp.lotag = 0;
-                engine.changespritestat(i, 106);
+                engine.changespritestat(i,(short) 106);
             	break;
             case 280: 
             case 281: 
@@ -772,25 +776,25 @@ public class Spawn {
                 sp.clipdist = 0;
                 sp.extra = 0;
                 sp.cstat |= 32768;
-                engine.changespritestat(i, 105);
+                engine.changespritestat(i,(short) 105);
             	break;
             case 63:
             	sp.xrepeat = 1;
                 sp.yrepeat = 1;
                 sp.clipdist = 1;
                 sp.cstat |= 32768;
-            	engine.changespritestat(i, 100);
+            	engine.changespritestat(i,(short) 100);
             	break;
             case 295:
             	sp.cstat |= 32768;
-            	engine.changespritestat(i, 107);
+            	engine.changespritestat(i,(short) 107);
             	break;
             case 296: 
             case 297:   
             	sp.xrepeat = 64;
             	sp.yrepeat = 64;
             	sp.clipdist = 64;
-            	engine.changespritestat(i, 108);
+            	engine.changespritestat(i,(short) 108);
 	            break;   
             case WATERBUBBLE:
                 if(j >= 0 && sprite[j].picnum == APLAYER)
@@ -803,7 +807,7 @@ public class Spawn {
                 }
                 else sp.xrepeat = sp.yrepeat = 32;
 
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 break;  
             case TOUCHPLATE:
                 hittype[i].temp_data[2] = sector[sect].floorz;
@@ -812,12 +816,12 @@ public class Spawn {
                 if(sp.pal != 0 && ud.multimode > 1)
                 {
                     sp.xrepeat=sp.yrepeat=0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
             case WATERBUBBLEMAKER:
                 sp.cstat |= 32768;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;
             
             case 21: 
@@ -873,7 +877,7 @@ public class Spawn {
                 if( ( ud.multimode < 2 && sp.pal != 0) || (sp.lotag > ud.player_skill) )
                 {
                     sp.xrepeat = sp.yrepeat = 0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
 
@@ -887,7 +891,7 @@ public class Spawn {
                 if(ud.multimode > 1 && ud.coop != 1 && sp.picnum == DOORKEY)
                 {
                     sp.xrepeat = sp.yrepeat = 0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
                 else
@@ -899,10 +903,10 @@ public class Spawn {
 
                 sp.shade = -17;
 
-                if(j >= 0) engine.changespritestat(i,1);
+                if(j >= 0) engine.changespritestat(i,(short)1);
                 else
                 {
-                    engine.changespritestat(i,2);
+                    engine.changespritestat(i,(short)2);
                     makeitfall(i);
                 }
                 
@@ -990,15 +994,15 @@ public class Spawn {
             case DOORSHOCK:
                 sp.cstat |= 1+256;
                 sp.shade = -12;
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;
             case SOUNDFX:
             	sp.cstat |= 32768;
-            	engine.changespritestat(i,2);
+            	engine.changespritestat(i,(short)2);
             	break;
             case LOCATORS:
                 sp.cstat |= 32768;
-                engine.changespritestat(i,7);
+                engine.changespritestat(i,(short)7);
                 break;    
             case DYNAMITE:
                 sp.yvel = 4;
@@ -1012,7 +1016,7 @@ public class Spawn {
                     if( sp.lotag > ud.player_skill )
                     {
                         sp.xrepeat = sp.yrepeat = 0;
-                        engine.changespritestat(i,5);
+                        engine.changespritestat(i,(short)5);
                         return i;
                     }
                     if ( checkaddkills(sp) )
@@ -1022,7 +1026,7 @@ public class Spawn {
                     if(ud.monsters_off)
                     {
                         sp.xrepeat = sp.yrepeat = 0;
-                        engine.changespritestat(i,5);
+                        engine.changespritestat(i,(short)5);
                         break;
                     }
                     sp.extra = 130;
@@ -1036,13 +1040,13 @@ public class Spawn {
                 if( ud.multimode < 2 && sp.pal != 0)
                 {
                     sp.xrepeat = sp.yrepeat = 0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
                 sp.pal = 0;
                 sprite[i].shade = -17;
 
-                engine.changespritestat(i,2);
+                engine.changespritestat(i,(short)2);
                 break;
             case RESPAWN:
                 sp.extra = 66-13;
@@ -1050,18 +1054,18 @@ public class Spawn {
                 if( ud.multimode < 2 && sp.pal == 1)
                 {
                     sp.xrepeat = sp.yrepeat = 0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
                 sp.cstat = (short)32768;
-                engine.changespritestat(i,11);
+                engine.changespritestat(i,(short)11);
                 break;   
             case ACTIVATORLOCKED:
             case ACTIVATOR:
                 sp.cstat = (short) 32768;
                 if(sp.picnum == ACTIVATORLOCKED)
                     sector[sp.sectnum].lotag |= 16384;
-                engine.changespritestat(i,8);
+                engine.changespritestat(i,(short)8);
                 break;     
             case SECTOREFFECTOR:
                 sp.yvel = sector[sect].extra;
@@ -1085,7 +1089,7 @@ public class Spawn {
 
                         hittype[i].temp_data[4] = (sector[sect].floorz == sprite[i].z)?1:0;
                         sp.cstat = 0;
-                        engine.changespritestat(i,9);
+                        engine.changespritestat(i,(short)9);
                         return i;
                     case 1:
                         sp.owner = -1;
@@ -1502,7 +1506,7 @@ public class Spawn {
                         setsectinterpolate(i);
                         break;
                 }
-                engine.changespritestat(i,3);
+                engine.changespritestat(i,(short)3);
                 break;
             case SEENINE:
             case OOZFILTER:
@@ -1517,7 +1521,7 @@ public class Spawn {
                 sp.extra = (short) (impact_damage<<2);
                 sp.owner = (short) i;
 
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;        
                 
             case HENSTAND:
@@ -1525,7 +1529,7 @@ public class Spawn {
 	            sp.clipdist = 48;
 	            sp.xrepeat = 21;
 	            sp.yrepeat = 15;
-	            engine.changespritestat(i, 2);
+	            engine.changespritestat(i,(short) 2);
 	            break;  
             case 4163: 
             case 4249: 
@@ -1657,7 +1661,7 @@ public class Spawn {
                 if( ( sp.lotag > ud.player_skill ) || ud.monsters_off )
                 {
                     sp.xrepeat=sp.yrepeat=0;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                     break;
                 }
                 else
@@ -1682,9 +1686,9 @@ public class Spawn {
                     {
                         hittype[i].timetosleep = 0;
                         check_fta_sounds(i);
-                        engine.changespritestat(i,1);
+                        engine.changespritestat(i,(short)1);
                     }
-                    else engine.changespritestat(i,2);
+                    else engine.changespritestat(i,(short)2);
                 }
             	break;
             case TONGUE:
@@ -1693,7 +1697,7 @@ public class Spawn {
                 sp.z -= 38<<8;
                 sp.zvel = (short) (256-(engine.krand()&511));
                 sp.xvel = (short) (64-(engine.krand()&127));
-                engine.changespritestat(i,4);
+                engine.changespritestat(i,(short)4);
                 break;
             case OOZ:
                 sp.shade = -12;
@@ -1705,7 +1709,7 @@ public class Spawn {
                     insertspriteq(i);
                 }
 
-                engine.changespritestat(i,1);
+                engine.changespritestat(i,(short)1);
 
                 getglobalz(i);
 
@@ -1726,7 +1730,7 @@ public class Spawn {
                     ssp(i,CLIPMASK0);
                 }
             case CEILINGSTEAM:
-                engine.changespritestat(i,6);
+                engine.changespritestat(i,(short)6);
                 break;
             case TRANSPORTERSTAR:
             case TRANSPORTERBEAM:
@@ -1758,19 +1762,19 @@ public class Spawn {
                 sp.ang = sprite[j].ang;
 
                 sp.xvel = 128;
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 ssp(i,CLIPMASK0);
                 engine.setsprite(i,sp.x,sp.y,sp.z);
                 break;
             case BLOOD:
 	               sp.xrepeat = sp.yrepeat = 4;
 	               sp.z -= (26<<8);
-	               engine.changespritestat(i,5);
+	               engine.changespritestat(i,(short)5);
 	               break;
             case 2264:
             	j = sp.cstat&60;
                 sp.cstat = (short) (j|1);
-                engine.changespritestat(i,0);
+                engine.changespritestat(i,(short)0);
             	break;
             case FRAMEEFFECT1:
                 if(j >= 0)
@@ -1783,7 +1787,7 @@ public class Spawn {
                 }
                 else sp.xrepeat = sp.yrepeat = 0;
 
-                engine.changespritestat(i,5);
+                engine.changespritestat(i,(short)5);
                 break;      
             case 1098: 
             case 1100: 
@@ -1798,12 +1802,12 @@ public class Spawn {
                 if(j == -1 )
                 {
                     sp.cstat = (short) 32768;
-                    engine.changespritestat(i,2);
+                    engine.changespritestat(i,(short)2);
                 }
                 else
                 {
                     sp.xrepeat = sp.yrepeat = 1;
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                 }
                 break;       
             case SHELL: //From the player
@@ -1840,7 +1844,7 @@ public class Spawn {
                     	sp.xrepeat=sp.yrepeat=2;
                     else sp.xrepeat=sp.yrepeat=4;
 
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                 }
                 break;
             case LOAFTILE:
@@ -1849,7 +1853,7 @@ public class Spawn {
                 sp.xrepeat = 12;
                 sp.yrepeat = 10;
                 sp.xvel = 32;
-                engine.changespritestat(i, 1);
+                engine.changespritestat(i,(short) 1);
             	break;
             case BONELESSTILE:
             	sp.cstat = 257;
@@ -1857,7 +1861,7 @@ public class Spawn {
                 sp.xrepeat = 17;
                 sp.yrepeat = 12;
                 sp.xvel = 32;
-                engine.changespritestat(i, 1);
+                engine.changespritestat(i,(short) 1);
             	break;
             case HEAD1TILE:
             	sp.cstat = 257;
@@ -1865,7 +1869,7 @@ public class Spawn {
                 sp.xrepeat = 13;
                 sp.yrepeat = 10;
                 sp.xvel = 0;
-                engine.changespritestat(i, 1);
+                engine.changespritestat(i,(short) 1);
             	break;
             case CHICKENATILE:   
             case CHICKENBTILE:   
@@ -1875,7 +1879,7 @@ public class Spawn {
                 sp.xrepeat = 32;
                 sp.yrepeat = 26;
                 sp.xvel = 32;
-                engine.changespritestat(i, 1);
+                engine.changespritestat(i,(short) 1);
             	break;
             case NUGGETTILE:
             	sp.cstat = 257;
@@ -1883,7 +1887,7 @@ public class Spawn {
                 sp.xrepeat = 8;
                 sp.yrepeat = 6;
                 sp.xvel = 16;
-                engine.changespritestat(i, 1);
+                engine.changespritestat(i,(short) 1);
             	break;
             case BROASTEDTILE:
             	sp.cstat = 257;
@@ -1891,25 +1895,25 @@ public class Spawn {
                 sp.xrepeat = 13;
                 sp.yrepeat = 13;
                 sp.xvel = 16;
-                engine.changespritestat(i, 1);
+                engine.changespritestat(i,(short) 1);
             	break;
             case 3410:
             	sp.extra = 0;
-            	engine.changespritestat(i, 107);
+            	engine.changespritestat(i,(short) 107);
             	break;
             case BOWLINGBALL:
             	sp.cstat = 256;
                 sp.clipdist = 64;
                 sp.xrepeat = 11;
                 sp.yrepeat = 9;
-                engine.changespritestat(i, 2);
+                engine.changespritestat(i,(short) 2);
             	break;
             case 3440:
             	sp.cstat = 257;
                 sp.clipdist = 48;
                 sp.xrepeat = 23;
                 sp.yrepeat = 23;
-                engine.changespritestat(i, 2);
+                engine.changespritestat(i,(short) 2);
             	break;       
             case APLAYER:
                 sp.xrepeat = sp.yrepeat = 0;
@@ -1917,9 +1921,9 @@ public class Spawn {
                 if(j == 2) j = 0;
 
                 if( ud.multimode < 2 || (ud.multimode > 1 && j != sp.lotag) )
-                    engine.changespritestat(i,5);
+                    engine.changespritestat(i,(short)5);
                 else
-                    engine.changespritestat(i,10);
+                    engine.changespritestat(i,(short)10);
                 break;            
             case PLAYERONWATER:
                 if(j >= 0)
@@ -1930,7 +1934,7 @@ public class Spawn {
                     if(sector[sp.sectnum].lotag != 2)
                         sp.cstat |= 32768;
                 }
-                engine.changespritestat(i,13);
+                engine.changespritestat(i,(short)13);
                 break;       
             case 1115: 
             case 1168: 
@@ -1951,7 +1955,7 @@ public class Spawn {
                     sp.clipdist = 32;
                 }
 
-                engine.changespritestat(i,2);
+                engine.changespritestat(i,(short)2);
                 break;       
 	    }
 	    return i;
@@ -1967,7 +1971,7 @@ public class Spawn {
 	    zincs = ( sector[sect].floorz-sector[sect].ceilingz ) / n;
 
 	    for(z = sector[sect].ceilingz;z < sector[sect].floorz; z += zincs )
-	        EGS(sect,x,y,z-(engine.krand()&8191),GLASSPIECES+(z&(engine.krand()%3)),-32,36,36,a+128-(engine.krand()&255),16+(engine.krand()&31),0,-1,5);
+	        EGS(sect,x,y,z-(engine.krand()&8191),GLASSPIECES+(z&(engine.krand()%3)),-32,36,36,a+128-(engine.krand()&255),16+(engine.krand()&31),0,-1,(short)5);
 	}
 
 	public static void lotsofglass(int i,int wallnum,int n)
@@ -1982,7 +1986,7 @@ public class Spawn {
 	        for(j=n-1; j >= 0 ;j--)
 	        {
 	            a = (short) (sprite[i].ang-256+(engine.krand()&511)+1024);
-	            EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z,2021,-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&1023),i,5);
+	            EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z,2021,-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&1023),i,(short)5);
 	        }
 	        return;
 	     }
@@ -2013,7 +2017,7 @@ public class Spawn {
 	              if( z < -(32<<8) || z > (32<<8) )
 	                  z = sprite[i].z-(32<<8)+(engine.krand()&((64<<8)-1));
 	              a = (short) (sprite[i].ang-1024);
-	              EGS(sprite[i].sectnum,x1,y1,z,2021,-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&1023),i,5);
+	              EGS(sprite[i].sectnum,x1,y1,z,2021,-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&1023),i,(short)5);
 	          }
          }
 	}
@@ -2030,7 +2034,7 @@ public class Spawn {
 	        for(j=n-1; j >= 0 ;j--)
 	        {
 	            a = (short) (sprite[i].ang-256+(engine.krand()&511)+1024);
-	            EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z,1256 + j%3,-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&1023),i,5);
+	            EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z,1256 + j%3,-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&1023),i,(short)5);
 	        }
 	        return;
 	     }
@@ -2061,7 +2065,7 @@ public class Spawn {
 	              if( z < -(32<<8) || z > (32<<8) )
 	                  z = sprite[i].z-(32<<8)+(engine.krand()&((64<<8)-1));
 	              a = (short) (sprite[i].ang-1024);
-	              EGS(sprite[i].sectnum,x1,y1,z,1256 + j%3,-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&1023),i,5);
+	              EGS(sprite[i].sectnum,x1,y1,z,1256 + j%3,-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&1023),i,(short)5);
 	          }
          }
 	}
@@ -2074,18 +2078,18 @@ public class Spawn {
 	    {
 	        a = engine.krand()&2047;
 	        z = sprite[i].z-((engine.krand()&16)<<8);
-	        k = EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,z,GLASSPIECES+(j%3),engine.krand()&15,36,36,a,32+(engine.krand()&63),-512-(engine.krand()&2047),i,5);
+	        k = EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,z,GLASSPIECES+(j%3),engine.krand()&15,36,36,a,32+(engine.krand()&63),-512-(engine.krand()&2047),i,(short)5);
 	        sprite[k].pal = sprite[i].pal;
 	    }
 	}
 
-	public static void ceilingglass(int i,int sectnum,int n)
+	public static void ceilingglass(int i,short sectnum,int n)
 	{
-	     int j, xv, yv, z, x1, y1;
-	     short a,s, startwall,endwall;
+	     int j, xv, yv, z, x1, y1, endwall;
+	     short a,s, startwall;
 
 	     startwall = sector[sectnum].wallptr;
-	     endwall = (short) (startwall+sector[sectnum].wallnum);
+	     endwall = (startwall+sector[sectnum].wallnum);
 
 	     for(s=startwall;s<(endwall-1);s++)
 	     {
@@ -2101,7 +2105,7 @@ public class Spawn {
 	              y1 += yv;
 	              a = (short) (engine.krand()&2047);
 	              z = sector[sectnum].ceilingz+((engine.krand()&15)<<8);
-	              EGS(sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,(engine.krand()&31),0,i,5);
+	              EGS(sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,(engine.krand()&31),0,i,(short)5);
 	          }
 	     }
 	}
@@ -2116,7 +2120,7 @@ public class Spawn {
 	        for(j=n-1; j >= 0 ;j--)
 	        {
 	            a = (short) (engine.krand()&2047);
-	            k = (short) EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z-(engine.krand()&(63<<8)),GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&2047),i,5);
+	            k = (short) EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z-(engine.krand()&(63<<8)),GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&2047),i,(short)5);
 	            sprite[k].pal = (short) (engine.krand()&15);
 	        }
 	        return;
@@ -2139,7 +2143,7 @@ public class Spawn {
 	    	 if( z < -(32<<8) || z > (32<<8) )
 	              z = sprite[i].z-(32<<8)+(engine.krand()&((64<<8)-1));
 	    	 a = (short) (sprite[i].ang-1024);
-	    	 k = (short) EGS(sprite[i].sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&2047),i,5);
+	    	 k = (short) EGS(sprite[i].sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&2047),i,(short)5);
 	    	 sprite[k].pal = (short) (engine.krand()&7);
 	     }
 	}
@@ -2148,7 +2152,7 @@ public class Spawn {
 		for (int i = n; i > 0; i--) {
 			int j = EGS(s.sectnum, s.x, s.y,
 					s.z - (engine.krand() % (47 << 8)), FEATHERS, -32, 8, 8,
-					engine.krand() & 2047, 0, 0, 0, 5);
+					engine.krand() & 2047, 0, 0, 0, (short)5);
 			sprite[j].cstat = (short) (engine.krand() & 12);
 		}
 	}
@@ -2181,7 +2185,7 @@ public class Spawn {
 					+ (engine.krand() & 255) - 128, gutz
 					- (engine.krand() & 8191), gtype, -32, sx >> 1, sy >> 1, a,
 					48 + (engine.krand() & 31), -512 - (engine.krand() & 2047),
-					ps[p].i, 5);
+					ps[p].i, (short)5);
 			if (pal == 6)
 				sprite[i].pal = 6;
 		}
@@ -2206,7 +2210,7 @@ public class Spawn {
 			int a = engine.krand() & 2047;
 			EGS(s.sectnum, s.x, s.y, gutz, gtype, -32, sx, sy, a,
 					256 + (engine.krand() & 127), -512
-							- (engine.krand() & 2047), ps[p].i, 5);
+							- (engine.krand() & 2047), ps[p].i,(short)5);
 		}
 	}
 }

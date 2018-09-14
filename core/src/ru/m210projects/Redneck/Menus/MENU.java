@@ -368,7 +368,7 @@ public class MENU {
 		if(mMenuHistory[0] != null) 
 			mDraw(mMenuHistory[0]);
 
-		if(mUseMouse || !cfg.menuMouse)
+		if(mUseMouse && cfg.menuMouse)
 			mDrawMouse(Gdx.input.getX(), Gdx.input.getY());
 	}
 	

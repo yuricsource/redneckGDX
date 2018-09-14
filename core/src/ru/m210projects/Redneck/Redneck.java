@@ -300,8 +300,8 @@ public class Redneck {
 					}
 		}));
 		
-		Console.RegisterCvar(new OSDCOMMAND("restart",
-				"restart", new OSDCVARFUNC() {
+		Console.RegisterCvar(new OSDCOMMAND("nextlevel",
+				"nextlevel", new OSDCVARFUNC() {
 					@Override
 					public void execute() {
 						LeaveMap();
@@ -310,12 +310,19 @@ public class Redneck {
 			            ud.m_level_number = ud.level_number;
 					}
 		}));
+		
+		Console.RegisterCvar(new OSDCOMMAND("net_bufferjitter",
+				"net_bufferjitter", new OSDCVARFUNC() {
+					@Override
+					public void execute() {
+						Console.Println("bufferjitter: " + bufferjitter);
+					}
+		}));
 	}
 	
 	public static boolean moveloop()
 	{
 	    int i;
-
 	    if (numplayers > 1)
 	        while (fakemovefifoplc < movefifoend[myconnectindex]) fakedomovethings();
 
@@ -1178,10 +1185,9 @@ public class Redneck {
 	                    }
 	                }
 
-	                
 	                if(j == THROWSAW_WEAPON)
 	                {
-	                    if( p.curr_weapon != THROWSAW_WEAPON && p.ammo_amount[BUZSAW_WEAPON] != 0)
+	                    if( p.curr_weapon != THROWSAW_WEAPON && p.ammo_amount[THROWSAW_WEAPON] != 0) //v0.751
 	                    {
                             if( (p.subweapon&(1<<BUZSAW_WEAPON)) != 0 || p.ammo_amount[BUZSAW_WEAPON] == 0 )
                             {
@@ -1277,7 +1283,6 @@ public class Redneck {
 	                        break;
 	                    case BUZSAW_WEAPON:
 	                    case THROWSAW_WEAPON:
-
 	                        if( p.ammo_amount[j] == 0 && p.show_empty_weapon == 0)
 	                        {
 	                            p.show_empty_weapon = 32;
@@ -1450,12 +1455,12 @@ public class Redneck {
 	        sprite[p.i].cstat &= ~257;
 
 	        sb_snum = syn.bits;
-
+	 
 	        psect = mycursectnum;
 	        psectlotag = sector[psect].lotag;
 	        spritebridge = 0;
 
-	        shrunk = (sprite[p.i].yrepeat < 32);
+	        shrunk = (sprite[p.i].yrepeat < 8);
 
 	        if( !ud.clipping && ( sector[psect].floorpicnum == MIRROR || psect < 0 || psect >= MAXSECTORS) )
 	        {
@@ -1502,30 +1507,54 @@ public class Redneck {
 	        if (myhorizoff > 0) myhorizoff -= ((myhorizoff>>3)+1);
 	        else if (myhorizoff < 0) myhorizoff += (((-myhorizoff)>>3)+1);
 
-	        if(hz >= 0 && (hz&49152) == 49152)
+	        if(hz >= 0 && (hz&kHitTypeMask) == kHitSprite)
 	        {
-	                hz &= (MAXSPRITES-1);
-	                if (sprite[hz].statnum == 1 && sprite[hz].extra >= 0)
-	                {
-	                    hz = 0;
-	                    cz = engine.getceilzofslope(psect,myx,myy);
-	                }
+                hz &= (kHitIndexMask);
+                if (sprite[hz].statnum == 1 && sprite[hz].extra >= 0)
+                {
+                    hz = 0;
+                    cz = engine.getceilzofslope(psect,myx,myy);
+                }
+                if ( sprite[hz].picnum == 3587 )
+    	        {
+    	        	if ( p.field_280 == 0 )
+    	            {
+    	            	if ( (sb_snum & 1) != 0 )
+    	            	{
+    	            		hz = 0;
+    	            		cz = p.truecz;
+    	            	}
+    	            }
+    	        }
 	        }
 
-	        if(lz >= 0 && (lz&49152) == 49152)
+	        if(lz >= 0 && (lz&kHitTypeMask) == kHitSprite)
 	        {
-	                 j = lz&(MAXSPRITES-1);
-	                 if ((sprite[j].cstat&33) == 33)
-	                 {
-	                        psectlotag = 0;
-	                        spritebridge = 1;
-	                 }
-	                 if(badguy(sprite[j]) && sprite[j].xrepeat > 24 && klabs(sprite[p.i].z-sprite[j].z) < (84<<8) )
-	                 {
-	                    j = engine.getangle( sprite[j].x-myx,sprite[j].y-myy);
-	                    myxvel -= sintable[(j+512)&2047]<<4;
-	                    myyvel -= sintable[j&2047]<<4;
-	                }
+                 j = lz&(kHitIndexMask);
+                 if ((sprite[j].cstat&33) == 33)
+                 {
+                        psectlotag = 0;
+                        spritebridge = 1;
+                 }
+                 if(badguy(sprite[j]) && sprite[j].xrepeat > 24 && klabs(sprite[p.i].z-sprite[j].z) < (84<<8) )
+                 {
+                    j = engine.getangle( sprite[j].x-myx,sprite[j].y-myy);
+                    myxvel -= sintable[(j+512)&2047]<<4;
+                    myyvel -= sintable[j&2047]<<4;
+                 }
+                 
+                 if ( sprite[j].picnum == 3587 )
+                 {
+     	        	if ( p.field_280 == 0 )
+     	            {
+     	            	if ( (sb_snum & 2) != 0 )
+     	            	{
+     	            		cz = sprite[j].z;
+     	                    hz = 0;
+     	                    fz = cz + 1024;
+     	            	}
+     	            }
+                 }
 	        }
 
 	        if( sprite[p.i].extra <= 0 )
@@ -1546,13 +1575,16 @@ public class Redneck {
 	            	            }
 	                 }
 
-	                 mycursectnum = engine.updatesector(myx,myy,mycursectnum);
+	                 short sect =engine.updatesector(myx,myy,mycursectnum);
+	                 if(sect != -1)
+	                	 mycursectnum = sect;
 	                 engine.pushmove(myx,myy,myz,mycursectnum,128,(4<<8),(20<<8),CLIPMASK0);
-	                 myx = pushmove_x;
-	                 myy = pushmove_y;
-	                 myz = pushmove_z;
-	                 mycursectnum = (short) pushmove_sectnum;
-
+	                if(pushmove_sectnum != -1) {
+		                 myx = pushmove_x;
+		                 myy = pushmove_y;
+		                 myz = pushmove_z;
+		                 mycursectnum = (short) pushmove_sectnum;
+	                }
 	                myhoriz = 100;
 	                myhorizoff = 0;
 
@@ -1716,7 +1748,7 @@ public class Redneck {
 		                            if( (sb_snum&1) == 0 && myjumpingtoggle == 1)
 		                                     myjumpingtoggle = 0;
 	
-		                            if( myjumpingcounter < (1024+256) )
+		                            if( myjumpingcounter < (768) )
 		                            {
 		                                     if(psectlotag == 1 && myjumpingcounter > 768)
 		                                     {
@@ -1777,7 +1809,7 @@ public class Redneck {
 	
 		        if ( myxvel != 0 || myyvel != 0 || syn.fvel != 0 || syn.svel != 0 )
 		        {
-		                 if(p.moonshine_amount > 0 && p.moonshine_amount < 400)
+		                 if(p.jetpack_on == 0 && p.moonshine_amount > 0 && p.moonshine_amount < 400)
 		                     doubvel <<= 1;
 	
 		                 myxvel += ((syn.fvel*doubvel)<<6);
@@ -1826,10 +1858,12 @@ public class Redneck {
             }
 	        
 	        engine.pushmove(myx,myy,myz,mycursectnum,164, 4<<8,4<<8,CLIPMASK0);
-	        myx = pushmove_x;
-            myy = pushmove_y;
-            myz = pushmove_z;
-            mycursectnum = (short) pushmove_sectnum;
+	        if(pushmove_sectnum != -1) {
+		        myx = pushmove_x;
+	            myy = pushmove_y;
+	            myz = pushmove_z;
+	            mycursectnum = (short) pushmove_sectnum;
+	        }
             
 	        if( p.jetpack_on == 0 && psectlotag != 1 && psectlotag != 2 && shrunk)
 	            myz += 30<<8;

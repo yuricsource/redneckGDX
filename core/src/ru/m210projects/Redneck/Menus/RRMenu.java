@@ -464,7 +464,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSlotList mList = new MenuSlotList(0, 205, 60, 100, SaveManager.getList(), 12, 1, updateCallback,
+		MenuSlotList mList = new MenuSlotList(0, 205, 60, 100, SaveManager.getList(), 10, 1, updateCallback,
 				confirmCallback, true);
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], mPicnum, false);
@@ -480,7 +480,6 @@ public class RRMenu {
 			@Override
 			public void run(MenuItem pItem) {
 				final MenuSlotList item = (MenuSlotList) pItem;
-
 				final int oFlags = gm;
 				gm = MODE_LOADING;
 				mClose();
@@ -495,8 +494,11 @@ public class RRMenu {
 						} else {
 							gm = oFlags;
 							if (gm == MODE_GAME) {
-								if (!kGameCrash)
+								if (!kGameCrash) {
 									addmessage("Incompatible version of saved game found!");
+									ready2send = true;
+								}
+								
 							} else {
 								if (gm == MODE_DEMO) {
 									DemoReset();
@@ -537,7 +539,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSlotList mList = new MenuSlotList(0, 205, 60, 100, SaveManager.getList(), 12, 1, updateCallback, Proc, false);
+		MenuSlotList mList = new MenuSlotList(0, 205, 60, 100, SaveManager.getList(), 10, 1, updateCallback, Proc, false);
 
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], mPicnum, false);
@@ -2827,7 +2829,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], mTitle, false);
 
 		int pos = 45;
-		MenuTextField mPortnum = new MenuTextField("Network socket number:", "" + cfg.mPort, 1, 46, pos += 12, 240,
+		MenuTextField mPortnum = new MenuTextField("Network socket:", "" + cfg.mPort, 1, 46, pos += 12, 240,
 				NUMBERS, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {

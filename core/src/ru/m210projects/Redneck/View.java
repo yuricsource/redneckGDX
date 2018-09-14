@@ -26,12 +26,13 @@ package ru.m210projects.Redneck;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static ru.m210projects.Build.Engine.waloff;
 import static ru.m210projects.Build.Engine.CLIPMASK1;
 import static ru.m210projects.Build.Engine.MAXSECTORS;
 import static ru.m210projects.Build.Engine.MAXSPRITESONSCREEN;
 import static ru.m210projects.Build.Engine.MAXSTATUS;
-import static ru.m210projects.Build.Engine.ceilzsofslope;
-import static ru.m210projects.Build.Engine.floorzsofslope;
+import static ru.m210projects.Build.Engine.CEIL;
+import static ru.m210projects.Build.Engine.FLOOR;
 import static ru.m210projects.Build.Engine.getInput;
 import static ru.m210projects.Build.Engine.gotpic;
 import static ru.m210projects.Build.Engine.headspritesect;
@@ -575,11 +576,11 @@ public class View {
 		        engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,9216,0,21,10+16+256,0,0,xdim-1,ydim-1);
 		        
 		        if ( p.gotkey[3] != 0 )
-		    		engine.rotatesprite(x+5<<16,182<<16, 0x8000, 0, 1656, 0, 23, 10+16+256, 0, 0, xdim - 1, ydim - 1);
+		    		engine.rotatesprite(x+5<<16,182<<16, 0x8000, 0, 1656, 0, 7, 10+16+256, 0, 0, xdim - 1, ydim - 1);
 		    	if ( p.gotkey[2] != 0  )
-		    		engine.rotatesprite(x+18<<16,182<<16, 0x8000, 0, 1656, 0, 21, 10+16+256, 0, 0, xdim - 1, ydim - 1);
+		    		engine.rotatesprite(x+18<<16,182<<16, 0x8000, 0, 1656, 0, 2, 10+16+256, 0, 0, xdim - 1, ydim - 1);
 		    	if ( p.gotkey[1] != 0  )
-		    		engine.rotatesprite(x+11<<16,189<<16, 0x8000, 0, 1656, 0, 0, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
+		    		engine.rotatesprite(x+11<<16,189<<16, 0x8000, 0, 1656, 0, 1, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
 		        x += tilesizx[9216] / 2 + 2;
 	        }
 	      
@@ -634,8 +635,11 @@ public class View {
 	        }
         }
         
-        if (ud.multimode > 1 && ud.coop != 1)
-        	engine.rotatesprite(142<<16,(169) << 16,65536,0,KILLSICON,0,0,10+16,0,0,xdim-1,ydim-1);
+        if (ud.multimode > 1 && ud.coop != 1) {
+        	if(waloff[9237] != null)
+        		engine.rotatesprite(133<<16,(168) << 16,32768,0,9237,0,0,10+16,0,0,xdim-1,ydim-1);
+        	else engine.rotatesprite(142<<16,(169) << 16,65536,0,KILLSICON,0,0,10+16,0,0,xdim-1,ydim-1);
+        }
 	    
 	    if (ud.multimode > 1 && ud.coop != 1)
 	    {
@@ -643,12 +647,13 @@ public class View {
 	    }
 	    else
 	    {
+	    	int x = 134;
 	    	if ( p.gotkey[3] != 0 )
-	    		engine.rotatesprite(9175040, 11927552, 0x8000, 0, 1656, 0, 23, 10+16, 0, 0, xdim - 1, ydim - 1);
+	    		engine.rotatesprite(x+5<<16,180<<16, 0x8000, 0, 1656, 0, 7, 10+16, 0, 0, xdim - 1, ydim - 1);
 	    	if ( p.gotkey[2] != 0  )
-	    		engine.rotatesprite(10027008, 11927552, 0x8000, 0, 1656, 0, 21, 10+16, 0, 0, xdim - 1, ydim - 1);
+	    		engine.rotatesprite(x+18<<16,180<<16, 0x8000, 0, 1656, 0, 2, 10+16, 0, 0, xdim - 1, ydim - 1);
 	    	if ( p.gotkey[1] != 0  )
-	    		engine.rotatesprite(9568256, 12386304, 0x8000, 0, 1656, 0, 0, 10+16, 0, 0, xdim - 1, ydim - 1);
+	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, 1, 10+16, 0, 0, xdim - 1, ydim - 1); 
 	    }
 	   
         if(sprite[p.i].pal == 1 && p.last_extra < 2)
@@ -818,9 +823,9 @@ public class View {
 
 	        if (sect >= 0)
 	        {
-	            engine.getzsofslope(sect,cposx,cposy);
-	            if (cposz < ceilzsofslope+(4<<8)) cposz = ceilzsofslope+(4<<8);
-	            if (cposz > floorzsofslope-(4<<8)) cposz = floorzsofslope-(4<<8);
+	            engine.getzsofslope(sect,cposx,cposy, zofslope);
+	            if (cposz < zofslope[CEIL]+(4<<8)) cposz = zofslope[CEIL]+(4<<8);
+	            if (cposz > zofslope[FLOOR]-(4<<8)) cposz = zofslope[FLOOR]-(4<<8);
 	        }
 
 	        if(choriz > 299) choriz = 299;
@@ -849,7 +854,7 @@ public class View {
 	                j = visibility;
 	                visibility = (j>>1) + (j>>2);
 
-	                engine.drawrooms(tposx,tposy,cposz,tang,choriz,mirrorsector[i]+MAXSECTORS);
+	                engine.drawrooms(tposx,tposy,cposz,tang,choriz,(short) (mirrorsector[i]+MAXSECTORS));
 
 	                display_mirror = 1;
 	                animatesprites(tposx,tposy,cposz,tang,smoothratio);
@@ -921,6 +926,24 @@ public class View {
 
 	        switch(t.picnum)
 	        {
+	        	case DOORKEY:
+	        		switch(t.lotag)
+	        		{
+		        		case 100: //got1
+		        			t.pal = 1;
+		        			break;
+		        		case 101: //got2
+		        			t.pal = 2;
+		        			break;
+		        		case 102: //got3
+		        			t.pal = 7;
+		        			break;
+		        		default:
+		        			t.pal = 6;
+		        			break;
+	        		}
+	        		t.shade = -128;
+	        		break;
 	            case BLOODPOOL:
 	            case FOOTPRINTS:
 	            case FOOTPRINTS2:
@@ -953,6 +976,9 @@ public class View {
 	                    continue;
 	        }
 
+	        if(t.sectnum < 0 || t.sectnum >= MAXSECTORS)
+	        	continue;
+	        
 	        if ((sector[t.sectnum].ceilingstat&1) != 0)
 	            l = sector[t.sectnum].ceilingshade;
 	        else
@@ -969,6 +995,9 @@ public class View {
 	        t = tsprite[j];
 	        i = t.owner;
 	        s = sprite[i];
+	        
+	        if(t.sectnum < 0 || t.sectnum >= MAXSECTORS)
+	        	continue;
 
 	        switch(s.picnum)
 	        {
@@ -1337,7 +1366,7 @@ public class View {
 					
 					if ((z1 < zBot) && (z1 > zTop))
 					{
-						if(engine.cansee(x, y, z, sprite[ps[screenpeek].i].sectnum, t.x, t.y, t.z, t.sectnum) != 0)
+						if(engine.cansee(x, y, z, sprite[ps[screenpeek].i].sectnum, t.x, t.y, t.z, t.sectnum))
 							gPlayerIndex = t.yvel;
 					}
 				}
@@ -1778,14 +1807,14 @@ public class View {
 	{
 		if(sector[sectnum].lotag == 848)
 		{
-	        int geomsect = 0;
+	        short geomsect = 0;
 	        
-	        for(int i = 0; i < numgeomeffects; i++)
+	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	int k = headspritesect[geomsector[i]]; 
+	        	short k = headspritesect[geomsector[i]]; 
 	        	while(k != -1)
 	        	{
-	        		int nextk = nextspritesect[k];
+	        		short nextk = nextspritesect[k];
 	        		engine.changespritesect(k, geoms1[i]);
 	        		engine.setsprite(k, sprite[k].x + geomx1[i], sprite[k].y + geomy1[i], sprite[k].z);
 	        		k = nextk;
@@ -1796,12 +1825,12 @@ public class View {
 	        
 	        engine.drawrooms(cposx - geomx1[geomsect], cposy - geomy1[geomsect], cposz, cang, choriz, geomsect);
 	        
-	        for(int i = 0; i < numgeomeffects; i++)
+	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	int k = headspritesect[geoms1[i]]; 
+	        	short k = headspritesect[geoms1[i]]; 
 	        	while(k != -1)
 	        	{
-	        		int nextk = nextspritesect[k];
+	        		short nextk = nextspritesect[k];
 	        		engine.changespritesect(k, geomsector[i]);
 	        		engine.setsprite(k, sprite[k].x - geomx1[i], sprite[k].y - geomy1[i], sprite[k].z);
 	        		k = nextk;
@@ -1811,12 +1840,12 @@ public class View {
 	        animatesprites(cposx, cposy, cposz, (short) cang, smoothratio);
 	        engine.drawmasks();
 	        
-	        for(int i = 0; i < numgeomeffects; i++)
+	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	int k = headspritesect[geomsector[i]]; 
+	        	short k = headspritesect[geomsector[i]]; 
 	        	while(k != -1)
 	        	{
-	        		int nextk = nextspritesect[k];
+	        		short nextk = nextspritesect[k];
 	        		engine.changespritesect(k, geoms2[i]);
 	        		engine.setsprite(k, sprite[k].x + geomx2[i], sprite[k].y + geomy2[i], sprite[k].z);
 	        		k = nextk;
@@ -1827,12 +1856,12 @@ public class View {
 	        
 	        engine.drawrooms(cposx - geomx2[geomsect], cposy - geomy2[geomsect], cposz, cang, choriz, geomsect);
 	        
-	        for(int i = 0; i < numgeomeffects; i++)
+	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	int k = headspritesect[geoms2[i]]; 
+	        	short k = headspritesect[geoms2[i]]; 
 	        	while(k != -1)
 	        	{
-	        		int nextk = nextspritesect[k];
+	        		short nextk = nextspritesect[k];
 	        		engine.changespritesect(k, geomsector[i]);
 	        		engine.setsprite(k, sprite[k].x - geomx2[i], sprite[k].y - geomy2[i], sprite[k].z);
 	        		k = nextk;

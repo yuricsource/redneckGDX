@@ -511,7 +511,7 @@ public class Network {
 			} while (i < 0);
 		}
 		if (connectpoint2[connecthead] < 0) syncstat = 0;
-
+		
 		if (syncstat != 0)
 		{
 			buildString(recbuf, 0, "Out Of Sync - Please restart game");

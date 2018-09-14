@@ -29,12 +29,9 @@ import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Redneck.Globals.MODE_EOL;
-import static ru.m210projects.Redneck.Globals.gm;
+import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Premap.LeaveMap;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
-import static ru.m210projects.Redneck.Globals.ps;
-import static ru.m210projects.Redneck.Globals.screenpeek;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.*;
 import static ru.m210projects.Redneck.Animate.*;
@@ -1211,8 +1208,9 @@ public class Sector {
 	public static boolean checkhitswitch(int snum,int w,int switchtype)
 	{
 	    int switchpal;
-	    int i, x, lotag,hitag,picnum,correctdips,numdips;
+	    int lotag,hitag,picnum,correctdips,numdips;
 	    int sx,sy;
+	    short x, i;
 
 	    if(w < 0) return false;
 	    correctdips = 1;
@@ -1254,21 +1252,30 @@ public class Sector {
 	                {
 	                    if( ps[snum].gotkey[1] != 0 )
 	                        ps[snum].access_incs = 1;
-	                    else FTA(70,ps[snum]);
+	                    else {
+	                    	buildString(fta_quotes[70], 0, "BLUE KEY REQUIRED"); //v0.751
+	                    	FTA(70,ps[snum]);
+	                    }
 	                }
 
 	                else if( switchpal == 21 )
 	                {
 	                    if( ps[snum].gotkey[2] != 0 )
 	                        ps[snum].access_incs = 1;
-	                    else FTA(71,ps[snum]);
+	                    else {
+	                    	buildString(fta_quotes[71], 0, "RED KEY REQUIRED");
+	                    	FTA(71,ps[snum]);
+	                    }
 	                }
 
 	                else if( switchpal == 23 )
 	                {
 	                    if( ps[snum].gotkey[3] != 0 )
 	                        ps[snum].access_incs = 1;
-	                    else FTA(72,ps[snum]);
+	                    else {
+	                    	buildString(fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                    	FTA(72,ps[snum]);
+	                    }
 	                }
 
 	                if( ps[snum].access_incs == 1 )
@@ -1380,7 +1387,7 @@ public class Sector {
 		        		x = headspritestat[107];
 		                while(x >= 0)
 		                {
-		                	int next = nextspritestat[x];
+		                	short next = nextspritestat[x];
 		                	
 		                	if(sprite[x].picnum == 3410)
 		                	{
@@ -1750,7 +1757,8 @@ public class Sector {
 
 	public static void checkhitwall(int spr,int dawallnum,int x,int y,int z,int atwith)
 	{
-	    int j, i, sn = -1, darkestwall;
+	    int j, darkestwall;
+	    short i, sn = -1;
 
 	    WALL wal = wall[dawallnum];
 
@@ -1802,7 +1810,7 @@ public class Sector {
 	            if(wal.nextwall >= 0)
 	                wall[wal.nextwall].cstat = 0;
 
-	            i = EGS(sn,x,y,z,SECTOREFFECTOR,0,0,0,(short)ps[0].ang,0,0,spr,3);
+	            i = EGS(sn,x,y,z,SECTOREFFECTOR,0,0,0,(short)ps[0].ang,0,0,spr,(short)3);
 	            sprite[i].lotag = 128; hittype[i].temp_data[1] = 2; hittype[i].temp_data[2] = dawallnum;
 	            spritesound(GLASS_BREAKING,i);
 	            return;
@@ -1824,33 +1832,33 @@ public class Sector {
 	                breakwall(wal.picnum+2,spr,dawallnum);
 	                spritesound(VENT_BUST,spr);
 	                return;
-	            case 3643: 
+	            case 3643: //Car textures
 	            case 3644: 
 	            case 3645: 
-	            case 3646: 
+	            case 3646:
 	            	if(wal.nextwall != -1) {
 	            		i = headspritesect[wall[wal.nextwall].nextsector];
 	            		while(i >= 0)
 	                    {
-	                    	int next = -1; 
-	                    	if(i+1 < MAXSECTORS) next = nextspritesect[i+1];
+	                    	short next = nextspritesect[i];  //v0.751
 	                    	SPRITE nspr = sprite[i];
 	                    	if(nspr.lotag == 6)
 	                    	{
 	                    		for(int k = 0; k < 16; k++)
 	                    			RANDOMSCRAP(nspr,i);
-	                    	}
-	                    	nspr.detail++;
-	                    	if(nspr.detail == 25 && nspr.sectnum < MAXSECTORS)
-	                    	{
-	                    		int startwall = sector[nspr.sectnum].wallptr;
-	            	            int endwall = startwall + sector[nspr.sectnum].wallnum;
-	            	            for(int k=startwall;k<endwall && wall[k].nextsector != -1;k++)
-	            	            	sector[wall[k].nextsector].lotag = 0;
-	            	            sector[nspr.sectnum].lotag = 0;
-	            	            stopsound(nspr.lotag);
-	                            spritesound(400, i);
-	                            engine.deletesprite(i);
+	                    	
+		                    	nspr.detail++;
+		                    	if(nspr.detail == 25 && nspr.sectnum < MAXSECTORS)
+		                    	{
+		                    		int startwall = sector[nspr.sectnum].wallptr;
+		            	            int endwall = startwall + sector[nspr.sectnum].wallnum;
+		            	            for(int k=startwall;k<endwall && wall[k].nextsector != -1;k++)
+		            	            	sector[wall[k].nextsector].lotag = 0;
+		            	            sector[nspr.sectnum].lotag = 0;
+		            	            stopsound(nspr.lotag);
+		                            spritesound(400, i);
+		                            engine.deletesprite(i);
+		                    	}
 	                    	}
 	                    	i = next;
 	                    }
@@ -1942,7 +1950,7 @@ public class Sector {
 	                if(sn < 0) return;
 	                darkestwall = 0;
 
-	                int startwall = sector[sn].wallptr;
+	                short startwall = sector[sn].wallptr;
 	                int endwall = startwall + sector[sn].wallnum;
 	                
 	                for(i=startwall; i < endwall; i++) {
@@ -1967,7 +1975,7 @@ public class Sector {
 	    }
 	}
 	
-	public static boolean checkhitceiling(int sn)
+	public static boolean checkhitceiling(short sn)
 	{
 	    int i, j;
 	   
@@ -2051,7 +2059,7 @@ public class Sector {
 	    return false;
 	}  
 	
-	public static void checkhitsprite(int i,int sn)
+	public static void checkhitsprite(short i,short sn)
 	{
 	    short j, k, p;
 	    SPRITE s;
@@ -2074,7 +2082,7 @@ public class Sector {
 		            case 3475:
 	                    for(k=0;k<64;k++)
 	                    {
-	                        j = (short) EGS( sprite[i].sectnum,sprite[i].x, sprite[i].y, sprite[i].z-(engine.krand()%(48<<8)),SCRAP3+(engine.krand()&3),-8,48,48,engine.krand()&2047,(engine.krand()&63)+64,-(engine.krand()&4095)-(sprite[i].zvel>>2),i,5);
+	                        j = EGS( sprite[i].sectnum,sprite[i].x, sprite[i].y, sprite[i].z-(engine.krand()%(48<<8)),SCRAP3+(engine.krand()&3),-8,48,48,engine.krand()&2047,(engine.krand()&63)+64,-(engine.krand()&4095)-(sprite[i].zvel>>2),i,(short)5);
 	                        sprite[j].pal = 8;
 	                    }
 
@@ -2148,7 +2156,7 @@ public class Sector {
 	            {
 	                for(j=0;j<15;j++)
 	                    EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sector[sprite[i].sectnum].floorz-(12<<8)-(j<<9),SCRAP1+(engine.krand()&15),-8,64,64,
-	                        engine.krand()&2047,(engine.krand()&127)+64,-(engine.krand()&511)-256,i,5);
+	                        engine.krand()&2047,(engine.krand()&127)+64,-(engine.krand()&511)-256,i,(short)5);
 	                spawn(i,EXPLOSION2);
 	                engine.deletesprite(i);
 	            }
@@ -2351,7 +2359,7 @@ public class Sector {
 	        	for(j=0;j<6;j++)
 	        	{
 	        		EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sector[sprite[i].sectnum].floorz-(8<<8),SCRAP6+(engine.krand()&15),-8,48,48,
-	                        engine.krand()&2047,(engine.krand()&63)+64,-(engine.krand()&4095)-sprite[i].zvel>>2,i,5);
+	                        engine.krand()&2047,(engine.krand()&63)+64,-(engine.krand()&4095)-sprite[i].zvel>>2,i,(short)5);
 	        	}
 	        	break;
 	        case PLAYERONWATER:
@@ -2392,7 +2400,7 @@ public class Sector {
 
 	                    if(sprite[i].statnum == 2)
 	                    {
-	                    	engine.changespritestat(i,1);
+	                    	engine.changespritestat(i,(short)1);
 	                        hittype[i].timetosleep = SLEEPTIME;
 	                    }
 	                }
@@ -2692,7 +2700,20 @@ public class Sector {
 	            	if ( sector[neartagsector].filler > 3 )
                 		spritesound(99, p.i);
                     else spritesound(419, p.i);
-                    FTA(41, ps[snum]);
+
+	            	if( sector[neartagsector].filler == 1 ) { //v0.751
+	            		buildString(fta_quotes[70], 0, "BLUE KEY REQUIRED");
+	                    FTA(70,ps[snum]);
+	            	}
+	                else if( sector[neartagsector].filler == 2 ) {
+	                	buildString(fta_quotes[71], 0, "RED KEY REQUIRED");
+	                    FTA(71,ps[snum]);
+	                }
+	                else if( sector[neartagsector].filler == 3 ) {
+	                	buildString(fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                    FTA(72,ps[snum]);
+	                }
+	                else FTA(41, ps[snum]);
 	            }
 	        }
 	        else if( (sector[sprite[p.i].sectnum].lotag&16384) == 0 )
@@ -2722,7 +2743,7 @@ public class Sector {
 	    
 	}
 	
-	public static void pushwall(int nwal, int nsect, int snum)
+	public static void pushwall(int nwal, short nsect, int snum)
 	{
 		int box = wall[nwal].nextsector;
 		int hitag = sector[nsect].hitag;
@@ -2756,13 +2777,13 @@ public class Sector {
 		miny -= hitag + 1;
 		
 		boolean inside = true;
-		if ( engine.inside(maxx, maxy, (short)nsect) == 0 )
+		if ( engine.inside(maxx, maxy, nsect) == 0 )
 			inside = false;
-		if ( engine.inside(maxx, miny, (short)nsect) == 0 )
+		if ( engine.inside(maxx, miny, nsect) == 0 )
 			inside = false;
-		if ( engine.inside(minx, miny, (short)nsect) == 0 )
+		if ( engine.inside(minx, miny, nsect) == 0 )
 			inside = false;
-		if ( engine.inside(minx, maxy, (short)nsect) == 0 )
+		if ( engine.inside(minx, maxy, nsect) == 0 )
 			inside = false;
 	
 		if ( inside )

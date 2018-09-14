@@ -55,6 +55,7 @@ import ru.m210projects.Redneck.Types.ANIMATION;
 import ru.m210projects.Redneck.Types.LSInfo;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
+import ru.m210projects.Redneck.Types.SafeLoader;
 import ru.m210projects.Redneck.Types.SaveManager;
 import ru.m210projects.Redneck.Types.Weaponhit;
 
@@ -82,6 +83,7 @@ public class LoadSave {
 
 	public static String lastload;
 	public static int quickslot = 0;
+	public static SafeLoader loader = new SafeLoader();
 	
 	public static void FindSaves()
 	{
@@ -486,278 +488,259 @@ public class LoadSave {
 		final String loadname = SaveManager.getLast();
 		if(loadname != null)
 		{
+			final int oFlags = gm;
 			gm = MODE_LOADING;
 			Gdx.app.postRunnable(new Runnable() {
 				public void run() {
-					loadgame(loadname);
+					if(!loadgame(loadname))
+					{
+						gm = oFlags;
+						if (gm == MODE_GAME) {
+							if (!kGameCrash) {
+								addmessage("Incompatible version of saved game found!");
+								ready2send = true;
+							}
+						} 
+					}
 				}
 			});
 		}
 	}
 	
-	public static void AnimationLoad(ByteBuffer bb)
+	public static void AnimationLoad(SafeLoader bb)
 	{
 		for(int i = 0; i < MAXANIMATES; i++) {
-			short index = bb.getShort();
-			byte type = bb.get();
-			Object object = getobject(index, type);
-			gAnimationData[i].id = index;
-			gAnimationData[i].type = type;
-			gAnimationData[i].ptr = object;
-			gAnimationData[i].goal = bb.getInt();
-			gAnimationData[i].vel = bb.getInt();
-			gAnimationData[i].sect = bb.getShort();
+			gAnimationData[i].id = bb.gAnimationData[i].id;
+			gAnimationData[i].type = bb.gAnimationData[i].type;
+			gAnimationData[i].ptr = bb.gAnimationData[i].ptr;
+			gAnimationData[i].goal = bb.gAnimationData[i].goal;
+			gAnimationData[i].vel = bb.gAnimationData[i].vel;
+			gAnimationData[i].sect = bb.gAnimationData[i].sect;
 		}	
-		gAnimationCount = bb.getInt();
+		gAnimationCount = bb.gAnimationCount;
 	}
 	
-	public static void ConLoad(ByteBuffer bb)
+	public static void ConLoad(SafeLoader bb)
 	{
-		for(int i = 0; i < MAXTILES; i++)
-			actortype[i] = (short) (bb.get() & 0xFF);
-		for(int i=0;i<MAXSCRIPTSIZE;i++)
-			script[i] = bb.getInt();
-		for(int i=0;i<MAXTILES;i++)
-			actorscrptr[i] = bb.getInt();
+		System.arraycopy(bb.actortype, 0, actortype, 0, MAXTILES);
+		System.arraycopy(bb.script, 0, script, 0, MAXSCRIPTSIZE);
+		System.arraycopy(bb.actorscrptr, 0, actorscrptr, 0, MAXTILES);
+		System.arraycopy(bb.actorscrptr, 0, actorscrptr, 0, MAXSPRITES);
+		
 		for(int i=0;i<MAXSPRITES;i++) 
-			hittype[i].set(bb);
+			hittype[i].copy(bb.hittype[i]);
 	}
 	
-	public static void GameInfoLoad(ByteBuffer bb)
+	public static void GameInfoLoad(SafeLoader bb)
 	{
-		pskybits = bb.getShort();
-		parallaxyscale = bb.getInt();
-		for(int i = 0; i < MAXPSKYTILES; i++)
-			pskyoff[i] = bb.getShort();
-
+		pskybits = bb.pskybits;
+		parallaxyscale = bb.parallaxyscale;
+		System.arraycopy(bb.pskyoff, 0, pskyoff, 0, MAXPSKYTILES);
 	    System.arraycopy(pskyoff, 0, zeropskyoff, 0, MAXPSKYTILES);
 		
-		earthquaketime = bb.getShort();
-		ud.from_bonus = bb.getShort();
-		ud.secretlevel = bb.getShort();
-		ud.respawn_monsters = bb.get() == 1;
-		ud.respawn_items = bb.get() == 1;
-		ud.respawn_inventory = bb.get() == 1;
-		ud.god =  bb.get() == 1;
-		ud.auto_run = (bb.getInt() == 1)?1:0;
-		ud.crosshair = (bb.getInt() == 1)?1:0;
-		ud.monsters_off = bb.get() == 1;
-		ud.last_level = bb.getInt();
-		ud.eog = bb.getInt();
-		ud.coop = bb.getInt();
-		ud.marker = bb.getInt();
-		ud.ffire = bb.getInt();
-		camsprite = bb.getShort();
+		earthquaketime = bb.earthquaketime;
+		ud.from_bonus = bb.from_bonus;
+		ud.secretlevel = bb.secretlevel;
+		ud.respawn_monsters = bb.respawn_monsters;
+		ud.respawn_items = bb.respawn_items;
+		ud.respawn_inventory = bb.respawn_inventory;
+		ud.god =  bb.god;
+		ud.auto_run = bb.auto_run;
+		ud.crosshair = bb.crosshair;
+		ud.monsters_off = bb.monsters_off;
+		ud.last_level = bb.last_level;
+		ud.eog = bb.eog;
+		ud.coop = bb.coop;
+		ud.marker = bb.marker;
+		ud.ffire = bb.ffire;
+		camsprite = bb.camsprite;
 	    
-		connecthead = bb.getShort();
-        for(int i = 0; i < MAXPLAYERS; i++) 
-        	connectpoint2[i] = bb.getShort();
-        numplayersprites = bb.getShort();
+		connecthead = bb.connecthead;
+		System.arraycopy(bb.connectpoint2, 0, connectpoint2, 0, MAXPLAYERS);
+        numplayersprites = bb.numplayersprites;
 	  
-        for(int i = 0; i < MAXPLAYERS; i++) 
-        	for(int j = 0; j < MAXPLAYERS; j++) 
-        		frags[i][j] = bb.getShort();
-        
-        engine.srand(bb.getInt());
-        global_random = bb.getShort();
+        for(int i = 0; i < MAXPLAYERS; i++)
+        	System.arraycopy(bb.frags[i], 0, frags[i], 0, MAXPLAYERS);
+
+        engine.srand(bb.randomseed);
+        global_random = bb.global_random;
 	}
 	
-	public static void StuffLoad(ByteBuffer bb)
+	public static void StuffLoad(SafeLoader bb)
 	{
-		numcyclers = bb.getShort();
-		for(int i = 0; i < MAXCYCLERS; i++)
-			for(int j = 0; j < 6; j++)
-				cyclers[i][j] = bb.getShort();
-		
+		numcyclers = bb.numcyclers;
+		for(int i = 0; i < MAXCYCLERS; i++) 
+			System.arraycopy(bb.cyclers[i], 0, cyclers[i], 0, 6);
 		for(int i = 0; i < MAXPLAYERS; i++)
-			ps[i].set(bb);
+			ps[i].copy(bb.ps[i]);
 		for(int i = 0; i < MAXPLAYERS; i++)
-			po[i].set(bb);
+			po[i].copy(bb.po[i]);
 		
-		numanimwalls = bb.getShort();
+		numanimwalls = bb.numanimwalls;
 		for(int i = 0; i < MAXANIMWALLS; i++) {
-			animwall[i].wallnum = bb.getShort();
-			animwall[i].tag = bb.getInt();
+			animwall[i].wallnum = bb.animwall[i].wallnum;
+			animwall[i].tag = bb.animwall[i].tag;
 		}
-		for(int i = 0; i < 2048; i++) 
-			msx[i] = bb.getInt();
-		for(int i = 0; i < 2048; i++) 
-			msy[i] = bb.getInt();
 		
-		spriteqloc = bb.getShort();
-		spriteqamount = bb.getShort();
-		for(int i = 0; i < 1024; i++)
-			spriteq[i] = bb.getShort();
-		
-		mirrorcnt = bb.getShort();
-		for(int i = 0; i < 64; i++)
-			mirrorwall[i] = bb.getShort();
-		for(int i = 0; i < 64; i++)
-			mirrorsector[i] = bb.getShort();
-		
-		bb.get(show2dsector);
-		
-		for(int i = 0; i < MAXSECTORS; i++)
-			shadeEffect[i] = bb.get() == 1;
-		
-		numjaildoors = bb.getInt();
+		System.arraycopy(bb.msx, 0, msx, 0, 2048);
+		System.arraycopy(bb.msy, 0, msy, 0, 2048);
+
+		spriteqloc = bb.spriteqloc;
+		spriteqamount = bb.spriteqamount;
+		System.arraycopy(bb.spriteq, 0, spriteq, 0, 1024);
+
+		mirrorcnt = bb.mirrorcnt;
+		System.arraycopy(bb.mirrorwall, 0, mirrorwall, 0, 64);
+		System.arraycopy(bb.mirrorsector, 0, mirrorsector, 0, 64);
+		System.arraycopy(bb.show2dsector, 0, show2dsector, 0, (MAXSECTORS + 7) >> 3);
+		System.arraycopy(bb.shadeEffect, 0, shadeEffect, 0, (MAXSECTORS + 7) >> 3);
+
+		numjaildoors = bb.numjaildoors;
 		for(int i = 0; i < MAXJAILDOORS; i++)
 		{
-			jailspeed[i] = bb.getInt();
-			jaildistance[i] = bb.getInt();
-			jailsect[i] = bb.getShort();
-			jaildirection[i] = bb.getShort();
-			jailunique[i] = bb.getShort();
-			jailsound[i] = bb.getShort();
-			jailstatus[i] = bb.getShort();
-			jailcount2[i] = bb.getInt();
+			jailspeed[i] = bb.jailspeed[i];
+			jaildistance[i] = bb.jaildistance[i];
+			jailsect[i] = bb.jailsect[i];
+			jaildirection[i] = bb.jaildirection[i];
+			jailunique[i] = bb.jailunique[i];
+			jailsound[i] = bb.jailsound[i];
+			jailstatus[i] = bb.jailstatus[i];
+			jailcount2[i] = bb.jailcount2[i];
 		}
 		
-		numminecart = bb.getInt();
+		numminecart = bb.numminecart;
 		for(int i = 0; i < MAXMINECARDS; i++)
 		{
-			minespeed[i] = bb.getInt();
-			minefulldist[i] = bb.getInt();
-			minedistance[i] = bb.getInt();
-			minechild[i] = bb.getShort();
-			mineparent[i] = bb.getShort();
-			minedirection[i] = bb.getShort();
-			minesound[i] = bb.getShort();
-			minestatus[i] = bb.getShort();
+			minespeed[i] = bb.minespeed[i];
+			minefulldist[i] = bb.minefulldist[i];
+			minedistance[i] = bb.minedistance[i];
+			minechild[i] = bb.minechild[i];
+			mineparent[i] = bb.mineparent[i];
+			minedirection[i] = bb.minedirection[i];
+			minesound[i] = bb.minesound[i];
+			minestatus[i] = bb.minestatus[i];
 		}
 
-		numtorcheffects = bb.getInt();
+		numtorcheffects = bb.numtorcheffects;
 		for(int i = 0; i < MAXTORCHES; i++)
 		{
-			torchsector[i] = bb.getShort();
-			torchshade[i] = bb.get();
-			torchflags[i] = bb.getShort();
+			torchsector[i] = bb.torchsector[i];
+			torchshade[i] = bb.torchshade[i];
+			torchflags[i] = bb.torchflags[i];
 		}
 		
-		numlightnineffects = bb.getInt();
+		numlightnineffects = bb.numlightnineffects;
 		for(int i = 0; i < MAXLIGHTNINS; i++)
 		{
-			lightninsector[i] = bb.getShort();
-			lightninshade[i] = bb.getShort();
+			lightninsector[i] = bb.lightninsector[i];
+			lightninshade[i] = bb.lightninshade[i];
 		}
 		
-		numambients = bb.getInt();
+		numambients = bb.numambients;
 		for(int i = 0; i < MAXAMBIENTS; i++)
 		{
-			ambienttype[i] = bb.getShort();
-			ambientid[i] = bb.getShort();
-			ambienthitag[i] = bb.getShort();
+			ambienttype[i] = bb.ambienttype[i];
+			ambientid[i] = bb.ambientid[i];
+			ambienthitag[i] = bb.ambienthitag[i];
 		}
 
-		numgeomeffects = bb.getInt();
+		numgeomeffects = bb.numgeomeffects;
 		for(int i = 0; i < MAXGEOMETRY; i++)
 		{
-			geomsector[i] = bb.getShort();
-			geoms1[i] = bb.getShort();
-			geomx1[i] = bb.getInt();
-			geomy1[i] = bb.getInt();
-			geomz1[i] = bb.getInt();
+			geomsector[i] = bb.geomsector[i];
+			geoms1[i] = bb.geoms1[i];
+			geomx1[i] = bb.geomx1[i];
+			geomy1[i] = bb.geomy1[i];
+			geomz1[i] = bb.geomz1[i];
 			
-			geoms2[i] = bb.getShort();
-			geomx2[i] = bb.getInt();
-			geomy2[i] = bb.getInt();
-			geomz2[i] = bb.getInt();
+			geoms2[i] = bb.geoms2[i];
+			geomx2[i] = bb.geomx2[i];
+			geomy2[i] = bb.geomy2[i];
+			geomz2[i] = bb.geomz2[i];
 		}
 		
-		UFO_SpawnCount = bb.getShort();
-		UFO_SpawnTime = bb.getShort();
-		UFO_SpawnHulk = bb.getShort();
+		UFO_SpawnCount = bb.UFO_SpawnCount;
+		UFO_SpawnTime = bb.UFO_SpawnTime;
+		UFO_SpawnHulk = bb.UFO_SpawnHulk;
 		
-		gEndFirstEpisode = bb.getShort();
-		gEndGame = bb.getShort();
+		gEndFirstEpisode = bb.gEndFirstEpisode;
+		gEndGame = bb.gEndGame;
 
 		tilesizy[0] = 0;
 	    tilesizx[0] = 0;
 	    waloff[0] = null;
 	    
 	    BowlReset();
-		plantProcess = bb.get() == 1;
+		plantProcess = bb.plantProcess;
 	}
 	
-	public static void MapLoad(ByteBuffer bb)
+	public static void MapLoad(SafeLoader bb)
 	{
-		ud.warp_on = bb.get();
-		byte[] buf = new byte[144];
-		bb.get(buf);
-		boardfilename = null;
-		String name = new String(buf).trim();
-		if(!name.isEmpty()) boardfilename = name;
-		
-		numwalls = bb.getShort();
+		ud.warp_on = bb.warp_on;
+		boardfilename = bb.boardfilename;
+		numwalls = bb.numwalls;
 		for(int w = 0; w < numwalls; w++) {
-			wall[w] = new WALL();
-			wall[w].buildWall(bb);
+			if(wall[w] == null) 
+				wall[w] = new WALL();
+			wall[w].set(bb.wall[w]);
 		}
-
-		numsectors = bb.getShort();
+		numsectors = bb.numsectors;
 		for(int s = 0; s < numsectors; s++) {
-			sector[s] = new SECTOR();
-			sector[s].buildSector(bb);
+			if(sector[s] == null) 
+				sector[s] = new SECTOR();
+			sector[s].set(bb.sector[s]);
+		}
+		for(int i = 0; i < MAXSPRITES; i++) {
+			if(sprite[i] == null) 
+				sprite[i] = new SPRITE();
+			sprite[i].set(bb.sprite[i]);
 		}
 		
-		// Store all sprites (even holes) to preserve indeces
-		for(int i = 0; i < MAXSPRITES; i++) {
-			sprite[i] = new SPRITE();
-			sprite[i].buildSprite(bb);
-		}
+		System.arraycopy(bb.headspritesect, 0, headspritesect, 0, MAXSECTORS+1);
+		System.arraycopy(bb.headspritestat, 0, headspritestat, 0, MAXSTATUS+1);
 
-		for(int i = 0; i <= MAXSECTORS; i++)
-			headspritesect[i] = bb.getShort();
-		for(int i = 0; i <= MAXSTATUS; i++)
-			headspritestat[i] = bb.getShort();
-		
 		for(int i = 0; i < MAXSPRITES; i++) {
-			prevspritesect[i] = bb.getShort();
-			prevspritestat[i] = bb.getShort();
-			nextspritesect[i] = bb.getShort();
-			nextspritestat[i] = bb.getShort();
+			prevspritesect[i] = bb.prevspritesect[i];
+			prevspritestat[i] = bb.prevspritestat[i];
+			nextspritesect[i] = bb.nextspritesect[i];
+			nextspritestat[i] = bb.nextspritestat[i];
 		}
 	}
 	
-	public static void LoadGDXBlock(ByteBuffer bb)
-	{
-		int pos = bb.position();
-		//reserve SAVEGDXDATA bytes for extra data
-		bb.position(pos + SAVEGDXDATA);
-	}
+	public static void LoadGDXBlock(SafeLoader bb)
+	{}
 	
-	public static boolean load(ByteBuffer bb)
+	public static boolean checkfile(ByteBuffer bb)
 	{
 		int nVersion = checkSave(bb);	
-
 		if(nVersion != gdxSave)
 			return false;
 		
+		if(!loader.load(bb))
+			return false;
+		
+		return true;
+	}
+	
+	
+	public static void load()
+	{
 		ready2send = false;
 		
 		engine.getAudio().getSound().stopAllSounds();
-
-		try {
-			bb.position(SAVEHEADER - SAVELEVELINFO);
+		
+		ud.multimode = loader.multimode;
+		ud.volume_number = loader.volume_number;
+		ud.level_number = loader.level_number;
+		ud.player_skill = loader.player_skill;
+		
+		LoadGDXBlock(loader);
+		MapLoad(loader);
+		StuffLoad(loader);
+		ConLoad(loader);
+		AnimationLoad(loader);
+		GameInfoLoad(loader);
 			
-			ud.multimode = bb.getInt();
-			ud.volume_number = bb.getInt();
-			ud.level_number = bb.getInt();
-			ud.player_skill = bb.getInt();
-			
-			bb.position(SAVEHEADER + SAVESCREENSHOTSIZE);
-
-			LoadGDXBlock(bb);
-			MapLoad(bb);
-			StuffLoad(bb);
-			ConLoad(bb);
-			AnimationLoad(bb);
-			GameInfoLoad(bb);
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-
 		if(ps[myconnectindex].over_shoulder_on != 0)
 		{
 	         cameradist = 0;
@@ -786,42 +769,42 @@ public class LoadSave {
 
 		engine.getAudio().getSound().setReverb(0);
 	   
-		if(ud.lockout == 0)
-		{
-			for(int x=0;x<numanimwalls;x++)
-				if( wall[animwall[x].wallnum].extra >= 0 )
-					wall[animwall[x].wallnum].picnum = wall[animwall[x].wallnum].extra;
-		}
-	
-		InterpolationCount = 0;
-		startofdynamicinterpolations = 0;
-
-		int k = headspritestat[3];
-		while(k >= 0)
-		{
-	        switch(sprite[k].lotag)
-	        {
-	            case 31:
-	            case 32:
-	            case 25:
-	            case 17:
-	                viewBackupSectorLoc(sprite[k].sectnum, sector[sprite[k].sectnum]);
-	                break;
-	            case 0:
-	            case 5:
-	            case 6:
-	            case 11:
-	            case 14:
-	            case 15:
-	            case 16:
-	            case 26:
-	            case 30:
-	                setsectinterpolate(k);
-	                break;
-	        }
-
-	        k = nextspritestat[k];
-		}
+//		if(ud.lockout == 0)
+//		{
+//			for(int x=0;x<numanimwalls;x++)
+//				if( wall[animwall[x].wallnum].extra >= 0 )
+//					wall[animwall[x].wallnum].picnum = wall[animwall[x].wallnum].extra;
+//		}
+//	
+//		InterpolationCount = 0;
+//		startofdynamicinterpolations = 0;
+//
+//		int k = headspritestat[3];
+//		while(k >= 0)
+//		{
+//	        switch(sprite[k].lotag)
+//	        {
+//	            case 31:
+//	            case 32:
+//	            case 25:
+//	            case 17:
+//	                viewBackupSectorLoc(sprite[k].sectnum, sector[sprite[k].sectnum]);
+//	                break;
+//	            case 0:
+//	            case 5:
+//	            case 6:
+//	            case 11:
+//	            case 14:
+//	            case 15:
+//	            case 16:
+//	            case 26:
+//	            case 30:
+//	                setsectinterpolate(k);
+//	                break;
+//	        }
+//
+//	        k = nextspritestat[k];
+//		} XXX
 
 		for(int i = gAnimationCount-1;i>=0;i--)
 		{
@@ -856,10 +839,7 @@ public class LoadSave {
 		resettimevars();
 		
 		gm = MODE_GAME;
-
-		return true;
 	}
-	
 	
 	public static boolean loadgame(String filename)
 	{
@@ -869,22 +849,19 @@ public class LoadSave {
 			Bread(fil, data, data.length);
 			ByteBuffer bb = ByteBuffer.wrap(data);
 			bb.order( ByteOrder.LITTLE_ENDIAN);
-
-			boolean status = false;
-			try {
-				status = load(bb);
-			} catch(Exception e) {
-				e.printStackTrace();
-//				GameCrash("Saved game file is corrupt \r\n" + e.toString());
-//				clearInstances();
-				kGameCrash = true;
+			
+			boolean status = checkfile(bb);
+			if(status)
+			{
+				load();
+				if(lastload == null || lastload.isEmpty()) 
+					lastload = filename;
 			}
-			if(status && (lastload == null || lastload.isEmpty()))
-				lastload = filename;
-
+			
 			Bclose(fil);
 			return status;
 		}
+		
 		return false;
 	}
 }

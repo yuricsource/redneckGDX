@@ -361,7 +361,7 @@ public class Gamedef {
 		return Character.isLetterOrDigit(c);
 	}
 
-	public static void getglobalz(int i)
+	public static void getglobalz(short i)
 	{
 	    int lz,zr;
 
@@ -1809,7 +1809,7 @@ public class Gamedef {
 	        da = klabs(pHitInfo.hitx-s.x)+klabs(pHitInfo.hity-s.y);
 
 	        if( d < da )
-	            if(engine.cansee(pHitInfo.hitx,pHitInfo.hity,pHitInfo.hitz,(short)pHitInfo.hitsect,s.x,s.y,s.z-(16<<8),s.sectnum) != 0)
+	            if(engine.cansee(pHitInfo.hitx,pHitInfo.hity,pHitInfo.hitz,(short)pHitInfo.hitsect,s.x,s.y,s.z-(16<<8),s.sectnum) )
 	        {
 	            furthest_x = pHitInfo.hitx;
 	            furthest_y = pHitInfo.hity;
@@ -1834,7 +1834,7 @@ public class Gamedef {
 	    {
 	        int j = ps[g_p].holoduke_on;
 
-	        if(j >= 0 && engine.cansee(sprite[j].x,sprite[j].y,sprite[j].z,sprite[j].sectnum,g_sp.x,g_sp.y,g_sp.z,g_sp.sectnum) != 0 )
+	        if(j >= 0 && engine.cansee(sprite[j].x,sprite[j].y,sprite[j].z,sprite[j].sectnum,g_sp.x,g_sp.y,g_sp.z,g_sp.sectnum) )
 	            g_sp.owner = (short) j;
 	        else g_sp.owner = ps[g_p].i;
 
@@ -2085,7 +2085,9 @@ public class Gamedef {
 	
 	public static boolean parse()
 	{
-		int j, l, s;
+		int j, l;
+		short s;
+		boolean cans;
 
 	    if(killit_flag != 0) return true;
 
@@ -2158,14 +2160,14 @@ public class Gamedef {
 	            parseifelse(j != 0);
 	            break;
 	        case 91:
-	            j = engine.cansee(g_sp.x,g_sp.y,g_sp.z-((engine.krand()&41)<<8),g_sp.sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz/*-((engine.krand()&41)<<8)*/,sprite[ps[g_p].i].sectnum);
-	            parseifelse(j != 0);
-	            if( j != 0 ) hittype[g_i].timetosleep = SLEEPTIME;
+	            cans = engine.cansee(g_sp.x,g_sp.y,g_sp.z-((engine.krand()&41)<<8),g_sp.sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz/*-((engine.krand()&41)<<8)*/,sprite[ps[g_p].i].sectnum);
+	            parseifelse(cans);
+	            if( cans ) hittype[g_i].timetosleep = SLEEPTIME;
 	            break;
 	        case 110:
-	        	j = engine.cansee(g_sp.x,g_sp.y,g_sp.z,g_sp.sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz,sprite[ps[g_p].i].sectnum);
-	        	parseifelse(j != 0);
-	        	if( j != 0 ) hittype[g_i].timetosleep = SLEEPTIME;
+	        	cans = engine.cansee(g_sp.x,g_sp.y,g_sp.z,g_sp.sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz,sprite[ps[g_p].i].sectnum);
+	        	parseifelse(cans);
+	        	if( cans ) hittype[g_i].timetosleep = SLEEPTIME;
 	        	break;
 
 	        case 49:
@@ -2177,31 +2179,31 @@ public class Gamedef {
 	            if(ps[g_p].holoduke_on >= 0)
 	            {
 	            	spr = sprite[ps[g_p].holoduke_on];
-	                j = engine.cansee(g_sp.x,g_sp.y,g_sp.z-(engine.krand()&((32<<8)-1)),g_sp.sectnum,
+	            	cans = engine.cansee(g_sp.x,g_sp.y,g_sp.z-(engine.krand()&((32<<8)-1)),g_sp.sectnum,
 	                		spr.x,spr.y,spr.z,spr.sectnum);
-	                if(j == 0)
+	                if(!cans)
 	                	spr = sprite[ps[g_p].i];
 	            }
 	            else spr = sprite[ps[g_p].i];
 
-	            j = engine.cansee(g_sp.x,g_sp.y,g_sp.z-(engine.krand()&((47<<8))),g_sp.sectnum,
+	            cans = engine.cansee(g_sp.x,g_sp.y,g_sp.z-(engine.krand()&((47<<8))),g_sp.sectnum,
 	            		spr.x,spr.y,spr.z-(24<<8),spr.sectnum);
 
-	            if(j == 0)
+	            if(!cans)
 	            {
 	                if( ( klabs(hittype[g_i].lastvx-g_sp.x)+klabs(hittype[g_i].lastvy-g_sp.y) ) <
 	                    ( klabs(hittype[g_i].lastvx-spr.x)+klabs(hittype[g_i].lastvy-spr.y) ) )
-	                        j = 0;
+	                	cans = false;
 
-	                if( j == 0 )
+	                if( !cans )
 	                {
 	                    j = furthestcanseepoint(g_i,spr, hittype[g_i].lastvx, hittype[g_i].lastvy);
 	                    
 	                    hittype[g_i].lastvx = furthest_x;
 	                    hittype[g_i].lastvy = furthest_y;
 
-	                    if(j == -1) j = 0;
-	                    else j = 1;
+	                    if(j == -1) cans = false;
+	                    else cans = true;
 	                }
 	            }
 	            else
@@ -2210,10 +2212,10 @@ public class Gamedef {
 	                hittype[g_i].lastvy = spr.y;
 	            }
 
-	            if( j == 1 && ( g_sp.statnum == 1 || g_sp.statnum == 6 ) )
+	            if( cans && ( g_sp.statnum == 1 || g_sp.statnum == 6 ) )
 	                hittype[g_i].timetosleep = SLEEPTIME;
 
-	            parseifelse(j == 1);
+	            parseifelse(cans);
 	            break;
 	        }
 
@@ -2360,48 +2362,13 @@ public class Gamedef {
 	            parseifelse(ambienttype[g_sp.ang] == script[insptr]);
 	        	break;
 	        case 128:
-	        	//XXX?
 	        	insptr++;
-	        	if(script[insptr] != 0)
-	        	{
-	        		if(script[insptr] != 1)
-	        		{
-	        			insptr++;
-	        		    return false;
-	        		} 
-	        		
-	        		if(ambientid[g_sp.ang] < g_x)
-	        		{
-	        			insptr = insptr+2;
-	        			parse();
-	        			insptr++;
-	        			return false;
-	        		}
-	        		
-	        		insptr++;
-	        		if(insptr != 10)
-	        		{
-	        			insptr++;
-	        		    return false;
-	        		}
-	        	} 
-	        	else
-	        	{
-	        		if(ambientid[g_sp.ang] > g_x)
-	        		{
-	        			insptr = insptr+2;
-	        			parse();
-	        			insptr++;
-	        			return false;
-	        		}
-	        		insptr++;
-	        		if(insptr != 10)
-	        		{
-	        			insptr++;
-	        		    return false;
-	        		}
-	        	}
-	        	break;
+	        	if(script[insptr] == 1)
+	        		parseifelse(ambienthitag[g_sp.ang] < g_x);
+	        	else if(script[insptr] == 0)
+	        		parseifelse(ambienthitag[g_sp.ang] > g_x);
+	        	insptr++;
+    		    return false;
 	        case 126:
 	        	spritesound(ambienttype[g_sp.ang],g_i);
 	            insptr++;
@@ -2553,15 +2520,15 @@ public class Gamedef {
 	                        }
 	                        else if(g_sp.zvel > 2048 && sector[g_sp.sectnum].lotag != 1)
 	                        {
-	                            j = g_sp.sectnum;
-	                            engine.pushmove(g_sp.x,g_sp.y,g_sp.z,j,128,(4<<8),(4<<8),CLIPMASK0);
+	                        	short pushsect = g_sp.sectnum;
+	                            engine.pushmove(g_sp.x,g_sp.y,g_sp.z,pushsect,128,(4<<8),(4<<8),CLIPMASK0);
 	                            
 	                            g_sp.x = pushmove_x;
 	                            g_sp.y = pushmove_y;
 	                            g_sp.z = pushmove_z;
-		                		j = (short) pushmove_sectnum;
-	                            if(j != g_sp.sectnum && j >= 0 && j < MAXSECTORS)
-	                                engine.changespritesect(g_i,j);
+		                		pushsect = pushmove_sectnum;
+	                            if(pushsect != g_sp.sectnum && pushsect != -1)
+	                                engine.changespritesect(g_i,pushsect);
 
 	                            spritesound(THUD,g_i);
 	                        }
@@ -2798,7 +2765,7 @@ public class Gamedef {
                 s = headspritesect[sect];
     		    while(s >= 0)
     		    {
-    		    	int next = nextspritesect[s];
+    		    	short next = nextspritesect[s];
     		    	if(sprite[s].picnum != 63 
     		    			&& sprite[s].picnum != DESTRUCTO
     		    			&& sprite[s].picnum != COOT 
@@ -2977,7 +2944,7 @@ public class Gamedef {
 	                    for(j=(script[insptr])-1;j>=0;j--)
 	                {
 	                    if(dnum == SCRAP1) s = 0;
-	                    else s = (engine.krand()%3);
+	                    else s = (short) (engine.krand()%3);
 
 	                    int vz = -(engine.krand()&2047);
 	                    int ve = (engine.krand()&127)+32;
@@ -2988,7 +2955,7 @@ public class Gamedef {
 	                    int sy = g_sp.y+(engine.krand()&255)-128;
 	                    int sx = g_sp.x+(engine.krand()&255)-128;
 	                    
-	                    l = EGS(g_sp.sectnum,sx,sy,sz,dnum+s,g_sp.shade,vx,vy,va,ve, vz,g_i,5);
+	                    l = EGS(g_sp.sectnum,sx,sy,sz,dnum+s,g_sp.shade,vx,vy,va,ve, vz,g_i,(short)5);
 	                    if(dnum == SCRAP1)
 	                        sprite[l].yvel = weaponsandammosprites[j%14];
 	                    else sprite[l].yvel = -1;
@@ -3134,7 +3101,7 @@ public class Gamedef {
 	                    ps[g_p].inven_icon = 4;
 	                    break;
 	                case 6:
-	                    switch(g_sp.lotag)
+	                	switch(g_sp.lotag)
 	                    {
 	                        case 100: ps[g_p].gotkey[1] = 1;break;
 	                        case 101: ps[g_p].gotkey[2] = 1;break;
@@ -3371,7 +3338,7 @@ public class Gamedef {
 	        case 38:
 	            insptr++;
 	            if( ps[g_p].knee_incs == 0 && sprite[ps[g_p].i].xrepeat >= 9 )
-	                if( engine.cansee(g_sp.x,g_sp.y,g_sp.z-(4<<8),g_sp.sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz+(16<<8),sprite[ps[g_p].i].sectnum) != 0 )
+	                if( engine.cansee(g_sp.x,g_sp.y,g_sp.z-(4<<8),g_sp.sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz+(16<<8),sprite[ps[g_p].i].sectnum) )
 	            {
 	                ps[g_p].knee_incs = 1;
 	                if(ps[g_p].weapon_pos == 0)
@@ -3609,7 +3576,7 @@ public class Gamedef {
 	            if(hittype[g_i].timetosleep > 1)
 	                hittype[g_i].timetosleep--;
 	            else if(hittype[g_i].timetosleep == 1)
-	                 engine.changespritestat(g_i,2);
+	                 engine.changespritestat(g_i,(short)2);
 	        }
 
 	        else if(g_sp.statnum == 6)
@@ -3628,7 +3595,7 @@ public class Gamedef {
 	                    if(hittype[g_i].timetosleep > 1)
 	                        hittype[g_i].timetosleep--;
 	                    else if(hittype[g_i].timetosleep == 1)
-	                        engine.changespritestat(g_i,2);
+	                        engine.changespritestat(g_i,(short)2);
 	                    break;
 	            }
 	    }
