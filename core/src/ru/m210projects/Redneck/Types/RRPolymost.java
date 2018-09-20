@@ -149,11 +149,6 @@ public class RRPolymost extends Polymost {
 				bakx1 = (int) rx1[0];
 				baky1 = mulscale((int) ry1[0] - (ydim << 11),
 						xyaspect, 16) + (ydim << 11);
-				if ((i & 0x0f) != 0) {
-					npoints = clippoly(npoints, i);
-					if (npoints < 3)
-						continue;
-				}
 
 				// Collect floor sprites to draw
 				for(i=headspritesect[s];i>=0;i=nextspritesect[i])
@@ -228,8 +223,8 @@ public class RRPolymost extends Polymost {
 					globalx2 = mulscale((int) globalx2, i, 12);
 					globaly2 = mulscale((int) globaly2, i, 12);
 				}
-				globalxshift = (char) (8 - (picsiz[globalpicnum] & 15));
-				globalyshift = (char) (8 - (picsiz[globalpicnum] >> 4));
+				int globalxshift = (8 - (picsiz[globalpicnum] & 15));
+				int globalyshift = (8 - (picsiz[globalpicnum] >> 4));
 				if ((globalorientation & 8) != 0) {
 					globalxshift++;
 					globalyshift++;
@@ -340,11 +335,6 @@ public class RRPolymost extends Polymost {
 
 	            if ((i&0xf0) != 0xf0) continue;
 	            bakx1 = (int) rx1[0]; baky1 = mulscale((int)ry1[0]-(ydim<<11),xyaspect,16)+(ydim<<11);
-	            if ((i&0x0f) != 0)
-	            {
-	                npoints = clippoly(npoints,i);
-	                if (npoints < 3) continue;
-	            }
 
 	            globalpicnum = spr.picnum;
 	            globalpal = spr.pal; // GL needs this, software doesn't

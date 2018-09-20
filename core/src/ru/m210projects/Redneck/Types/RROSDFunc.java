@@ -69,7 +69,8 @@ public class RROSDFunc extends DEFOSDFUNC {
 			x += 3;
 			while (text != null && pos < text.length && text[pos] != 0) {
 				pal = ((fmt[ptr][pos]) & ~0xE0);
-				engine.printchar256(x, (y << 3) + 3, colorswap(pal), -1, text[pos++], 0);
+				charbuf[0] = text[pos++];
+				engine.printext256(x, (y << 3) + 3, colorswap(pal), -1, charbuf, 0);
 				x += 8;
 			}
 		}
