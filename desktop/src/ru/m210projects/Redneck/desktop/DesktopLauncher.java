@@ -16,8 +16,12 @@
 
 package ru.m210projects.Redneck.desktop;
 
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.OnSceenDisplay.Console.SetLogFile;
 
+import org.lwjgl.LWJGLException;
+
+import ru.m210projects.Build.Audio.ALAudio;
 import ru.m210projects.Build.Audio.DummySound;
 import ru.m210projects.Build.Audio.Sound;
 import ru.m210projects.Build.Audio.BMusic.DummyMusic;
@@ -28,6 +32,8 @@ import ru.m210projects.Build.desktop.DesktopMessage;
 import ru.m210projects.Build.desktop.Launcher.DesktopFrame;
 import ru.m210projects.Build.desktop.Launcher.LaunchCallback;
 import ru.m210projects.Build.desktop.audio.ALSoundDrv;
+import ru.m210projects.Build.desktop.audio.GdxAL;
+import ru.m210projects.Build.desktop.audio.LwjglAL;
 import ru.m210projects.Build.desktop.audio.midi.DavidMusicModule;
 import ru.m210projects.Build.desktop.extension.DeskApplication;
 import ru.m210projects.Build.desktop.extension.DeskApplicationConfiguration;
@@ -88,9 +94,23 @@ public class DesktopLauncher {
 		for(int i = 16; i <= 256; i *= 2) 
 			lwjglConfig.addIcon("icons/RR" + i + ".png", FileType.Internal);
 		
+		ALAudio al = null;
+		try {
+			//try to load JNA version of OpenAL
+			al = new GdxAL();
+		} catch (Throwable t) {
+			try {
+				//if not success, try to load GDX version of OpenAL
+				al = new LwjglAL();
+			} catch (LWJGLException e) {
+				e.printStackTrace();
+				Console.Println("Unable to initialize OpenAL! - " + e.getLocalizedMessage(), OSDTEXT_RED);
+			}
+		}
+		
 		Main.fxdrivers = new Sound[] {
 			new DummySound(),
-			new ALSoundDrv(),
+			new ALSoundDrv(al),
 		};
 		if(cfg.snddrv >= Main.fxdrivers.length)
 			cfg.snddrv = 0;

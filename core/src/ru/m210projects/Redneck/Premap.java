@@ -1622,7 +1622,7 @@ public class Premap {
 
 	    StopAllSounds();
 	    clearsoundlocks();
-	    engine.getAudio().getSound().setReverb(0);
+	    engine.getAudio().getSound().setReverb(false, 0);
 
 	    dofrontscreens();
 		    

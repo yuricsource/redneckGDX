@@ -982,13 +982,11 @@ public class Actors {
 				if (s.lotag >= 1000 && s.lotag < 2000) {
 					x = ldist(sprite[ps[screenpeek].i], s);
 					if (x < ht && hittype[i].temp_data[0] == 0) {
-						engine.getAudio().getSound().setReverb(1);
-						engine.getAudio().getSound().setReverbDelay(s.lotag - 1000);
+						engine.getAudio().getSound().setReverb(true, s.lotag - 1000);
 						hittype[i].temp_data[0] = 1;
 					}
 					if (x >= ht && hittype[i].temp_data[0] == 1) {
-						engine.getAudio().getSound().setReverb(0);
-						engine.getAudio().getSound().setReverbDelay(0);
+						engine.getAudio().getSound().setReverb(false, 0);
 						hittype[i].temp_data[0] = 0;
 					}
 				} else if (s.lotag < 999

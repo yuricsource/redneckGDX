@@ -767,7 +767,7 @@ public class LoadSave {
 		setpal(ps[myconnectindex]);
 		vscrn(ud.screen_size);
 
-		engine.getAudio().getSound().setReverb(0);
+		engine.getAudio().getSound().setReverb(false, 0); //XXX
 	   
 //		if(ud.lockout == 0)
 //		{

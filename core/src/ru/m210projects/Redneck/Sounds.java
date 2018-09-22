@@ -201,12 +201,12 @@ public class Sounds {
 	public static boolean sndRestart(int nvoices)
 	{
 		engine.getAudio().getSound().stopAllSounds();	
-		engine.getAudio().getSound().dispose();
+		engine.getAudio().getSound().uninit();
 		cfg.NumVoices = nvoices;
 		
 		Console.Println("Sound restarting...");
 		
-		if(engine.getAudio().getSound().init(1, nvoices))
+		if(engine.getAudio().getSound().init(1, nvoices, 0))
 		{
 			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);
 		} 
@@ -227,7 +227,7 @@ public class Sounds {
 	    }
 		
 
-		if(engine.getAudio().getSound().init(1, cfg.NumVoices)) {
+		if(engine.getAudio().getSound().init(1, cfg.NumVoices, 0)) {
 			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);	
 		}
 		else {
@@ -235,10 +235,6 @@ public class Sounds {
 		}
 	}
 
-	public static void SoundShutdown() {
-		engine.getAudio().getSound().dispose();
-	}
-	
 	public static void MusicStartup() {
 		if(!engine.getAudio().getMusic().init()) 
 			Console.Println(engine.getAudio().getName(MUSICDRV) + " initialization failed", OSDTEXT_RED);
@@ -248,10 +244,6 @@ public class Sounds {
 		else engine.getAudio().setVolume(MUSICDRV, 0);	
 	}
 
-	public static void MusicShutdown() {
-		engine.getAudio().getMusic().dispose();
-	}
-	
 	public static void MusicUpdate()
 	{
 		currMusic.update();
