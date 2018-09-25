@@ -361,7 +361,7 @@ public class View {
         	gametext(160,y,buf,65536,shade,0,8+16);
 	    }
 
-	    //if(ud.coords != 0)
+	    if(ud.coords != 0)
 	    	coords(screenpeek);
 	}
 
@@ -871,7 +871,7 @@ public class View {
 	        animatesprites(cposx,cposy,cposz,(short)cang,smoothratio);
 	        engine.drawmasks();
 	        
-	        displaygeom3d(sect, cposx, cposy, cposz, choriz, cang, sect, smoothratio); //XXX
+	        displaygeom3d(sect, cposx, cposy, cposz, choriz, cang, sect, smoothratio);
 	    }
 
 	    restoreinterpolations();

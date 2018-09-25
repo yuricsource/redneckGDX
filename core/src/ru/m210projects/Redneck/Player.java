@@ -689,7 +689,7 @@ public class Player {
 	                    fz = cz + 1024;
 	            	}
 	            }
-	        } //XXX
+	        }
 		    else if ( (sprite[j].picnum == 1098 || sprite[j].picnum == 2121) && (sb_snum & 2) != 0 && Sound[436].num == 0 ) 
 		    {
 		    	spritesound(436, p.i);
