@@ -222,7 +222,8 @@ public class Demo {
 				domovethings();
 	
 				if (ud.reccnt <= 0) {
-					backtomenu();
+					//backtomenu();
+					demfile = null;
 					return;
 				}
 			}

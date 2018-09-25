@@ -963,9 +963,9 @@ public class Redneck {
 	    if(p.aim_mode < i)
 	        p.return_to_center = 9;
 	    
-	    /* option
-	    if(p.last_pissed_time == 0)
+	    if((sb_snum & 1 << 22) != 0 && p.last_pissed_time == 0)
 	    {
+	    	System.err.println("Quick pee");
 	    	p.last_pissed_time = 4000;
 	    	if(ud.lockout == 0)
 	    		spritesound(437, p.i);
@@ -981,7 +981,6 @@ public class Redneck {
 	  	        p.last_extra = sprite[p.i].extra;
 	  	    }
 	    }
-	    */
 
 	    if( (sb_snum&((15<<8)|(1<<12)|(1<<15)|(1<<16)|(1<<22)|  (1<<19)| (1<<20)|(1<<21)|(1<<24)|(1<<25)|(1<<27)|(1<<28)|(1<<29)|(1<<30)|(1<<31))) == 0 )
 	        p.interface_toggle_flag = 0;
@@ -1095,7 +1094,7 @@ public class Redneck {
 		                        CHECKINV = true;
 		                        break;
 		                    case 5:
-		                        if(p.empty_amount > 0 && i > 1)
+		                        if(p.yeehaa_amount > 0 && i > 1)
 		                            break;
 		                        if(k != 0) dainv = 6;
 		                        else dainv = 4;
@@ -1350,7 +1349,7 @@ public class Redneck {
 	                  spritesound(425, p.i);
 	        }
 	        
-	        if( (sb_snum&(1<<15)) != 0 ) //NightVision (empty_amount) XXX
+	        if( (sb_snum&(1<<15)) != 0 )
 	        {
 	        	if( p.newowner == -1 && p.field_count == 0 )
 	        	{

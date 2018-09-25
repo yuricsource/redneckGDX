@@ -361,7 +361,7 @@ public class View {
         	gametext(160,y,buf,65536,shade,0,8+16);
 	    }
 
-	    if(ud.coords != 0)
+	    //if(ud.coords != 0)
 	    	coords(screenpeek);
 	}
 
@@ -611,7 +611,7 @@ public class View {
                 case 2: i = ((p.moonshine_amount+3)>>2); break;
                 case 3: i = ((p.beer_amount)/400); break;
                 case 4: i = ((p.cowpie_amount)/100); break;
-                case 5: i = p.empty_amount/12; break;
+                case 5: i = p.yeehaa_amount/12; break;
                 case 6: i = ((p.snorkle_amount+63)>>6); break;
                 case 7: i = (p.boot_amount / 10 >> 1); break;
 	            }
@@ -693,7 +693,7 @@ public class View {
                 case 2: i = ((p.moonshine_amount+3)>>2); break;
                 case 3: i = ((p.beer_amount)/400); break;
                 case 4: i = ((p.cowpie_amount)/100); break;
-                case 5: i = p.empty_amount/12; break;
+                case 5: i = p.yeehaa_amount/12; break;
                 case 6: i = ((p.snorkle_amount+63)>>6); break;
                 case 7: i = (p.boot_amount / 10 >> 1); break;
             }
@@ -871,7 +871,7 @@ public class View {
 	        animatesprites(cposx,cposy,cposz,(short)cang,smoothratio);
 	        engine.drawmasks();
 	        
-	        displaygeom3d(sect, cposx, cposy, cposz, choriz, cang, sect, smoothratio);
+	        displaygeom3d(sect, cposx, cposy, cposz, choriz, cang, sect, smoothratio); //XXX
 	    }
 
 	    restoreinterpolations();
@@ -1805,7 +1805,7 @@ public class View {
 
 	public static void displaygeom3d(int sectnum, int cposx, int cposy, int cposz,  float choriz, float cang, int csect, int smoothratio)
 	{
-		if(sector[sectnum].lotag == 848)
+		if(sectnum != -1 && sector[sectnum].lotag == 848)
 		{
 	        short geomsect = 0;
 	        
@@ -1884,7 +1884,7 @@ public class View {
 	    n |= (p.moonshine_amount > 0)?1<<1:0; if((n&2) != 0) j++;
 	    n |= ( p.beer_amount > 0)?1<<2:0; if((n&4) != 0) j++;
 	    n |= (p.whishkey_amount > 0)?1:0; if((n&1) != 0) j++;
-	    n |= (p.empty_amount > 0)?1<<4:0; if((n&16) != 0) j++;
+	    n |= (p.yeehaa_amount > 0)?1<<4:0; if((n&16) != 0) j++;
 	    n |= (p.boot_amount > 0)?1<<6:0; if((n&64) != 0) j++;
 	    
 	    xoff = 160-(j*11);

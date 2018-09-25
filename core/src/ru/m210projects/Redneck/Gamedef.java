@@ -3110,7 +3110,7 @@ public class Gamedef {
 	                    }
 	                    break;
 	                case 7:
-	                    ps[g_p].empty_amount = (short) script[insptr];
+	                    ps[g_p].yeehaa_amount = (short) script[insptr];
 	                    ps[g_p].inven_icon = 5;
 	                    break;
 	                case 9:
@@ -3325,7 +3325,7 @@ public class Gamedef {
 	                            case 103: if(ps[g_p].gotkey[4] != 0) j = 1;break;
 	                        }
 	                        break;
-	                    case 7:if(ps[g_p].empty_amount != script[insptr]) j = 1;break;
+	                    case 7:if(ps[g_p].yeehaa_amount != script[insptr]) j = 1;break;
 	                    case 9:
 	                        if(ps[g_p].whishkey_amount != script[insptr]) j = 1;break;
 	                    case 10:

@@ -688,7 +688,7 @@ public class Premap {
 	    p.inven_icon       = 0;
 	    p.boot_amount = 0;
 	    p.scuba_on =           0;p.snorkle_amount =         0;
-	    p.empty_amount        = 0;p.heat_on = 0;
+	    p.yeehaa_amount        = 0;p.heat_on = 0;
 	    p.jetpack_on =         0;p.cowpie_amount =       0;
 	    p.shield_amount =      (short) max_armour_amount;
 	    p.holoduke_on = -1;
@@ -1798,7 +1798,7 @@ class PlayerInfo
             moonshine_amount = p.moonshine_amount;
             beer_amount = p.beer_amount;
             cowpie_amount = p.cowpie_amount;
-            empty_amount = p.empty_amount;
+            empty_amount = p.yeehaa_amount;
             snorkle_amount = p.snorkle_amount;
             boot_amount = p.boot_amount;
         }
@@ -1824,7 +1824,7 @@ class PlayerInfo
             p.moonshine_amount= moonshine_amount;
             p.beer_amount = beer_amount;
             p.cowpie_amount = cowpie_amount;
-            p.empty_amount = empty_amount;
+            p.yeehaa_amount = empty_amount;
             p.snorkle_amount= snorkle_amount;
             p.boot_amount = boot_amount;
         }

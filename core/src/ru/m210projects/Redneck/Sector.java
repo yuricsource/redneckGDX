@@ -1759,7 +1759,7 @@ public class Sector {
 	{
 	    int j, darkestwall;
 	    short i, sn = -1;
-
+	    
 	    WALL wal = wall[dawallnum];
 
 	    if(wal.overpicnum == MIRROR)
@@ -1800,7 +1800,8 @@ public class Sector {
 
 	        case GLASS:
 	        case 1973:
-	        	sn = engine.updatesector(x,y,sn); if( sn < 0 ) return;
+	        	sn = engine.updatesector(x,y,sn); 
+	        	if( sn < 0 ) return;
 	            wal.overpicnum=GLASS2;
 	            if(wal.overpicnum == 1973)
 	            	lotsofglass(spr,dawallnum,64);

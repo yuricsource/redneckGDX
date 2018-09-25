@@ -31,8 +31,14 @@ public class VOC {
 	public VOC(byte[] data)
 	{
 		getInfo(data);
-		byte[] buf = convertData(data, datalen, samplesize == 8);
-		sampledata = ByteBuffer.allocateDirect(buf.length);
+		boolean eightbit = samplesize == 8;
+		byte[] buf = convertData(data, datalen, eightbit);
+		
+		int samplelength = buf.length;
+		if(!eightbit && (samplelength % 2) == 1)
+			samplelength++;
+		
+		sampledata = ByteBuffer.allocateDirect(samplelength);
 		sampledata.put(buf);
 		sampledata.rewind();
 	}
@@ -53,15 +59,14 @@ public class VOC {
 
 		datalen = 0;
 		while (true) {
-			blocktype = data[tptr++];
-			if (tptr >= data.length) return;	// truncated
+			if (tptr >= data.length - 4) return;	// truncated
 			
+			blocktype = data[tptr];
 			if (blocktype == 0)
 				break;
 
-			blocklen = (data[tptr++] & 0xFF);
-			blocklen |= (data[tptr++] & 0xFF)  << 8;
-			blocklen |= (data[tptr++] & 0xFF) << 16;
+			blocklen = LittleEndian.getInt(data, tptr + 1) & 0x00FFFFFF;
+			tptr += 4;
 
 			int ptr = tptr;
 			switch (blocktype) {
@@ -116,6 +121,7 @@ public class VOC {
 					samplesize = data[tptr] & 0xFF;
 					if(samplesize == 0) samplesize = 8;
 					channels   = data[tptr + 1] & 0xFF;
+					
 					if (((data[tptr + 2] & 0xFF) | ((data[tptr + 3] & 0xFF) << 8)) != 0 &&
 					    ((data[tptr + 2] & 0xFF) | ((data[tptr + 3] & 0xFF) << 8)) != 4) {
 						/* only PCM please */
@@ -125,7 +131,6 @@ public class VOC {
 					
 					if (ptr + blocklen >= data.length) 
 						blocklen = data.length - ptr - 1;
-					
 					datalen += blocklen-12;
 					tptr = ptr + blocklen;
 					break;

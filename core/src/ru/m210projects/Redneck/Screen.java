@@ -205,7 +205,7 @@ public class Screen {
 	    n |= (p.moonshine_amount > 0)?1<<1:0; if((n&2) != 0) j++;
 	    n |= ( p.beer_amount > 0)?1<<2:0; if((n&4) != 0) j++;
 	    n |= (p.whishkey_amount > 0)?1:0; if((n&1) != 0) j++;
-	    n |= (p.empty_amount > 0)?1<<4:0; if((n&16) != 0) j++;
+	    n |= (p.yeehaa_amount > 0)?1<<4:0; if((n&16) != 0) j++;
 	    n |= (p.boot_amount > 0)?1<<6:0; if((n&64) != 0) j++;
 	    
 	    xoff = 160-(j*11);

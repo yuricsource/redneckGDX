@@ -210,12 +210,13 @@ public class Controls {
 	    loc.bits |=   ctrlGetInputKey(Moonshine, false)? 1 << 12 : 0;
 	    loc.bits |=   ctrlGetInputKey(Look_Up, false)? 1 << 13 : 0;
 	    loc.bits |=   ctrlGetInputKey(Look_Down, false)? 1 << 14 : 0;
-
+//	    loc.bits |=   ctrlGetInputKey(Yeehaa, false)? 1 << 15 : 0; // XXX
 	    loc.bits |=   ctrlGetInputKey(Wiskey, false)? 1 << 16 : 0;
 	    loc.bits |=   ctrlGetInputKey(Aim_Center, false)? 1 << 18 : 0;
 	    loc.bits |=   ctrlGetInputKey(Holster_Weapon, false)? 1 << 19 : 0;
 	    loc.bits |=   ctrlGetInputKey(Inventory_Left, false)? 1 << 20 : 0;
 	    loc.bits |=   getInput().keyStatus(KEY_PAUSE)? 1 << 21 : 0;
+//	    loc.bits |=   ctrlGetInputKey(Quick_Pee, false)? 1 << 22 : 0;
 	    loc.bits |=   cfg.gMouseAim? 1 << 23 : 0;
 	    
 	    loc.bits |=   ctrlGetInputKey(Beer, false)? 1 << 24 : 0;

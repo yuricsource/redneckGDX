@@ -54,7 +54,7 @@ public class PlayerStruct {
 	public short over_shoulder_on,random_club_frame,fist_incs;
 	public short one_eighty_count,cheat_phase;
 	public short dummyplayersprite,extra_extra8,quick_kick;
-	public short empty_amount,actorsqu,timebeforeexit,customexitsound;
+	public short yeehaa_amount,actorsqu,timebeforeexit,customexitsound;
 
 	public short weaprecs[] = new short[16],weapreccnt,interface_toggle_flag;
 
@@ -196,7 +196,7 @@ public class PlayerStruct {
 		this.dummyplayersprite = src.dummyplayersprite;
 		this.extra_extra8 = src.extra_extra8;
 		this.quick_kick = src.quick_kick;
-		this.empty_amount = src.empty_amount;
+		this.yeehaa_amount = src.yeehaa_amount;
 		this.actorsqu = src.actorsqu;
 		this.timebeforeexit = src.timebeforeexit;
 		this.customexitsound = src.customexitsound;
@@ -369,7 +369,7 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, dummyplayersprite); ptr+=2;
 		LittleEndian.putShort(buf, ptr, extra_extra8); ptr+=2;
 		LittleEndian.putShort(buf, ptr, quick_kick); ptr+=2;
-		LittleEndian.putShort(buf, ptr, empty_amount); ptr+=2;
+		LittleEndian.putShort(buf, ptr, yeehaa_amount); ptr+=2;
 		LittleEndian.putShort(buf, ptr, actorsqu); ptr+=2;
 		LittleEndian.putShort(buf, ptr, timebeforeexit); ptr+=2;
 		LittleEndian.putShort(buf, ptr, customexitsound); ptr+=2;
@@ -558,7 +558,7 @@ public class PlayerStruct {
 		dummyplayersprite = bb.getShort();
 		extra_extra8 = bb.getShort();
 		quick_kick = bb.getShort();
-		empty_amount = bb.getShort();
+		yeehaa_amount = bb.getShort();
 		actorsqu = bb.getShort();
 		timebeforeexit = bb.getShort();
 		customexitsound = bb.getShort();

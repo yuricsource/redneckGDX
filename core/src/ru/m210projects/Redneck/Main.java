@@ -51,18 +51,23 @@ public class Main extends ApplicationAdapter {
 	 * v0.751
 	 * Crash and bugs fixes
 	 * Colored keys
+	 * Load Some VOC files crash fix
 	 * 
-	 * Globals rename variables
+	 * 
+	 * TODO:
+	 * RR66 mod support
+	 * yeeaha button and quick pee button
+	 * испраавить переключение на лом
 	 * Vixen lasers
 	 * Green vixen damage
-	 * Когда пьяный, можно отлить
+	 * 
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
 	 */
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.751";
+	public static final String sversion = "v0.752";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();

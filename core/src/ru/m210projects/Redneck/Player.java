@@ -123,7 +123,7 @@ public class Player {
 			p.inven_icon = 3;
 		else if (p.cowpie_amount > 0)
 			p.inven_icon = 4;
-		else if (p.empty_amount > 0)
+		else if (p.yeehaa_amount > 0)
 			p.inven_icon = 5;
 		else if (p.snorkle_amount > 0)
 			p.inven_icon = 6;
@@ -689,7 +689,7 @@ public class Player {
 	                    fz = cz + 1024;
 	            	}
 	            }
-	        }
+	        } //XXX
 		    else if ( (sprite[j].picnum == 1098 || sprite[j].picnum == 2121) && (sb_snum & 2) != 0 && Sound[436].num == 0 ) 
 		    {
 		    	spritesound(436, p.i);
@@ -1863,7 +1863,7 @@ public class Player {
 	        case 55: if (ps[snum].moonshine_amount == 400) return(30); else return(0);
 	        case 56: if (ps[snum].snorkle_amount < 6400) return(30); else return(0);
 	        case 57: if (ps[snum].cowpie_amount < 600) return(100); else return(0);
-	        case 59: if (ps[snum].empty_amount < 1200) return(10); else return(0);
+	        case 59: if (ps[snum].yeehaa_amount < 1200) return(10); else return(0);
 	        case 60: return(1);
 	        case BOOTS: if (ps[snum].boot_amount < 2000) return(50); else return(0);
 	        case 5595: if (sprite[ps[snum].i].extra < max_player_health) return(50); else return(0);
