@@ -184,6 +184,35 @@ public class RRMenu {
 		};
 		
 		Console.Println("Searching for addition content...");
+		
+//		boolean map66 = false;
+//		boolean rr66addon = false;
+//		DirectoryEntry dir = cache.checkDirectory("route66");
+//		if(dir != null) {
+//			if(dir.checkFile("start.map") != null)
+//				map66 = true;
+//		}
+//		
+//		int weigth66 = 0;
+//		for (Iterator<FileEntry> it = cache.checkDirectory("<main>").getFiles().values().iterator(); it.hasNext();) {
+//			FileEntry file = it.next();
+//			if(!map66 && file.getName().equals("start.map"))
+//				map66 = true;
+//			
+//			if(file.getName().equals("game66.con") || 
+//					file.getName().equals("gator66.con") ||
+//					file.getName().equals("pig66.con") ||
+//					file.getName().equals("bubba66.con") ||
+//					file.getName().equals("tilesa66.art") ||
+//					file.getName().equals("tilesb66.art"))
+//				weigth66++;
+//		}
+//		
+//		if(weigth66 == 6 && map66)
+//			rr66addon = true;
+		
+//		searchEpisode("user66.con");
+		
 		mUserContent(USERCONTENT, UserContProc);
 		mMain(MAIN);
 		mGame(GAME);
@@ -217,7 +246,7 @@ public class RRMenu {
 		mNetwork(NETWORKGAME);
 		mColorMode(COLORCORR);
 	}
-	
+
 	private static void mReSetClassic(int nMenuId) {
 		
 		MenuTitle question = new MenuTitle("Do you really want reset to classic?", 1, 160, 90, -1);
@@ -389,6 +418,8 @@ public class RRMenu {
                 ud.multimode = 1;
                 if(numplayers > 1)
                 	NetDisconnect(myconnectindex);
+                
+//                checkEpisodeResources("RR66_Addon");
                 
 				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
 				
@@ -1786,8 +1817,10 @@ public class RRMenu {
 	
 	public static int snddriver;
 	public static int middriver;
+	public static int resampler;
 	public static int osnddriver;
 	public static int omiddriver;
+	public static int oresampler;
 	public static int voices;
 	public static int ovoices;
 	public static int cdaudio;
@@ -1889,7 +1922,33 @@ public class RRMenu {
 			}
 		};
 
-		final MenuSlider sSound = new MenuSlider("SOUND VOLUME:", style, false, posx, 80, width, (int) (cfg.soundVolume * 256),
+		final MenuConteiner sResampler = new MenuConteiner("Resampler:", 0, posx, posy += 10, width, null, 0,
+				new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuConteiner item = (MenuConteiner) pItem;
+						resampler = item.num;
+					}
+				}) {
+			@Override
+			public void open(MENU pMenu) {
+				if(this.list == null) {
+					this.list = new char[engine.getAudio().getSound().getNumResamplers()][];
+					for (int i = 0; i < list.length; i++)
+						this.list[i] = engine.getAudio().getSound().getSoftResamplerName(i).toCharArray();
+				}
+				if(cfg.resampler_num < 0 || cfg.resampler_num >= engine.getAudio().getSound().getNumResamplers())
+					cfg.resampler_num = 0;
+				num = resampler = oresampler = cfg.resampler_num;
+			}
+			
+			@Override
+			public void draw() {
+				SndDriverDraw(this);
+			}
+		};
+
+		final MenuSlider sSound = new MenuSlider("SOUND VOLUME:", style, false, posx, 85, width, (int) (cfg.soundVolume * 256),
 				0, 256, 16, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
@@ -1908,7 +1967,7 @@ public class RRMenu {
 					flags = 1;
 			}
 		};
-		final MenuSlider sVoices = new MenuSlider("VOICES:", style, false, posx, 90, width, 0, 8, 256, 8, new MENUPROC() {
+		final MenuSlider sVoices = new MenuSlider("VOICES:", style, false, posx, 95, width, 0, 8, 256, 8, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuSlider slider = (MenuSlider) pItem;
@@ -1926,7 +1985,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSwitch sSoundSwitch = new MenuSwitch("Sound:", style, posx, 70, width, cfg.SoundToggle, new MENUPROC() {
+		MenuSwitch sSoundSwitch = new MenuSwitch("Sound:", style, posx, 75, width, cfg.SoundToggle, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuSwitch sw = (MenuSwitch) pItem;
@@ -1942,7 +2001,7 @@ public class RRMenu {
 			}
 		}, null, null);
 
-		final MenuSlider sMusic = new MenuSlider("MUSIC VOLUME:", style, false, posx, 120, width, (int) (cfg.musicVolume * 256), 0, 256, 8,
+		final MenuSlider sMusic = new MenuSlider("MUSIC VOLUME:", style, false, posx, 125, width, (int) (cfg.musicVolume * 256), 0, 256, 8,
 				new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
@@ -1961,7 +2020,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSwitch sMusicSwitch = new MenuSwitch("Music:", style, posx, 110, width, cfg.MusicToggle, new MENUPROC() {
+		MenuSwitch sMusicSwitch = new MenuSwitch("Music:", style, posx, 115, width, cfg.MusicToggle, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuSwitch sw = (MenuSwitch) pItem;
@@ -1978,7 +2037,7 @@ public class RRMenu {
 			}
 		}, null, null);
 
-		MenuConteiner sMusicType = new MenuConteiner("Music type:", style, posx, 130, width, null, 0, new MENUPROC() {
+		MenuConteiner sMusicType = new MenuConteiner("Music type:", style, posx, 135, width, null, 0, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuConteiner item = (MenuConteiner) pItem;
@@ -2006,18 +2065,28 @@ public class RRMenu {
 		MENUPROC callback = new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
-				if (snddriver != osnddriver || voices != ovoices) {
+				if (snddriver != osnddriver || voices != ovoices || resampler != oresampler) {
 					StopAllSounds();
 					
 					if (snddriver != osnddriver)
 						engine.getAudio().setDriver(SOUNDDRV, fxdrivers[snddriver]);
 					if (voices != ovoices)
 						cfg.NumVoices = voices;
+					if(resampler != oresampler)
+						cfg.resampler_num = resampler;
 
-					if (sndRestart(cfg.NumVoices)) {
+					if (sndRestart(cfg.NumVoices, cfg.resampler_num)) {
 						cfg.snddrv = osnddriver = snddriver;
 						sSoundDrv.list[sSoundDrv.num] = fxdrivers[snddriver].getName().toCharArray();
 						ovoices = voices;
+						oresampler = resampler;
+						
+						sResampler.list = new char[engine.getAudio().getSound().getNumResamplers()][];
+						for (int i = 0; i < sResampler.list.length; i++)
+							sResampler.list[i] = engine.getAudio().getSound().getSoftResamplerName(i).toCharArray();
+						if(cfg.resampler_num < 0 || cfg.resampler_num >= engine.getAudio().getSound().getNumResamplers())
+							cfg.resampler_num = 0;
+						sResampler.num = resampler = oresampler = cfg.resampler_num;
 					} else
 						sSoundDrv.list[sSoundDrv.num] = "initialization failed".toCharArray();
 				}
@@ -2044,12 +2113,12 @@ public class RRMenu {
 			}
 		};
 		
-		posy = 130;
+		posy = 135;
 		MenuButton mApplyChanges = new MenuButton("Apply changes", 2, 0, posy += 20, 320, 1, 0, null, -1, callback, 0) {
 			@Override
 			public void draw() {
 				super.draw();
-				if (snddriver != osnddriver || middriver != omiddriver || voices != ovoices || cdaudio != ocdaudio) {
+				if (snddriver != osnddriver || middriver != omiddriver || resampler != oresampler || voices != ovoices || cdaudio != ocdaudio) {
 					flags = 7; pal = 0;
 				} else {
 					pal = 1; flags = 3;
@@ -2059,6 +2128,7 @@ public class RRMenu {
 
 		mAddItem(mMenus[nMenuId], sSoundDrv, true);
 		mAddItem(mMenus[nMenuId], sMusicDrv, false);
+		mAddItem(mMenus[nMenuId], sResampler, false);
 		mAddItem(mMenus[nMenuId], sSoundSwitch, false);
 		mAddItem(mMenus[nMenuId], sSound, false);
 		mAddItem(mMenus[nMenuId], sVoices, false);

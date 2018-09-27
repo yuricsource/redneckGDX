@@ -52,15 +52,15 @@ public class Main extends ApplicationAdapter {
 	 * Crash and bugs fixes
 	 * Colored keys
 	 * Load Some VOC files crash fix
-	 * 
+	 * Quick_pee and "Yeehaa" button
+	 * Weapon low ammo change fix
+	 * Cheats
+	 * Green vixel shoot fix
+	 * OpenAL updated to 1.18.1
 	 * 
 	 * TODO:
+	 * добавить kills и alchogol
 	 * RR66 mod support
-	 * yeeaha button and quick pee button
-	 * испраавить переключение на лом
-	 * Vixen lasers
-	 * Green vixen damage
-	 * 
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop

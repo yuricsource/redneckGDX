@@ -1074,7 +1074,6 @@ public class Weapons {
 	            sprite[atwith].z -= 3840;
             	break;
 	    }
-	    return;
 	}
 	
 	public static final byte crowbar_frames[] = {0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7};
@@ -1125,7 +1124,6 @@ public class Weapons {
 
 			switch (s.picnum) {
 			case RADIUSEXPLOSION:
-			case DILDO:
 				engine.deletesprite(i);
 				continue;
 			case TONGUE:
@@ -1184,6 +1182,7 @@ public class Weapons {
 			case CIRCLESAW:
 			case UWHIP:
 			case OWHIP:
+			case DILDO:
 				p = -1;
 
 				if (s.picnum == CROSSBOW && sector[s.sectnum].lotag == 2) {

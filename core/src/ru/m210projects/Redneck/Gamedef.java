@@ -35,6 +35,7 @@ import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Strhandler.*;
 import static ru.m210projects.Redneck.Globals.MODE_RESTART;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Globals.gm;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.LoadSave.lastload;
@@ -889,7 +890,6 @@ public class Gamedef {
 	            
 	            if(conweigth == 3 && GameCON != RRRA )
 	            {
-	            	 Console.Println("Looks like Redneck Rampage: Suckin' Grits on Route 66 Edition CON files.");
 	            	 GameCON = RR66;
 	            	 conweigth = 0;
 	            }
@@ -1562,11 +1562,9 @@ public class Gamedef {
 	        		 if (j != 30) continue;
 	        		 
 	        		 if (keyword() != -1) {
-	        			 Console.Println("Looks like Redneck Rampage Edition CON files.");
 		            	 GameCON = RR;
 	        			 break;
 	        		 } else {
-	        			 Console.Println("Looks like Redneck Rampage: Rides Again Edition CON files.");
 	        			 GameCON = RRRA;
 	        		 }
 	        	}
@@ -1639,6 +1637,68 @@ public class Gamedef {
 	    }
 	}
 
+	public static boolean loaduserdef(String filenam)
+	{
+		if(cache.checkFile(filenam) == null)
+	    {
+	    	return false;
+	    }
+		
+		int fp = kOpen(filenam,loadfromgrouponly), fs; //XXX
+	    if( fp == -1 )
+	    {
+	        return false;
+	    }
+	    else
+	    {
+	    	Console.Println("Compiling: " + filenam + ".");
+
+	        fs = kFileLength(fp);
+	        
+	        byte[] buf = new byte[fs+1];
+	        label = new char[131072];
+
+	        kRead(fp,buf,fs);
+	        last_used_text = new String(buf);
+	        last_used_size = fs;
+
+	        textptr = 0;
+	        text = last_used_text.toCharArray();
+	        
+	        kClose(fp);
+	    }
+
+	    text[fs - 1] = 0;
+
+	    Arrays.fill(actorscrptr, 0);
+	    Arrays.fill(actortype, (short) 0);
+
+	    labelcnt = 0;
+	    scriptptr = 1;
+	    warning = 0;
+	    error = 0;
+	    line_number = 1;
+	    total_lines = 0;
+
+	    passone(); //Tokenize
+
+	    if((warning|error) != 0)
+	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");
+
+	    if(error != 0)
+	    {
+	    	if(GameMessage("\nErrors found in " + filenam + " file.", false))
+	    		return false;
+	    }
+	    else
+	    {
+	        total_lines += line_number; //1795
+	        Console.Println("Code Size:" + (((scriptptr)<<2)-4) + " bytes(" + labelcnt + " labels).");
+	    }
+	    
+	    return true;
+	}
+	
 	public static void loadefs(String filenam)
 	{
 	    int fs,fp;
@@ -3605,10 +3665,71 @@ public class Gamedef {
 	{
 		conweigth = 0;
 		loadefs(confilename);
+		defscriptname = confilename;
+		defGameCON = GameCON;
 		if( loadfromgrouponly != 0 )
 		{
 			Console.Println("  * Writing defaults to current directory.");
 			loadefs(confilename);
 		}
+
+		switch(GameCON)
+		{
+			case RR:
+				Console.Println("Looks like Redneck Rampage Edition CON files.");
+				break;
+			case RR66:
+				Console.Println("Looks like Redneck Rampage: Suckin' Grits on Route 66 Edition CON files.");
+				break;
+			case RRRA:
+				Console.Println("Looks like Redneck Rampage: Rides Again Edition CON files.");
+				break;
+		}
+	}
+	
+	//For user episodes
+	public static void searchEpisode(String confile)
+	{
+		int fp = kOpen(confile,0), fs;
+		fs = kFileLength(fp);
+        byte[] buf = new byte[fs+1];
+        kRead(fp,buf,fs);
+        kClose(fp);
+        String stext = new String(buf);
+        
+        int index = -1;
+        text = stext.toCharArray();
+        scriptptr = 1;
+        while( (index = stext.indexOf("definevolumename", index+1)) != -1)
+        {
+        	textptr = index + 16;
+        	{
+        		System.err.println(index + " " + textptr);
+        		scriptptr--;
+	            transnum();
+	            scriptptr--;
+	            int j = script[scriptptr];
+	            while( text[textptr] == ' ' ) textptr++;
+
+	            int i = 0;
+	            while( text[textptr] != 0x0a )
+	            {
+	                volume_names[j][i] = Character.toUpperCase(text[textptr]);
+	                textptr++;
+	                i++;
+	                if(i >= 32)
+	                {
+	                    Console.Println("  * ERROR!(L" + line_number + ") Volume name exceeds character size limit of 32.");
+	                    error++;
+	                    while( text[textptr] != 0x0a ) textptr++;
+	                    break;
+	                }
+	            }
+	            
+	            volume_names[j][i-1] = '\0';
+	            if(numepisodes < j)
+	            	numepisodes = j;
+        	}
+        }
 	}
 }

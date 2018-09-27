@@ -21,6 +21,7 @@ import static ru.m210projects.Build.Defs.defsparser;
 import static ru.m210projects.Build.Defs.loaddefinitionsfile;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
+import static ru.m210projects.Build.FileHandle.Compat.FilePath;
 import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Gameutils.BClipRange;
@@ -33,6 +34,7 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Config.Show_Console;
 import static ru.m210projects.Redneck.Animlib.*;
 import static ru.m210projects.Redneck.Actors.*;
@@ -178,7 +180,8 @@ public class Redneck {
 			
 			engine.inittimer(TICRATE);
 			
-			engine.loadpics("tiles000.art");
+			if(engine.loadpics("tiles000.art") == 0)
+				dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
 
 			tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
 			
@@ -189,7 +192,8 @@ public class Redneck {
 			uninitmultiplayer();
 
 			RTS_Init(ud.rtsname);
-			if(numlumps != 0) Console.Println("Using .RTS file:" + ud.rtsname);
+			if(numlumps != 0) 
+				Console.Println("Using .RTS file:" + ud.rtsname);
 			
 			SoundStartup();
 			MusicStartup();
@@ -442,6 +446,12 @@ public class Redneck {
 	
 					switch(gNetFlags)
 					{
+						case 0:
+							Arrays.fill(buf, (char)0);
+							buildString(buf, 0, "Please wait ");
+							mGetAlign(2, buf);
+							menutext(160 - alignx / 2, 90+16+8, -128, 0, buf, 0);
+							break;
 						case gNetCreate:
 						case gNetConnect:
 							if(inet.waiting()) {
@@ -526,6 +536,7 @@ public class Redneck {
 						if (demofiles.size() != 0 && cfg.gDemoSeq != 0)
 			        		gm = MODE_DEMO;
 			        	else gm = MODE_MENU;
+
 			        	scrReset();
 			        	StopAllSounds();
 			        	mOpen(mMenus[MAIN], -1);
@@ -965,7 +976,6 @@ public class Redneck {
 	    
 	    if((sb_snum & 1 << 22) != 0 && p.last_pissed_time == 0)
 	    {
-	    	System.err.println("Quick pee");
 	    	p.last_pissed_time = 4000;
 	    	if(ud.lockout == 0)
 	    		spritesound(437, p.i);
@@ -1436,7 +1446,7 @@ public class Redneck {
 	    }
 	}
 	
-	public static void fakedomovethings() //XXX check player input
+	public static void fakedomovethings()
 	{
 	        Input syn;
 	        PlayerStruct p;
@@ -1955,8 +1965,15 @@ public class Redneck {
 		if(anmInited())
 			closeanm();
 		
-		gm = MODE_LOGO;
-		initanm("rr_intro.anm",5, -1);
+		gm = MODE_WAIT;
+		gNetFlags = 0;
+		new Thread(new Runnable() {
+			public void run() {
+				resetEpisodeResources();
+				initanm("rr_intro.anm",5, -1);
+				gm = MODE_LOGO;
+			}
+		}).start();
 		
 		mClose();
 	}
@@ -1966,6 +1983,12 @@ public class Redneck {
 		closedemowrite();
 		if(engine != null)
 			engine.uninit();
+
+		for(int i = 0; fxdrivers != null && i < fxdrivers.length; i++)
+			if(i != cfg.snddrv && fxdrivers[i].getName().contains("OpenAL")) {
+				fxdrivers[i].destroy(); //OpenAL dispose if DummySound choosed
+			}
+		
 		saveConfig();
 		if(Gdx.graphics instanceof BGraphics)
 			((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();

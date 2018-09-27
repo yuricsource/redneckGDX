@@ -192,10 +192,14 @@ public class Globals {
 
 	public static char[] betaname = new char[80];
 
-	public static char[][] level_names = new char[44][33],level_file_names = new char[44][128];
-	public static int[] partime = new int[44],designertime = new int[44];
-	public static char[][] volume_names = new char[4][33];
-	public static char[][] skill_names = new char[5][33];
+	public static final int nMaxMaps = 11;
+	public static final int nMaxEpisodes = 4;
+	public static final int nMaxSkills = 5;
+	
+	public static char[][] level_names = new char[nMaxMaps * nMaxEpisodes][33],level_file_names = new char[nMaxMaps * nMaxEpisodes][128];
+	public static int[] partime = new int[nMaxMaps * nMaxEpisodes],designertime = new int[nMaxMaps * nMaxEpisodes];
+	public static char[][] volume_names = new char[nMaxMaps][33];
+	public static char[][] skill_names = new char[nMaxSkills][33];
 
 	public static int checksume;
 	public static int[] soundsiz = new int[NUM_SOUNDS];

@@ -198,7 +198,7 @@ public class Sounds {
 		}
 	}
 	
-	public static boolean sndRestart(int nvoices)
+	public static boolean sndRestart(int nvoices, int resampler)
 	{
 		engine.getAudio().getSound().stopAllSounds();	
 		engine.getAudio().getSound().uninit();
@@ -206,7 +206,7 @@ public class Sounds {
 		
 		Console.Println("Sound restarting...");
 		
-		if(engine.getAudio().getSound().init(1, nvoices, 0))
+		if(engine.getAudio().getSound().init(1, nvoices, resampler))
 		{
 			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);
 		} 
@@ -227,7 +227,7 @@ public class Sounds {
 	    }
 		
 
-		if(engine.getAudio().getSound().init(1, cfg.NumVoices, 0)) {
+		if(engine.getAudio().getSound().init(1, cfg.NumVoices, cfg.resampler_num)) {
 			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);	
 		}
 		else {

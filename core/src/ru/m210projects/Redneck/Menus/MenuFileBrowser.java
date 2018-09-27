@@ -129,6 +129,20 @@ public class MenuFileBrowser extends MenuItem {
 			list[FILE].addAll(tmpList);
 			tmpList.clear();
 		}
+		
+		int weigth66 = 0;
+		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
+			FileEntry file = it.next();
+			if(file.getName().equals("game66.con") || 
+					file.getName().equals("gator66.con") ||
+					file.getName().equals("pig66.con") ||
+					file.getName().equals("bubba66.con") ||
+					file.getName().equals("tilesa66.art") ||
+					file.getName().equals("tilesb66.art"))
+				weigth66++;
+		}
+		if(weigth66 == 6)
+			tmpList.add("route66");
 
 //		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
 //			FileEntry file = it.next();
@@ -137,9 +151,9 @@ public class MenuFileBrowser extends MenuItem {
 //				tmpList.add(toLowerCase(name));
 //		}
 //		
-//		Collections.sort(tmpList);
-//		list[FILE].addAll(tmpList);
-//		tmpList.clear();
+		Collections.sort(tmpList);
+		list[FILE].addAll(tmpList);
+		tmpList.clear();
 		
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
 			FileEntry file = it.next();

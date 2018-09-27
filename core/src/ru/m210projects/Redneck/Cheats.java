@@ -20,6 +20,8 @@ import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.View.*;
+import static ru.m210projects.Redneck.Actors.*;
+import static ru.m210projects.Redneck.Sector.*;
 import static ru.m210projects.Redneck.Weapons.*;
 
 import java.util.Arrays;
@@ -29,7 +31,7 @@ import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
 
 public class Cheats {
 
-	private static final int kCheatMax = 11;
+	private static final int kCheatMax = 19;
 
 	public static final String cheatCode[] = {
 		/*0*/"SEBMM", // rdall
@@ -41,8 +43,16 @@ public class Cheats {
 		/*6*/"SELFZT", // rdkeys
 		/*7*/"SETLJMM", // rdskill
 		/*8*/"SEVOMPDL", // rdunlock
-		/*9*/"SENPOTUFS", // rdmonster
+		/*9*/"SESBGBFM", // rdrafael
 		/*10*/"SENFBEPX", // rdmeadow
+		/*11*/"SEUFBDIFST", // rdteachers
+		/*12*/"SEWJFX", // rdview
+		/*13*/"SEDMVDL", // rdcluck
+		/*14*/"SEZFSBU", // rdyerat
+		/*15*/"SENPPOTIJOF", // rdmoonshine
+		/*16*/"SEDSJUUFST", // rdcritters
+		/*17*/"SETIPXNBQ", // rdshowmap
+		/*18*/"SEIPVOEEPH", // rdhounddog
 	};
 	
 	public static boolean IsCheatCode(String message, int... opt)
@@ -53,7 +63,112 @@ public class Cheats {
 			{
 				switch(nCheatCode)
 				{
-				case 0:
+				case 16: //critters
+					if ( actor_tog == 3 )
+                        actor_tog = 0;
+					actor_tog++;
+					break;
+				case 15: //moonshine
+					ps[myconnectindex].moonshine_amount = 399;
+					FTA(37, ps[myconnectindex]);
+					break;
+				case 11: //teachers
+					FTA(105, ps[myconnectindex]);
+					break;
+				case 9: //rdrafael
+					FTA(99, ps[myconnectindex]);
+					break;
+				case 17: //rdshowmap
+					ud.showallmap = 1-ud.showallmap;
+                    if(ud.showallmap != 0)
+                    {
+                        for(int i=0;i<(MAXSECTORS>>3);i++)
+                            show2dsector[i] = (byte) 255;
+                        for(int i=0;i<(MAXWALLS>>3);i++)
+                            show2dwall[i] = (byte) 255;
+                        FTA(111, ps[myconnectindex]);
+                    }
+                    else
+                    {
+                        for(int i=0;i<(MAXSECTORS>>3);i++)
+                            show2dsector[i] = 0;
+                        for(int i=0;i<(MAXWALLS>>3);i++)
+                            show2dwall[i] = 0;
+                        FTA(1,ps[myconnectindex]);
+                    }	
+					break;
+				case 5: //rditems
+					ps[myconnectindex].moonshine_amount =         	400;
+                    ps[myconnectindex].boot_amount      =    		2000;
+                    ps[myconnectindex].shield_amount 	=           100;
+                    ps[myconnectindex].snorkle_amount 	=           6400;
+                    ps[myconnectindex].beer_amount 		=         	2400;
+                    ps[myconnectindex].cowpie_amount 	=          	600;
+                    ps[myconnectindex].whishkey_amount 	=         	(short) max_player_health;
+
+                    Arrays.fill(ps[myconnectindex].gotkey, (short)1);
+                    FTA(5,ps[myconnectindex]);
+					break;
+				case 13: // dncashman
+					ud.cashman = 1-ud.cashman;
+					break;
+				case 8: // rdunlock
+					for(int i=numsectors-1;i>=0;i--) //Unlock
+                    {
+                        int j = sector[i].lotag;
+                        if(j == -1 || j == 32767) continue;
+                        if( (j & 0x7fff) > 2 )
+                        {
+                            if( (j&(0xffff-16384)) != 0 )
+                                sector[i].lotag &= (0xffff-16384);
+                            operatesectors(i,ps[myconnectindex].i);
+                        }
+                    }
+                    operateforcefields(ps[myconnectindex].i,-1);
+
+                    FTA(100, ps[myconnectindex]);		
+					break;
+				case 12: // rdview
+					if( ps[myconnectindex].over_shoulder_on != 0 )
+                        ps[myconnectindex].over_shoulder_on = 0;
+                    else
+                    {
+                        ps[myconnectindex].over_shoulder_on = 1;
+                        cameradist = 0;
+                        cameraclock = totalclock;
+                    }
+                    FTA(22,ps[myconnectindex]);
+					break;
+				case 14:
+					ud.coords = 1 - ud.coords;
+					break;
+				case 10: //rdmeadow
+				case 7: //rdskill
+					gEndGame = 0;
+					break;
+					
+				case 3: //rdguns
+					for ( int weapon = PISTOL_WEAPON;weapon < MAX_WEAPONSRA;weapon++ )
+						ps[myconnectindex].gotweapon[weapon]  = true;
+					for ( int weapon = PISTOL_WEAPON; weapon < (MAX_WEAPONSRA); weapon++ )
+						addammo( weapon, ps[myconnectindex], max_ammo_amount[weapon] );
+					FTA(119,ps[myconnectindex]);
+					break;
+				case 4: //rdinventory
+					ps[myconnectindex].moonshine_amount =         	400;
+					ps[myconnectindex].boot_amount      =    		2000;
+					ps[myconnectindex].shield_amount 	=           100;
+					ps[myconnectindex].snorkle_amount 	=           6400;
+					ps[myconnectindex].beer_amount 		=         	2400;
+					ps[myconnectindex].cowpie_amount 	=          	600;
+					ps[myconnectindex].whishkey_amount 	=         	(short) max_player_health;
+					FTA(120,ps[myconnectindex]);
+					break;
+				case 6: //rdkeys
+					Arrays.fill(ps[myconnectindex].gotkey, (short)1);
+                    FTA(121,ps[myconnectindex]);
+					break;
+				case 0: //rdall
 					for ( int weapon = PISTOL_WEAPON;weapon < MAX_WEAPONSRA;weapon++ )
 	                       ps[myconnectindex].gotweapon[weapon]  = true;
 
@@ -61,7 +176,7 @@ public class Cheats {
                         addammo( weapon, ps[myconnectindex], max_ammo_amount[weapon] );
 
                     ps[myconnectindex].moonshine_amount =         	400;
-                    ps[myconnectindex].boot_amount      =    		200;
+                    ps[myconnectindex].boot_amount      =    		2000;
                     ps[myconnectindex].shield_amount 	=           100;
                     ps[myconnectindex].snorkle_amount 	=           6400;
                     ps[myconnectindex].beer_amount 		=         	2400;
@@ -72,12 +187,13 @@ public class Cheats {
                     FTA(5,ps[myconnectindex]);
                     ps[myconnectindex].inven_icon = 1;
 					break;
-				case 1:
+				case 1: //rdclip
 					ud.clipping = !ud.clipping;
                     ps[myconnectindex].cheat_phase = 0;
                     FTA(112+(ud.clipping?1:0),ps[myconnectindex]);
 					break;
-				case 2:
+				case 2: //rdelvis
+				case 18: //rdhounddog
 					ud.god = !ud.god;
 
                     if(ud.god)

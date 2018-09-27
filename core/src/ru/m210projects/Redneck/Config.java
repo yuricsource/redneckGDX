@@ -75,37 +75,39 @@ public class Config extends BConfig {
 	public static final int Inventory_Use = 32;
 	public static final int Inventory_Left = 33;
 	public static final int Inventory_Right = 34;
-	public static final int Map_Toggle = 35;
-	public static final int Map_Follow_Mode = 36;
-	public static final int Shrink_Screen = 37;
-	public static final int Enlarge_Screen = 38;
-	public static final int Send_Message = 39;
-	public static final int See_Coop_View = 40;
-	public static final int See_Chase_View = 41;
-	public static final int Mouse_Aiming = 42;
-	public static final int Toggle_Crosshair = 43;
-	public static final int Next_Weapon = 44;
-	public static final int Previous_Weapon = 45;
-	public static final int Holster_Weapon = 46;
-	public static final int Show_Opponents_Weapon = 47;
-	public static final int Crouch_toggle = 48;
-	public static final int Beer = 49;
-	public static final int Cowpie = 50;
-	public static final int Wiskey = 51;
-	public static final int Moonshine = 52;
-	public static final int Menu_open = 53;
-	public static final int Show_Console = 54;
-	public static final int Show_Help = 55;
-	public static final int Show_Savemenu = 56;
-	public static final int Show_Loadmenu = 57;
-	public static final int Show_Sounds = 58;
-	public static final int Show_Options = 59;
-	public static final int Quicksave = 60;
-	public static final int ToggleMessages = 61;
-	public static final int Quickload = 62;
-	public static final int Quit = 63;
-	public static final int Gamma = 64;
-	public static final int Screenshot = 65;
+	public static final int Yeehaa = 35;
+	public static final int Quick_pee = 36;
+	public static final int Map_Toggle = 37;
+	public static final int Map_Follow_Mode = 38;
+	public static final int Shrink_Screen = 39;
+	public static final int Enlarge_Screen = 40;
+	public static final int Send_Message = 41;
+	public static final int See_Coop_View = 42;
+	public static final int See_Chase_View = 43;
+	public static final int Mouse_Aiming = 44;
+	public static final int Toggle_Crosshair = 45;
+	public static final int Next_Weapon = 46;
+	public static final int Previous_Weapon = 47;
+	public static final int Holster_Weapon = 48;
+	public static final int Show_Opponents_Weapon = 49;
+	public static final int Crouch_toggle = 50;
+	public static final int Beer = 51;
+	public static final int Cowpie = 52;
+	public static final int Wiskey = 53;
+	public static final int Moonshine = 54;
+	public static final int Menu_open = 55;
+	public static final int Show_Console = 56;
+	public static final int Show_Help = 57;
+	public static final int Show_Savemenu = 58;
+	public static final int Show_Loadmenu = 59;
+	public static final int Show_Sounds = 60;
+	public static final int Show_Options = 61;
+	public static final int Quicksave = 62;
+	public static final int ToggleMessages = 63;
+	public static final int Quickload = 64;
+	public static final int Quit = 65;
+	public static final int Gamma = 66;
+	public static final int Screenshot = 67;
 	
 	
 	public boolean AmbienceToggle = true;
@@ -115,6 +117,7 @@ public class Config extends BConfig {
 	public boolean MusicToggle = true;
 	public int NumVoices = 32;
 	public boolean VoiceToggle = true;
+	public int resampler_num = 0;
 
 	public  int widescreen = 1;
 	public  int anisotropy = 0;
@@ -179,6 +182,8 @@ public class Config extends BConfig {
 		"Inventory_Use",
 		"Inventory_Left",
 		"Inventory_Right",
+		"Yeehaa",
+		"Quick_pee",
 		"Map_Toggle",
 		"Map_Follow_Mode",
 		"Shrink_Screen",
@@ -248,37 +253,39 @@ public class Config extends BConfig {
 		Keys.ENTER, 	//Inventory_Use 32
 		Keys.LEFT_BRACKET, //Inventory_Left 33
 		Keys.RIGHT_BRACKET, //Inventory_Right 34
-		Keys.TAB,			//Map_Toggle 35
-		Keys.F,			//Map_Follow_Mode 36
-		Keys.MINUS, 	//Shrink_Screen 37
-		Keys.EQUALS,	//Enlarge_Screen 38
-		Keys.T, 		//Send_Message 39
-		Keys.K,			//See_Coop_View 40
-		Keys.F7,		//See_Chase_View 41
-		Keys.U,			//Mouse_Aiming 42
-		Keys.I,			//Toggle_Crosshair 43
-		Keys.APOSTROPHE,//Next_Weapon 44
-		Keys.SEMICOLON,	//Previous_Weapon 45
-		Keys.BACKSLASH, //Holster_Weapon 46
-		Keys.Y, 		//Show_Opponents_Weapon 47
-		Keys.N, 		//Crouch_toggle 48
-		Keys.H,			//Beer 49
-		Keys.J,			//Cowpie 50
-		Keys.M,			//Wiskey 51
-		Keys.R,			//Moonshine 52
-		Keys.ESCAPE,	//Open_menu 53
-		Keys.GRAVE,		//Show_Console 54
-		Keys.F1,		//Show_HelpScreen 55
-		Keys.F2,		//Show_Save	56
-		Keys.F3,		//Show_Load 57
-		Keys.F4,		//Show_Sounds 58
-		Keys.F5,		//Show_Options 59
-		Keys.F6,		//QuickSave	60
-		Keys.F8,		//ToggleMessages 61
-		Keys.F9,		//QuickLoad 62
-		Keys.F10,		//Quit 63
-		Keys.F11,		//Gamma 64
-		Keys.F12,		//MakeScreenshot 65
+		Keys.H,				//Yeehaa 35
+		Keys.X,				//Quick_pee 36
+		Keys.TAB,			//Map_Toggle 37
+		Keys.F,			//Map_Follow_Mode 38
+		Keys.MINUS, 	//Shrink_Screen 39
+		Keys.EQUALS,	//Enlarge_Screen 40
+		Keys.T, 		//Send_Message 41
+		Keys.K,			//See_Coop_View 42
+		Keys.F7,		//See_Chase_View 43
+		Keys.U,			//Mouse_Aiming 44
+		Keys.I,			//Toggle_Crosshair 45
+		Keys.APOSTROPHE,//Next_Weapon 46
+		Keys.SEMICOLON,	//Previous_Weapon 47
+		Keys.BACKSLASH, //Holster_Weapon 48
+		Keys.Y, 		//Show_Opponents_Weapon 49
+		0, 				//Crouch_toggle 50
+		Keys.B,			//Beer 51
+		Keys.P,			//Cowpie 52
+		Keys.M,			//Wiskey 53
+		Keys.R,			//Moonshine 54
+		Keys.ESCAPE,	//Open_menu 55
+		Keys.GRAVE,		//Show_Console 56
+		Keys.F1,		//Show_HelpScreen 57
+		Keys.F2,		//Show_Save	58
+		Keys.F3,		//Show_Load 59
+		Keys.F4,		//Show_Sounds 60
+		Keys.F5,		//Show_Options 61
+		Keys.F6,		//QuickSave	62
+		Keys.F8,		//ToggleMessages 63
+		Keys.F9,		//QuickLoad 64
+		Keys.F10,		//Quit 65
+		Keys.F11,		//Gamma 66
+		Keys.F12,		//MakeScreenshot 67
 	};
 	
 	public static final char[] defclassickeys = {
@@ -294,7 +301,7 @@ public class Config extends BConfig {
 			Keys.Z, 			//Crouch 9
 			Keys.SHIFT_LEFT, 	//Run 10
 			KEY_CAPSLOCK, 		//AutoRun 11
-			Keys.SPACE,		 		//Open 12
+			Keys.SPACE,		 	//Open 12
 			Keys.CONTROL_LEFT, //Weapon_Fire 13
 			Keys.Q, 			//Last_Weapon_Switch 14
 			Keys.HOME, 			//Aim_Up 15
@@ -317,37 +324,39 @@ public class Config extends BConfig {
 			Keys.ENTER, 	//Inventory_Use 32
 			Keys.LEFT_BRACKET, //Inventory_Left 33
 			Keys.RIGHT_BRACKET, //Inventory_Right 34
-			Keys.TAB,			//Map_Toggle 35
-			Keys.F,			//Map_Follow_Mode 36
-			Keys.MINUS, 	//Shrink_Screen 37
-			Keys.EQUALS,	//Enlarge_Screen 38
-			Keys.T, 		//Send_Message 39
-			Keys.K,			//See_Coop_View 40
-			Keys.F7,		//See_Chase_View 41
-			Keys.U,			//Mouse_Aiming 42
-			Keys.I,			//Toggle_Crosshair 43
-			Keys.APOSTROPHE,//Next_Weapon 44
-			Keys.SEMICOLON,	//Previous_Weapon 45
-			KEY_SCROLLOCK,  //Holster_Weapon 46
-			Keys.W, 		//Show_Opponents_Weapon 47
-			Keys.N,			//Crouch_toggle 48
-			Keys.H,			//Beer 49
-			Keys.J,			//Cowpie 50
-			Keys.M,			//Wiskey 51
-			Keys.R,			//Moonshine 52
-			Keys.ESCAPE,	//Open_menu 53
-			Keys.GRAVE,		//Show_Console 54
-			Keys.F1,		//Show_HelpScreen 55
-			Keys.F2,		//Show_Save	56
-			Keys.F3,		//Show_Load 57
-			Keys.F4,		//Show_Sounds 58
-			Keys.F5,		//Show_Options 59
-			Keys.F6,		//QuickSave	60
-			Keys.F8,		//ToggleMessages 61
-			Keys.F9,		//QuickLoad 62
-			Keys.F10,		//Quit 63
-			Keys.F11,		//Gamma 64
-			Keys.F12,		//MakeScreenshot 65
+			Keys.Y,				//Yeehaa 35
+			Keys.GRAVE,			//Quick_pee 36
+ 			Keys.TAB,			//Map_Toggle 37
+			Keys.F,			//Map_Follow_Mode 38
+			Keys.MINUS, 	//Shrink_Screen 39
+			Keys.EQUALS,	//Enlarge_Screen 40
+			Keys.T, 		//Send_Message 41
+			Keys.K,			//See_Coop_View 42
+			Keys.F7,		//See_Chase_View 43
+			Keys.U,			//Mouse_Aiming 44
+			Keys.I,			//Toggle_Crosshair 45
+			Keys.APOSTROPHE,//Next_Weapon 46
+			Keys.SEMICOLON,	//Previous_Weapon 47
+			KEY_SCROLLOCK,  //Holster_Weapon 48
+			Keys.E, 		//Show_Opponents_Weapon 49
+			0,				//Crouch_toggle 50
+			Keys.B,			//Beer 51
+			Keys.C,			//Cowpie 52
+			Keys.W,			//Wiskey 53
+			Keys.M,			//Moonshine 54
+			Keys.ESCAPE,	//Open_menu 55
+			0,				//Show_Console 56
+			Keys.F1,		//Show_HelpScreen 57
+			Keys.F2,		//Show_Save	58
+			Keys.F3,		//Show_Load 59
+			Keys.F4,		//Show_Sounds 60
+			Keys.F5,		//Show_Options 61
+			Keys.F6,		//QuickSave	62
+			Keys.F8,		//ToggleMessages 63
+			Keys.F9,		//QuickLoad 64
+			Keys.F10,		//Quit 65
+			Keys.F11,		//Gamma 66
+			Keys.F12,		//MakeScreenshot 67
 	};
 	
 	public int[] primarykeys = new int[keynames.length];
@@ -475,6 +484,9 @@ public class Config extends BConfig {
 				midiSynth = RRcfg.GetKeyString("MidiSynth");
 				int type = RRcfg.GetKeyInt("MusicType");
 				if(type != -1) musicType = type;
+				int resampler = RRcfg.GetKeyInt("Resampler_num"); 
+				if(resampler != -1)
+					resampler_num = resampler;
 			}
 			
 			if(RRcfg.set("KeyDefinitions")) {
@@ -696,6 +708,7 @@ public class Config extends BConfig {
 			saveInteger(fil, "MidiDriver", middrv);
 			saveString(fil, "MidiSynth = " + midiSynth +"\r\n");
 			saveInteger(fil, "MusicType", musicType);
+			saveInteger(fil, "Resampler_num", resampler_num);
 			saveString(fil, ";\r\n;\r\n");
 
 			saveString(fil, "[KeyDefinitions]\r\n");

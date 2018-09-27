@@ -73,6 +73,17 @@ public class UserDefs {
 	    ridecule[8] = "Haw, haw, haw! \0".toCharArray();
 	    ridecule[9] = "Now you gone and done it! \0".toCharArray();
 	    
+	    wchoice[0][0] = 3;
+        wchoice[0][1] = 4;
+        wchoice[0][2] = 5;
+        wchoice[0][3] = 7;
+        wchoice[0][4] = 8;
+        wchoice[0][5] = 6;
+        wchoice[0][6] = 0;
+        wchoice[0][7] = 2;
+        wchoice[0][8] = 9;
+        wchoice[0][9] = 1;
+	    
 	    screen_size = cfg.screen_size;
 	    crosshair = cfg.crosshair;
 	    screen_tilting = cfg.screen_tilting;

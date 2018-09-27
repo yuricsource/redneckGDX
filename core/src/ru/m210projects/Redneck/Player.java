@@ -154,7 +154,6 @@ public class Player {
 		int snum = sprite[p.i].yvel, i;
 		for (i = 0; i < 10; i++) {
 			weap = ud.wchoice[snum][i];
-
 			if (weap == 0)
 				weap = 9;
 			else
