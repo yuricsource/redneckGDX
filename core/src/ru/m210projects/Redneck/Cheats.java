@@ -144,7 +144,7 @@ public class Cheats {
 					break;
 				case 10: //rdmeadow
 				case 7: //rdskill
-					gEndGame = 0;
+					//gEndGame = 0;
 					break;
 					
 				case 3: //rdguns

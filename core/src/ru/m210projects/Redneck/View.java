@@ -73,8 +73,7 @@ import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
-import static ru.m210projects.Redneck.Redneck.boardfilename;
-import static ru.m210projects.Redneck.Redneck.gShowMenu;
+import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.LoadSave.gScreenCapture;
 import static ru.m210projects.Redneck.Gamedef.actorscrptr;
 import static ru.m210projects.Redneck.Gamedef.getincangle;
@@ -254,15 +253,12 @@ public class View {
 	                    if(ud.screen_size > 0) a = 145;
 	                    else a = 182;
 
-	                    if(gEndGame != 0 && ud.last_level != 7)
-	                    {
-	                    	Arrays.fill(buffer, (char)0);
-	                    	buildString(buffer, 0, "Close Encounters");
-		                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
-	                    } else {
-		                    minitext(5,a,volume_names[ud.volume_number],65536, 0,0,8+16+256);
-		                    minitext(5,a+6,level_names[ud.volume_number*11 + ud.level_number],65536,0,0,8+16+256);
-	                    }
+                    	Arrays.fill(buffer, (char)0);
+                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].Title);
+	                    minitext(5,a,buffer,65536, 0,0,8+16+256);
+	                    Arrays.fill(buffer, (char)0);
+                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
+	                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
 	                    
 	                    if ( cfg.gShowStat == 2 ) {
 	                    	int k = 0;
@@ -318,12 +314,9 @@ public class View {
 			if(cfg.showMapInfo != 0 && !gShowMenu)
 			{	
 				char[] mapname;
-				if(ud.warp_on == 0 || boardfilename == null) {
-					if(gEndGame != 0 && ud.last_level != 7)
-					{
-						buildString(buffer, 0, "Close Encounters");
-						mapname = buffer;
-					} else mapname = level_names[(ud.volume_number*11)+ud.level_number];
+				if(ud.warp_on != 2 || boardfilename == null) {
+					buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
+					mapname = buffer;
 				}
 				else {
 					Arrays.fill(buffer, (char)0);

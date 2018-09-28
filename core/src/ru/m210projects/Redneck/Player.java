@@ -490,25 +490,22 @@ public class Player {
 	        	
 	        	int snd = -1;
 	        	LeonardCrack = 1;
-	        	if ( gEndGame != 0 )
-	        	{
-	        		snd = 391;
-	        	}
-	        	else if ( ud.volume_number != 0 )
-	        	{
-	        		if ( ud.volume_number == 1 )
-	        			switch( ud.level_number )
-	        			{
-	        				case 0: snd = 105; break;
-	        				case 1: snd = 176; break;
-	        				case 2: snd = 177; break;
-	        				case 3: snd = 198; break;
-	        				case 4: snd = 230; break;
-	        				case 5: snd = 255; break;
-	        				case 6: snd = 283; break;
-	        			}
+
+	        	if ( ud.volume_number == 1 ) {
+        			switch( ud.level_number )
+        			{
+        				case 0: snd = 105; break;
+        				case 1: snd = 176; break;
+        				case 2: snd = 177; break;
+        				case 3: snd = 198; break;
+        				case 4: snd = 230; break;
+        				case 5: snd = 255; break;
+        				case 6: snd = 283; break;
+        				case 7: snd = 391; break; //EndGame
+        			}
 	        	} 
-	        	else	
+	        	
+	        	if ( ud.volume_number == 0 )	
 	        	{
 	        		switch( ud.level_number )
         			{
@@ -571,8 +568,11 @@ public class Player {
 	    } 
 	    else if ( psectlotag == 7777 && ud.volume_number == 1 && ud.level_number == 6 )
 	    {
-	    	gEndGame = 1;
+	    	LeaveMap();
+	    	ud.level_number = 7;
+	    	return;
 	    }
+	    
 	    if ( psectlotag == 848 && sector[psect].floorpicnum == 1045 )
 	        psectlotag = 1;
 	    if ( psectlotag == 857 )
@@ -773,10 +773,6 @@ public class Player {
 	        else if(p.timebeforeexit == 1)
 	        {
 	            LeaveMap();
-	            
-	            if ( ud.level_number == 6 && ud.volume_number == 0 )
-	                gEndFirstEpisode = 1;
-	            
                 ud.level_number++;
                 ud.m_level_number = ud.level_number;
 	            

@@ -26,16 +26,19 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import com.badlogic.gdx.utils.IntArray;
+
 
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Strhandler.*;
 import static ru.m210projects.Redneck.Globals.MODE_RESTART;
-import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Globals.gm;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.LoadSave.lastload;
@@ -59,14 +62,19 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Weapons.*;
 import static ru.m210projects.Redneck.Globals.*;
 
+import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.SPRITE;
+import ru.m210projects.Redneck.Types.GameInfo;
+import ru.m210projects.Redneck.Types.EpisodeInfo;
+import ru.m210projects.Redneck.Types.MapInfo;
 
 public class Gamedef {
 	
 	public static final int[] params = new int[35];
 	public static String confilename = "GAME.CON";
 	public static int conweigth = 10;
+	private static int GameCON = RR;
 	
 	// Defines the motion characteristics of an actor;
 	public static final int face_player = 1;
@@ -129,6 +137,11 @@ public class Gamedef {
 	
 	public static int actorscrptr[] = new int[MAXTILES];
 	public static short actortype[] = new short[MAXTILES];
+	
+	public static char[][] level_names = new char[nMaxMaps * nMaxEpisodes][33],level_file_names = new char[nMaxMaps * nMaxEpisodes][128];
+	public static int[] partime = new int[nMaxMaps * nMaxEpisodes],designertime = new int[nMaxMaps * nMaxEpisodes];
+	public static char[][] volume_names = new char[nMaxMaps][33];
+	public static char[][] skill_names = new char[nMaxSkills][33];
 	
 	public static final String defaultcons[] =
 	{
@@ -355,6 +368,11 @@ public class Gamedef {
 	public static boolean isaltok(char c)
 	{
 	    return ( isalnum(c) || c == '{' || c == '}' || c == '/' || c == '*' || c == '-' || c == '_' || c == '.' );
+	}
+	
+	public static boolean isaltok(byte c)
+	{
+	    return ( Character.isLetterOrDigit(c) || c == '{' || c == '}' || c == '/' || c == '*' || c == '-' || c == '_' || c == '.' );
 	}
 	
 	public static boolean isalnum(char c)
@@ -602,7 +620,7 @@ public class Gamedef {
 	    textptr += l;
 	}
 
-	public static boolean parsecommand()
+	public static boolean parsecommand(GameInfo addon)
 	{
 		int i, j, k;
 	    char temp_ifelse_check;
@@ -915,7 +933,7 @@ public class Gamedef {
 
 	            boolean done = false;
 	            do
-	                done = parsecommand();
+	                done = parsecommand(addon);
 	            while( !done );
 
 	            text = origtext;
@@ -1185,7 +1203,7 @@ public class Gamedef {
 	                checking_ifelse--;
 	                tempscrptr = scriptptr; 
 	                scriptptr++; //Leave a spot for the fail location
-	                parsecommand();
+	                parsecommand(addon);
 
 	                script[tempscrptr] = scriptptr;
 	            }
@@ -1276,17 +1294,17 @@ public class Gamedef {
 	            {
 	                j = keyword();
 	                if(j == 20 || j == 39)
-	                    parsecommand();
+	                    parsecommand(addon);
 	            } while(j == 20 || j == 39);
 
-	            parsecommand();
+	            parsecommand(addon);
 	            script[tempscrptr] = scriptptr;
 	            checking_ifelse++;
 	            return false;
 	        case 29:
 	            num_squigilly_brackets++;
 	            do
-	                done = parsecommand();
+	                done = parsecommand(addon);
 	            while( !done );
 	            return false;
 	        case 30:
@@ -1337,9 +1355,11 @@ public class Gamedef {
 	                }
 	            }
 	            volume_names[j][i-1] = '\0';
-	            if(numepisodes < j)
-	            	numepisodes = j;
 
+	            if(addon != null) {
+		            addon.episodes[j] = new EpisodeInfo(new String(volume_names[j]).trim());
+		            addon.nEpisodes = Math.max( addon.nEpisodes, j+1);
+	            }
 	            return false;
 	        case 108:
 	            scriptptr--;
@@ -1364,6 +1384,8 @@ public class Gamedef {
 	                }
 	            }
 	            skill_names[j][i-1] = '\0';
+	            if(addon != null)
+	            	addon.skillnames[j] = new String(skill_names[j]).trim();
 	            return false;
 	        case 0:
 	            scriptptr--;
@@ -1421,8 +1443,10 @@ public class Gamedef {
 	                }
 	            }
 	            level_names[j*11+k][i-1] = '\0';
-	            if(numlevels[j] < k)
-	            	numlevels[j] = k;
+	            if(addon != null) {
+		            addon.episodes[j].gMapInfo[k] = new MapInfo(new String(level_file_names[j*11+k]).trim(), new String(level_names[j*11+k]).trim(), partime[j*11+k], designertime[j*11+k]);
+		            addon.episodes[j].nMaps = Math.max(addon.episodes[j].nMaps, k+1);
+	            }
 	            return false;
 	        case 79:
 	            scriptptr--;
@@ -1615,9 +1639,9 @@ public class Gamedef {
 	    return false;
 	}
 	
-	public static void passone()
+	public static void passone(GameInfo addon)
 	{
-	    while( !parsecommand() );
+	    while( !parsecommand(addon) );
 	    if( (error+warning) > 12)
 	    	Console.Println(  "  * ERROR! Too many warnings or errors.");
 	}
@@ -1637,68 +1661,6 @@ public class Gamedef {
 	    }
 	}
 
-	public static boolean loaduserdef(String filenam)
-	{
-		if(cache.checkFile(filenam) == null)
-	    {
-	    	return false;
-	    }
-		
-		int fp = kOpen(filenam,loadfromgrouponly), fs; //XXX
-	    if( fp == -1 )
-	    {
-	        return false;
-	    }
-	    else
-	    {
-	    	Console.Println("Compiling: " + filenam + ".");
-
-	        fs = kFileLength(fp);
-	        
-	        byte[] buf = new byte[fs+1];
-	        label = new char[131072];
-
-	        kRead(fp,buf,fs);
-	        last_used_text = new String(buf);
-	        last_used_size = fs;
-
-	        textptr = 0;
-	        text = last_used_text.toCharArray();
-	        
-	        kClose(fp);
-	    }
-
-	    text[fs - 1] = 0;
-
-	    Arrays.fill(actorscrptr, 0);
-	    Arrays.fill(actortype, (short) 0);
-
-	    labelcnt = 0;
-	    scriptptr = 1;
-	    warning = 0;
-	    error = 0;
-	    line_number = 1;
-	    total_lines = 0;
-
-	    passone(); //Tokenize
-
-	    if((warning|error) != 0)
-	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");
-
-	    if(error != 0)
-	    {
-	    	if(GameMessage("\nErrors found in " + filenam + " file.", false))
-	    		return false;
-	    }
-	    else
-	    {
-	        total_lines += line_number; //1795
-	        Console.Println("Code Size:" + (((scriptptr)<<2)-4) + " bytes(" + labelcnt + " labels).");
-	    }
-	    
-	    return true;
-	}
-	
 	public static void loadefs(String filenam)
 	{
 	    int fs,fp;
@@ -1751,7 +1713,7 @@ public class Gamedef {
 	    line_number = 1;
 	    total_lines = 0;
 
-	    passone(); //Tokenize
+	    passone(defGame); //Tokenize
 
 	    if((warning|error) != 0)
 	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");
@@ -3664,15 +3626,13 @@ public class Gamedef {
 	public static void compilecons()
 	{
 		conweigth = 0;
+		defGame = new GameInfo(confilename);
 		loadefs(confilename);
-		defscriptname = confilename;
-		defGameCON = GameCON;
 		if( loadfromgrouponly != 0 )
 		{
 			Console.Println("  * Writing defaults to current directory.");
 			loadefs(confilename);
 		}
-
 		switch(GameCON)
 		{
 			case RR:
@@ -3685,51 +3645,130 @@ public class Gamedef {
 				Console.Println("Looks like Redneck Rampage: Rides Again Edition CON files.");
 				break;
 		}
+		defGame.Title = "Default";
+		defGame.ConType = GameCON;
+		if(defGame.episodes[1] != null)
+			defGame.episodes[1].gMapInfo[7] = new MapInfo("endgame.map", "Close encounters", defGame.episodes[1].gMapInfo[0].partime, defGame.episodes[1].gMapInfo[0].designertime); //EndGame map
+		defGame.isInited = true;
+		currentGame = defGame;
 	}
 	
 	//For user episodes
-	public static void searchEpisode(String confile)
+	
+	public static void InitTree(HashMap<String, List<String>> map, FileEntry confile)
 	{
-		int fp = kOpen(confile,0), fs;
-		fs = kFileLength(fp);
-        byte[] buf = new byte[fs+1];
-        kRead(fp,buf,fs);
-        kClose(fp);
-        String stext = new String(buf);
-        
-        int index = -1;
-        text = stext.toCharArray();
-        scriptptr = 1;
-        while( (index = stext.indexOf("definevolumename", index+1)) != -1)
-        {
-        	textptr = index + 16;
-        	{
-        		System.err.println(index + " " + textptr);
-        		scriptptr--;
-	            transnum();
-	            scriptptr--;
-	            int j = script[scriptptr];
-	            while( text[textptr] == ' ' ) textptr++;
+		byte[] buf = getScript(confile.getPath());
 
-	            int i = 0;
-	            while( text[textptr] != 0x0a )
-	            {
-	                volume_names[j][i] = Character.toUpperCase(text[textptr]);
-	                textptr++;
-	                i++;
-	                if(i >= 32)
-	                {
-	                    Console.Println("  * ERROR!(L" + line_number + ") Volume name exceeds character size limit of 32.");
-	                    error++;
-	                    while( text[textptr] != 0x0a ) textptr++;
-	                    break;
-	                }
-	            }
-	            
-	            volume_names[j][i-1] = '\0';
-	            if(numepisodes < j)
-	            	numepisodes = j;
+        List<String> list = null;
+		int index = -1;
+        while( (index = indexOf("include ", buf, index+1)) != -1)
+        {
+        	int textptr = index + 7;
+        	if(list == null) list = new ArrayList<String>();
+        	
+        	while( !isaltok(buf[textptr]) )
+            {
+                textptr++;
+                if( buf[textptr] == 0 ) break;
+            }
+
+            int i = 0;
+            while( isaltok(buf[textptr+i]) ) i++;
+            
+            String name = new String(buf, textptr, i);
+            list.add(name.toLowerCase());
+        }
+
+        if(list != null)
+        	map.put(confile.getName(), list);
+	}
+	
+	public static byte[] getScript(String path)
+	{
+        byte[] buf = kGetBytes(path,0);
+
+        int index = -1;
+        while( (index = indexOf("//", buf, index+1)) != -1)
+        {
+        	int textptr = index + 2;
+        	while( buf[textptr] != 0x0a ) {
+        		buf[textptr] = 0;
+        		textptr++;
         	}
         }
+        
+        index = -1;
+        while( (index = indexOf("/*", buf, index+1)) != -1)
+        {
+        	int textptr = index + 2;
+        	do
+            {
+        		buf[textptr] = 0;
+                textptr++;
+                if( textptr >= buf.length )
+                	return buf;
+            }
+            while( buf[textptr] != '*' || buf[textptr + 1] != '/' );
+        }
+
+        return buf;
+	}
+	
+	public static boolean loaduserdef(String filenam)
+	{
+		if(cache.checkFile(filenam) == null)
+	    	return false;
+
+		int fp = kOpen(filenam, 0), fs; //XXX
+	    if( fp == -1 )
+	        return false;
+	    else
+	    {
+	    	Console.Println("Compiling: " + filenam + ".");
+
+	        fs = kFileLength(fp);
+	        
+	        byte[] buf = new byte[fs+1];
+	        label = new char[131072];
+
+	        kRead(fp,buf,fs);
+	        last_used_text = new String(buf);
+	        last_used_size = fs;
+
+	        textptr = 0;
+	        text = last_used_text.toCharArray();
+	        
+	        kClose(fp);
+	    }
+
+	    text[fs - 1] = 0;
+
+	    Arrays.fill(actorscrptr, 0);
+	    Arrays.fill(actortype, (short) 0);
+
+	    labelcnt = 0;
+	    scriptptr = 1;
+	    warning = 0;
+	    error = 0;
+	    line_number = 1;
+	    total_lines = 0;
+
+	    passone(null); //Tokenize
+
+	    if((warning|error) != 0)
+	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");
+
+	    if(error != 0)
+	    {
+	    	if(GameMessage("\nErrors found in " + filenam + " file.", false))
+	    		return false;
+	    }
+	    else
+	    {
+	        total_lines += line_number;
+	        Console.Println("Code Size:" + (((scriptptr)<<2)-4) + " bytes(" + labelcnt + " labels).");
+	    }
+	    
+	    return true;
 	}
 }

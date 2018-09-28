@@ -37,7 +37,7 @@ import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Build.Strhandler.isdigit;
-import static ru.m210projects.Redneck.Redneck.boardfilename;
+import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Main.gpmanager;
@@ -557,8 +557,9 @@ public class Screen {
 			buildString(bonusbuf, 0, "MULTIPLAYER TOTALS");
 			mGetAlign(1, bonusbuf);
 			gametext(160-alignx/2,58+2,bonusbuf,65536, 0, 0,2+8+16);
-			mGetAlign(1, level_names[(ud.volume_number*11)+ud.last_level-1]);
-	        gametext(160-alignx/2,58+10,level_names[(ud.volume_number*11)+ud.last_level-1],65536, 0, 0,2+8+16);
+			buildString(bonusbuf, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
+			mGetAlign(1, bonusbuf);
+	        gametext(160-alignx/2,58+10,bonusbuf,65536, 0, 0,2+8+16);
 	   
 	        t = 0;
 	        
@@ -628,15 +629,12 @@ public class Screen {
 	 
 	    if(!bonusonly && (ud.multimode < 2 || ud.coop == 1)) {
 	    	int level = ud.level_number;
-	    	if ( ud.volume_number != 0 )
-	    		gfx = 408 + level;
+	    	if ( ud.volume_number != 0 ) 
+	    		gfx = 408 + level;	
 	        else {
 	        	if(level == 0) level = 1;
 	        	gfx = 402 + level;
 	        }
-	        
-	    	if ( gEndGame != 0 )
-	    		gfx = 416;
 
 		    if (boardfilename != null) {
 				FileEntry file = cache.checkFile(boardfilename);
@@ -645,9 +643,6 @@ public class Screen {
 			} else {
 				engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
 				mapname = lastmapname;
-				
-				if ( gEndGame != 0 && ud.last_level != 7 && ud.volume_number == 1 ) 
-					mapname = "Close Encounters".toCharArray();
 			}
 		    
 		    mGetAlign(2, mapname);
@@ -661,9 +656,9 @@ public class Screen {
 
 			for (ii=ps[myconnectindex].player_par/(26*60), ij=1; ii>9; ii/=10, ij++) ;
 				clockpad = max(clockpad,ij);
-			for (ii=partime[ud.volume_number*11+ud.last_level-1]/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			for (ii=currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].partime/(26*60), ij=1; ii>9; ii/=10, ij++) ;
 				clockpad = max(clockpad,ij);
-			for (ii=designertime[ud.volume_number*11+ud.last_level-1]/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			for (ii=currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].designertime/(26*60), ij=1; ii>9; ii/=10, ij++) ;
 				clockpad = max(clockpad,ij);
 
 			if( totalclock >= (1000000000) && totalclock < (1000000320) )
@@ -718,12 +713,12 @@ public class Screen {
                     buildString(bonusbuf, num, " : ", (ps[myconnectindex].player_par/26)%60, 2);
                     menutext(211,pos,0,0,bonusbuf,8+16);
                     
-                    num = Bitoa(partime[ud.volume_number*11+ud.last_level-1]/(26*60), bonusbuf, 2);
-                    buildString(bonusbuf, num, " : ", (partime[ud.volume_number*11+ud.last_level-1]/26)%60, 2);
+                    num = Bitoa(currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].partime/(26*60), bonusbuf, 2);
+                    buildString(bonusbuf, num, " : ", (currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].partime/26)%60, 2);
                     menutext(211,pos+=19,0,0,bonusbuf,8+16);
 
-                    num = Bitoa(designertime[ud.volume_number*11+ud.last_level-1]/(26*60), bonusbuf, 2);
-                    buildString(bonusbuf, num, " : ", (designertime[ud.volume_number*11+ud.last_level-1]/26)%60, 2);
+                    num = Bitoa(currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].designertime/(26*60), bonusbuf, 2);
+                    buildString(bonusbuf, num, " : ", (currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].designertime/26)%60, 2);
                     menutext(211,pos+=19,0,0,bonusbuf,8+16);
                 }
             }

@@ -48,17 +48,12 @@ import ru.m210projects.Redneck.Types.RREngine;
 public class Main extends ApplicationAdapter {
 	
 	/*
-	 * v0.751
-	 * Crash and bugs fixes
-	 * Colored keys
-	 * Load Some VOC files crash fix
-	 * Quick_pee and "Yeehaa" button
-	 * Weapon low ammo change fix
-	 * Cheats
-	 * Green vixel shoot fix
-	 * OpenAL updated to 1.18.1
-	 * 
+	 * v0.753
 	 * TODO:
+	 * set currentGame (gamedef)
+	 * Network content
+	 * Addons to browser
+	 * cheat @mario
 	 * добавить kills и alchogol
 	 * RR66 mod support
 	 * keys multiplayer bug

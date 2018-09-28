@@ -1326,8 +1326,6 @@ public class Premap {
 	    ready2send = false;
 	    setgamepalette(ps[myconnectindex], palette, 3);
 
-	    gEndFirstEpisode = 0;
-	    gEndGame = 0;
 	    currTrack = 0;
 	    
 	    ud.level_number =   ln;
@@ -1375,7 +1373,7 @@ public class Premap {
 		gLoadingTicks = 0.0f;
 		closedemowrite();
 		
-		lastmapname = level_names[(ud.volume_number*11)+ud.level_number];
+		lastmapname = defGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title.toCharArray();
 	}
 	
 	public static PlayerInfo[] info = new PlayerInfo[MAXPLAYERS];
@@ -1628,17 +1626,13 @@ public class Premap {
 		    
 	    Gdx.app.postRunnable(new Runnable() {
 			public void run() {
-			    if( ud.warp_on == 1 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2 )
+			    if( ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2 )
 			    {
 			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 )
 			            dassert("Map " + boardfilename + " not found!");
 			    }
 			    else {
-			    	String map = new String(level_file_names[ (ud.volume_number*11)+ud.level_number]).trim();
-			    	if(gEndGame != 0) {
-			    		map = "endgame.map";
-			    		ud.level_number = 0;
-			    	}
+			    	String map = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].path;
 			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1)
 			    		dassert("Map " + map + " not found!");
 			    }

@@ -352,8 +352,8 @@ public class LoadSave {
 		bb.putShort((short)UFO_SpawnTime);
 		bb.putShort((short)UFO_SpawnHulk);
 
-		bb.putShort(gEndFirstEpisode);
-		bb.putShort(gEndGame);
+		bb.putShort((short)0); //gEndFirstEpisode
+		bb.putShort((short)0); //gEndGame
 		bb.put((byte) (plantProcess?1:0));
 
 		Bwrite(fil,bb.array(),bb.capacity());
@@ -663,8 +663,8 @@ public class LoadSave {
 		UFO_SpawnTime = bb.UFO_SpawnTime;
 		UFO_SpawnHulk = bb.UFO_SpawnHulk;
 		
-		gEndFirstEpisode = bb.gEndFirstEpisode;
-		gEndGame = bb.gEndGame;
+		//gEndFirstEpisode = bb.gEndFirstEpisode;
+		//gEndGame = bb.gEndGame;
 
 		tilesizy[0] = 0;
 	    tilesizx[0] = 0;

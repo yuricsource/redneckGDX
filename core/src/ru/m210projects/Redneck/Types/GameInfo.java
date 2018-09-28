@@ -1,0 +1,238 @@
+package ru.m210projects.Redneck.Types;
+
+import static ru.m210projects.Build.Strhandler.Bstrcmp;
+import static ru.m210projects.Build.Strhandler.indexOf;
+import static ru.m210projects.Redneck.Gamedef.*;
+import static ru.m210projects.Redneck.Globals.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.m210projects.Build.FileHandle.DirectoryEntry;
+import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.OnSceenDisplay.Console;
+
+public class GameInfo {
+	
+	public DirectoryEntry resDir; 
+	public String Title;
+	public String mainCon;
+	public EpisodeInfo[] episodes;
+	public String[] skillnames;
+	public int nEpisodes;
+	public int ConType;
+	public boolean isInited = false;
+	
+	public GameInfo(String mainCon)
+	{
+		this.mainCon = mainCon;
+		this.Title = mainCon;
+		skillnames = new String[nMaxSkills];
+		episodes = new EpisodeInfo[nMaxEpisodes];
+		isInited = false;
+	}
+
+	public void setDirectory(DirectoryEntry resDir)
+	{
+		this.resDir = resDir;
+	}
+	
+	public DirectoryEntry getDirectory()
+	{
+		return resDir;
+	}
+	
+	public void init()
+	{
+		try {
+			List<FileEntry> list = new ArrayList<FileEntry>();
+			list.add(resDir.checkFile(mainCon));
+			for(int i = 0; i < list.size(); i++)
+				InitTree(list, list.get(i));
+			
+			for(int i = 0; i < list.size(); i++) {
+				FileEntry scriptfile = list.get(i);
+				if(scriptfile == null) continue;
+				if(findSkillNames(getScript(scriptfile.getPath())))
+					break;
+			}
+			
+			for(int i = 0; i < list.size(); i++) {
+				FileEntry scriptfile = list.get(i);
+				if(scriptfile == null) continue;
+				if(findVolumes(getScript(scriptfile.getPath())))
+					break;
+			}
+			
+			for(int i = 0; i < list.size(); i++) {
+				FileEntry scriptfile = list.get(i);
+				if(scriptfile == null) continue;
+				findMaps(getScript(scriptfile.getPath()));
+			}
+	
+			isInited = true;
+		} catch(Exception e) { isInited = false; }
+	}
+	
+	private void InitTree(List<FileEntry> list, FileEntry confile)
+	{
+		if(confile == null) return;
+		byte[] buf = getScript(confile.getPath());
+		int index = -1;
+        while( (index = indexOf("include ", buf, index+1)) != -1)
+        {
+        	int textptr = index + 7;
+        	while( !isaltok(buf[textptr]) )
+            {
+                textptr++;
+                if( buf[textptr] == 0 ) break;
+            }
+
+            int i = 0;
+            while( textptr+i < buf.length && isaltok(buf[textptr+i]) ) i++;
+            String name = new String(buf, textptr, i);
+            list.add(resDir.checkFile(name));
+        }
+	}
+	
+	private boolean findVolumes(byte[] buf)
+	{
+        int index = -1;
+
+        nEpisodes = 0;
+        while( (index = indexOf("definevolumename ", buf, index+1)) != -1)
+        {
+        	textptr = index + 16;
+            Integer j = transnum(buf);
+            if(j == null) continue;
+            while( buf[textptr] == ' ' ) textptr++;
+
+            int i = 0;
+            int startptr = textptr;
+            while( buf[textptr+i] != 0x0a ) i++;
+            
+            episodes[j] = new EpisodeInfo(new String(buf, startptr, i-1).toUpperCase());
+            nEpisodes = Math.max(nEpisodes, j + 1);
+        }
+        
+        if(nEpisodes != 0) 
+	        return true;
+        
+        return false;
+	}
+	
+	private void findMaps(byte[] buf)
+	{
+		int index = -1;
+		
+        while( (index = indexOf("definelevelname ", buf, index+1)) != -1)
+        {
+        	textptr = index + 15;
+            Integer epnum = transnum(buf);
+            if(epnum == null) continue;
+            Integer mapnum = transnum(buf);
+            if(mapnum == null) continue;
+            
+            while( buf[textptr] == ' ' ) textptr++;
+
+            int i = 0;
+            int ptr = textptr;
+            while( buf[textptr] != ' ' && buf[textptr] != 0x0a ) { textptr++; i++; }
+            
+            String path = new String(buf, ptr, i);
+            while( buf[textptr] == ' ' ) textptr++;
+
+            int partime = (((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
+                (((buf[textptr+3]-'0')*10+(buf[textptr+4]-'0'))*26);
+
+            textptr += 5;
+            while( buf[textptr] == ' ' ) textptr++;
+
+            int designertime =
+            	(((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
+            	(((buf[textptr+3]-'0')*10+(buf[textptr+4]-'0'))*26);
+
+            textptr += 5;
+            while( buf[textptr] == ' ' ) textptr++;
+
+            i = 0;
+            while( buf[textptr+i] != 0x0a ) i++;
+            String title = new String(buf, textptr, i-1);
+            episodes[epnum].gMapInfo[mapnum] = new MapInfo(path, title, partime, designertime);
+            episodes[epnum].nMaps = Math.max(episodes[epnum].nMaps, mapnum + 1);
+        }
+	}
+	
+	private boolean findSkillNames(byte[] buf)
+	{
+		int index = -1;
+		int size = 0;
+        while( (index = indexOf("defineskillname ", buf, index+1)) != -1)
+        {
+        	textptr = index + 15;
+        	Integer j = transnum(buf);
+            if(j == null) continue;
+            while( buf[textptr] == ' ' ) textptr++;
+
+            int i = 0;
+            while( buf[textptr+i] != 0x0a ) i++;
+            
+            skillnames[j] = new String(buf, textptr, i-1).toUpperCase();
+            size = Math.max(size, j+1);  
+        }
+        
+        if(size != 0)
+        	return true;
+
+        return false;
+	}
+	private int textptr;
+	private char[] tempbuf = new char[2048];
+	private Integer transnum(byte[] text)
+	{
+		while( !isaltok(text[textptr]) )
+	    {
+	    	textptr++;
+	        if( text[textptr] == 0 )
+	            return null;
+	    }
+
+	    int l = 0;
+	    while( isaltok(text[textptr + l]) )
+	    {
+	        tempbuf[l] = (char) text[textptr + l];
+	        l++;
+	    }
+	    
+	    tempbuf[l] = 0;
+	    for(int i=0;i<NUMKEYWORDS;i++)
+	        if( Bstrcmp( label, (labelcnt<<6), keyw[i], 0) == 0 )
+	    {
+	        error++;
+	        Console.Println("  * ERROR! Symbol '" + label[(labelcnt<<6)] + "' is a key word.");
+	        textptr+=l;
+	    }
+
+	    for(int i=0;i<labelcnt;i++)
+	    {
+	        if( Bstrcmp(tempbuf, 0, label, i<<6) == 0 )
+	        {
+	        	textptr += l;
+	            return labelcode.get(i);
+	        }
+	    }
+
+	    if( !Character.isDigit(text[textptr]) && text[textptr] != '-')
+	    {
+	    	Console.Println("  * ERROR! Parameter '" + tempbuf[0] + "' is undefined.");
+	        error++;
+	        textptr+=l;
+	        return null;
+	    }
+	    
+	    String number = new String(text, textptr, l);
+	    textptr += l;
+	    return Integer.parseInt(number);
+	}
+	
+}

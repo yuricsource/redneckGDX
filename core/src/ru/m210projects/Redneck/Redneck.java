@@ -134,6 +134,7 @@ import ru.m210projects.Build.Types.Message;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Types.Sample;
 import ru.m210projects.Redneck.Types.SoundOwner;
+import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.Animwalltype;
 import ru.m210projects.Redneck.Types.RREngine;
 import ru.m210projects.Redneck.Types.RROSDFunc;
@@ -152,6 +153,7 @@ public class Redneck {
 	public static int scenestatus = 0;
 	
 	public static boolean gShowMenu;
+	public static GameInfo currentGame;
 	
 	public static void InitUserDefs()
 	{
@@ -630,7 +632,7 @@ public class Redneck {
 						    {
 						   		case 0:
 									scenestatus = 0;
-									if(GameCON == RR66) {
+									if(currentGame.ConType == RR66) {
 										initanm("turd66.anm",5,5);
 										break;
 									}
@@ -639,7 +641,7 @@ public class Redneck {
 									break;
 								case 1:
 									scenestatus = 0;
-									if(GameCON == RR66) {
+									if(currentGame.ConType == RR66) {
 										initanm("end66.anm",5,4);
 										break;
 									}
@@ -705,11 +707,8 @@ public class Redneck {
 				
 				char[] mapname;
 				boolean usermap = false;
-				if(ud.warp_on == 0 || boardfilename == null) {
-					mapname = level_names[(ud.volume_number*11)+ud.level_number];
-					if(gEndGame != 0)
-						mapname = "CLOSE ENCOUNTERS".toCharArray();
-				}
+				if(ud.warp_on != 2 || boardfilename == null) 
+					mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title.toCharArray();
 				else {
 					Arrays.fill(buf, (char)0);
 					int index = boardfilename.lastIndexOf(File.separator);

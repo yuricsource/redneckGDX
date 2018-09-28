@@ -313,7 +313,7 @@ public class Network {
 
 						if(fil != null) {
 							nNetLastSuccess = fil;
-							mContentUpdate(fil);
+//							mContentUpdate(fil); XXX
 							return 1;
 						} else {
 							if(nNetLastSuccess != null)

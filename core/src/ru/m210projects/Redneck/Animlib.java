@@ -20,6 +20,7 @@ import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
@@ -297,11 +298,11 @@ LABEL_11:
 	        		sound(479);
 	            break;
 	        case 5:
-	        	if(fr == 1 && GameCON != RR66) 
+	        	if(fr == 1 && currentGame.ConType != RR66) 
 	        		sound(35);
 	            break;
 	        case 6:
-	        	if(fr == 1 && GameCON != RR66)
+	        	if(fr == 1 && currentGame.ConType != RR66)
 	        		sound(82);
 	            break;
 	    }

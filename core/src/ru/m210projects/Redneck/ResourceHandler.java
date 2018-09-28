@@ -15,11 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
+import ru.m210projects.Redneck.Types.GameInfo;
 
 public class ResourceHandler {
 	
-	public static String defscriptname;
-	public static int defGameCON;
 	public static int[] deftiletovox = new int[MAXTILES];
 	
 //	private static int usergroup;
@@ -36,8 +35,7 @@ public class ResourceHandler {
 			Sound[i].ptr = null;
 		
 		if(userscript) {
-			loaduserdef(defscriptname);
-			GameCON = defGameCON;
+			loaduserdef(defGame.mainCon);
 			userscript = false;
 		}
 		
@@ -79,11 +77,9 @@ public class ResourceHandler {
 //		
 //	}
 	
-	public static void checkEpisodeResources(String path)
+	public static void checkEpisodeResources(GameInfo addon)
 	{
 		resetEpisodeResources();
-		
-		if(path == null) return;
 		
 //		if(ini.isPackage()) //if in main blood folder
 //		{
@@ -105,13 +101,12 @@ public class ResourceHandler {
 		//Loading user package files
 //		InitGroupResources(kDynamicList());
 		
-		if(path.equals("RR66_Addon"))
+		if(addon.Title.equals("Suckin' Grits on Route 66"))
 		{
-			GameCON = RR66;
-
+			System.err.println("Load 66");
 			engine.loadpic("TILESA66.ART");
 			engine.loadpic("TILESB66.ART");
-			if(loaduserdef("game66.con"))
+			if(loaduserdef(addon.mainCon))
 				userscript = true;
 			usecustomarts = true;
 		}

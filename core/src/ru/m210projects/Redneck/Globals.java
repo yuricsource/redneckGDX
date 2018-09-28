@@ -31,6 +31,7 @@ import com.badlogic.gdx.Gdx;
 
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Types.SoundOwner;
+import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.Animwalltype;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
@@ -44,7 +45,8 @@ public class Globals {
 	public static final int RR66 = 1;
 	public static final int RRRA = 2;
 	
-	public static int GameCON = RR;
+	public static GameInfo defGame;
+	public static GameInfo RR66Game;
 	
 	public static final int BYTEVERSIONRR = 108;
 	public static final int GDXBYTEVERSION = 147;
@@ -67,7 +69,7 @@ public class Globals {
 	public static int WindDir;
 	public static int WindTime;
 	
-	public static int numepisodes, numlevels[] = new int[3];
+//	public static int numepisodes, numlevels[] = new int[3];
 	
 	public static final int MAX_WEAPONS = 13;
 	public static final int MAX_WEAPONSRA = 17;
@@ -154,8 +156,6 @@ public class Globals {
 	public static boolean kGameCrash;
 	public static int musicvolume, musiclevel;
 	
-	public static short gEndGame;
-	public static short gEndFirstEpisode;
 	public static int LeonardCrack;
 	
 	public static PlayerOrig po[] = new PlayerOrig[MAXPLAYERS];
@@ -196,11 +196,6 @@ public class Globals {
 	public static final int nMaxEpisodes = 4;
 	public static final int nMaxSkills = 5;
 	
-	public static char[][] level_names = new char[nMaxMaps * nMaxEpisodes][33],level_file_names = new char[nMaxMaps * nMaxEpisodes][128];
-	public static int[] partime = new int[nMaxMaps * nMaxEpisodes],designertime = new int[nMaxMaps * nMaxEpisodes];
-	public static char[][] volume_names = new char[nMaxMaps][33];
-	public static char[][] skill_names = new char[nMaxSkills][33];
-
 	public static int checksume;
 	public static int[] soundsiz = new int[NUM_SOUNDS];
 
