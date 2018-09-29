@@ -6,14 +6,18 @@ import static ru.m210projects.Build.FileHandle.Compat.FilePath;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Gameutils.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
+import ru.m210projects.Build.FileHandle.DirectoryEntry;
+import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
 import ru.m210projects.Redneck.Types.GameInfo;
 
@@ -21,27 +25,22 @@ public class ResourceHandler {
 	
 	public static int[] deftiletovox = new int[MAXTILES];
 	
-//	private static int usergroup;
+	private static int usergroup;
 	private static boolean usecustomarts;
-	private static boolean userscript;
-	
+
 	public static void resetEpisodeResources()
 	{
 		kDynamicClear();
-//		usergroup = -1;
+		usergroup = -1;
+		currentGame = defGame;
 		
 		System.arraycopy(deftiletovox, 0, tiletovox, 0, MAXTILES); //reset user voxels
 		for(int i = 0; i < NUM_SOUNDS; i++)
 			Sound[i].ptr = null;
-		
-		if(userscript) {
-			loaduserdef(defGame.mainCon);
-			userscript = false;
-		}
-		
+
 		if(!usecustomarts)
 			return; 
-		
+
 		System.err.println("Reset to default resources");
 		Arrays.fill(tilesizx, 0, MAXTILES, (short)0);
 		Arrays.fill(tilesizy, 0, MAXTILES, (short)0);
@@ -72,10 +71,28 @@ public class ResourceHandler {
 		}
 	}
 	
-//	private static void searchEpisodeResources(DirectoryEntry cache)
-//	{
-//		
-//	}
+	private static void searchEpisodeResources(DirectoryEntry cache)
+	{
+		if(cache.getDirectories().size() > 0)
+		{
+			for (Iterator<DirectoryEntry> it = cache.getDirectories().values().iterator(); it.hasNext(); ) {
+				DirectoryEntry dir = it.next();
+				dir.InitDirectory(dir.getAbsolutePath());
+				if(!dir.getName().equals("<userdir>"))
+					searchEpisodeResources(dir);
+			}
+		}
+
+		if(usergroup == -1)
+			usergroup = kGroupNew("User", true);
+		
+		for (Iterator<FileEntry> it = cache.getFiles().values().iterator(); it.hasNext(); ) {
+			FileEntry file = it.next();
+			if(!file.getExtension().equals("zip")
+					&& !file.getExtension().equals("grp")) 
+				kGroupAdd(usergroup, file.getPath(), null, 0);
+	    }
+	}
 	
 	public static void checkEpisodeResources(GameInfo addon)
 	{
@@ -95,20 +112,20 @@ public class ResourceHandler {
 //				return;
 //			}
 //		} else
-//		if(!path.equals("<main>"))
-//			searchEpisodeResources(ini.getFile().getParent());
-		
-		//Loading user package files
-//		InitGroupResources(kDynamicList());
-		
-		if(addon.Title.equals("Suckin' Grits on Route 66"))
-		{
-			System.err.println("Load 66");
+
+		if(!addon.getDirectory().getName().equals("<main>"))
+			searchEpisodeResources(addon.getDirectory());
+		else if(addon.Title.equals("Route 66")) {
 			engine.loadpic("TILESA66.ART");
 			engine.loadpic("TILESB66.ART");
-			if(loaduserdef(addon.mainCon))
-				userscript = true;
 			usecustomarts = true;
 		}
+		
+		//Loading user package files
+		InitGroupResources(kDynamicList());
+		if(addon.getCON() == null) 
+			addon.setCON(loaduserdef(addon.ConName));
+
+		currentGame = addon;
 	}
 }

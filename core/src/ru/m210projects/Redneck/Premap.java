@@ -26,12 +26,10 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
-import static ru.m210projects.Redneck.Redneck.gShowMenu;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Screen.vscrn;
 import static ru.m210projects.Redneck.Types.Demo.opendemowrite;
 import static ru.m210projects.Redneck.Screen.setgamepalette;
-import static ru.m210projects.Redneck.Redneck.gLoadingTicks;
 import static ru.m210projects.Redneck.Types.Demo.closedemowrite;
 import static ru.m210projects.Redneck.Interpolation.InterpolationCount;
 import static ru.m210projects.Redneck.Interpolation.gInterpolationData;
@@ -383,8 +381,8 @@ public class Premap {
 	{
 	    if(num >= NUM_SOUNDS || !cfg.SoundToggle) return false;
 
-	    if(sounds[num] == null) return false;
-	    int fp = kOpen(sounds[num], loadfromgrouponly);
+	    if(currentGame.getCON().sounds[num] == null) return false;
+	    int fp = kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
 	    if(fp == -1) return false;
 
 	    int l = kFileLength( fp );
@@ -690,7 +688,7 @@ public class Premap {
 	    p.scuba_on =           0;p.snorkle_amount =         0;
 	    p.yeehaa_amount        = 0;p.heat_on = 0;
 	    p.jetpack_on =         0;p.cowpie_amount =       0;
-	    p.shield_amount =      (short) max_armour_amount;
+	    p.shield_amount =      (short) currentGame.getCON().max_armour_amount;
 	    p.holoduke_on = -1;
 	    p.beer_amount =    0;
 	    p.whishkey_amount = 0;
@@ -748,7 +746,7 @@ public class Premap {
 		PlayerStruct p = ps[snum];
 
 	    spriteqloc = 0;
-	    for(int i=0;i<spriteqamount;i++) spriteq[i] = -1;
+	    for(int i=0;i<currentGame.getCON().spriteqamount;i++) spriteq[i] = -1;
 
 	    p.hbomb_on          = 0;
 	    p.cheat_phase       = 0;
@@ -768,7 +766,7 @@ public class Premap {
 	    p.last_pissed_time = 0;
 
 	    p.one_parallax_sectnum = -1;
-	    p.visibility = ud.const_visibility;
+	    p.visibility = currentGame.getCON().const_visibility;
 
 	    screenpeek              = myconnectindex;
 	    numanimwalls            = 0;
@@ -1432,8 +1430,8 @@ public class Premap {
 
 	            if( (g&MODE_EOL) != MODE_EOL || ps[j].last_extra == 0)
 	            {
-	                ps[j].last_extra = (short) max_player_health;
-	                s.extra = (short) max_player_health;
+	                ps[j].last_extra = (short) currentGame.getCON().max_player_health;
+	                s.extra = (short) currentGame.getCON().max_player_health;
 	            }
 	            else s.extra = ps[j].last_extra;
 
@@ -1663,7 +1661,7 @@ public class Premap {
 			    {
 			    	musicvolume = ud.volume_number;
 			    	musiclevel = ud.level_number;
-			    	sndPlayMusic(music_fn[musicvolume][musiclevel]);
+			    	sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
 			    }
 			    
 			    if( (ud.recstat == 1) && (g&MODE_RESTART) != MODE_RESTART )

@@ -43,15 +43,10 @@ import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Redneck.Actors.*;
-import static ru.m210projects.Redneck.Gamedef.actorscrptr;
-import static ru.m210projects.Redneck.Gamedef.actortype;
-import static ru.m210projects.Redneck.Gamedef.getglobalz;
-import static ru.m210projects.Redneck.Gamedef.makeitfall;
-import static ru.m210projects.Redneck.Gamedef.script;
+import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Redneck.Globals.dassert;
 import static ru.m210projects.Redneck.Globals.hittype;
-import static ru.m210projects.Redneck.Globals.impact_damage;
 import static ru.m210projects.Redneck.Globals.msx;
 import static ru.m210projects.Redneck.Globals.msy;
 import static ru.m210projects.Redneck.Globals.ps;
@@ -59,6 +54,7 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Sector.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.SoundDefs.SUBWAY;
@@ -122,12 +118,12 @@ public class Spawn {
 	    }
 
 	    hittype[i].temp_data[0]=hittype[i].temp_data[2]=hittype[i].temp_data[3]=hittype[i].temp_data[5]=0;
-	    if( actorscrptr[s_pn] != 0 )
+	    if( currentGame.getCON().actorscrptr[s_pn] != 0 )
 	    {
-	        s.extra = (short) script[actorscrptr[s_pn]];
-	        hittype[i].temp_data[4] = script[actorscrptr[s_pn]+1];
-	        hittype[i].temp_data[1] = script[actorscrptr[s_pn]+2];
-	        s.hitag = (short) script[actorscrptr[s_pn]+3];
+	        s.extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[s_pn]];
+	        hittype[i].temp_data[4] = currentGame.getCON().script[currentGame.getCON().actorscrptr[s_pn]+1];
+	        hittype[i].temp_data[1] = currentGame.getCON().script[currentGame.getCON().actorscrptr[s_pn]+2];
+	        s.hitag = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[s_pn]+3];
 	    }
 	    else
 	    {
@@ -207,7 +203,7 @@ public class Spawn {
 	            {
 	                engine.changespritestat(i,(short)12);
 	                sprite[i].cstat |=  257;
-	                sprite[i].extra = (short) impact_damage;
+	                sprite[i].extra = (short) currentGame.getCON().impact_damage;
 	                return i;
 	            }
 	        }
@@ -216,13 +212,13 @@ public class Spawn {
 
 	        if( (sprite[i].cstat&1) != 0 ) sprite[i].cstat |= 256;
 
-	        if( actorscrptr[s] != 0 )
+	        if( currentGame.getCON().actorscrptr[s] != 0 )
 	        {
-	            sprite[i].extra = (short) script[actorscrptr[s]];
-	            hittype[i].temp_data[4] = script[actorscrptr[s]+1];
-	            hittype[i].temp_data[1] = script[actorscrptr[s]+2];
-	            if( script[actorscrptr[s]+3] != 0 && sprite[i].hitag == 0 )
-	                sprite[i].hitag = (short) script[actorscrptr[s]+3];
+	            sprite[i].extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[s]];
+	            hittype[i].temp_data[4] = currentGame.getCON().script[currentGame.getCON().actorscrptr[s]+1];
+	            hittype[i].temp_data[1] = currentGame.getCON().script[currentGame.getCON().actorscrptr[s]+2];
+	            if( currentGame.getCON().script[currentGame.getCON().actorscrptr[s]+3] != 0 && sprite[i].hitag == 0 )
+	                sprite[i].hitag = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[s]+3];
 	        }
 	        else hittype[i].temp_data[1] = hittype[i].temp_data[4] = 0;
 	    }
@@ -234,7 +230,7 @@ public class Spawn {
 	    {
 	            default:
 
-	                if( actorscrptr[sp.picnum] != 0 )
+	                if( currentGame.getCON().actorscrptr[sp.picnum] != 0 )
 	                {
 	                    if( j == -1 && sp.lotag > ud.player_skill )
 	                    {
@@ -247,7 +243,7 @@ public class Spawn {
 	                    if(sp.xrepeat == 0 || sp.yrepeat == 0)
 	                        sp.xrepeat = sp.yrepeat = 1;
 
-	                    if( (actortype[sp.picnum] & 3) != 0)
+	                    if( (currentGame.getCON().actortype[sp.picnum] & 3) != 0)
 	                    {
 	                        if( ud.monsters_off )
 	                        {
@@ -256,9 +252,9 @@ public class Spawn {
 	                            break;
 	                        }
 
-	                        makeitfall(i);
+	                        makeitfall(currentGame.getCON(), i);
 
-	                        if( (actortype[sp.picnum] & 2) != 0)
+	                        if( (currentGame.getCON().actortype[sp.picnum] & 2) != 0)
 	                            hittype[i].actorstayput = sp.sectnum;
 	                       
 	                        if ( checkaddkills(sp) )
@@ -416,7 +412,7 @@ public class Spawn {
                 if(j >= 0)
                     sp.xrepeat = sp.yrepeat = 32;
                 sp.clipdist = 72;
-                makeitfall(i);
+                makeitfall(currentGame.getCON(), i);
                 if(j >= 0)
                     sp.owner = (short) j;
                 else sp.owner = (short) i;
@@ -907,7 +903,7 @@ public class Spawn {
                 else
                 {
                     engine.changespritestat(i,(short)2);
-                    makeitfall(i);
+                    makeitfall(currentGame.getCON(), i);
                 }
                 
                 switch(sp.picnum)
@@ -1033,7 +1029,7 @@ public class Spawn {
                 }
 
                 if(sp.picnum == REACTOR || sp.picnum == REACTOR2)
-                    sp.extra = (short) impact_damage;
+                    sp.extra = (short) currentGame.getCON().impact_damage;
 
                 sprite[i].cstat |= 257; // Make it hitable
 
@@ -1518,7 +1514,7 @@ public class Spawn {
                     sp.xrepeat=sp.yrepeat=0;
                 }
                 else sp.cstat = 1+256;
-                sp.extra = (short) (impact_damage<<2);
+                sp.extra = (short) (currentGame.getCON().impact_damage<<2);
                 sp.owner = (short) i;
 
                 engine.changespritestat(i,(short)6);
@@ -1666,7 +1662,7 @@ public class Spawn {
                 }
                 else
                 {
-                    makeitfall(i);
+                    makeitfall(currentGame.getCON(), i);
 
                     if(sp.picnum == RAT)
                     {

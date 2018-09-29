@@ -32,12 +32,9 @@ import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Config.*;
-import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -69,7 +66,6 @@ import ru.m210projects.Redneck.Menus.MenuSlider;
 import ru.m210projects.Redneck.Menus.MenuTextField;
 import ru.m210projects.Redneck.Menus.MenuTitle;
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Render.GLInfo;
@@ -139,14 +135,12 @@ public class RRMenu {
 			nFlags = 2;
 			mGameInfo = null;
 		} else {
-			if (fil.getExtension().equals("zip") || fil.getExtension().equals("grp")) {
-				if (ini != null) {
-					nFlags = 1;
-					if(ini.Title.equals("Default"))
-						nFlags = 0;
+			if (ini != null) {
+				nFlags = 1;
+				if(ini == defGame)
+					nFlags = 0;
 
-					updateUserEpisodeList(ini);
-				}
+				updateUserEpisodeList(ini);
 			}
 			ud.m_level_number = 0;
 	        ud.m_volume_number = 0;
@@ -182,6 +176,8 @@ public class RRMenu {
 	{
 		System.err.println("mResetContent");
 		mContent = null;
+		mGameInfo = null;
+		mEpisodelist.clear();
 		mUserFlag = 0;
 		ud.m_level_number = 0;
         ud.m_volume_number = 0;
@@ -200,7 +196,7 @@ public class RRMenu {
 
 		MenuTitle mTitle = new MenuTitle("SELECT AN EPISODE", 2, 160, 19, MENUBAR);
 		mAddItem(mMenus[nMenuId], mTitle, false);
-		MenuList mSlot = new MenuList(mEpisodelist, 1, 0, 45, 320, 1, 5, mMenus[DIFFICULTY], UserProc, nMaxEpisodes);
+		MenuList mSlot = new MenuList(mEpisodelist, 2, 0, 55, 320, 1, 5, mMenus[DIFFICULTY], UserProc, nMaxEpisodes);
 		mAddItem(mMenus[nMenuId], mSlot, true);
 	}
 	
@@ -239,8 +235,6 @@ public class RRMenu {
 		
 		Console.Println("Searching for addition content...");
 
-		buildAddons(cache);
-		
 		mUserContent(USERCONTENT, UserContProc);
 		mMain(MAIN);
 		mGame(GAME);
@@ -284,61 +278,6 @@ public class RRMenu {
 		return game.resDir.getRelativePath();
 	}
 	
-	private static void buildAddons(DirectoryEntry dir)
-	{
-		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
-			FileEntry file = it.next();
-			if(file.getExtension().equals("con"))
-				InitTree(map, file);
-		}
-		
-		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
-			FileEntry file = it.next();
-			if(file.getExtension().equals("con"))
-			{
-				List<String> list = map.get(file.getName());
-				if(list != null) 
-					handleList(map, list);
-			}
-		}
-
-		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
-			String con = it.next();
-			if(!dir.getName().equals("<main>") || !con.equals("game.con")) {
-				GameInfo addon = new GameInfo(con);
-				addon.setDirectory(dir);
-				addon.init();
-				if(addon.isInited)
-					Console.Println("Found addon: " + addon.mainCon);
-				
-				if(con.equals("game66.con")) {
-					FileEntry mapFile = cache.checkFile(addon.episodes[0].gMapInfo[0].path);
-					if(mapFile != null) {
-						RR66Game = addon;
-						RR66Game.ConType = RR66;
-						RR66Game.Title = "Suckin' Grits on Route 66";
-					}
-				}
-			}
-		}
-	}
-	
-	private static void handleList(HashMap<String, List<String>> map, List<String> list)
-	{
-		for(String child : list)
-			for (Iterator<String> con = map.keySet().iterator(); con.hasNext();) {
-				String name = con.next();
-				if(name.equals(child)) {
-					List<String> other = map.get(name);
-					con.remove();
-					if(other != null) 
-						handleList(map, other);
-					break;
-				}
-			}
-	}
-
 	private static void mReSetClassic(int nMenuId) {
 		
 		MenuTitle question = new MenuTitle("Do you really want reset to classic?", 1, 160, 90, -1);
@@ -366,7 +305,6 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], QuitVariants, true);
 	}
 
-	
 	public static boolean mFromNetworkSetup() {
 		return mCount > 0 && mMenuHistory[mCount - 1] == mMenus[NETWORKGAME];
 	}
@@ -470,7 +408,15 @@ public class RRMenu {
 		
 		if(RR66Game != null)
 		{
-			MenuButton skill = new MenuButton(RR66Game.Title, 2, 0, pos+=19, 320, 1, 0, null, -1, newEpProc, 0);
+			MenuButton skill = new MenuButton(RR66Game.Title, 2, 0, pos+=19, 320, 1, 0, mMenus[NEWUSERGAME], -1, new MENUPROC() {
+				@Override
+				public void run(MenuItem pItem) {
+					mUserFlag = 1;
+					updateUserEpisodeList(RR66Game);
+					ud.m_level_number = 0;
+					ud.m_volume_number = 0;
+				}
+			}, 0);
 			mAddItem(mMenus[nMenuId], skill, epnum == 0);
 			epnum++;
 		}
@@ -2219,8 +2165,8 @@ public class RRMenu {
 
 				if ((gm&MODE_GAME) != 0 || (gm&MODE_DEMO) != 0 || (gm&MODE_MENU) != 0) {
 					sndStopMusic();
-					if((gm&MODE_MENU) != 0) { sndPlayMusic(env_music_fn[0]); } 
-					else sndPlayMusic(music_fn[ud.volume_number][ud.level_number]);
+					if((gm&MODE_MENU) != 0) { sndPlayMusic(currentGame.getCON().env_music_fn[0]); } 
+					else sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
 				}
 			}
 		};

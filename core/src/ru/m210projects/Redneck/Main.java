@@ -50,6 +50,7 @@ public class Main extends ApplicationAdapter {
 	/*
 	 * v0.753
 	 * TODO:
+	 * script labels reset
 	 * set currentGame (gamedef)
 	 * Network content
 	 * Addons to browser

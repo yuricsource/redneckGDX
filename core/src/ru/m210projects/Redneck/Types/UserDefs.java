@@ -36,7 +36,6 @@ public class UserDefs {
 	public int camerasprite = -1,last_camsprite;
 	public int last_level,secretlevel;
 
-	public int const_visibility;
 	public int camera_time,folfvel,folx,foly,fola;
 	public int reccnt;
 	public float folavel;

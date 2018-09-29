@@ -34,6 +34,7 @@ import static ru.m210projects.Redneck.Globals.global_random;
 import static ru.m210projects.Redneck.Globals.sync;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Premap.LeaveMap;
+import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Redneck.Types.Demo.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
@@ -455,7 +456,7 @@ public class Player {
 	            else
 	            {
 	                p.extra_extra8 += 32;
-	                if(p.last_extra < (max_player_health>>1) && (p.last_extra&3) == 0)
+	                if(p.last_extra < (currentGame.getCON().max_player_health>>1) && (p.last_extra&3) == 0)
 	                    spritesound(DUKE_LONGTERM_PAIN,p.i);
 	            }
 	        }
@@ -836,12 +837,12 @@ public class Player {
 	                    {
 	                        if(snum == screenpeek)
 	                        {
-	                        	buildString(fta_quotes[115], 0, "KILLED BY ", ud.user_name[p.frag_ps]);
+	                        	buildString(currentGame.getCON().fta_quotes[115], 0, "KILLED BY ", ud.user_name[p.frag_ps]);
 	                        	FTA(115,p);
 	                        }
 	                        else
 	                        {
-	                        	buildString(fta_quotes[116], 0, "KILLED ", ud.user_name[snum]);
+	                        	buildString(currentGame.getCON().fta_quotes[116], 0, "KILLED ", ud.user_name[snum]);
 	                            FTA(116, ps[p.frag_ps]);
 	                        }
 	                    }
@@ -849,12 +850,12 @@ public class Player {
 	                    {
 	                        if(snum == screenpeek)
 	                        {
-	                        	buildString(fta_quotes[115], 0, "KILLED BY PLAYER ", 1+p.frag_ps);
+	                        	buildString(currentGame.getCON().fta_quotes[115], 0, "KILLED BY PLAYER ", 1+p.frag_ps);
 	                            FTA(115,p);
 	                        }
 	                        else
 	                        {
-	                        	buildString(fta_quotes[116], 0, "KILLED PLAYER ", 1+snum);
+	                        	buildString(currentGame.getCON().fta_quotes[116], 0, "KILLED PLAYER ", 1+snum);
 	                            FTA(116,ps[p.frag_ps]);
 	                        }
 	                    }
@@ -1208,7 +1209,7 @@ public class Player {
 			            else
 			            {
 			                p.on_ground = false;
-			                p.poszv += (gc+80); // (TICSPERFRAME<<6);
+			                p.poszv += (currentGame.getCON().gc+80); // (TICSPERFRAME<<6);
 			                if(p.poszv >= (4096+2048)) p.poszv = (4096+2048);
 			                if(p.poszv > 2400 && p.falling_counter < 255)
 			                {
@@ -1483,28 +1484,28 @@ public class Player {
 		
 			        if( ( p.curr_weapon == KNEE_WEAPON && p.kickback_pic > 10 && p.on_ground ) || ( p.on_ground && (sb_snum&2) != 0 ) )
 			        {
-			            p.posxv = mulscale(p.posxv,dukefriction-0x2000,16);
-			            p.posyv = mulscale(p.posyv,dukefriction-0x2000,16);
+			            p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-0x2000,16);
+			            p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-0x2000,16);
 			        }
 			        else
 			        {
 			            if(psectlotag == 2)
 			            {
-			                p.posxv = mulscale(p.posxv,dukefriction-0x1400,16);
-			                p.posyv = mulscale(p.posyv,dukefriction-0x1400,16);
+			                p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-0x1400,16);
+			                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-0x1400,16);
 			            }
 			            else
 			            {
-			                p.posxv = mulscale(p.posxv,dukefriction,16);
-			                p.posyv = mulscale(p.posyv,dukefriction,16);
+			                p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction,16);
+			                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction,16);
 			            }
 			        }
 			        
 			        if(sector[p.cursectnum].floorpicnum == 3073 || sector[p.cursectnum].floorpicnum == 2702)
 			        {
 			        	if(p.boot_amount <= 0) {
-				        	p.posxv = mulscale(p.posxv,dukefriction-6144,16);
-			                p.posyv = mulscale(p.posyv,dukefriction-6144,16);
+				        	p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-6144,16);
+			                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-6144,16);
 			        	} else p.boot_amount--;
 			        }
 			        
@@ -1514,9 +1515,9 @@ public class Player {
 			        if( shrunk )
 			        {
 			            p.posxv =
-			                mulscale(p.posxv,dukefriction-(dukefriction>>1)+(dukefriction>>2), 16);
+			                mulscale(p.posxv,currentGame.getCON().dukefriction-(currentGame.getCON().dukefriction>>1)+(currentGame.getCON().dukefriction>>2), 16);
 			            p.posyv =
-			                mulscale(p.posyv,dukefriction-(dukefriction>>1)+(dukefriction>>2), 16);
+			                mulscale(p.posyv,currentGame.getCON().dukefriction-(currentGame.getCON().dukefriction>>1)+(currentGame.getCON().dukefriction>>2), 16);
 			        }
 			    }
 			}
@@ -1842,14 +1843,14 @@ public class Player {
 	        case SHOTGUNSPRITE: return(120);
 	        case 29: return(120);
 
-	        case 42: if (ps[snum].ammo_amount[TIT_WEAPON] < max_ammo_amount[TIT_WEAPON]) return(25); else return(0);
-	        case AMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < max_ammo_amount[SHOTGUN_WEAPON]) return(10); else return(0);
-	        case 41: if (ps[snum].ammo_amount[RIFLEGUN_WEAPON] < max_ammo_amount[RIFLEGUN_WEAPON]) return(20); else return(0);
-	        case 37: if (ps[snum].ammo_amount[ALIENBLASTER_WEAPON] < max_ammo_amount[ALIENBLASTER_WEAPON]) return(10); else return(0);
-	        case 44: if (ps[snum].ammo_amount[DYNAMITE_WEAPON] < max_ammo_amount[DYNAMITE_WEAPON]) return(50); else return(0);
-	        case 46: if (ps[snum].ammo_amount[THROWSAW_WEAPON] < max_ammo_amount[THROWSAW_WEAPON]) return(10); else return(0);
-	        case HBOMBAMMO: if (ps[snum].ammo_amount[4] < max_ammo_amount[4]) return(30); else return(0);
-	        case SHOTGUNAMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < max_ammo_amount[SHOTGUN_WEAPON]) return(25); else return(0);
+	        case 42: if (ps[snum].ammo_amount[TIT_WEAPON] < currentGame.getCON().max_ammo_amount[TIT_WEAPON]) return(25); else return(0);
+	        case AMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < currentGame.getCON().max_ammo_amount[SHOTGUN_WEAPON]) return(10); else return(0);
+	        case 41: if (ps[snum].ammo_amount[RIFLEGUN_WEAPON] < currentGame.getCON().max_ammo_amount[RIFLEGUN_WEAPON]) return(20); else return(0);
+	        case 37: if (ps[snum].ammo_amount[ALIENBLASTER_WEAPON] < currentGame.getCON().max_ammo_amount[ALIENBLASTER_WEAPON]) return(10); else return(0);
+	        case 44: if (ps[snum].ammo_amount[DYNAMITE_WEAPON] < currentGame.getCON().max_ammo_amount[DYNAMITE_WEAPON]) return(50); else return(0);
+	        case 46: if (ps[snum].ammo_amount[THROWSAW_WEAPON] < currentGame.getCON().max_ammo_amount[THROWSAW_WEAPON]) return(10); else return(0);
+	        case HBOMBAMMO: if (ps[snum].ammo_amount[4] < currentGame.getCON().max_ammo_amount[4]) return(30); else return(0);
+	        case SHOTGUNAMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < currentGame.getCON().max_ammo_amount[SHOTGUN_WEAPON]) return(25); else return(0);
 
 	        case 51: if (sprite[ps[snum].i].extra < 100) return(10); else return(0); //BEER
 	        case 52: if (sprite[ps[snum].i].extra < 100) return(30); else return(0); //PORKBALLS
@@ -1861,7 +1862,7 @@ public class Player {
 	        case 59: if (ps[snum].yeehaa_amount < 1200) return(10); else return(0);
 	        case 60: return(1);
 	        case BOOTS: if (ps[snum].boot_amount < 2000) return(50); else return(0);
-	        case 5595: if (sprite[ps[snum].i].extra < max_player_health) return(50); else return(0);
+	        case 5595: if (sprite[ps[snum].i].extra < currentGame.getCON().max_player_health) return(50); else return(0);
 	        case 3437: if (ps[snum].beer_amount < 2400) return(30); else return(0);
 	    }
 	    return(0);

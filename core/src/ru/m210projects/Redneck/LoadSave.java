@@ -269,7 +269,7 @@ public class LoadSave {
 			bb.putInt(msy[i]);
 		
 		bb.putShort(spriteqloc);
-		bb.putShort(spriteqamount);
+		bb.putShort(currentGame.getCON().spriteqamount);
 		for(int i = 0; i < 1024; i++)
 			bb.putShort(spriteq[i]);
 		
@@ -368,11 +368,11 @@ public class LoadSave {
 		ByteBuffer bb = ByteBuffer.allocate(bufsiz);
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
 		for(int i = 0; i < MAXTILES; i++)
-			bb.put((byte)actortype[i]);
+			bb.put((byte)currentGame.getCON().actortype[i]);
 		for(int i=0;i<MAXSCRIPTSIZE;i++)
-	    	bb.putInt(script[i]);
+	    	bb.putInt(currentGame.getCON().script[i]);
 		for(int i=0;i<MAXTILES;i++)
-			bb.putInt(actorscrptr[i]);
+			bb.putInt(currentGame.getCON().actorscrptr[i]);
 		for(int i=0;i<MAXSPRITES;i++) 
 			bb.put(hittype[i].getBytes());
 
@@ -522,11 +522,10 @@ public class LoadSave {
 	
 	public static void ConLoad(SafeLoader bb)
 	{
-		System.arraycopy(bb.actortype, 0, actortype, 0, MAXTILES);
-		System.arraycopy(bb.script, 0, script, 0, MAXSCRIPTSIZE);
-		System.arraycopy(bb.actorscrptr, 0, actorscrptr, 0, MAXTILES);
-		System.arraycopy(bb.actorscrptr, 0, actorscrptr, 0, MAXSPRITES);
-		
+		System.arraycopy(bb.actortype, 0, currentGame.getCON().actortype, 0, MAXTILES);
+		System.arraycopy(bb.script, 0, currentGame.getCON().script, 0, MAXSCRIPTSIZE);
+		System.arraycopy(bb.actorscrptr, 0, currentGame.getCON().actorscrptr, 0, MAXTILES);
+
 		for(int i=0;i<MAXSPRITES;i++) 
 			hittype[i].copy(bb.hittype[i]);
 	}
@@ -586,7 +585,7 @@ public class LoadSave {
 		System.arraycopy(bb.msy, 0, msy, 0, 2048);
 
 		spriteqloc = bb.spriteqloc;
-		spriteqamount = bb.spriteqamount;
+		currentGame.getCON().spriteqamount = bb.spriteqamount;
 		System.arraycopy(bb.spriteq, 0, spriteq, 0, 1024);
 
 		mirrorcnt = bb.mirrorcnt;
@@ -757,7 +756,7 @@ public class LoadSave {
 
 		musicvolume = ud.volume_number;
     	musiclevel = ud.level_number;
-    	sndPlayMusic(music_fn[ud.volume_number][ud.level_number]);
+    	sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
 
 		ud.recstat = 0;
 

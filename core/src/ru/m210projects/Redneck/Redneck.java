@@ -632,7 +632,7 @@ public class Redneck {
 						    {
 						   		case 0:
 									scenestatus = 0;
-									if(currentGame.ConType == RR66) {
+									if(currentGame.getCON().type == RR66) {
 										initanm("turd66.anm",5,5);
 										break;
 									}
@@ -641,7 +641,7 @@ public class Redneck {
 									break;
 								case 1:
 									scenestatus = 0;
-									if(currentGame.ConType == RR66) {
+									if(currentGame.getCON().type == RR66) {
 										initanm("end66.anm",5,4);
 										break;
 									}
@@ -979,10 +979,10 @@ public class Redneck {
 	    	if(ud.lockout == 0)
 	    		spritesound(437, p.i);
 	
-	    	if ( sprite[p.i].extra > max_player_health - max_player_health / 10 )
+	    	if ( sprite[p.i].extra > currentGame.getCON().max_player_health - currentGame.getCON().max_player_health / 10 )
 	  	   	{
-	  	        if ( sprite[p.i].extra < max_player_health )
-	  	          sprite[p.i].extra = (short) max_player_health;
+	  	        if ( sprite[p.i].extra < currentGame.getCON().max_player_health )
+	  	          sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
 	  	    }
 	  	    else
 	  	    {
@@ -1343,14 +1343,14 @@ public class Redneck {
 	            }
 	        }
 
-	        if( (sb_snum&(1<<24)) != 0 && p.beer_amount > 0 && sprite[p.i].extra < max_player_health )
+	        if( (sb_snum&(1<<24)) != 0 && p.beer_amount > 0 && sprite[p.i].extra < currentGame.getCON().max_player_health )
 	        {
 	        	p.beer_amount -= 400;
 	        	sprite[p.i].extra += 5;
 	            p.inven_icon = 3;
 
-	            if ( sprite[p.i].extra > max_player_health )
-	            	sprite[p.i].extra = (short) max_player_health;
+	            if ( sprite[p.i].extra > currentGame.getCON().max_player_health )
+	            	sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
 	            p.alcohol_amount += 5;
 	            if ( p.beer_amount == 0 )
 	                checkavailinven(p);
@@ -1368,16 +1368,16 @@ public class Redneck {
 	        		sub_64EF0(snum);
 	        		if ( sector[p.cursectnum].lotag == 857 )
 	        	    {
-	        			if(sprite[p.i].extra < max_player_health)
+	        			if(sprite[p.i].extra < currentGame.getCON().max_player_health)
 	        			{
 	        				sprite[p.i].extra += 10;
-	        				if(sprite[p.i].extra > max_player_health)
-	                        	sprite[p.i].extra = (short) max_player_health;
+	        				if(sprite[p.i].extra > currentGame.getCON().max_player_health)
+	                        	sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
 	        			}
 	        	    }
 	        	    else
 	        	    {
-	        	    	if(sprite[p.i].extra + 1 <= max_player_health)
+	        	    	if(sprite[p.i].extra + 1 <= currentGame.getCON().max_player_health)
 	        	    		sprite[p.i].extra++;
 	        	    }
 	        	}
@@ -1385,7 +1385,7 @@ public class Redneck {
 
 	        if( (sb_snum&(1<<16)) != 0 )
 	        {
-	            if( p.whishkey_amount > 0 && sprite[p.i].extra < max_player_health )
+	            if( p.whishkey_amount > 0 && sprite[p.i].extra < currentGame.getCON().max_player_health )
 	            {
 	                if(p.whishkey_amount > 10)
 	                {
@@ -1399,8 +1399,8 @@ public class Redneck {
 	                    p.whishkey_amount = 0;
 	                    checkavailinven(p);
 	                }
-	                if(sprite[p.i].extra > max_player_health)
-                    	sprite[p.i].extra = (short) max_player_health;
+	                if(sprite[p.i].extra > currentGame.getCON().max_player_health)
+                    	sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
 	               
 	                p.alcohol_amount += 10;
 	                if ( p.alcohol_amount <= 100 && Sound[DUKE_USEMEDKIT].num == 0)
@@ -1412,7 +1412,7 @@ public class Redneck {
 	        {
 	        	if ( p.cowpie_amount > 0 )
 	            {
-	        		if ( sprite[p.i].extra < max_player_health )
+	        		if ( sprite[p.i].extra < currentGame.getCON().max_player_health )
 	        		{
 	        			if ( Sound[429].num == 0 )
 	        				spritesound(429, p.i);
@@ -1431,8 +1431,8 @@ public class Redneck {
 	        			}
 	                
 	        			sprite[p.i].extra += 5;
-	        			if(sprite[p.i].extra > max_player_health)
-	        				sprite[p.i].extra = (short) max_player_health;
+	        			if(sprite[p.i].extra > currentGame.getCON().max_player_health)
+	        				sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
 	        			p.inven_icon = 4;
 	        			if(p.cowpie_amount <= 0)
 	        				checkavailinven(p);
@@ -1701,7 +1701,7 @@ public class Redneck {
 		                            {
 		                                     myonground = false;
 	
-		                                     myzvel += (gc+80);
+		                                     myzvel += (currentGame.getCON().gc+80);
 	
 		                                     if(myzvel >= (4096+2048)) myzvel = (4096+2048);
 		                            }
@@ -1825,20 +1825,20 @@ public class Redneck {
 	
 		                 if( ( p.curr_weapon == KNEE_WEAPON && p.kickback_pic > 10 && myonground ) || ( myonground && (sb_snum&2) != 0 ) )
 		                 {
-		                            myxvel = mulscale(myxvel,dukefriction-0x2000, 16);
-		                            myyvel = mulscale(myyvel,dukefriction-0x2000, 16);
+		                            myxvel = mulscale(myxvel,currentGame.getCON().dukefriction-0x2000, 16);
+		                            myyvel = mulscale(myyvel,currentGame.getCON().dukefriction-0x2000, 16);
 		                 }
 		                 else
 		                 {
 		                    if(psectlotag == 2)
 		                    {
-		                        myxvel = mulscale(myxvel,dukefriction-0x1400, 16);
-		                        myyvel = mulscale(myyvel,dukefriction-0x1400, 16);
+		                        myxvel = mulscale(myxvel,currentGame.getCON().dukefriction-0x1400, 16);
+		                        myyvel = mulscale(myyvel,currentGame.getCON().dukefriction-0x1400, 16);
 		                    }
 		                    else
 		                    {
-		                        myxvel = mulscale(myxvel,dukefriction, 16);
-		                        myyvel = mulscale(myyvel,dukefriction, 16);
+		                        myxvel = mulscale(myxvel,currentGame.getCON().dukefriction, 16);
+		                        myyvel = mulscale(myyvel,currentGame.getCON().dukefriction, 16);
 		                    }
 		                 }
 	
@@ -1848,9 +1848,9 @@ public class Redneck {
 		                 if( shrunk )
 		                 {
 		                     myxvel =
-		                         mulscale(myxvel,(dukefriction)-(dukefriction>>1)+(dukefriction>>2), 16);
+		                         mulscale(myxvel,(currentGame.getCON().dukefriction)-(currentGame.getCON().dukefriction>>1)+(currentGame.getCON().dukefriction>>2), 16);
 		                     myyvel =
-		                         mulscale(myyvel,(dukefriction)-(dukefriction>>1)+(dukefriction>>2), 16);
+		                         mulscale(myyvel,(currentGame.getCON().dukefriction)-(currentGame.getCON().dukefriction>>1)+(currentGame.getCON().dukefriction>>2), 16);
 		                 }
 		        }
 	        }

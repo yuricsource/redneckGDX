@@ -96,11 +96,11 @@ public class MenuList extends MenuItem
 			int px = x, py = y;
 			for(int i = l_nMin; i >= 0 && i < l_nMin + nListItems && i < text.size(); i++) {	
 				int pal = 0;
-				int shade = 32;
+				int shade = 8;
 				if ( i == l_nFocus ) {
 					if(mGetFocusedItem(m_pMenu, this))
-						shade = 32 - (totalclock & 0x3F);
-					else { shade = 0; pal = 8; }
+						shade = 8 - (totalclock & 0x3F);
+					else { shade = 0; pal = 0; }
 				}
 			    if(align == 1) {
 			    	mGetAlign(textStyle, text.get(i));
@@ -115,7 +115,7 @@ public class MenuList extends MenuItem
 			}
 		} else {
 			int pal = 0;
-			int shade = 32;
+			int shade = 8;
 			String text = "List is empty";
 			mGetAlign(textStyle, text.toCharArray());
 			int px = x, py = y;		
@@ -129,7 +129,7 @@ public class MenuList extends MenuItem
 		    }	    
 			mGetAlign(textStyle, null);
 			if(mGetFocusedItem(m_pMenu, this))
-				shade = 32 - (totalclock & 0x3F);
+				shade = 8 - (totalclock & 0x3F);
 			mDrawText(textStyle, text.toCharArray(), px, py, shade, pal, 0, 0);
 		}
 	}

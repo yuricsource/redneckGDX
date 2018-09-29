@@ -255,12 +255,12 @@ public class Sounds {
 	    if (!engine.getAudio().IsInited(SOUNDDRV)) return 0;
 
 	    int fp = -1;
-	    if(sounds[num] != null) fp= kOpen(sounds[num], loadfromgrouponly);
+	    if(currentGame.getCON().sounds[num] != null) fp= kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
 	    if(fp == -1)
 	    {
-	    	int offs = buildString(fta_quotes[113], 0, "Sound ", sounds[num]);
-	    	offs = buildString(fta_quotes[113], offs, "(", num);
-	    	offs = buildString(fta_quotes[113], offs, ") not found.");
+	    	int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
+	    	offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
+	    	offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
 
 	        FTA(113,ps[myconnectindex]);
 	        return 0;
@@ -285,26 +285,26 @@ public class Sounds {
 
 	    if( num >= NUM_SOUNDS ||
 	        !engine.getAudio().IsInited(SOUNDDRV) ||
-	        ( (soundm[num]&8) != 0 && ud.lockout != 0 ) ||
+	        ( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) ||
 	        !cfg.SoundToggle ||
 	        Sound[num].num > 3 ||
-	        !engine.getAudio().getSound().isAvailable(soundpr[num]) ||
+	        !engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[num]) ||
 	        (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26*3) ||
 	        gShowMenu) return null;
 
-	    if( (soundm[num]&128) != 0 )
+	    if( (currentGame.getCON().soundm[num]&128) != 0 )
 	    {
 	        sound(num);
 	        return null;
 	    }
 
-	    if( (soundm[num]&4) != 0 )
+	    if( (currentGame.getCON().soundm[num]&4) != 0 )
 	    {
 	        if(!cfg.VoiceToggle || (ud.multimode > 1 && sprite[i].picnum == APLAYER && sprite[i].yvel != screenpeek && ud.coop != 1) ) return null;
 
 	        for(int j=0;j<NUM_SOUNDS;j++)
 	          for(int k=0;k<Sound[j].num;k++)
-	            if( (Sound[j].num > 0) && (soundm[j]&4) != 0 )
+	            if( (Sound[j].num > 0) && (currentGame.getCON().soundm[j]&4) != 0 )
 	              return null;
 	    }
 
@@ -315,11 +315,11 @@ public class Sounds {
 
 	    int sndist = FindDistance3D((cx-x),(cy-y),(cz-z)>>4);
 
-	    if( i >= 0 && (soundm[num]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && sector[sprite[i].sectnum].lotag < 9 )
+	    if( i >= 0 && (currentGame.getCON().soundm[num]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && sector[sprite[i].sectnum].lotag < 9 )
 	        sndist = (int) divscale(sndist,(sprite[i].hitag+1), 14);
 
-	    int pitchs = soundps[num];
-	    int pitche = soundpe[num];
+	    int pitchs = currentGame.getCON().soundps[num];
+	    int pitche = currentGame.getCON().soundpe[num];
 	    cx = (int) klabs(pitche-pitchs);
 
 	    if(cx != 0)
@@ -330,7 +330,7 @@ public class Sounds {
 	    }
 	    else pitch = pitchs;
 
-	    sndist += soundvo[num];
+	    sndist += currentGame.getCON().soundvo[num];
 	    if(sndist < 0) sndist = 0;
 	    if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx,cy,cz-(24<<8),cs,sprite[i].x,sprite[i].y,sprite[i].z-(24<<8),sprite[i].sectnum) )
 	        sndist += sndist>>2;
@@ -346,7 +346,7 @@ public class Sounds {
 	                pitch -= 1024;
 	            break;
 	        default:
-	            if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
+	            if(sector[ps[screenpeek].cursectnum].lotag == 2 && (currentGame.getCON().soundm[num]&4) == 0)
 	                pitch = -768;
 	            if( sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
 	                return null;
@@ -375,20 +375,20 @@ public class Sounds {
 	       Sound[num].ptr.rewind();
 	    }
 
-	    if( (soundm[num]&16) != 0 ) sndist = 0;
+	    if( (currentGame.getCON().soundm[num]&16) != 0 ) sndist = 0;
 
 	    if(sndist < ((255-LOUDESTVOLUME)<<6) )
 	        sndist = ((255-LOUDESTVOLUME)<<6);
 
-	    if( (soundm[num]&1) != 0)
+	    if( (currentGame.getCON().soundm[num]&1) != 0)
 	    {
 	        if(Sound[num].num > 0) return null;
-        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, soundpr[num]);
+        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
         	if(voice != null)
         		voice.setLooping(true, 0, -1);
 	    }
 	    else
-        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, soundpr[num]);
+        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
 
 	    if ( voice != null )
 	    {
@@ -407,13 +407,13 @@ public class Sounds {
 	    Source voice;
 	    if (!engine.getAudio().IsInited(SOUNDDRV)) return null;
 	    if(!cfg.SoundToggle) return null;
-	    if(!cfg.VoiceToggle && (soundm[num]&4) != 0 ) return null;
-	    if( (soundm[num]&8) != 0 && ud.lockout != 0 ) return null;
-	    if(!engine.getAudio().getSound().isAvailable(soundpr[num])) return null;
+	    if(!cfg.VoiceToggle && (currentGame.getCON().soundm[num]&4) != 0 ) return null;
+	    if( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) return null;
+	    if(!engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[num])) return null;
 
 	    int pitch;
-	    int pitchs = soundps[num];
-	    int pitche = soundpe[num];
+	    int pitchs = currentGame.getCON().soundps[num];
+	    int pitche = currentGame.getCON().soundpe[num];
 	    int cx = (int) klabs(pitche-pitchs);
 
 	    if(cx != 0)
@@ -434,9 +434,9 @@ public class Sounds {
 	       Sound[num].ptr.rewind();
 	    }
 	    
-	    if( (soundm[num]&1) != 0)
+	    if( (currentGame.getCON().soundm[num]&1) != 0)
 	    {
-	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, soundpr[num]);
+	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
         	if(voice != null) {
         		voice.setLooping(true, 0, -1);
         		voice.setGlobal(1);
@@ -446,7 +446,7 @@ public class Sounds {
         	
 	    }
 	    else {
-	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, soundpr[num]);
+	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
         	if ( voice != null )
         	{
         		voice.setGlobal(1);
@@ -568,12 +568,12 @@ public class Sounds {
 	        {
 	            sndist = FindDistance3D((cx-sx),(cy-sy),(cz-sz)>>4);
 	            if(sprite[i].sectnum >= 0 && sprite[i].sectnum < MAXSECTORS) { //0.751
-		            if( i >= 0 && (soundm[j]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag&0xff) < 9 )
+		            if( i >= 0 && (currentGame.getCON().soundm[j]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag&0xff) < 9 )
 		                sndist = (int) divscale(sndist,(sprite[i].hitag+1), 14);
 	            }
 	        }
 
-	        sndist += soundvo[j];
+	        sndist += currentGame.getCON().soundvo[j];
 	        if(sndist < 0) sndist = 0;
 
 	        if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),sprite[i].sectnum) )
@@ -598,7 +598,7 @@ public class Sounds {
 	        }
 
 	        if(Sound[j].ptr == null && loadsound(j) == 0 ) continue;
-	        if( (soundm[j]&16) != 0 ) sndist = 0;
+	        if( (currentGame.getCON().soundm[j]&16) != 0 ) sndist = 0;
 
 	        if(sndist < ((255-LOUDESTVOLUME)<<6) )
 	            sndist = ((255-LOUDESTVOLUME)<<6);
@@ -628,7 +628,7 @@ public class Sounds {
 
         if(tempk > 0)
         {
-            if( (soundm[num]&16) == 0)
+            if( (currentGame.getCON().soundm[num]&16) == 0)
                 for(int tempj=0;tempj<tempk;tempj++)
             {
                 int tempi = SoundOwner[num][tempj].i;

@@ -13,20 +13,23 @@ import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 
 public class GameInfo {
-	
+
 	public DirectoryEntry resDir; 
 	public String Title;
-	public String mainCon;
+	
 	public EpisodeInfo[] episodes;
 	public String[] skillnames;
 	public int nEpisodes;
-	public int ConType;
+	public String ConName;
+	private Script ConScr;
 	public boolean isInited = false;
+	private int nMaps;
 	
-	public GameInfo(String mainCon)
+	public GameInfo(DirectoryEntry resDir, String mainCon)
 	{
-		this.mainCon = mainCon;
+		this.ConName = mainCon;
 		this.Title = mainCon;
+		this.resDir = resDir;
 		skillnames = new String[nMaxSkills];
 		episodes = new EpisodeInfo[nMaxEpisodes];
 		isInited = false;
@@ -42,11 +45,21 @@ public class GameInfo {
 		return resDir;
 	}
 	
+	public Script getCON()
+	{
+		return ConScr;
+	}
+	
+	public void setCON(Script con)
+	{
+		this.ConScr = con;
+	}
+	
 	public void init()
 	{
 		try {
 			List<FileEntry> list = new ArrayList<FileEntry>();
-			list.add(resDir.checkFile(mainCon));
+			list.add(resDir.checkFile(ConName));
 			for(int i = 0; i < list.size(); i++)
 				InitTree(list, list.get(i));
 			
@@ -64,13 +77,15 @@ public class GameInfo {
 					break;
 			}
 			
+			nMaps = 0;
 			for(int i = 0; i < list.size(); i++) {
 				FileEntry scriptfile = list.get(i);
 				if(scriptfile == null) continue;
 				findMaps(getScript(scriptfile.getPath()));
 			}
-	
-			isInited = true;
+			 if(nEpisodes != 0 && nMaps != 0) 
+				 isInited = true;
+
 		} catch(Exception e) { isInited = false; }
 	}
 	
@@ -140,26 +155,31 @@ public class GameInfo {
             while( buf[textptr] != ' ' && buf[textptr] != 0x0a ) { textptr++; i++; }
             
             String path = new String(buf, ptr, i);
-            while( buf[textptr] == ' ' ) textptr++;
-
-            int partime = (((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
-                (((buf[textptr+3]-'0')*10+(buf[textptr+4]-'0'))*26);
-
-            textptr += 5;
-            while( buf[textptr] == ' ' ) textptr++;
-
-            int designertime =
-            	(((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
-            	(((buf[textptr+3]-'0')*10+(buf[textptr+4]-'0'))*26);
-
-            textptr += 5;
-            while( buf[textptr] == ' ' ) textptr++;
-
-            i = 0;
-            while( buf[textptr+i] != 0x0a ) i++;
-            String title = new String(buf, textptr, i-1);
-            episodes[epnum].gMapInfo[mapnum] = new MapInfo(path, title, partime, designertime);
-            episodes[epnum].nMaps = Math.max(episodes[epnum].nMaps, mapnum + 1);
+            
+            FileEntry mapFile = resDir.checkFile(path);
+			if(mapFile != null) {
+	            while( buf[textptr] == ' ' ) textptr++;
+	
+	            int partime = (((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
+	                (((buf[textptr+3]-'0')*10+(buf[textptr+4]-'0'))*26);
+	
+	            textptr += 5;
+	            while( buf[textptr] == ' ' ) textptr++;
+	
+	            int designertime =
+	            	(((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
+	            	(((buf[textptr+3]-'0')*10+(buf[textptr+4]-'0'))*26);
+	
+	            textptr += 5;
+	            while( buf[textptr] == ' ' ) textptr++;
+	
+	            i = 0;
+	            while( buf[textptr+i] != 0x0a ) i++;
+	            String title = new String(buf, textptr, i-1);
+	            episodes[epnum].gMapInfo[mapnum] = new MapInfo(mapFile.getPath(), title, partime, designertime);
+	            episodes[epnum].nMaps = Math.max(episodes[epnum].nMaps, mapnum + 1);
+	            nMaps++;
+			}
         }
 	}
 	

@@ -401,8 +401,8 @@ public class Controls {
 			musicvolume = music_select / 11;
 			musiclevel = music_select % 11;
 			
-			buildString(fta_quotes[26], 0, "PLAYING ", music_fn[musicvolume][musiclevel]);
-			sndPlayMusic(music_fn[musicvolume][musiclevel]);
+			buildString(currentGame.getCON().fta_quotes[26], 0, "PLAYING ", currentGame.getCON().music_fn[musicvolume][musiclevel]);
+			sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
             FTA(26, ps[myconnectindex]);
             return;
 		}

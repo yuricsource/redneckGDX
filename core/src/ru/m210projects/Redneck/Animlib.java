@@ -298,11 +298,11 @@ LABEL_11:
 	        		sound(479);
 	            break;
 	        case 5:
-	        	if(fr == 1 && currentGame.ConType != RR66) 
+	        	if(fr == 1 && currentGame.getCON().type != RR66) 
 	        		sound(35);
 	            break;
 	        case 6:
-	        	if(fr == 1 && currentGame.ConType != RR66)
+	        	if(fr == 1 && currentGame.getCON().type != RR66)
 	        		sound(82);
 	            break;
 	    }

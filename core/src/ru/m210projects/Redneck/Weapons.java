@@ -48,44 +48,10 @@ import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Redneck.Names.BOTTOMSTATUSBAR;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Player.*;
-import static ru.m210projects.Redneck.Gamedef.actorscrptr;
-import static ru.m210projects.Redneck.Gamedef.execute;
-import static ru.m210projects.Redneck.Gamedef.face_player_smart;
-import static ru.m210projects.Redneck.Gamedef.getglobalz;
-import static ru.m210projects.Redneck.Gamedef.script;
+import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Redneck.Gameutils.rnd;
-import static ru.m210projects.Redneck.Globals.AUTO_AIM_ANGLE;
-import static ru.m210projects.Redneck.Globals.BUZSAW_WEAPON;
-import static ru.m210projects.Redneck.Globals.RIFLEGUN_WEAPON;
-import static ru.m210projects.Redneck.Globals.THROWSAW_WEAPON;
-import static ru.m210projects.Redneck.Globals.CROSSBOW_WEAPON;
-import static ru.m210projects.Redneck.Globals.ALIENBLASTER_WEAPON;
-import static ru.m210projects.Redneck.Globals.TIT_WEAPON;
-import static ru.m210projects.Redneck.Globals.HANDREMOTE_WEAPON;
-import static ru.m210projects.Redneck.Globals.KNEE_WEAPON;
-import static ru.m210projects.Redneck.Globals.MAX_WEAPONS;
-import static ru.m210projects.Redneck.Globals.PISTOL_WEAPON;
-import static ru.m210projects.Redneck.Globals.DYNAMITE_WEAPON;
-import static ru.m210projects.Redneck.Globals.SHOTGUN_WEAPON;
-import static ru.m210projects.Redneck.Globals.Sound;
-import static ru.m210projects.Redneck.Globals.POWDERKEG_WEAPON;
-import static ru.m210projects.Redneck.Globals.BOWLING_WEAPON;
-import static ru.m210projects.Redneck.Globals.gc;
-import static ru.m210projects.Redneck.Globals.global_random;
-import static ru.m210projects.Redneck.Globals.hittype;
-import static ru.m210projects.Redneck.Globals.kHitIndexMask;
-import static ru.m210projects.Redneck.Globals.kHitSector;
-import static ru.m210projects.Redneck.Globals.kHitSprite;
-import static ru.m210projects.Redneck.Globals.kHitTypeMask;
-import static ru.m210projects.Redneck.Globals.kHitWall;
-import static ru.m210projects.Redneck.Globals.max_ammo_amount;
-import static ru.m210projects.Redneck.Globals.max_player_health;
-import static ru.m210projects.Redneck.Globals.numfreezebounces;
-import static ru.m210projects.Redneck.Globals.ps;
-import static ru.m210projects.Redneck.Globals.crossbowblastradius;
-import static ru.m210projects.Redneck.Globals.sync;
-import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.ALIENBLAST;
 import static ru.m210projects.Redneck.Names.APLAYER;
@@ -133,6 +99,7 @@ import static ru.m210projects.Redneck.Names.VIXEN;
 import static ru.m210projects.Redneck.Names.WATERBUBBLE;
 import static ru.m210projects.Redneck.Names.WATERSPLASH2;
 import static ru.m210projects.Redneck.Premap.shadeEffect;
+import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Screen.myos;
 import static ru.m210projects.Redneck.Screen.myospal;
 import static ru.m210projects.Redneck.Sector.checkhitceiling;
@@ -271,8 +238,8 @@ public class Weapons {
 	{
 		p.ammo_amount[weapon] += amount;
 
-		if (p.ammo_amount[weapon] > max_ammo_amount[weapon])
-			p.ammo_amount[weapon] = max_ammo_amount[weapon];
+		if (p.ammo_amount[weapon] > currentGame.getCON().max_ammo_amount[weapon])
+			p.ammo_amount[weapon] = currentGame.getCON().max_ammo_amount[weapon];
 	}
 
 	public static void addweapon(PlayerStruct p, int weapon) {
@@ -513,7 +480,7 @@ public class Weapons {
 	                    }
 
 	                    if ( p >= 0 && ps[p].moonshine_amount > 0 && ps[p].moonshine_amount < 400 )
-	                        sprite[j].extra += (max_player_health>>2);
+	                        sprite[j].extra += (currentGame.getCON().max_player_health>>2);
 
 	                    if( hitsprite >= 0 && sprite[hitsprite].picnum != 129 && sprite[hitsprite].picnum != 82 )
 	                    {
@@ -628,7 +595,7 @@ public class Weapons {
 	            if(p >= 0)
 	            {
 	                k = EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,10,10,sa,0,0,i,(short)4);
-	                sprite[k].extra = (short) script[actorscrptr[atwith]];
+	                sprite[k].extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[atwith]];
 	                sprite[k].extra += (engine.krand()%6);
 
 	                if( hitwall == -1 && hitsprite == -1)
@@ -747,7 +714,7 @@ public class Weapons {
 	            else
 	            {
 	                k = EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,24,24,sa,0,0,i,(short)4);
-	                sprite[k].extra = (short) script[actorscrptr[atwith]]; 
+	                sprite[k].extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[atwith]]; 
 
 	                if( hitsprite >= 0 )
 	                {
@@ -1000,7 +967,7 @@ public class Weapons {
 	                sprite[j].yvel = l;
 	            else
 	            {
-	                sprite[j].yvel = (short) numfreezebounces;
+	                sprite[j].yvel = (short) currentGame.getCON().numfreezebounces;
 	                sprite[j].xrepeat >>= 1;
 	                sprite[j].yrepeat >>= 1;
 	                sprite[j].zvel -= (2<<4);
@@ -1256,7 +1223,7 @@ public class Weapons {
 					}
 				} else if (s.picnum == SHITBALL)
 					if (s.zvel < 6144)
-						s.zvel += gc - 112;
+						s.zvel += currentGame.getCON().gc - 112;
 
 				if (j != 0) {
 					if ((j & kHitTypeMask) == kHitSprite) {
@@ -1417,11 +1384,11 @@ public class Weapons {
 
 							if (s.xrepeat >= 10) {
 								x = s.extra;
-								hitradius(i, crossbowblastradius, x >> 2, x >> 1, x
+								hitradius(i, currentGame.getCON().crossbowblastradius, x >> 2, x >> 1, x
 										- (x >> 2), x);
 							} else {
 								x = s.extra + (global_random & 3);
-								hitradius(i, (crossbowblastradius >> 1), x >> 2,
+								hitradius(i, (currentGame.getCON().crossbowblastradius >> 1), x >> 2,
 										x >> 1, x - (x >> 2), x);
 							}
 						}
@@ -1437,7 +1404,7 @@ public class Weapons {
 				continue;
 			case SHOTSPARK1:
 				p = findplayer(s);
-				execute(i, p, player_dist);
+				execute(currentGame.getCON(), i, p, player_dist);
 				continue;
 			}
 		}

@@ -75,9 +75,7 @@ import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.LoadSave.gScreenCapture;
-import static ru.m210projects.Redneck.Gamedef.actorscrptr;
-import static ru.m210projects.Redneck.Gamedef.getincangle;
-import static ru.m210projects.Redneck.Gamedef.script;
+import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Interpolation.dointerpolations;
 import static ru.m210projects.Redneck.Interpolation.restoreinterpolations;
@@ -424,11 +422,11 @@ public class View {
 
 	     j = ps[screenpeek].fta;
 	     if (j > 4)
-	          gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16);
+	          gametext(320>>1,k,currentGame.getCON().fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16);
 	     else
-	         if (j > 2) gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16+1);
+	         if (j > 2) gametext(320>>1,k,currentGame.getCON().fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16+1);
 	     else
-	         gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16+1+32);
+	         gametext(320>>1,k,currentGame.getCON().fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16+1+32);
 	}
 	
 	public static void displayfragbar(int yoffset, boolean showpalette)
@@ -871,10 +869,10 @@ public class View {
 
 	    if (totalclock < lastvisinc)
 	    {
-	        if (klabs(p.visibility-ud.const_visibility) > 8)
-	            p.visibility += (ud.const_visibility-p.visibility)>>2;
+	        if (klabs(p.visibility-currentGame.getCON().const_visibility) > 8)
+	            p.visibility += (currentGame.getCON().const_visibility-p.visibility)>>2;
 	    }
-	    else p.visibility = ud.const_visibility;
+	    else p.visibility = currentGame.getCON().const_visibility;
 	}
 
 	public static String lastmessage;
@@ -893,10 +891,10 @@ public class View {
 	        }
 	        
 	        int len = 0;
-	        while(len < fta_quotes[p.ftq].length && fta_quotes[p.ftq][++len] != 0);
+	        while(len < currentGame.getCON().fta_quotes[p.ftq].length && currentGame.getCON().fta_quotes[p.ftq][++len] != 0);
 
 	        if (p == ps[screenpeek]) {
-	        	String message = new String(fta_quotes[p.ftq], 0, len);
+	        	String message = new String(currentGame.getCON().fta_quotes[p.ftq], 0, len);
 	        	if(!message.equals(lastmessage)) {
 		        	Console.Println(message);
 		        	lastmessage = message;
@@ -1320,9 +1318,9 @@ public class View {
 
                 if(ps[p].newowner > -1)
                 {
-                    t4 = script[actorscrptr[APLAYER]+1];
+                    t4 = currentGame.getCON().script[currentGame.getCON().actorscrptr[APLAYER]+1];
                     t3 = 0;
-                    t1 = script[actorscrptr[APLAYER]+2];
+                    t1 = currentGame.getCON().script[currentGame.getCON().actorscrptr[APLAYER]+2];
                 }
 
                 if(ud.camerasprite == -1 && ps[p].newowner == -1)
@@ -1369,11 +1367,11 @@ public class View {
 	        	continue;   
 	        }
 
-	        if( actorscrptr[s.picnum] != 0 && (t.cstat & 0x30) != 48 )
+	        if( currentGame.getCON().actorscrptr[s.picnum] != 0 && (t.cstat & 0x30) != 48 )
 	        {
 	            if(t4 != 0)
 	            {
-	                l = script[t4+2];
+	                l = currentGame.getCON().script[t4+2];
 	                switch( l )
 	                {
 	                    case 2:
@@ -1432,7 +1430,7 @@ public class View {
 	                        break;
 	                }
 
-	                t.picnum += (k + ( script[t4] ) + l * t3);
+	                t.picnum += (k + ( currentGame.getCON().script[t4] ) + l * t3);
 
 	                if(l > 0) while(tilesizx[t.picnum] == 0 && t.picnum > 0 )
 	                    t.picnum -= l;       //Hack, for actors
@@ -1644,7 +1642,7 @@ public class View {
 	}
 	
 	public static void addmessage(String message) {
-		buildString(fta_quotes[122], 0, message);
+		buildString(currentGame.getCON().fta_quotes[122], 0, message);
 		FTA(122,ps[myconnectindex]);
 	}
 	

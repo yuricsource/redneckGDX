@@ -17,7 +17,9 @@
 package ru.m210projects.Redneck.Menus;
 
 import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Gamedef.InitTree;
 import static ru.m210projects.Redneck.Gameutils.*;
+import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Menus.MENU.*;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Build.Gameutils.*;
@@ -33,6 +35,7 @@ import static ru.m210projects.Build.FileHandle.Compat.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +44,7 @@ import com.badlogic.gdx.Gdx;
 
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 
 public class MenuFileBrowser extends MenuItem {
@@ -91,6 +95,65 @@ public class MenuFileBrowser extends MenuItem {
 		this.currColumn = FILE;
 		changeDir(cache);
 	}
+	
+	private static void buildAddons(List<String> tmpList, DirectoryEntry dir)
+	{
+		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
+			FileEntry file = it.next();
+			if(file.getExtension().equals("con"))
+				InitTree(map, file);
+		}
+		
+		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
+			FileEntry file = it.next();
+			if(file.getExtension().equals("con"))
+			{
+				List<String> list = map.get(file.getName());
+				if(list != null) 
+					handleList(map, list);
+			}
+		}
+
+		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
+			String con = it.next();
+			if(!dir.getName().equals("<main>") || !con.equals("game.con")) {
+				
+				GameInfo addon = episodes.get(dir.checkFile(con).getPath());
+				if(addon == null) {
+					addon = new GameInfo(dir, con);
+					addon.init();
+					if(addon.isInited) {
+						Console.Println("Found addon: " + addon.ConName);
+						tmpList.add(con);
+						episodes.put(dir.checkFile(con).getPath(), addon);
+						if(con.equals("game66.con")) {
+							RR66Game = addon;
+							RR66Game.Title = "Route 66";	
+						}
+					}
+				} else {
+					if(addon.isInited) 
+						tmpList.add(con);
+				}
+			}
+		}
+	}
+	
+	private static void handleList(HashMap<String, List<String>> map, List<String> list)
+	{
+		for(String child : list)
+			for (Iterator<String> con = map.keySet().iterator(); con.hasNext();) {
+				String name = con.next();
+				if(name.equals(child)) {
+					List<String> other = map.get(name);
+					con.remove();
+					if(other != null) 
+						handleList(map, other);
+					break;
+				}
+			}
+	}
 
 	List<String> tmpList;
 	private void changeDir(DirectoryEntry dir)
@@ -129,18 +192,9 @@ public class MenuFileBrowser extends MenuItem {
 			list[FILE].addAll(tmpList);
 			tmpList.clear();
 		}
-
-//		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
-//			FileEntry file = it.next();
-//			String name = file.getName();
-//			if(file.getExtension().equals("grp") || file.getExtension().equals("zip"))
-//				tmpList.add(toLowerCase(name));
-//		}
-//		
-//		Collections.sort(tmpList);
-//		list[FILE].addAll(tmpList);
-//		tmpList.clear();
 		
+		buildAddons(tmpList, dir);
+
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
 			FileEntry file = it.next();
 			String name = file.getFile().getName();
@@ -197,15 +251,13 @@ public class MenuFileBrowser extends MenuItem {
 			}
 
 			String filename = list[FILE].get(i);
-
-			text = toCharArray(list[FILE].get(i));
-			if(!filename.equals("none"))
+			GameInfo addon;
+			if((addon = episodes.get(currDir.checkFile(filename).getPath())) != null)
 			{
-				String extension = currDir.checkFile(filename).getExtension();
-				if(extension.equals("zip")
-					|| extension.equals("grp"))
-					pal = 2;
-			} else pal = 2;
+				filename = addon.Title;
+				pal = 2;
+			}
+			text = toCharArray(filename);
 			
 			mGetAlign(textStyle, text);
 	        px = x + width - 1 - alignx;
@@ -318,9 +370,19 @@ public class MenuFileBrowser extends MenuItem {
 					l_nFocus[FILE] = l_nMin[FILE] = 0;
 				} else if(list[FILE].size() > 0 && currColumn == FILE) {
 					String filename = null;
+					currGame = null;
 					if(l_nFocus[FILE] == -1) return 0;
-					filename = list[FILE].get(l_nFocus[FILE]);
-					currFile = currDir.checkFile(filename);
+//					if(currDir.checkFile(list[FILE].get(l_nFocus[FILE])) == null) { //then multiEpisode file (archive)
+//						String ptr = list[FILE].get(l_nFocus[FILE]);
+//						currGame = episodes.get(ptr);
+//						currFile = currIni.getFile();
+//					} 
+//					else 
+					{
+						filename = list[FILE].get(l_nFocus[FILE]);
+						currFile = currDir.checkFile(filename);
+						currGame = episodes.get(currFile.getPath());
+					}
 					specialCall.run(this);
 				}
 				sound(PISTOL_BODYHIT);

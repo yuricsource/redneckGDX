@@ -18,6 +18,7 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Actors.*;
@@ -104,7 +105,7 @@ public class Cheats {
                     ps[myconnectindex].snorkle_amount 	=           6400;
                     ps[myconnectindex].beer_amount 		=         	2400;
                     ps[myconnectindex].cowpie_amount 	=          	600;
-                    ps[myconnectindex].whishkey_amount 	=         	(short) max_player_health;
+                    ps[myconnectindex].whishkey_amount 	=         	(short) currentGame.getCON().max_player_health;
 
                     Arrays.fill(ps[myconnectindex].gotkey, (short)1);
                     FTA(5,ps[myconnectindex]);
@@ -151,7 +152,7 @@ public class Cheats {
 					for ( int weapon = PISTOL_WEAPON;weapon < MAX_WEAPONSRA;weapon++ )
 						ps[myconnectindex].gotweapon[weapon]  = true;
 					for ( int weapon = PISTOL_WEAPON; weapon < (MAX_WEAPONSRA); weapon++ )
-						addammo( weapon, ps[myconnectindex], max_ammo_amount[weapon] );
+						addammo( weapon, ps[myconnectindex], currentGame.getCON().max_ammo_amount[weapon] );
 					FTA(119,ps[myconnectindex]);
 					break;
 				case 4: //rdinventory
@@ -161,7 +162,7 @@ public class Cheats {
 					ps[myconnectindex].snorkle_amount 	=           6400;
 					ps[myconnectindex].beer_amount 		=         	2400;
 					ps[myconnectindex].cowpie_amount 	=          	600;
-					ps[myconnectindex].whishkey_amount 	=         	(short) max_player_health;
+					ps[myconnectindex].whishkey_amount 	=         	(short) currentGame.getCON().max_player_health;
 					FTA(120,ps[myconnectindex]);
 					break;
 				case 6: //rdkeys
@@ -173,7 +174,7 @@ public class Cheats {
 	                       ps[myconnectindex].gotweapon[weapon]  = true;
 
                     for ( int weapon = PISTOL_WEAPON; weapon < (MAX_WEAPONSRA); weapon++ )
-                        addammo( weapon, ps[myconnectindex], max_ammo_amount[weapon] );
+                        addammo( weapon, ps[myconnectindex], currentGame.getCON().max_ammo_amount[weapon] );
 
                     ps[myconnectindex].moonshine_amount =         	400;
                     ps[myconnectindex].boot_amount      =    		2000;
@@ -181,7 +182,7 @@ public class Cheats {
                     ps[myconnectindex].snorkle_amount 	=           6400;
                     ps[myconnectindex].beer_amount 		=         	2400;
                     ps[myconnectindex].cowpie_amount 	=          	600;
-                    ps[myconnectindex].whishkey_amount 	=         	(short) max_player_health;
+                    ps[myconnectindex].whishkey_amount 	=         	(short) currentGame.getCON().max_player_health;
 
                     Arrays.fill(ps[myconnectindex].gotkey, (short)1);
                     FTA(5,ps[myconnectindex]);
@@ -217,13 +218,13 @@ public class Cheats {
                     else
                     {
                         ud.god = false;
-                        sprite[ps[myconnectindex].i].extra = (short) max_player_health;
+                        sprite[ps[myconnectindex].i].extra = (short) currentGame.getCON().max_player_health;
                         hittype[ps[myconnectindex].i].extra = -1;
-                        ps[myconnectindex].last_extra = (short) max_player_health;
+                        ps[myconnectindex].last_extra = (short) currentGame.getCON().max_player_health;
                         FTA(18,ps[myconnectindex]);
                     }
 
-                    sprite[ps[myconnectindex].i].extra = (short) max_player_health;
+                    sprite[ps[myconnectindex].i].extra = (short) currentGame.getCON().max_player_health;
                     hittype[ps[myconnectindex].i].extra = 0;
 					break;
 				}

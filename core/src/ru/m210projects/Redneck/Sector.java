@@ -31,13 +31,13 @@ import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Premap.LeaveMap;
+import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.*;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Premap.*;
-import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.*;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Sounds.*;
@@ -149,7 +149,7 @@ public class Sector {
 
 	            if(hittype[i].temp_data[0] == 0)
 	            {
-	                if( (soundm[sprite[i].lotag]&16) == 0)
+	                if( (currentGame.getCON().soundm[sprite[i].lotag]&16) == 0)
 	                {
 	                    if(sprite[i].lotag != 0)
 	                    {
@@ -165,7 +165,7 @@ public class Sector {
 	            else if(sprite[i].hitag < NUM_SOUNDS)
 	            {
 	                if(sprite[i].hitag != 0) spritesound(sprite[i].hitag,whatsprite);
-	                if( (soundm[sprite[i].lotag]&1) != 0 || ( sprite[i].hitag != 0 && sprite[i].hitag != sprite[i].lotag ) )
+	                if( (currentGame.getCON().soundm[sprite[i].lotag]&1) != 0 || ( sprite[i].hitag != 0 && sprite[i].hitag != sprite[i].lotag ) )
 	                    stopsound(sprite[i].lotag);
 	                hittype[i].temp_data[0] = 0;
 	            }
@@ -1253,7 +1253,7 @@ public class Sector {
 	                    if( ps[snum].gotkey[1] != 0 )
 	                        ps[snum].access_incs = 1;
 	                    else {
-	                    	buildString(fta_quotes[70], 0, "BLUE KEY REQUIRED"); //v0.751
+	                    	buildString(currentGame.getCON().fta_quotes[70], 0, "BLUE KEY REQUIRED"); //v0.751
 	                    	FTA(70,ps[snum]);
 	                    }
 	                }
@@ -1263,7 +1263,7 @@ public class Sector {
 	                    if( ps[snum].gotkey[2] != 0 )
 	                        ps[snum].access_incs = 1;
 	                    else {
-	                    	buildString(fta_quotes[71], 0, "RED KEY REQUIRED");
+	                    	buildString(currentGame.getCON().fta_quotes[71], 0, "RED KEY REQUIRED");
 	                    	FTA(71,ps[snum]);
 	                    }
 	                }
@@ -1273,7 +1273,7 @@ public class Sector {
 	                    if( ps[snum].gotkey[3] != 0 )
 	                        ps[snum].access_incs = 1;
 	                    else {
-	                    	buildString(fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                    	buildString(currentGame.getCON().fta_quotes[72], 0, "BROWN KEY REQUIRED");
 	                    	FTA(72,ps[snum]);
 	                    }
 	                }
@@ -1645,7 +1645,7 @@ public class Sector {
 	                else if(hitag != 0)
 	                {
 	                	if(hitag < NUM_SOUNDS) {
-		                    if(switchtype == 1 && (soundm[hitag]&4) == 0)
+		                    if(switchtype == 1 && (currentGame.getCON().soundm[hitag]&4) == 0)
 		                        xyzsound(hitag,w,sx,sy,ps[snum].posz);
 		                    else spritesound(hitag,ps[snum].i);
 	                	}
@@ -2153,7 +2153,7 @@ public class Sector {
 	        case 1067: 
 	        case 1114: 
 	        case 1117: 
-	            if(sprite[sn].extra != script[actorscrptr[SHOTSPARK1]] )
+	            if(sprite[sn].extra != currentGame.getCON().script[currentGame.getCON().actorscrptr[SHOTSPARK1]] )
 	            {
 	                for(j=0;j<15;j++)
 	                    EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sector[sprite[i].sectnum].floorz-(12<<8)-(j<<9),SCRAP1+(engine.krand()&15),-8,64,64,
@@ -2377,7 +2377,7 @@ public class Sector {
 
 	                    if( (sprite[i].picnum != MOSQUITO) )
 	                        if(sprite[sn].picnum != ALIENBLAST )
-	                            if( actortype[sprite[i].picnum] == 0 )
+	                            if( currentGame.getCON().actortype[sprite[i].picnum] == 0 )
 	                    {
 	                        j = (short) spawn(sn,JIBS6);
 	                        if(sprite[sn].pal == 6)
@@ -2412,7 +2412,7 @@ public class Sector {
 		                    if( (sprite[i].picnum == APLAYER && sprite[i].pal == 1 ) )
 		                        return;
 		                    
-		                    if ( freezerhurtowner == 0 )
+		                    if ( currentGame.getCON().freezerhurtowner == 0 )
 		                    {
 		                    	if ( sprite[sn].owner == i)
 		                    		return;
@@ -2629,13 +2629,13 @@ public class Sector {
 	                            p.holster_weapon = 1;
 	                            p.weapon_pos = -1;
 	                        }
-	                        if(sprite[p.i].extra <= (max_player_health-(max_player_health/10) ) )
+	                        if(sprite[p.i].extra <= (currentGame.getCON().max_player_health-(currentGame.getCON().max_player_health/10) ) )
 	                        {
-	                            sprite[p.i].extra += max_player_health/10;
+	                            sprite[p.i].extra += currentGame.getCON().max_player_health/10;
 	                            p.last_extra = sprite[p.i].extra;
 	                        }
-	                        else if(sprite[p.i].extra < max_player_health )
-	                             sprite[p.i].extra = (short) max_player_health;
+	                        else if(sprite[p.i].extra < currentGame.getCON().max_player_health )
+	                             sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
 	                    }
 	                    else if(Sound[38].num == 0)
 	                        spritesound(38,p.i);
@@ -2647,7 +2647,7 @@ public class Sector {
 	                        hittype[neartagsprite].temp_data[0] = 1;
 	                        sprite[neartagsprite].owner = p.i;
 
-	                        if(sprite[p.i].extra < max_player_health)
+	                        if(sprite[p.i].extra < currentGame.getCON().max_player_health)
 	                        {
 	                            sprite[p.i].extra++;
 	                            spritesound(DUKE_DRINKING,p.i);
@@ -2703,15 +2703,15 @@ public class Sector {
                     else spritesound(419, p.i);
 
 	            	if( sector[neartagsector].filler == 1 ) { //v0.751
-	            		buildString(fta_quotes[70], 0, "BLUE KEY REQUIRED");
+	            		buildString(currentGame.getCON().fta_quotes[70], 0, "BLUE KEY REQUIRED");
 	                    FTA(70,ps[snum]);
 	            	}
 	                else if( sector[neartagsector].filler == 2 ) {
-	                	buildString(fta_quotes[71], 0, "RED KEY REQUIRED");
+	                	buildString(currentGame.getCON().fta_quotes[71], 0, "RED KEY REQUIRED");
 	                    FTA(71,ps[snum]);
 	                }
 	                else if( sector[neartagsector].filler == 3 ) {
-	                	buildString(fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                	buildString(currentGame.getCON().fta_quotes[72], 0, "BROWN KEY REQUIRED");
 	                    FTA(72,ps[snum]);
 	                }
 	                else FTA(41, ps[snum]);

@@ -24,6 +24,9 @@ import static ru.m210projects.Redneck.Redneck.appdispose;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Types.BugReport.saveToFTP;
+
+import java.util.HashMap;
+
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Sounds.*;
 
@@ -44,6 +47,8 @@ public class Globals {
 	public static final int RR = 0;
 	public static final int RR66 = 1;
 	public static final int RRRA = 2;
+	
+	public static HashMap<String, GameInfo> episodes = new HashMap<String, GameInfo>();
 	
 	public static GameInfo defGame;
 	public static GameInfo RR66Game;
@@ -173,15 +178,13 @@ public class Globals {
 	public static short global_random;
 	public static short neartagsector, neartagwall, neartagsprite;
 
-	public static int numframes, gc=176,neartaghitdist,lockclock,max_player_health,max_armour_amount, max_ammo_amount[] = new int[MAX_WEAPONSRA];
+	public static int numframes,neartaghitdist,lockclock;
 
-	public static short spriteq[] = new short[1024],spriteqloc,spriteqamount=64,moustat;
+	public static short spriteq[] = new short[1024],spriteqloc,moustat;
 	public static Animwalltype animwall[] = new Animwalltype[MAXANIMWALLS];
 	public static short numanimwalls;
 	public static int[] msx = new int[2048],msy = new int[2048];
 	public static short cyclers[][] = new short[MAXCYCLERS][6], numcyclers;
-
-	public static char[][] fta_quotes = new char[NUMOFFIRSTTIMEACTIVE][64];
 
 	public static char[] buf = new char[80];
 
@@ -190,19 +193,12 @@ public class Globals {
 
 	public static int current_menu;
 
-	public static char[] betaname = new char[80];
-
 	public static final int nMaxMaps = 11;
 	public static final int nMaxEpisodes = 4;
 	public static final int nMaxSkills = 5;
 	
 	public static int checksume;
 	public static int[] soundsiz = new int[NUM_SOUNDS];
-
-	public static short[] soundps = new short[NUM_SOUNDS],soundpe = new short[NUM_SOUNDS],soundvo = new short[NUM_SOUNDS];
-	public static short[] soundm = new short[NUM_SOUNDS],soundpr = new short[NUM_SOUNDS];
-	public static String[] sounds = new String[NUM_SOUNDS];  //len 14
-
 	public static short title_zoom;
 
 	public static Sample[] Sound = new Sample[ NUM_SOUNDS ];
@@ -238,12 +234,10 @@ public class Globals {
 	public static float angvel;
 	public static float horiz;
 	
-	public static int ototalclock, respawnactortime=768, respawnitemtime=768, groupfile;
+	public static int ototalclock, groupfile;
 
 	public static char display_mirror,typebuflen;
 	public static byte[] tempbuf = new byte[2048];
-	public static String music_fn[][] = new String[5][11];
-	public static String env_music_fn[] = new String[5];
 	
 	public static final short weaponsandammosprites[] = {
 		CROSSBOWSPRITE,
@@ -263,9 +257,7 @@ public class Globals {
 		37,
 	};
 
-	public static int impact_damage;
-
-	        //GLOBAL.C - replace the end "my's" with this
+	//GLOBAL.C - replace the end "my's" with this
 	public static int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
 	public static short myhorizoff, omyhorizoff;
 	public static short mycursectnum, myjumpingcounter,frags[][] = new short[MAXPLAYERS][MAXPLAYERS];
@@ -277,16 +269,12 @@ public class Globals {
 
 	public static int fakemovefifoplc,movefifoplc;
 	public static int[] myxbak = new int[MOVEFIFOSIZ], myybak = new int[MOVEFIFOSIZ], myzbak = new int[MOVEFIFOSIZ];
-	public static int dukefriction = 0xcc00;
 	public static float myhorizbak[] = new float[MOVEFIFOSIZ];
 	public static float[] myangbak = new float[MOVEFIFOSIZ];
 
-	public static char camerashitable,freezerhurtowner=0,dildoblase;
 	// CTW - MODIFICATION
 	// char networkmode = 255, movesperpacket = 1,gamequit = 0,playonten = 0,everyothertime;
 	public static char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
-	// CTW END - MODIFICATION
-	public static int numfreezebounces=3,crossbowblastradius,tntblastradius,bouncemineblastradius,shrinkerblastradius,morterblastradius,powderblastradius,seenineblastradius;
 
 	public static int myminlag[] = new int[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
 	public static int totalmemory = 0;
