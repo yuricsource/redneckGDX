@@ -18,7 +18,9 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Compat.FilePath;
+import static ru.m210projects.Build.Input.Keymap.ANYKEY;
 import static ru.m210projects.Build.OnSceenDisplay.Console.CloseLogFile;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
 import static ru.m210projects.Redneck.Redneck.appdispose;
 import static ru.m210projects.Redneck.Main.cfg;
@@ -358,6 +360,17 @@ public class Globals {
 			appdispose();
 			System.exit(0);
 		}
+	}
+	
+	public static void GameCrash(String errorText)
+	{
+		engine.showMessage("Error: ", errorText, false);
+		if(Gdx.graphics != null)
+			cfg.fullscreen = 0;
+		Console.Println("Game error: "+ errorText, OSDTEXT_RED);
+		getInput().setKey(ANYKEY, 0);
+
+		kGameCrash = true;
 	}
 	
 	public static boolean GameMessage(String text, boolean choise)

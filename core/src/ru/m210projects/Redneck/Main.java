@@ -49,11 +49,13 @@ public class Main extends ApplicationAdapter {
 	
 	/*
 	 * v0.753
+	 * Autoload folder can load resources as cusspack
+	 * Addons support
+	 * 
 	 * TODO:
-	 * script labels reset
-	 * set currentGame (gamedef)
+	 * get crc32 from map and script
+	 * addons save
 	 * Network content
-	 * Addons to browser
 	 * cheat @mario
 	 * добавить kills и alchogol
 	 * RR66 mod support

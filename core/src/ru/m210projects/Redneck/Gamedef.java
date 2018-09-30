@@ -26,10 +26,7 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import com.badlogic.gdx.utils.IntArray;
 
@@ -62,7 +59,7 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Weapons.*;
 import static ru.m210projects.Redneck.Globals.*;
 
-import ru.m210projects.Build.FileHandle.FileEntry;
+
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Redneck.Types.GameInfo;
@@ -137,18 +134,7 @@ public class Gamedef {
 	public static IntArray labelcode = new IntArray();
 	public static char[] label;
 	public static int labelcnt;
-	
 
-	
-//	public static int const_visibility;
-//	public static int impact_damage;
-//	public static int gc=176,max_player_health,max_armour_amount, max_ammo_amount[] = new int[MAX_WEAPONSRA];
-//	public static int respawnactortime=768, respawnitemtime=768;
-//	public static int dukefriction = 0xcc00;
-//	public static int numfreezebounces=3,crossbowblastradius,tntblastradius,bouncemineblastradius,shrinkerblastradius,morterblastradius,powderblastradius,seenineblastradius;
-//	public static char camerashitable,freezerhurtowner=0,dildoblase;
-//	public static short spriteqamount=64;
-	
 	public static final String defaultcons[] =
 	{
 		"GAME.CON",
@@ -3667,39 +3653,9 @@ public class Gamedef {
 	}
 	
 	//For user episodes
-	
-	public static void InitTree(HashMap<String, List<String>> map, FileEntry confile)
+
+	public static byte[] preparescript(byte[] buf)
 	{
-		byte[] buf = getScript(confile.getPath());
-
-        List<String> list = null;
-		int index = -1;
-        while( (index = indexOf("include ", buf, index+1)) != -1)
-        {
-        	int textptr = index + 7;
-        	if(list == null) list = new ArrayList<String>();
-        	
-        	while( !isaltok(buf[textptr]) )
-            {
-                textptr++;
-                if( buf[textptr] == 0 ) break;
-            }
-
-            int i = 0;
-            while( isaltok(buf[textptr+i]) ) i++;
-            
-            String name = new String(buf, textptr, i);
-            list.add(name.toLowerCase());
-        }
-
-        if(list != null)
-        	map.put(confile.getName(), list);
-	}
-	
-	public static byte[] getScript(String path)
-	{
-        byte[] buf = kGetBytes(path,0);
-
         int index = -1;
         while( (index = indexOf("//", buf, index+1)) != -1)
         {

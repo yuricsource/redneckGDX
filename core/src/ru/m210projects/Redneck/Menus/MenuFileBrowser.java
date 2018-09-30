@@ -17,7 +17,7 @@
 package ru.m210projects.Redneck.Menus;
 
 import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Gamedef.InitTree;
+import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Menus.MENU.*;
@@ -30,6 +30,9 @@ import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.Network.*;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Build.Strhandler.indexOf;
+import static ru.m210projects.Build.FileHandle.Cache1D.checkgroupfile;
+import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 
 import java.io.File;
@@ -44,6 +47,8 @@ import com.badlogic.gdx.Gdx;
 
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.IResource;
+import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 
@@ -102,7 +107,7 @@ public class MenuFileBrowser extends MenuItem {
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
 			if(file.getExtension().equals("con"))
-				InitTree(map, file);
+				InitTree(map, preparescript(kGetBytes(file.getPath(), 0)), file.getName());
 		}
 		
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
@@ -138,6 +143,69 @@ public class MenuFileBrowser extends MenuItem {
 				}
 			}
 		}
+	}
+	
+	private static void buildAddons(List<String> tmpList, IResource res, FileEntry file)
+	{
+		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+		for(RESHANDLE files : res.fList()) {
+			if(files.fileformat.equals("con")) 
+				InitTree(map, preparescript(files.getBytes()), files.filename);	
+		}
+		
+		for(RESHANDLE files : res.fList()) {
+			if(files.fileformat.equals("con")) {
+				List<String> list = map.get(files.filename);
+				if(list != null) 
+					handleList(map, list);
+			}
+		}
+
+		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
+			String con = res.name+":"+it.next();
+			if(!con.equals("redneck.grp:game.con")) {
+				GameInfo addon = episodes.get(con);
+				if(addon == null) {
+					String conName = con.substring(con.indexOf(":")+1);
+					addon = new GameInfo(res, file, conName);
+					if(addon.isInited) {
+						Console.Println("Found addon: " + con);
+						tmpList.add(con);
+						episodes.put(con, addon);
+					}
+				} else {
+					if(addon.isInited) 
+						tmpList.add(con);
+				}
+			}
+		}
+	}
+	
+	
+	private static void InitTree(HashMap<String, List<String>> map, byte[] buf, String parentName)
+	{
+        List<String> list = null;
+		int index = -1;
+        while( (index = indexOf("include ", buf, index+1)) != -1)
+        {
+        	int textptr = index + 7;
+        	if(list == null) list = new ArrayList<String>();
+        	
+        	while( !isaltok(buf[textptr]) )
+            {
+                textptr++;
+                if( buf[textptr] == 0 ) break;
+            }
+
+            int i = 0;
+            while( isaltok(buf[textptr+i]) ) i++;
+            
+            String name = new String(buf, textptr, i);
+            list.add(name.toLowerCase());
+        }
+
+        if(list != null)
+        	map.put(parentName, list);
 	}
 	
 	private static void handleList(HashMap<String, List<String>> map, List<String> list)
@@ -200,6 +268,21 @@ public class MenuFileBrowser extends MenuItem {
 			String name = file.getFile().getName();
 			if(file.getExtension().equals("map"))
 				tmpList.add(toLowerCase(name));
+			
+			if(file.getExtension().equals("grp") || file.getExtension().equals("zip"))
+			{
+				try {
+					IResource res = checkgroupfile(file.getPath());
+					if(res != null)
+					{
+						buildAddons(tmpList, res, file);	
+						res.Dispose();
+						res = null;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		Collections.sort(tmpList);
@@ -211,6 +294,8 @@ public class MenuFileBrowser extends MenuItem {
 		if(dir.getRelativePath() != null)
 			path += currDir.getRelativePath();
 	}
+	
+	
 	
 	@Override
 	public void draw() {
@@ -252,7 +337,15 @@ public class MenuFileBrowser extends MenuItem {
 
 			String filename = list[FILE].get(i);
 			GameInfo addon;
-			if((addon = episodes.get(currDir.checkFile(filename).getPath())) != null)
+			
+			if(currDir.checkFile(filename) == null) //archived addon
+			{
+				if((addon = episodes.get(filename)) != null) {
+					filename = addon.Title;
+					pal = 2;
+				} else return;
+			} 
+			else if((addon = episodes.get(currDir.checkFile(filename).getPath())) != null)
 			{
 				filename = addon.Title;
 				pal = 2;
@@ -372,12 +465,12 @@ public class MenuFileBrowser extends MenuItem {
 					String filename = null;
 					currGame = null;
 					if(l_nFocus[FILE] == -1) return 0;
-//					if(currDir.checkFile(list[FILE].get(l_nFocus[FILE])) == null) { //then multiEpisode file (archive)
-//						String ptr = list[FILE].get(l_nFocus[FILE]);
-//						currGame = episodes.get(ptr);
-//						currFile = currIni.getFile();
-//					} 
-//					else 
+					if(currDir.checkFile(list[FILE].get(l_nFocus[FILE])) == null) { //then multiEpisode file (archive)
+						String ptr = list[FILE].get(l_nFocus[FILE]);
+						currGame = episodes.get(ptr);
+						currFile = currGame.isPackage();
+					} 
+					else 
 					{
 						filename = list[FILE].get(l_nFocus[FILE]);
 						currFile = currDir.checkFile(filename);

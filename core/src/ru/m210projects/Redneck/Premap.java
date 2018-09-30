@@ -1624,15 +1624,16 @@ public class Premap {
 		    
 	    Gdx.app.postRunnable(new Runnable() {
 			public void run() {
+				if(kGameCrash) return;
 			    if( ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2 )
 			    {
 			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 )
-			            dassert("Map " + boardfilename + " not found!");
+			            GameCrash("Map " + boardfilename + " not found!");
 			    }
 			    else {
 			    	String map = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].path;
 			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1)
-			    		dassert("Map " + map + " not found!");
+			    		GameCrash("Map " + map + " not found!");
 			    }
 			    
 			    ps[0].posx = posx[0];

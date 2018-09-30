@@ -38,5 +38,14 @@ public class Script {
 	public int numfreezebounces=3,crossbowblastradius,tntblastradius,bouncemineblastradius,shrinkerblastradius,morterblastradius,powderblastradius,seenineblastradius;
 	public char camerashitable,freezerhurtowner=0,dildoblase;
 	public short spriteqamount=64;
-
+	
+	private long crc32 = -1;
+	public long getCRC32()
+	{
+		if(crc32 == -1)
+		{
+			//calc crc32 TODO:
+		}
+		return crc32;
+	}
 }

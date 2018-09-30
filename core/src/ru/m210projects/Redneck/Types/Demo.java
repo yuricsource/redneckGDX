@@ -200,9 +200,11 @@ public class Demo {
 				
 			} else {
 				gm = MODE_MENU;
+				currentGame = null;
 				return;
 			}
 
+			currentGame = defGame;
 			ud.recstat = 2;
 			enterlevel(MODE_DEMO);
 

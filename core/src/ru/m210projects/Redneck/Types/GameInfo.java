@@ -1,5 +1,6 @@
 package ru.m210projects.Redneck.Types;
 
+import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
 import static ru.m210projects.Build.Strhandler.Bstrcmp;
 import static ru.m210projects.Build.Strhandler.indexOf;
 import static ru.m210projects.Redneck.Gamedef.*;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.IResource;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 
 public class GameInfo {
@@ -24,6 +26,7 @@ public class GameInfo {
 	private Script ConScr;
 	public boolean isInited = false;
 	private int nMaps;
+	private FileEntry pack;
 	
 	public GameInfo(DirectoryEntry resDir, String mainCon)
 	{
@@ -33,6 +36,44 @@ public class GameInfo {
 		skillnames = new String[nMaxSkills];
 		episodes = new EpisodeInfo[nMaxEpisodes];
 		isInited = false;
+	}
+	
+	public GameInfo(IResource res, FileEntry name, String mainCon)
+	{
+		this.ConName = mainCon;
+		this.Title = name.getName() + ":" + mainCon;
+		skillnames = new String[nMaxSkills];
+		episodes = new EpisodeInfo[nMaxEpisodes];
+
+		try {
+			List<String> list = new ArrayList<String>();
+			list.add(ConName);
+			for(int i = 0; i < list.size(); i++) 
+				InitTree(list, res, list.get(i));
+			
+			nMaps = 0;
+			nEpisodes = 0;
+			for(int i = 0; i < list.size(); i++) {
+				int fil = res.Lookup(list.get(i));
+				if(fil == -1) continue;
+				
+				byte[] data = preparescript(res.Lock(fil));
+				findSkillNames(data);
+				findVolumes(data);
+				findMaps(data, res);
+				res.Close(fil);
+			}
+
+			if(nEpisodes != 0 && nMaps != 0) 
+				isInited = true;
+			checkEpisodes();
+			this.pack = name;
+		} catch(Exception e) { e.printStackTrace(); isInited = false; }
+	}
+	
+	public FileEntry isPackage()
+	{
+		return pack;
 	}
 
 	public void setDirectory(DirectoryEntry resDir)
@@ -63,36 +104,42 @@ public class GameInfo {
 			for(int i = 0; i < list.size(); i++)
 				InitTree(list, list.get(i));
 			
-			for(int i = 0; i < list.size(); i++) {
-				FileEntry scriptfile = list.get(i);
-				if(scriptfile == null) continue;
-				if(findSkillNames(getScript(scriptfile.getPath())))
-					break;
-			}
-			
-			for(int i = 0; i < list.size(); i++) {
-				FileEntry scriptfile = list.get(i);
-				if(scriptfile == null) continue;
-				if(findVolumes(getScript(scriptfile.getPath())))
-					break;
-			}
-			
 			nMaps = 0;
+			nEpisodes = 0;
 			for(int i = 0; i < list.size(); i++) {
 				FileEntry scriptfile = list.get(i);
 				if(scriptfile == null) continue;
-				findMaps(getScript(scriptfile.getPath()));
+				byte[] data = preparescript(kGetBytes(scriptfile.getPath(), 0));
+				findSkillNames(data);
+				findVolumes(data);
+				findMaps(data, null);
 			}
-			 if(nEpisodes != 0 && nMaps != 0) 
-				 isInited = true;
 
-		} catch(Exception e) { isInited = false; }
+			if(nEpisodes != 0 && nMaps != 0) 
+				isInited = true;
+			checkEpisodes();
+			
+		} catch(Exception e) { e.printStackTrace(); isInited = false; }
+	}
+	
+	private void checkEpisodes()
+	{
+		int sum = 0;
+		for(int e = 0; e < nEpisodes; e++)
+		{
+			if(episodes[e].gMapInfo[0] == null)
+				episodes[e].nMaps = 0;
+			sum += episodes[e].nMaps;
+		}
+		
+		if(sum == 0)
+			isInited = false;
 	}
 	
 	private void InitTree(List<FileEntry> list, FileEntry confile)
 	{
 		if(confile == null) return;
-		byte[] buf = getScript(confile.getPath());
+		byte[] buf = preparescript(kGetBytes(confile.getPath(),0));
 		int index = -1;
         while( (index = indexOf("include ", buf, index+1)) != -1)
         {
@@ -110,11 +157,35 @@ public class GameInfo {
         }
 	}
 	
+	private void InitTree(List<String> list, IResource res, String filename)
+	{
+		int fil = res.Lookup(filename);
+		if(fil != -1)
+		{
+			byte[] buf = preparescript(res.Lock(fil));
+			int index = -1;
+	        while( (index = indexOf("include ", buf, index+1)) != -1)
+	        {
+	        	int textptr = index + 7;
+	        	while( !isaltok(buf[textptr]) )
+	            {
+	                textptr++;
+	                if( buf[textptr] == 0 ) break;
+	            }
+
+	            int i = 0;
+	            while( textptr+i < buf.length && isaltok(buf[textptr+i]) ) i++;
+	            String name = new String(buf, textptr, i);
+	            list.add(name);
+	        }
+	        res.Close(fil);
+		}
+	}
+	
 	private boolean findVolumes(byte[] buf)
 	{
         int index = -1;
 
-        nEpisodes = 0;
         while( (index = indexOf("definevolumename ", buf, index+1)) != -1)
         {
         	textptr = index + 16;
@@ -136,7 +207,8 @@ public class GameInfo {
         return false;
 	}
 	
-	private void findMaps(byte[] buf)
+	
+	private void findMaps(byte[] buf, IResource res)
 	{
 		int index = -1;
 		
@@ -156,8 +228,20 @@ public class GameInfo {
             
             String path = new String(buf, ptr, i);
             
-            FileEntry mapFile = resDir.checkFile(path);
-			if(mapFile != null) {
+            boolean mapFound = false;
+            String mapPath = path;
+            if(res == null)
+            {
+            	FileEntry mapFile = resDir.checkFile(path);
+            	mapFound = mapFile != null;
+            	if(mapFound)
+            		mapPath = mapFile.getPath();
+            } else {
+            	mapFound = res.Lookup(path) != -1;
+            	mapPath = path;
+            }
+            
+			if(mapFound) {
 	            while( buf[textptr] == ' ' ) textptr++;
 	
 	            int partime = (((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+
@@ -176,7 +260,7 @@ public class GameInfo {
 	            i = 0;
 	            while( buf[textptr+i] != 0x0a ) i++;
 	            String title = new String(buf, textptr, i-1);
-	            episodes[epnum].gMapInfo[mapnum] = new MapInfo(mapFile.getPath(), title, partime, designertime);
+	            episodes[epnum].gMapInfo[mapnum] = new MapInfo(mapPath, title, partime, designertime);
 	            episodes[epnum].nMaps = Math.max(episodes[epnum].nMaps, mapnum + 1);
 	            nMaps++;
 			}

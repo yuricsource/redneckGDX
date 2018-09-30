@@ -167,7 +167,7 @@ public class RRMenu {
 		mGameInfo = gInfo;
 		mEpisodelist.clear();
 		for (int i = 0; i < nMaxEpisodes; i++) {
-			if(gInfo.episodes[i] != null)
+			if(gInfo.episodes[i] != null && gInfo.episodes[i].nMaps != 0)
 				mEpisodelist.add(gInfo.episodes[i].Title.toCharArray());
 		}
 	}

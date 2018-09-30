@@ -3,6 +3,7 @@ package ru.m210projects.Redneck;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.FileHandle.Compat.FilePath;
+import static ru.m210projects.Build.FileHandle.Compat.getFilename;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
@@ -71,6 +72,28 @@ public class ResourceHandler {
 		}
 	}
 	
+	public static void prepareusergroup(int group, boolean removable) throws Exception
+	{
+		//Searching and loading rfs scripts
+		for(RESHANDLE res : kList(group)) {
+			if(res.paktype == ZIP) //zips can use subfolders
+				res.filename = getFilename(res.filename); //Correct path in archive (files shouldn't be in a subfolder)
+			
+			if(res.fileformat.equals("grp"))
+			{
+				int groupnum = initgroupfile(res.getBytes());
+				setgroupflags(groupnum, true, removable);
+			}
+			if(res.fileformat.equals("zip"))
+				throw new Exception("ZIP in groupfile not support!");
+
+//			if(res.fileformat.equals("cue")) {
+//				Console.Println("Cd tracks found...");
+//				parserfs(removable?group:-1, res.filename, res.getBytes());
+//			}
+		}
+	}
+	
 	private static void searchEpisodeResources(DirectoryEntry cache)
 	{
 		if(cache.getDirectories().size() > 0)
@@ -98,21 +121,18 @@ public class ResourceHandler {
 	{
 		resetEpisodeResources();
 		
-//		if(ini.isPackage()) //if in main blood folder
-//		{
-//			try {
-//				String ininame = ini.getFile().getName();
-//				if(!currPath.equals("<main>"))
-//					ininame = currPath + File.separator + ininame;
-//				int gr = initgroupfile(ininame);
-//				setgroupflags(gr, true, true);
-//				prepareusergroup(gr, true);
-//			} catch(Exception e) { 
-//				GameCrash("Error found in " + ini.getFile().getName() + "\r\n" + e.getMessage()); 
-//				return;
-//			}
-//		} else
-
+		FileEntry fil;
+		if((fil = addon.isPackage()) != null)
+		{
+			try {
+				int gr = initgroupfile(fil.getPath());
+				setgroupflags(gr, true, true);
+				prepareusergroup(gr, true);
+			} catch(Exception e) { 
+				GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
+				return;
+			}
+		} else
 		if(!addon.getDirectory().getName().equals("<main>"))
 			searchEpisodeResources(addon.getDirectory());
 		else if(addon.Title.equals("Route 66")) {

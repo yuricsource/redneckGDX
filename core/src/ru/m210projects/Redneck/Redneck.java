@@ -30,7 +30,9 @@ import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Input.Keymap.ANYKEY;
 import static ru.m210projects.Build.OnSceenDisplay.Console.CloseLogFile;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
+import static ru.m210projects.Build.OnSceenDisplay.Console.osd_argv;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Names.*;
@@ -252,7 +254,7 @@ public class Redneck {
 						if (file.getExtension().equals("zip")) {
 							String filename = file.getName().substring(0, file.getName().lastIndexOf('.'));
 							int group = initgroupfile(file.getPath());
-//							boolean defgroup = false;
+							boolean defgroup = false;
 							for(RESHANDLE res : kList(group)) {
 								if(res.filename.lastIndexOf('.') == -1)
 									continue;
@@ -267,9 +269,16 @@ public class Redneck {
 						    		if (script == null) return;
 						    		script.filename = res.filename;
 						    		defsparser(script);
-//						    		defgroup = true;
+						    		defgroup = true;
 						    		break;
 								}
+							}
+							
+							if(!defgroup)
+							{
+								setgroupflags(group, true, false);
+								prepareusergroup(group, false);
+								InitGroupResources(kList(group));
 							}
 						}
 
@@ -279,8 +288,8 @@ public class Redneck {
 				}
 			}
 			
-			loaddefinitionsfile("dukegdx.def");
-//			System.arraycopy(tiletovox, 0, oldtiletovox, 0, MAXTILES); //save default tiletovox for reset to default when user episode reset
+			loaddefinitionsfile("rrgdx.def");
+			System.arraycopy(tiletovox, 0, deftiletovox, 0, MAXTILES); //save default tiletovox for reset to default when user episode reset
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -324,6 +333,77 @@ public class Redneck {
 						Console.Println("bufferjitter: " + bufferjitter);
 					}
 		}));
+		
+		Console.RegisterCvar(new OSDCOMMAND("initgroupfile",
+				"initgroupfile", new OSDCVARFUNC() {
+					@Override
+					public void execute() {
+						if (Console.osd_argc != 2) {
+							Console.Println("initgroupfile: <path to [zip/grp]>");
+							return;
+						}
+						
+						if(gm != MODE_MENU) {
+							Console.Println("initgroupfile: Back to menu at first");
+							return;
+						}
+
+						String filename = osd_argv[1];
+						FileEntry file = cache.checkFile(filename);
+						if (file != null) {
+							if(file.getExtension().equals("zip") 
+									|| file.getExtension().equals("grp"))
+							{
+								try {
+									int gr = initgroupfile(file.getPath());
+									setgroupflags(gr, true, false);
+									prepareusergroup(gr, false);
+									InitGroupResources(kList(gr));
+									scrReset();
+									
+									Console.Println("initgroupfile: " + filename + " successfuly added to game resources");
+								} catch(Exception e) { 
+									Console.Println("Error to load " + file.getName(), OSDTEXT_RED); 
+								}
+							}
+						} else Console.Println("initgroupfile: File not found");
+					}
+		}));
+		
+		Console.RegisterCvar(new OSDCOMMAND("quicksave",
+				"quicksave: performs a quick save", new OSDCVARFUNC() {
+					@Override
+					public void execute() {
+						if ( ud.multimode != 1 || numplayers > 1 ) {
+							Console.Println("quicksave: Single player only");
+							return;
+						}
+						
+						if (gm == MODE_GAME) {
+							quicksave();
+						} else
+							Console.Println("quicksave: not in a game");
+					}
+				}));
+			
+			Console.RegisterCvar(new OSDCOMMAND("quickload",
+				"quickload: performs a quick load", new OSDCVARFUNC() {
+					@Override
+					public void execute() {
+						if (gm == MODE_GAME) {
+							quickload();
+						} else
+							Console.Println("quickload: not in a game");
+					}
+				}));
+			
+			Console.RegisterCvar(new OSDCOMMAND("quit",
+				null, new OSDCVARFUNC() {
+					@Override
+					public void execute() {
+						gm = MODE_END;
+					}
+				}));
 	}
 	
 	public static boolean moveloop()
@@ -693,9 +773,9 @@ public class Redneck {
 		            	gm = MODE_GAME;
 		            enterlevel(gm);
 		           
-//		            if (kGameCrash) {
-//						backtomenu();
-//					}
+		            if (kGameCrash) {
+						backtomenu();
+					}
 					break;
 			}
 			
@@ -707,8 +787,14 @@ public class Redneck {
 				
 				char[] mapname;
 				boolean usermap = false;
-				if(ud.warp_on != 2 || boardfilename == null) 
-					mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title.toCharArray();
+				if(ud.warp_on != 2 || boardfilename == null) {
+					if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
+						mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title.toCharArray();
+					else {
+						GameCrash("No MapInfo!");
+						return;
+					}
+				}
 				else {
 					Arrays.fill(buf, (char)0);
 					int index = boardfilename.lastIndexOf(File.separator);
