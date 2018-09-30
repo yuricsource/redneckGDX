@@ -53,6 +53,8 @@ public class Main extends ApplicationAdapter {
 	 * Addons support
 	 * 
 	 * TODO:
+	 * banjo sound script return true?
+	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * у монтировки нет звука атаки
 	 * инфа об юзерэпизоде в меню загрузок

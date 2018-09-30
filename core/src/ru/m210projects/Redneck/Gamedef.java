@@ -3497,7 +3497,7 @@ public class Gamedef {
 		        			break;
 	        		}
 	            }
-	        	break;
+	        	return true;
 	        case 144: //motoloopsnd
 	        	if ( Sound[411].num == 0 )
 	        		spritesound(411, g_i);
