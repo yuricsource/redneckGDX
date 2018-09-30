@@ -137,10 +137,16 @@ public class RRMenu {
 		} else {
 			if (ini != null) {
 				nFlags = 1;
-				if(ini == defGame)
+				if(ini == defGame) {
 					nFlags = 0;
+					mContent = "None";
+				}
 
 				updateUserEpisodeList(ini);
+			} else {
+				nFlags = 0;
+				mContent = "None";
+				updateUserEpisodeList(defGame);
 			}
 			ud.m_level_number = 0;
 	        ud.m_volume_number = 0;
@@ -167,7 +173,7 @@ public class RRMenu {
 		mGameInfo = gInfo;
 		mEpisodelist.clear();
 		for (int i = 0; i < nMaxEpisodes; i++) {
-			if(gInfo.episodes[i] != null && gInfo.episodes[i].nMaps != 0)
+			if(gInfo.episodes[i] != null && gInfo.episodes[i].nMaps != 0) 
 				mEpisodelist.add(gInfo.episodes[i].Title.toCharArray());
 		}
 	}
@@ -175,9 +181,9 @@ public class RRMenu {
 	public static void mResetContent()
 	{
 		System.err.println("mResetContent");
-		mContent = null;
-		mGameInfo = null;
-		mEpisodelist.clear();
+		mContent = "None";
+		updateUserEpisodeList(defGame);
+		mEpisodeUpdateRequest = true;
 		mUserFlag = 0;
 		ud.m_level_number = 0;
         ud.m_volume_number = 0;
@@ -472,11 +478,11 @@ public class RRMenu {
         		else
         			resetEpisodeResources();
                 
-        		if ( ud.warp_on == 1) {
-//        			getEpisodeInfo(gUserEpisodeInfo, currentIni);
+                if(kGameCrash)
+                	return;
+                
+        		if ( ud.warp_on == 1) 
         			Console.Println("Start user addon " + mGameInfo.Title, 0);
-        		}
-
         		if ( ud.warp_on == 2) 
         			Console.Println("Start user map - " + boardfilename);
                 
@@ -582,18 +588,11 @@ public class RRMenu {
 							}
 						} else {
 							gm = oFlags;
-							if (gm == MODE_GAME) {
-								if (!kGameCrash) {
-									addmessage("Incompatible version of saved game found!");
+							if (gm == MODE_GAME || gm == MODE_DEMO) {
+								if (!kGameCrash) 
 									ready2send = true;
-								}
-								
-							} else {
-								if (gm == MODE_DEMO) {
-									DemoReset();
-								}
-								kGameCrash = false;
-							}
+							} 
+							addmessage("Incompatible version of saved game found!");
 						}
 					}
 				});
@@ -2844,16 +2843,16 @@ public class RRMenu {
 		MenuButton mCreate = new MenuButton("New game", 2, 0, pos += 20, 320, 1, 0, mMenus[MCREATE], -1, null, 0);
 		MenuButton mJoin = new MenuButton("Join a game", 2, 0, pos += 20, 320, 1, 0, mMenus[MJOIN], -1, null, 0);
 		// splitscreen game
-		// end game
+		// end game XXX
 
 		mAddItem(mMenus[nMenuId], mCreate, true);
 		mAddItem(mMenus[nMenuId], mJoin, false);
 	}
 	
 	private static int mPlayers = 2;
-	private static String mContent;
+	private static String mContent = "None";
 	private static boolean mEpisodeUpdateRequest = false;
-	
+
 	private static void mCreate(int nMenuId) {
 		MenuTitle mTitle = new MenuTitle("Multiplayer", 2, 160, 19, MENUBAR);
 		mAddItem(mMenus[nMenuId], mTitle, false);
@@ -3025,25 +3024,17 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		
 		final MenuConteiner pItem = new MenuConteiner("Content", 2, 20,
-				45, 280, new String[] { "none" }, 0, new MENUPROC() {
+				45, 280, new String[] { mContent }, 0, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
 						mOpen(mMenus[USERCONTENT], -1);
 					}
 				}) {
-			
-//				@Override
-//				public void open(MENU pMenu) {
-//					mContentUpdate(mContent);
-//				}
 
 			@Override
 			public void draw() {
 				super.draw();
-				if(mContent != null)
-					this.list[0] = mContent.toCharArray();
-				else
-					this.list[0] = "none".toCharArray();
+				this.list[0] = mContent.toCharArray();
 			}
 		};
 		
@@ -3066,30 +3057,41 @@ public class RRMenu {
 				num = ud.m_coop;
 			}
 		};
+		
+		final MENUPROC mLevelsUpdate = new MENUPROC() {
+			@Override
+			public void run(MenuItem pItem) {
+				MenuConteiner item = (MenuConteiner) pItem;
+
+				int size = mGameInfo.episodes[ud.m_volume_number].nMaps;
+				if (item.list == null || item.list.length != size)
+					item.list = new char[size][];
+				for (int i = 0; i < size; i++)
+					item.list[i] =  mGameInfo.episodes[ud.m_volume_number].gMapInfo[i].title.toCharArray();
+				ud.m_level_number = item.num = 0;
+			}
+		};
 
 		final MenuConteiner mMenuLevel = new MenuConteiner("LEVEL", 1, 20, 90, 280, null, 0, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuConteiner item = (MenuConteiner) pItem;
-				if(item.num > defGame.episodes[ud.m_volume_number].nMaps) 
-					item.num = defGame.episodes[ud.m_volume_number].nMaps;
+				if(item.num > mGameInfo.episodes[ud.m_volume_number].nMaps) 
+					item.num = mGameInfo.episodes[ud.m_volume_number].nMaps;
 				ud.m_level_number = item.num;
 			}
 		}) {
 
 			@Override
 			public void open(MENU pMenu) {
-//				if (this.list == null)
-//					mLevelsUpdate.run(this);
-//				list = level_names; XXX
+				if (this.list == null)
+					mLevelsUpdate.run(this);
+				num = ud.m_level_number;
 			}
 
 			@Override
 			public void draw() {
-				int onum = num;
-				num = 11*ud.m_volume_number+ud.m_level_number;
 				super.draw();
-				num = onum;
 				mCheckEnableItem(this, mUserFlag != 2);
 			}
 		};
@@ -3098,15 +3100,22 @@ public class RRMenu {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuConteiner item = (MenuConteiner) pItem;
-				if(item.num > defGame.nEpisodes) item.num = defGame.nEpisodes;
+				if(item.num > mGameInfo.nEpisodes) item.num = mGameInfo.nEpisodes;
 				ud.m_volume_number = item.num;
-//				mLevelsUpdate.run(mMenuLevel);
+				mLevelsUpdate.run(mMenuLevel);
 			}
 		}) {
 
 			@Override
 			public void open(MENU pMenu) {
-//				list = volume_names; XXX
+				if (this.list == null) {
+					updateUserEpisodeList(mGameInfo);
+					int size = mEpisodelist.size();
+					this.list = new char[size][];
+					for (int i = 0; i < size; i++) 
+						this.list[i] = mEpisodelist.get(i);
+				}
+				mCheckEnableItem(this, mUserFlag != 2);
 				num = ud.m_volume_number;
 			}
 			
@@ -3114,6 +3123,20 @@ public class RRMenu {
 			public void draw() {
 				super.draw();
 				mCheckEnableItem(this, mUserFlag != 2);
+				
+				if (mEpisodeUpdateRequest) {
+					mLevelsUpdate.run(mMenuLevel);
+
+					int size = mEpisodelist.size();
+					if (this.list == null || this.list.length != size)
+						this.list = new char[size][];
+
+					for (int i = 0; i < size; i++) {
+						this.list[i] = mEpisodelist.get(i);
+					}
+					num = 0;
+					mEpisodeUpdateRequest = false;
+				}
 			}
 		};
 		
@@ -3139,7 +3162,7 @@ public class RRMenu {
 					this.list = new char[5][];
 					this.list[0] = "NONE".toCharArray();
 					for(int i = 0; i < 4; i++)
-						this.list[1 + i] = defGame.skillnames[i].toCharArray();
+						this.list[1 + i] = mGameInfo.skillnames[i].toCharArray();
 				}
 				num = ud.m_player_skill;
 			}
@@ -3209,6 +3232,17 @@ public class RRMenu {
 				}
                 
                 sendtoall(tempbuf,11);
+                
+                if (mGameInfo != null)
+        			checkEpisodeResources(mGameInfo);
+        		else
+        			resetEpisodeResources();
+                
+        		if ( ud.warp_on == 1) 
+        			Console.Println("Start user addon " + mGameInfo.Title, 0);
+        		
+        		if ( ud.warp_on == 2) 
+        			Console.Println("Start user map - " + boardfilename);
                 
 				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
                 enterlevel(MODE_GAME);

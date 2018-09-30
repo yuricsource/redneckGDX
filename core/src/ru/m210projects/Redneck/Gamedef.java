@@ -3637,8 +3637,10 @@ public class Gamedef {
 		defGame.Title = "Default";
 
 		//Create episode info
+		defGame.nEpisodes = con.nEpisodes;
 		for(int i = 0; i < con.nEpisodes; i++) {
 			defGame.episodes[i] = new EpisodeInfo(new String(con.volume_names[i]).trim());
+			defGame.episodes[i].nMaps = con.nMaps[i];
 			for(int j = 0; j < con.nMaps[i]; j++)
 				defGame.episodes[i].gMapInfo[j] = new MapInfo(new String(con.level_file_names[i*11+j]).trim(), new String(con.level_names[i*11+j]).trim(), con.partime[i*11+j], con.designertime[i*11+j]);
 		}
@@ -3646,8 +3648,10 @@ public class Gamedef {
 		for(int i = 0; i < con.nSkills; i++) 
 			defGame.skillnames[i] = new String(con.skill_names[i]).trim();
 
-		if(defGame.episodes[1] != null)
+		if(defGame.episodes[1] != null) {
 			defGame.episodes[1].gMapInfo[7] = new MapInfo("endgame.map", "Close encounters", defGame.episodes[1].gMapInfo[0].partime, defGame.episodes[1].gMapInfo[0].designertime); //EndGame map
+			defGame.episodes[1].nMaps = 7;
+		}
 		defGame.isInited = true;
 		currentGame = defGame;
 	}
@@ -3722,7 +3726,13 @@ public class Gamedef {
 	    error = 0;
 	    line_number = 1;
 	
-	    passone(con); //Tokenize
+	    try {
+	    	passone(con); //Tokenize
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	error = 1;
+	    	return null;
+	    }
 	    
 	    switch(GameCON)
 		{

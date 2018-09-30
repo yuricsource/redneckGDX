@@ -25,6 +25,7 @@ import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Actors.*;
@@ -72,6 +73,7 @@ public class LoadSave {
 	public static final String savsign = "RGDX";
 	
 	public static final int gdxSave = 100;
+	public static final int currentGdxSave = 101;
 	public static final int SAVEVERSION = savsign.length() + 2; //version (2 bytes)
 	public static final int SAVETIME = 8;
 	public static final int SAVENAME = 32;
@@ -100,7 +102,7 @@ public class LoadSave {
 					String signature = new String(buf,0,4);
 					if(signature.equals(savsign)) {
 						int nVersion = Bread(fil, 2);
-						if(nVersion == gdxSave) {
+						if(nVersion >= gdxSave) {
 							Bread(fil, buf, 8);
 							long time = LittleEndian.getLong(buf);
 							Bread(fil, buf, SAVENAME);
@@ -131,7 +133,7 @@ public class LoadSave {
 			int nVersion = checkSave(bb);
 			lsInf.clear();
 			
-			if(nVersion == gdxSave)
+			if(nVersion == currentGdxSave)
 			{
 				bb.position(SAVEVERSION);
 				lsInf.date = Main.date.getDate(bb.getLong());
@@ -145,7 +147,7 @@ public class LoadSave {
 				engine.invalidatetile(TILE_LOADSHOT, 0, 255);
 				Bclose(fil);
 				return 1;
-			}	
+			} else 	lsInf.info = "Incompatible ver. " + nVersion + " != " + currentGdxSave;
 		} else lsInf.clear();
 		return -1;
 	}
@@ -196,7 +198,6 @@ public class LoadSave {
 	
 	public static void MapSave(int fil)
 	{
-		Bwrite(fil, ud.warp_on, 1);
 		if(boardfilename != null)
 			Bwrite(fil, boardfilename.toCharArray(), 144);
 		else Bwrite(fil, new byte[144], 144);
@@ -439,7 +440,7 @@ public class LoadSave {
 	
 	public static void SaveHeader(int fil, String savename, long time)
 	{
-		SaveVersion(fil, gdxSave);
+		SaveVersion(fil, currentGdxSave);
 		
 		byte[] buf = new byte[8];
 		LittleEndian.putLong(buf, 0, time);
@@ -454,8 +455,29 @@ public class LoadSave {
 	
 	public static void SaveGDXBlock(int fil)
 	{
-		Bwrite(fil, saveBuffer, SAVESCREENSHOTSIZE);	
-		Bwrite(fil, new byte[SAVEGDXDATA], SAVEGDXDATA); 	
+		Bwrite(fil, saveBuffer, SAVESCREENSHOTSIZE);
+		ByteBuffer bb = ByteBuffer.allocate(SAVEGDXDATA);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		bb.put((byte)ud.warp_on);
+		if(ud.warp_on == 1) //user episode
+		{
+			byte[] name = new byte[144];
+			if(currentGame != null)
+			{
+				FileEntry addon = currentGame.isPackage();
+				if(addon != null) {
+					String path = addon.getPath();
+					path += ":" + currentGame.ConName;
+					System.arraycopy(path.getBytes(), 0, name, 0, Math.min(path.length(), 144));
+				}
+				else {
+					String path = currentGame.getDirectory().checkFile(currentGame.ConName).getPath();
+					System.arraycopy(path.getBytes(), 0, name, 0, Math.min(path.length(), 144));
+				}
+			}
+			bb.put(name);
+		}
+		Bwrite(fil, bb.array(), SAVEGDXDATA); 	
 	}
 
 	public static void save(int fil, String savename, long time)
@@ -675,7 +697,6 @@ public class LoadSave {
 	
 	public static void MapLoad(SafeLoader bb)
 	{
-		ud.warp_on = bb.warp_on;
 		boardfilename = bb.boardfilename;
 		numwalls = bb.numwalls;
 		for(int w = 0; w < numwalls; w++) {
@@ -707,12 +728,16 @@ public class LoadSave {
 	}
 	
 	public static void LoadGDXBlock(SafeLoader bb)
-	{}
+	{
+		if(bb.warp_on == 1)
+			checkEpisodeResources(bb.addon);
+		else resetEpisodeResources();
+	}
 	
 	public static boolean checkfile(ByteBuffer bb)
 	{
 		int nVersion = checkSave(bb);	
-		if(nVersion != gdxSave)
+		if(nVersion != currentGdxSave)
 			return false;
 		
 		if(!loader.load(bb))
@@ -720,7 +745,6 @@ public class LoadSave {
 		
 		return true;
 	}
-	
 	
 	public static void load()
 	{

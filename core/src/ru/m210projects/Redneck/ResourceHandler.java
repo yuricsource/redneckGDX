@@ -3,6 +3,7 @@ package ru.m210projects.Redneck;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.FileHandle.Compat.FilePath;
+import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.FileHandle.Compat.getFilename;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.IResource;
 import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
 import ru.m210projects.Redneck.Types.GameInfo;
 
@@ -70,6 +72,60 @@ public class ResourceHandler {
 				usecustomarts = true;
 			}
 		}
+	}
+	
+	public static GameInfo levelGetEpisode(String filepath)
+	{
+		String fullname = filepath;
+		String conName = null;
+		int filenameIndex = -1;
+		if((filenameIndex = fullname.indexOf(":")) != -1)
+		{
+			filepath = fullname.substring(0, filenameIndex);
+			conName = fullname.substring(filenameIndex+1);
+		}
+
+		FileEntry file = cache.checkFile(filepath);
+		if(file != null)
+		{
+			GameInfo ini = null;
+			if(filenameIndex == -1 && (ini = episodes.get(file.getPath())) == null)
+			{
+				if(file.getExtension().equals("con")) {
+					
+					ini = new GameInfo(file.getParent(), file.getName());
+					ini.init();
+					if(ini.isInited)
+						episodes.put(file.getPath(), ini);
+				}
+			} 
+			else if(filenameIndex != -1 && (ini = episodes.get(fullname)) == null)
+			{
+				if(file.getExtension().equals("zip") 
+					|| file.getExtension().equals("grp"))
+				{
+					try {
+						IResource res = checkgroupfile(file.getPath());
+						if(res != null)
+						{
+							ini = new GameInfo(res, file, conName);
+							if(ini.isInited) {
+								System.err.println("load: put " + fullname);
+								episodes.put(fullname, ini);
+							}
+							else ini = null;
+						}
+						res.Dispose();
+						res = null;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+			}
+			return ini;
+		}
+		return null;
 	}
 	
 	public static void prepareusergroup(int group, boolean removable) throws Exception
@@ -141,11 +197,16 @@ public class ResourceHandler {
 			usecustomarts = true;
 		}
 		
+		error = 0;
 		//Loading user package files
 		InitGroupResources(kDynamicList());
 		if(addon.getCON() == null) 
 			addon.setCON(loaduserdef(addon.ConName));
-
-		currentGame = addon;
+		
+		if(error == 0)
+			currentGame = addon;
+		else {
+			GameCrash("\nErrors found in " + addon.ConName + " file.");
+		}
 	}
 }

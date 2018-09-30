@@ -17,8 +17,14 @@
 
 package ru.m210projects.Redneck.Menus;
 
+import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Menus.MENU.*;
+import static ru.m210projects.Redneck.Names.BIGFNTCURSOR;
+import static ru.m210projects.Redneck.Names.SPINNINGNUKEICON;
+import static ru.m210projects.Build.Engine.tilesizx;
 import static ru.m210projects.Build.Engine.totalclock;
+import static ru.m210projects.Build.Engine.xdim;
+import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Redneck.Screen.*;
 
 import java.util.List;
@@ -110,6 +116,22 @@ public class MenuList extends MenuItem
 			    	mGetAlign(textStyle, text.get(i));
 			        px = x + width - 1 - alignx;
 			    }
+			    
+			    if ( i == l_nFocus ) {
+					if(mGetFocusedItem(m_pMenu, this)) {
+						int yoff = 0;
+					    int scale = 4096;
+				    	int yoffset = -4;
+						if(textStyle == 1) { yoffset = -6; }
+						if(textStyle == 2) { yoffset = 1 - yoff; scale = 8192; }
+				    	if(align == 1) {
+					    	int centre = 320>>2;
+						    engine.rotatesprite(((320>>1)+(centre>>1)+70)<<16,(py-yoffset)<<16,scale,0,SPINNINGNUKEICON+15-((15+(totalclock>>3))&15),shade,0,10,0,0,xdim-1,ydim-1);
+						    engine.rotatesprite(((320>>1)-(centre>>1)-70)<<16,(py-yoffset)<<16,scale,0,SPINNINGNUKEICON+((totalclock>>3)&15),shade,0,10,0,0,xdim-1,ydim-1);
+				    	} else if(align == 0) engine.rotatesprite((px-tilesizx[BIGFNTCURSOR]-4)<<16,(y-4)<<16,scale,0,SPINNINGNUKEICON+(((totalclock>>3))&15),shade,0,10,0,0,xdim-1,ydim-1);
+					}
+				}
+			    
 			    mDrawText(textStyle, text.get(i), px, py, shade, pal, 0, 0);
 				py += aligny + nItemHeight;
 			}

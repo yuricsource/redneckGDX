@@ -101,7 +101,7 @@ public class MenuFileBrowser extends MenuItem {
 		changeDir(cache);
 	}
 	
-	private static void buildAddons(List<String> tmpList, DirectoryEntry dir)
+	private void buildAddons(List<String> tmpList, DirectoryEntry dir)
 	{
 		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
@@ -123,7 +123,6 @@ public class MenuFileBrowser extends MenuItem {
 		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
 			String con = it.next();
 			if(!dir.getName().equals("<main>") || !con.equals("game.con")) {
-				
 				GameInfo addon = episodes.get(dir.checkFile(con).getPath());
 				if(addon == null) {
 					addon = new GameInfo(dir, con);
@@ -141,11 +140,14 @@ public class MenuFileBrowser extends MenuItem {
 					if(addon.isInited) 
 						tmpList.add(con);
 				}
+			} else {
+				if(showmain)
+					tmpList.add(defGame.ConName);
 			}
 		}
 	}
 	
-	private static void buildAddons(List<String> tmpList, IResource res, FileEntry file)
+	private void buildAddons(List<String> tmpList, IResource res, FileEntry file)
 	{
 		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
 		for(RESHANDLE files : res.fList()) {
@@ -182,7 +184,7 @@ public class MenuFileBrowser extends MenuItem {
 	}
 	
 	
-	private static void InitTree(HashMap<String, List<String>> map, byte[] buf, String parentName)
+	private void InitTree(HashMap<String, List<String>> map, byte[] buf, String parentName)
 	{
         List<String> list = null;
 		int index = -1;
@@ -208,7 +210,7 @@ public class MenuFileBrowser extends MenuItem {
         	map.put(parentName, list);
 	}
 	
-	private static void handleList(HashMap<String, List<String>> map, List<String> list)
+	private void handleList(HashMap<String, List<String>> map, List<String> list)
 	{
 		for(String child : list)
 			for (Iterator<String> con = map.keySet().iterator(); con.hasNext();) {
@@ -253,13 +255,6 @@ public class MenuFileBrowser extends MenuItem {
 		Collections.sort(tmpList);
 		list[DIRECTORY].addAll(tmpList);
 		tmpList.clear();
-		
-		if(showmain)
-		{
-			tmpList.add("none");
-			list[FILE].addAll(tmpList);
-			tmpList.clear();
-		}
 		
 		buildAddons(tmpList, dir);
 
@@ -337,17 +332,22 @@ public class MenuFileBrowser extends MenuItem {
 
 			String filename = list[FILE].get(i);
 			GameInfo addon;
-			
 			if(currDir.checkFile(filename) == null) //archived addon
 			{
 				if((addon = episodes.get(filename)) != null) {
 					filename = addon.Title;
 					pal = 2;
-				} else return;
+				} else continue;
 			} 
 			else if((addon = episodes.get(currDir.checkFile(filename).getPath())) != null)
 			{
 				filename = addon.Title;
+				pal = 2;
+			}
+			
+			if(currDir.getName().equals("<main>") && filename.equalsIgnoreCase("game.con"))
+			{
+				filename = "None";
 				pal = 2;
 			}
 			text = toCharArray(filename);

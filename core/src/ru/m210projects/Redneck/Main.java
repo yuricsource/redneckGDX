@@ -53,23 +53,23 @@ public class Main extends ApplicationAdapter {
 	 * Addons support
 	 * 
 	 * TODO:
+	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
+	 * у монтировки нет звука атаки
+	 * инфа об юзерэпизоде в меню загрузок
 	 * get crc32 from map and script
-	 * addons save
-	 * Network content
 	 * cheat @mario
 	 * добавить kills и alchogol
-	 * RR66 mod support
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
 	 */
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.752";
+	public static final String sversion = "v0.753";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();
-	public static boolean release = true;
+	public static boolean release = false;
 	
 	public static RREngine engine;
 	public static Config cfg;

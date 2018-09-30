@@ -3,11 +3,13 @@ package ru.m210projects.Redneck.Types;
 import static ru.m210projects.Build.Engine.MAXPSKYTILES;
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
 import static ru.m210projects.Build.Engine.MAXWALLS;
+import static ru.m210projects.Build.FileHandle.Compat.toLowerCase;
 import static ru.m210projects.Build.Engine.MAXSECTORS;
 import static ru.m210projects.Build.Engine.MAXSPRITES;
 import static ru.m210projects.Build.Engine.MAXSTATUS;
 import static ru.m210projects.Build.Engine.MAXTILES;
 import static ru.m210projects.Redneck.LoadSave.*;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.CEILZ;
 import static ru.m210projects.Redneck.Types.ANIMATION.FLOORZ;
 import static ru.m210projects.Redneck.Types.ANIMATION.WALLX;
@@ -15,6 +17,7 @@ import static ru.m210projects.Redneck.Types.ANIMATION.WALLY;
 import static ru.m210projects.Redneck.Gamedef.MAXSCRIPTSIZE;
 import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
 import static ru.m210projects.Redneck.Globals.MAXCYCLERS;
+import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Animate.MAXANIMATES;
 
 import java.nio.ByteBuffer;
@@ -26,6 +29,7 @@ import ru.m210projects.Build.Types.WALL;
 public class SafeLoader {
 
 	public String boardfilename;
+	public GameInfo addon;
 	
 	public short spriteq[] = new short[1024],spriteqloc,spriteqamount=64;
 	public short numanimwalls;
@@ -389,8 +393,6 @@ public class SafeLoader {
 	
 	public void MapLoad(ByteBuffer bb) throws Exception
 	{
-		warp_on = bb.get();
-		
 		byte[] buf = new byte[144];
 		bb.get(buf);
 		boardfilename = null;
@@ -422,6 +424,25 @@ public class SafeLoader {
 	{
 		int pos = bb.position();
 		//reserve SAVEGDXDATA bytes for extra data
+
+		addon = null;
+		warp_on = bb.get();
+		if(warp_on == 1) //user episode
+		{
+			byte[] buf = new byte[144];
+			bb.get(buf);
+			String name = new String(buf).trim();
+			name = toLowerCase(name);
+			addon = levelGetEpisode(name);
+			if(addon == null)
+			{
+				addmessage("Can't find user episode file: " + name);
+				level_number = 3;
+		        volume_number = 2;
+				warp_on = 2;
+			}
+		}
+
 		bb.position(pos + SAVEGDXDATA);
 	}
 
