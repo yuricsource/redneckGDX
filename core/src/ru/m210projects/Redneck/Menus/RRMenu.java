@@ -134,6 +134,11 @@ public class RRMenu {
 	        ud.m_volume_number = 2;
 			nFlags = 2;
 			mGameInfo = null;
+			mSkilllist.clear();
+			for (int i = 0; i < nMaxSkills; i++) {
+				if(defGame.skillnames[i] != null) 
+					mSkilllist.add(defGame.skillnames[i].toCharArray());
+			}
 		} else {
 			if (ini != null) {
 				nFlags = 1;
