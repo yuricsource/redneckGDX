@@ -167,6 +167,7 @@ public class RRMenu {
 	}
 	
 	private static final List<char[]> mEpisodelist = new ArrayList<char[]>();
+	private static final List<char[]> mSkilllist = new ArrayList<char[]>();
 	private static GameInfo mGameInfo;
 	
 	private static void updateUserEpisodeList(GameInfo gInfo) {
@@ -175,6 +176,11 @@ public class RRMenu {
 		for (int i = 0; i < nMaxEpisodes; i++) {
 			if(gInfo.episodes[i] != null && gInfo.episodes[i].nMaps != 0) 
 				mEpisodelist.add(gInfo.episodes[i].Title.toCharArray());
+		}
+		mSkilllist.clear();
+		for (int i = 0; i < nMaxSkills; i++) {
+			if(mGameInfo.skillnames[i] != null) 
+				mSkilllist.add(mGameInfo.skillnames[i].toCharArray());
 		}
 	}
 	
@@ -396,8 +402,14 @@ public class RRMenu {
 				MenuButton but = (MenuButton) pItem;
 				mUserFlag = 0;
 				mGameInfo = null;
-				if (but.specialOpt > -1)
+				if (but.specialOpt > -1) {
 					ud.m_volume_number = but.specialOpt;
+					mSkilllist.clear();
+					for (int i = 0; i < nMaxSkills; i++) {
+						if(defGame.skillnames[i] != null) 
+							mSkilllist.add(defGame.skillnames[i].toCharArray());
+					}
+				}
 			}
 		};
 
@@ -438,20 +450,11 @@ public class RRMenu {
 		MENUPROC newGameProc = new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
-				MenuButton button = (MenuButton) pItem;
-				if (button.specialOpt > -1)
-					ud.m_player_skill = button.specialOpt;
-				
-				Source skillvoice = null;
-				switch(ud.m_player_skill) {
-					case 0: skillvoice = sound(427);break;
-		            case 1: skillvoice = sound(428);break;
-		            case 2: skillvoice = sound(196);break;
-		            case 3: skillvoice = sound(195);break;
-		            case 4: skillvoice = sound(197);break;
-				}
-				
-				while(skillvoice != null && skillvoice.isActive());
+//				MenuButton button = (MenuButton) pItem;
+//				if (button.specialOpt > -1)
+//					ud.m_player_skill = button.specialOpt;
+				MenuList button = (MenuList) pItem;
+				ud.m_player_skill = button.l_nFocus;
 
                 if(ud.m_player_skill == 3) ud.m_respawn_monsters = true;
                 else ud.m_respawn_monsters = false;
@@ -481,6 +484,17 @@ public class RRMenu {
                 if(kGameCrash)
                 	return;
                 
+                Source skillvoice = null;
+				switch(ud.m_player_skill) {
+					case 0: skillvoice = sound(427);break;
+		            case 1: skillvoice = sound(428);break;
+		            case 2: skillvoice = sound(196);break;
+		            case 3: skillvoice = sound(195);break;
+		            case 4: skillvoice = sound(197);break;
+				}
+				
+				while(skillvoice != null && skillvoice.isActive());
+                
         		if ( ud.warp_on == 1) 
         			Console.Println("Start user addon " + mGameInfo.Title, 0);
         		if ( ud.warp_on == 2) 
@@ -492,14 +506,8 @@ public class RRMenu {
 			}
 		};
 
-		int pos = 40;
-		for(int i = 0; i < defGame.skillnames.length; i++)
-		{
-			if(defGame.skillnames[i] != null) { //empty check
-				MenuButton skill = new MenuButton(defGame.skillnames[i].toCharArray(), 2, 0, pos+=19, 320, 1, 0, null, -1, newGameProc, i);
-				mAddItem(mMenus[nMenuId], skill, i == 1);
-			}
-		}
+		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills);
+		mAddItem(mMenus[nMenuId], mSlot, true);
 	}
 	
 	private static void mSaveGame(int nMenuId) {

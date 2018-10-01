@@ -53,6 +53,7 @@ public class Main extends ApplicationAdapter {
 	 * Addons support
 	 * 
 	 * TODO:
+	 * gameinfo if map not found check neargrp
 	 * banjo sound script return true?
 	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт

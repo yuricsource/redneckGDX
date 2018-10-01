@@ -1687,9 +1687,6 @@ public class Gamedef {
 
 	    text[fs - 1] = 0;
 
-	    Arrays.fill(con.actorscrptr, 0);
-	    Arrays.fill(con.actortype, (short) 0);
-
 	    labelcode.clear();
 	    labelcnt = 0;
 	    scriptptr = 1;
@@ -3497,7 +3494,8 @@ public class Gamedef {
 		        			break;
 	        		}
 	            }
-	        	return true;
+	        	insptr++;
+	        	break;
 	        case 144: //motoloopsnd
 	        	if ( Sound[411].num == 0 )
 	        		spritesound(411, g_i);

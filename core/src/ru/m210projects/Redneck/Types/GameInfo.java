@@ -1,6 +1,7 @@
 package ru.m210projects.Redneck.Types;
 
 import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Strhandler.Bstrcmp;
 import static ru.m210projects.Build.Strhandler.indexOf;
 import static ru.m210projects.Redneck.Gamedef.*;
@@ -68,7 +69,11 @@ public class GameInfo {
 				isInited = true;
 			checkEpisodes();
 			this.pack = name;
-		} catch(Exception e) { e.printStackTrace(); isInited = false; }
+		} catch(Exception e) { 
+			e.printStackTrace(); 
+			Console.Println("Build addon: " + name.getName() + " failed!", OSDTEXT_RED);
+			isInited = false; 
+		}
 	}
 	
 	public FileEntry isPackage()
@@ -132,8 +137,21 @@ public class GameInfo {
 			sum += episodes[e].nMaps;
 		}
 		
-		if(sum == 0)
+		if(sum == 0) {
 			isInited = false;
+		} else { //sort episodes
+			int e = 0, ep = nEpisodes;
+			while(e != ep)
+			{
+				if(episodes[e] != null && episodes[e].nMaps == 0) {
+					System.arraycopy(episodes, e+1, episodes, e, ep-(e+1));
+					nEpisodes--;
+					episodes[nEpisodes] = null;
+					continue;
+				}
+				e++;
+			}
+		}
 	}
 	
 	private void InitTree(List<FileEntry> list, FileEntry confile)
