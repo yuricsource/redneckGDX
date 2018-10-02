@@ -398,4 +398,22 @@ public class Names {
 	public static final int VIXENTELE           = 5845;
 	public static final int VIXENTEAT           = 5851;
 	
+	//RA
+	public static final int AIRPLANE = 8450;
+	public static final int SWAMPBUGGY = 7233;
+	public static final int MOTORCYCLE = 7220;
+	public static final int CHIKENCROSSBOW = 1781;
+	public static final int BIKERSTAND = 5995;
+	public static final int BIKERRIDE = 5890;
+	public static final int BIKERRIDEDAISY = 6401;
+	public static final int MINIONAIRBOAT = 7192;
+	public static final int HULKAIRBOAT = 7199;
+	public static final int DAISYMAE = 6658;
+	public static final int DAISYAIRBOAT = 7206;
+	public static final int MINIONUFO = 5260;
+	public static final int JACKOLOPE = 7280;
+	public static final int BANJOCOOTER = 7030;
+	public static final int GUITARBILLY = 7035;
+	public static final int MAMAJACKOLOPE = 8705;
+	
 }

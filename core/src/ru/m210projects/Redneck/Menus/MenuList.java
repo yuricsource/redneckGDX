@@ -118,6 +118,8 @@ public class MenuList extends MenuItem
 			    }
 			    
 			    if ( i == l_nFocus ) {
+			    	while(text.get(l_nFocus) == null)
+			    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
 					if(mGetFocusedItem(m_pMenu, this)) {
 						int yoff = 0;
 					    int scale = 4096;
@@ -132,8 +134,10 @@ public class MenuList extends MenuItem
 					}
 				}
 			    
-			    mDrawText(textStyle, text.get(i), px, py, shade, pal, 0, 0);
-				py += aligny + nItemHeight;
+			    if(text.get(i) != null) {
+				    mDrawText(textStyle, text.get(i), px, py, shade, pal, 0, 0);
+					py += aligny + nItemHeight;
+			    }
 			}
 		} else {
 			int pal = 0;
@@ -171,6 +175,8 @@ public class MenuList extends MenuItem
 				return 0;
 			case 2:
 				l_nFocus--;
+				while(text.get(l_nFocus) == null)
+		    		l_nFocus = (l_nFocus - 1) & (text.size() - 1);
 				if(l_nFocus >= 0 && l_nFocus < l_nMin)
 					if(l_nMin > 0) l_nMin--;
 				if(l_nFocus < 0) {
@@ -181,6 +187,8 @@ public class MenuList extends MenuItem
 				return 0;
 			case 3:
 				l_nFocus++;
+				while(text.get(l_nFocus) == null)
+		    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
 				if(l_nFocus >= l_nMin + nListItems && l_nFocus < text.size())
 					l_nMin++;
 				if(l_nFocus >= text.size()) {

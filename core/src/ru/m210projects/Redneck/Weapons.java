@@ -45,7 +45,7 @@ import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Pragmas.scale;
-import static ru.m210projects.Redneck.Names.BOTTOMSTATUSBAR;
+import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Gamedef.*;
@@ -53,51 +53,7 @@ import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Redneck.Gameutils.rnd;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.engine;
-import static ru.m210projects.Redneck.Names.ALIENBLAST;
-import static ru.m210projects.Redneck.Names.APLAYER;
-import static ru.m210projects.Redneck.Names.BIGFORCE;
-import static ru.m210projects.Redneck.Names.BLOODSPLAT1;
-import static ru.m210projects.Redneck.Names.BLOODSPLAT2;
-import static ru.m210projects.Redneck.Names.BLOODSPLAT3;
-import static ru.m210projects.Redneck.Names.BLOODSPLAT4;
-import static ru.m210projects.Redneck.Names.BOUNCEMINE;
-import static ru.m210projects.Redneck.Names.BOWLINGBALL;
-import static ru.m210projects.Redneck.Names.BULLETHOLE;
-import static ru.m210projects.Redneck.Names.BUZSAW;
-import static ru.m210projects.Redneck.Names.CIRCLESAW;
-import static ru.m210projects.Redneck.Names.CIRCLESTUCK;
-import static ru.m210projects.Redneck.Names.CROSSBOW;
-import static ru.m210projects.Redneck.Names.DILDO;
-import static ru.m210projects.Redneck.Names.DOORKEY;
-import static ru.m210projects.Redneck.Names.DYNAMITE;
-import static ru.m210projects.Redneck.Names.EXPLOSION2;
-import static ru.m210projects.Redneck.Names.FIRELASER;
-import static ru.m210projects.Redneck.Names.FIRSTGUNSPRITE;
-import static ru.m210projects.Redneck.Names.HULK;
-import static ru.m210projects.Redneck.Names.INNERJAW;
-import static ru.m210projects.Redneck.Names.JIBS6;
-import static ru.m210projects.Redneck.Names.MIRROR;
-import static ru.m210projects.Redneck.Names.MORTER;
-import static ru.m210projects.Redneck.Names.NEWCROWBAR;
-import static ru.m210projects.Redneck.Names.NEWSHOTGUN;
-import static ru.m210projects.Redneck.Names.OOZFILTER;
-import static ru.m210projects.Redneck.Names.OWHIP;
-import static ru.m210projects.Redneck.Names.POWDERKEGSPRITE;
-import static ru.m210projects.Redneck.Names.RADIUSEXPLOSION;
-import static ru.m210projects.Redneck.Names.RIFLE;
-import static ru.m210projects.Redneck.Names.SHELL;
-import static ru.m210projects.Redneck.Names.SHITBALL;
-import static ru.m210projects.Redneck.Names.SHOTGUNSPRITE;
-import static ru.m210projects.Redneck.Names.SHOTSPARK1;
-import static ru.m210projects.Redneck.Names.SMALLSMOKE;
-import static ru.m210projects.Redneck.Names.TONGUE;
-import static ru.m210projects.Redneck.Names.TORNADO;
-import static ru.m210projects.Redneck.Names.TRANSPORTERSTAR;
-import static ru.m210projects.Redneck.Names.UFOBEAM;
-import static ru.m210projects.Redneck.Names.UWHIP;
-import static ru.m210projects.Redneck.Names.VIXEN;
-import static ru.m210projects.Redneck.Names.WATERBUBBLE;
-import static ru.m210projects.Redneck.Names.WATERSPLASH2;
+import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Premap.shadeEffect;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Screen.myos;
@@ -128,8 +84,7 @@ import static ru.m210projects.Redneck.SoundDefs.SHRINKER_FIRE;
 import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.Sounds.spritesound;
 import static ru.m210projects.Redneck.Sounds.xyzsound;
-import static ru.m210projects.Redneck.Spawn.EGS;
-import static ru.m210projects.Redneck.Spawn.spawn;
+import static ru.m210projects.Redneck.Spawn.*;
 import static ru.m210projects.Redneck.View.FTA;
 import static ru.m210projects.Redneck.View.lastvisinc;
 
@@ -243,12 +198,45 @@ public class Weapons {
 	}
 
 	public static void addweapon(PlayerStruct p, int weapon) {
+		
+		if ( p.OnMotorcycle || p.OnBoat )
+		{
+			p.gotweapon[0] = true;
+			switch ( weapon )
+		    {
+		    	case 6:
+		        p.gotweapon[11] = true;
+		        p.gotweapon[6] = true;
+		        p.ammo_amount[11] = 1;
+		        break;
+		    	case 5:
+		        p.gotweapon[5] = true;
+		        p.gotweapon[16] = true;
+		        break;
+		    	case 15:
+		        p.gotweapon[15] = true;
+		        p.ammo_amount[15] = 1;
+		        break;
+		    }
+			return;
+		}
+		
 		if (!p.gotweapon[weapon]) {
 			p.gotweapon[weapon] = true;
 			if (weapon == 6) {
 				p.gotweapon[6] = true;
 				p.gotweapon[11] = true;
 				p.ammo_amount[11] = 1;
+			}
+			if(currentGame.getCON().type == RRRA) {
+				if (weapon == 5) {
+					p.gotweapon[5] = true;
+					p.gotweapon[16] = true;
+				}
+				if (weapon == 15) {
+					p.gotweapon[15] = true;
+					p.ammo_amount[15] = 50;
+				}
 			}
 		}
 
@@ -1175,15 +1163,71 @@ public class Weapons {
 						sprite[j].z += (1 << 8);
 					}
 					break;
+				case CHIKENCROSSBOW:
+					s.hitag++;
+					if (hittype[i].picnum != 4557 && s.xrepeat >= 10
+							&& sector[s.sectnum].lotag != 2) {
+						j = spawn(i, SMALLSMOKE);
+						sprite[j].z += (1 << 8);
+						if ( (engine.krand() & 0xF) == 2 )
+					          j = spawn(i, FEATHERS);
+					}
+					if ( sprite[s.lotag].extra <= 0 )
+						s.lotag = 0;
+					
+					if ( s.lotag != 0 && s.hitag > 5 )  
+					{
+						SPRITE spr = sprite[s.lotag];
+						short ang = engine.getangle(spr.x - s.x, spr.y - s.y);
+						long seekang = ang - s.ang;
+						if(seekang >= 100)
+						{
+							if(seekang == 100)
+								s.ang = ang;
+							if(klabs(seekang) <= 1023)
+								s.ang += 51;
+							else s.ang -= 51;
+						} else if(klabs(seekang) <= 1023)
+							s.ang -= 51;
+						else s.ang += 51;
+						
+						if ( s.hitag > 180 && s.zvel <= 0 )
+					          s.zvel += 200;	
+					}
+					break;
+				case 1790:
+					if ( s.extra != 0 )
+					{
+						s.zvel = (short) (250 * s.extra);
+						s.zvel = (short) -s.zvel;
+				        s.extra--;
+					}
+					else makeitfall(currentGame.getCON(), i);
+					
+					if ( s.xrepeat >= 10 && sector[s.sectnum].lotag != 2 )
+					{
+				        j = spawn(i, SMALLSMOKE);
+				        sprite[j].z += 256;
+					}
+					break;
 				}
 
 				j = movesprite(i, (k * (sintable[(s.ang + 512) & 2047])) >> 14,
 						(k * (sintable[s.ang & 2047])) >> 14, ll, qq);
 
-				if (s.picnum == CROSSBOW && s.yvel >= 0)
-					if (FindDistance2D(s.x - sprite[s.yvel].x, s.y
-							- sprite[s.yvel].y) < 256)
-						j = 49152 | s.yvel;
+				if(s.yvel >= 0)
+				{
+					switch(s.picnum)
+					{
+					case CROSSBOW:
+					case CHIKENCROSSBOW:
+					case 1790:
+						if (FindDistance2D(s.x - sprite[s.yvel].x, s.y
+								- sprite[s.yvel].y) < 256)
+							j = 49152 | s.yvel;
+						break;
+					}
+				}
 
 				if (s.sectnum < 0) {
 					engine.deletesprite(i);
@@ -1194,6 +1238,7 @@ public class Weapons {
 					engine.deletesprite(i);
 					continue;
 				} else if ((j & kHitTypeMask) != kHitSprite)
+					
 					if (s.picnum != ALIENBLAST) {
 						if (s.z < hittype[i].ceilingz) {
 							j = kHitSector | (s.sectnum);
@@ -1229,17 +1274,31 @@ public class Weapons {
 					if ((j & kHitTypeMask) == kHitSprite) {
 						j &= kHitIndexMask;
 
-						if (s.picnum == ALIENBLAST && sprite[j].pal == 1)
-							if (badguy(sprite[j])
-									|| sprite[j].picnum == APLAYER) {
-								j = spawn(i, TRANSPORTERSTAR);
-								sprite[j].pal = 1;
-								sprite[j].xrepeat = 32;
-								sprite[j].yrepeat = 32;
-
-								engine.deletesprite(i);
+						if(currentGame.getCON().type == RRRA) {
+							if ( sprite[j].picnum == MINION
+									&& (s.picnum == CROSSBOW || s.picnum == CHIKENCROSSBOW)
+									&& sprite[j].pal == 19 )
+							{
+								spritesound(9, i);
+								j = spawn(i, EXPLOSION2);
+								sprite[j].x = s.x;
+								sprite[j].y = s.y;
+								sprite[j].z = s.z;
 								continue;
 							}
+						} else {
+							if (s.picnum == ALIENBLAST && sprite[j].pal == 1)
+								if (badguy(sprite[j])
+										|| sprite[j].picnum == APLAYER) {
+									j = spawn(i, TRANSPORTERSTAR);
+									sprite[j].pal = 1;
+									sprite[j].xrepeat = 32;
+									sprite[j].yrepeat = 32;
+	
+									engine.deletesprite(i);
+									continue;
+								}
+						}
 
 						checkhitsprite((short)j, i);
 
@@ -1248,6 +1307,12 @@ public class Weapons {
 							spritesound(PISTOL_BODYHIT, j);
 
 							if (s.picnum == SHITBALL) {
+								if ( sprite[s.owner].picnum == MAMAJACKOLOPE )
+					            {
+									guts(s, 7387, 2, myconnectindex);
+									guts(s, 7392, 2, myconnectindex);
+									guts(s, 7397, 2, myconnectindex);
+					            }
 								ps[p].horiz += 32;
 								ps[p].return_to_center = 8;
 									
@@ -1267,10 +1332,19 @@ public class Weapons {
 						}
 					} else if ((j & kHitTypeMask) == kHitWall) {
 						j &= kHitIndexMask;
+						if ( sprite[s.owner].picnum == MAMAJACKOLOPE )
+			            {
+							guts(s, 7387, 2, myconnectindex);
+							guts(s, 7392, 2, myconnectindex);
+							guts(s, 7397, 2, myconnectindex);
+			            }
+						
 
 						if (s.picnum != CROSSBOW
+								&& s.picnum != CHIKENCROSSBOW
 								&& s.picnum != ALIENBLAST
 								&& s.picnum != SHITBALL
+								&& s.picnum != CIRCLESAW
 								&& (wall[j].overpicnum == MIRROR || wall[j].picnum == MIRROR)) {
 							k = engine.getangle(wall[wall[j].point2].x
 									- wall[j].x, wall[wall[j].point2].y
@@ -1283,22 +1357,24 @@ public class Weapons {
 							engine.setsprite(i, dax, day, daz);
 							checkhitwall(i, j, s.x, s.y, s.z, s.picnum);
 
-							if (s.picnum == ALIENBLAST) {
-								if (wall[j].overpicnum != MIRROR
-										&& wall[j].picnum != MIRROR) {
-									s.extra >>= 1;
-									s.yvel--;
-									if (s.xrepeat > 8)
-										s.xrepeat -= 2;
-									if (s.yrepeat > 8)
-										s.yrepeat -= 2;
+							if(currentGame.getCON().type != RRRA) {
+								if (s.picnum == ALIENBLAST) {
+									if (wall[j].overpicnum != MIRROR
+											&& wall[j].picnum != MIRROR) {
+										s.extra >>= 1;
+										s.yvel--;
+										if (s.xrepeat > 8)
+											s.xrepeat -= 2;
+										if (s.yrepeat > 8)
+											s.yrepeat -= 2;
+									}
+	
+									k = engine.getangle(wall[wall[j].point2].x
+											- wall[j].x, wall[wall[j].point2].y
+											- wall[j].y);
+									s.ang = (short) (((k << 1) - s.ang) & 2047);
+									continue;
 								}
-
-								k = engine.getangle(wall[wall[j].point2].x
-										- wall[j].x, wall[wall[j].point2].y
-										- wall[j].y);
-								s.ang = (short) (((k << 1) - s.ang) & 2047);
-								continue;
 							}
 
 							if (s.picnum == CIRCLESAW) {
@@ -1314,12 +1390,15 @@ public class Weapons {
 									} else {
 										s.x += sintable[(s.ang + 512) & 2047] >> 7;
 										s.y += sintable[(s.ang) & 2047] >> 7;
-										int nspawn = spawn(i, CIRCLESTUCK);
-										sprite[nspawn].xrepeat = 8;
-										sprite[nspawn].yrepeat = 8;
-										sprite[nspawn].cstat = 16;
-										sprite[nspawn].ang = (short) ((sprite[i].ang + 512) & 0x7FF);
-										sprite[nspawn].clipdist = mulscale(tilesizx[s.picnum], s.xrepeat, 7);
+										if ( sprite[s.owner].picnum != DAISYMAE && sprite[s.owner].picnum != DAISYMAE+1 )
+										{
+											int nspawn = spawn(i, CIRCLESTUCK);
+											sprite[nspawn].xrepeat = 8;
+											sprite[nspawn].yrepeat = 8;
+											sprite[nspawn].cstat = 16;
+											sprite[nspawn].ang = (short) ((sprite[i].ang + 512) & 0x7FF);
+											sprite[nspawn].clipdist = mulscale(tilesizx[s.picnum], s.xrepeat, 7);
+										}
 										engine.deletesprite(i);
 									}
 								} else
@@ -1330,6 +1409,13 @@ public class Weapons {
 					} else if ((j & kHitTypeMask) == kHitSector) {
 						engine.setsprite(i, dax, day, daz);
 
+						if ( sprite[s.owner].picnum == MAMAJACKOLOPE )
+			            {
+							guts(s, 7387, 2, myconnectindex);
+							guts(s, 7392, 2, myconnectindex);
+							guts(s, 7397, 2, myconnectindex);
+			            }
+						
 						if (s.zvel < 0) {
 							if ((sector[s.sectnum].ceilingstat & 1) != 0)
 								if (sector[s.sectnum].ceilingpal == 0) {
@@ -1354,7 +1440,13 @@ public class Weapons {
 					}
 
 					if (s.picnum != SHITBALL) {
-						if (s.picnum == CROSSBOW) {
+						switch(s.picnum)
+						{
+						case CROSSBOW:
+						case CHIKENCROSSBOW:
+						case 1790:
+							if(s.picnum == 1790)
+								s.extra = 160;
 							k = spawn(i, EXPLOSION2);
 							sprite[k].x = dax;
 							sprite[k].y = day;
@@ -1367,20 +1459,36 @@ public class Weapons {
 								sprite[k].cstat |= 8;
 								sprite[k].z += (48 << 8);
 							}
-						} else if (s.picnum != CIRCLESAW
+							break;
+						default:
+							if (s.picnum != CIRCLESAW
 								&& s.picnum != ALIENBLAST
-								&& s.picnum != FIRELASER) {
-							k = spawn(i, EXPLOSION2);
-							sprite[k].xrepeat = sprite[k].yrepeat = (short) (s.xrepeat >> 1);
-							if ((j & kHitTypeMask) == kHitSector) {
-								if (s.zvel < 0) {
-									sprite[k].cstat |= 8;
-									sprite[k].z += (72 << 8);
+								&& s.picnum != FIRELASER) 
+							{
+								k = spawn(i, EXPLOSION2);
+								sprite[k].xrepeat = sprite[k].yrepeat = (short) (s.xrepeat >> 1);
+								if ((j & kHitTypeMask) == kHitSector) {
+									if (s.zvel < 0) {
+										sprite[k].cstat |= 8;
+										sprite[k].z += (72 << 8);
+									}
 								}
 							}
+							break;
 						}
-						if (s.picnum == CROSSBOW) {
-							spritesound(RPG_EXPLODE, i);
+						
+						switch(s.picnum)
+						{
+						case CROSSBOW:
+						case CHIKENCROSSBOW:
+						case 1790:	
+							if(s.picnum != CHIKENCROSSBOW)
+								spritesound(RPG_EXPLODE, i);
+							else spritesound(247, i);
+							if(s.picnum == CHIKENCROSSBOW)
+								s.extra = 150;
+							if(s.picnum == 1790)
+								s.extra = 160;
 
 							if (s.xrepeat >= 10) {
 								x = s.extra;
@@ -1391,6 +1499,7 @@ public class Weapons {
 								hitradius(i, (currentGame.getCON().crossbowblastradius >> 1), x >> 2,
 										x >> 1, x - (x >> 2), x);
 							}
+							break;
 						}
 					}
 					
@@ -1398,7 +1507,7 @@ public class Weapons {
 					continue;
 					
 				}
-				if (s.picnum == CROSSBOW && sector[s.sectnum].lotag == 2
+				if ((s.picnum == CROSSBOW || s.picnum == CHIKENCROSSBOW) && sector[s.sectnum].lotag == 2
 						&& s.xrepeat >= 10 && rnd(140))
 					spawn(i, WATERBUBBLE);
 				continue;

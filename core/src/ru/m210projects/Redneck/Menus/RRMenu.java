@@ -181,7 +181,9 @@ public class RRMenu {
 		for (int i = 0; i < nMaxEpisodes; i++) {
 			if(gInfo.episodes[i] != null && gInfo.episodes[i].nMaps != 0) 
 				mEpisodelist.add(gInfo.episodes[i].Title.toCharArray());
-		}
+			else mEpisodelist.add(null);
+		} 
+		
 		mSkilllist.clear();
 		for (int i = 0; i < nMaxSkills; i++) {
 			if(mGameInfo.skillnames[i] != null) 

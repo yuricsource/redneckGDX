@@ -139,19 +139,20 @@ public class GameInfo {
 		
 		if(sum == 0) {
 			isInited = false;
-		} else { //sort episodes
-			int e = 0, ep = nEpisodes;
-			while(e != ep)
-			{
-				if(episodes[e] != null && episodes[e].nMaps == 0) {
-					System.arraycopy(episodes, e+1, episodes, e, ep-(e+1));
-					nEpisodes--;
-					episodes[nEpisodes] = null;
-					continue;
-				}
-				e++;
-			}
-		}
+		} 
+//		else { //sort episodes
+//			int e = 0, ep = nEpisodes;
+//			while(e != ep)
+//			{
+//				if(episodes[e] != null && episodes[e].nMaps == 0) {
+//					System.arraycopy(episodes, e+1, episodes, e, ep-(e+1));
+//					nEpisodes--;
+//					episodes[nEpisodes] = null;
+//					continue;
+//				}
+//				e++;
+//			}
+//		}
 	}
 	
 	private void InitTree(List<FileEntry> list, FileEntry confile)

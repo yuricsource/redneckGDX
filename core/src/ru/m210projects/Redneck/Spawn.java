@@ -45,12 +45,7 @@ import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
-import static ru.m210projects.Redneck.Globals.dassert;
-import static ru.m210projects.Redneck.Globals.hittype;
-import static ru.m210projects.Redneck.Globals.msx;
-import static ru.m210projects.Redneck.Globals.msy;
-import static ru.m210projects.Redneck.Globals.ps;
-import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.*;
@@ -1952,7 +1947,48 @@ public class Spawn {
                 }
 
                 engine.changespritestat(i,(short)2);
-                break;       
+                break;     
+            case MOTORCYCLE:
+            	if ( ud.multimode < 2 && sp.pal == 1 )
+            		sp.xrepeat = sp.yrepeat = 0;
+                else
+                {
+                	sp.pal = 0;
+                	sp.xrepeat = 18;
+                	sp.yrepeat = 18;
+                	sp.clipdist = tilesizx[sp.picnum] * sp.xrepeat >> 7;
+                  	sp.owner = 100;
+                  	sp.cstat |= 257;
+                  	sp.lotag = 1;
+                  	engine.changespritestat(i, (short)1);
+                }
+            	break;
+            case SWAMPBUGGY:
+            	if ( ud.multimode < 2 && sp.pal == 1 )
+            		sp.xrepeat = sp.yrepeat = 0;
+                else
+                {
+                	sp.pal = 0;
+                	sp.xrepeat = 32;
+                	sp.yrepeat = 32;
+                	sp.clipdist = tilesizx[sp.picnum] * sp.xrepeat >> 7;
+                  	sp.owner = 20;
+                  	sp.cstat |= 257;
+                  	sp.lotag = 1;
+                  	engine.changespritestat(i, (short)1);
+                }
+            	break;
+            case AIRPLANE:
+            	sp.xrepeat = 64;
+            	sp.yrepeat = 64;
+            	sp.extra = sp.lotag;
+              	sp.cstat |= 257;
+              	engine.changespritestat(i, (short)116);
+            	break;
+            case 8192:
+            	sp.xrepeat = sp.yrepeat = 0;
+                ps[screenpeek].field_5FD = 1;
+                break;
 	    }
 	    return i;
 	}
@@ -2172,8 +2208,16 @@ public class Spawn {
 
 		if (badguy(s) && s.pal == 6)
 			pal = 6;
-		else
+		else {
+			if(currentGame.getCON().type == RRRA) {
+				if ( s.picnum == MINION && s.pal == 8 )
+					pal = 8;
+				else if ( s.picnum == MINION && s.pal == 19 )
+					pal = 19;
+				else pal  = 0;
+			} else
 			pal = 0;
+		}
 
 		for (int j = 0; j < n; j++) {
 			int a = engine.krand() & 2047;
@@ -2182,8 +2226,19 @@ public class Spawn {
 					- (engine.krand() & 8191), gtype, -32, sx >> 1, sy >> 1, a,
 					48 + (engine.krand() & 31), -512 - (engine.krand() & 2047),
 					ps[p].i, (short)5);
-			if (pal == 6)
-				sprite[i].pal = 6;
+
+			 switch ( pal )
+			 {
+			 case 6:
+				 sprite[i].pal = 6;
+				 break;
+			 case 8:
+				 sprite[i].pal = 8;
+				 break;
+			 case 19:
+				 sprite[i].pal = 19;
+				 break;
+			 }
 		}
 	}
 

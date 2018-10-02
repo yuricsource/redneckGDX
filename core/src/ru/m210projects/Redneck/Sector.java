@@ -453,6 +453,17 @@ public class Sector {
 	{
 	    int i, j, p, t;
 
+	    if ( ps[screenpeek].field_5DD == 1 )
+	    {
+	    	for ( i = 0; i < MAXTILES; ++i )
+	    	{
+	    		if ( wall[i].picnum == 7873 )
+	    			wall[i].xpanning += 6;
+	    		else if ( wall[i].picnum == 7870 )
+	    			wall[i].xpanning += 6;
+	    	}
+	    }
+	    
 	    for(p=0;p < numanimwalls ;p++)
 	    {
 	        i = animwall[p].wallnum;

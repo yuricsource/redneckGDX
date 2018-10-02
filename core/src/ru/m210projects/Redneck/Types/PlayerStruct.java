@@ -114,7 +114,9 @@ public class PlayerStruct {
 	public boolean OnBoat;
 	public boolean OnMotorcycle;
 	public short Motospeed;
-
+	public int field_5FD;
+	public int field_5B9;
+	public int field_5DD;
 
 	public void copy(PlayerStruct src)
 	{
