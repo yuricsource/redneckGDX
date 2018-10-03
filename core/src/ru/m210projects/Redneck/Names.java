@@ -25,6 +25,7 @@ package ru.m210projects.Redneck;
 
 public class Names {
 
+	public static final int GRID 			 =	  0;
 	public static final int SECTOREFFECTOR   =    1;
 	public static final int ACTIVATOR        =    2;
 	public static final int TOUCHPLATE       =    3;

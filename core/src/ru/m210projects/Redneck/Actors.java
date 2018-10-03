@@ -1031,9 +1031,9 @@ public class Actors {
 				if (sprite[i].extra == 66) {
 					j = spawn(i, sprite[i].hitag);
 					if(currentGame.getCON().type == RRRA) {
-						 sprite[j].pal = sprite[i].pal;
-						 if ( sprite[j].picnum == 8705 )
-						 {
+						sprite[j].pal = sprite[i].pal;
+						if ( sprite[j].picnum == 8705 )
+						{
 							 if ( sprite[j].pal == 30 )
 							 {
 								 sprite[j].xrepeat = 26;
@@ -1052,16 +1052,16 @@ public class Actors {
 								 sprite[j].yrepeat = 50;
 								 sprite[j].clipdist = 100;
 							 }
-							 if ( sprite[j].pal == 8 )
-				             	sprite[j].cstat |= 2;
-							 if ( sprite[j].pal == 6 )
-							 {
-								 sprite[i].extra = 53;
-								 sprite[j].pal = 0;
-							 }
-							 else 
-								 engine.deletesprite(i);
-				          }
+						}
+						if ( sprite[j].pal == 8 )
+							sprite[j].cstat |= 2;
+						if ( sprite[j].pal == 6 )
+						{
+							sprite[i].extra = 53;
+							sprite[j].pal = 0;
+						}
+						else 
+							engine.deletesprite(i);
 					} else {
 						engine.deletesprite(i);
 						i = nexti;
@@ -2352,6 +2352,328 @@ public class Actors {
 			movejails();
 		if (numminecart != 0)
 			movecarts();
+		
+		for (int i = headspritestat[115]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].extra != 0)
+			{
+				if ( sprite[i].picnum != 8162 )
+					sprite[i].picnum = 8162;
+				sprite[i].extra--;
+				if ( sprite[i].extra == 0 )
+				{
+					int chance = engine.krand() & 0x7F;
+			        if ( chance >= 96 )
+			        {
+			        	if ( chance >= 112 )
+			        	{
+			        		if ( chance >= 120 )
+			        		{
+			        			if ( chance >= 126 )
+			        			{
+			        				if ( (ps[screenpeek].SlotWin & 8) != 0 )
+			        					sprite[i].picnum = 8165;
+			        				else
+			        				{
+			        					sprite[i].picnum = 8166;
+			        					spawn(i, 5595);
+			        					ps[screenpeek].SlotWin |= 8;
+			        					spritesound(52, i);
+			        				}
+			        			}
+			        			else if ( (ps[screenpeek].SlotWin & 4) != 0)
+			        				sprite[i].picnum = 8165;
+			        			else
+			        			{
+			        				sprite[i].picnum = 8167;
+			        				spawn(i, 52);
+			        				ps[screenpeek].SlotWin |= 4;
+			        				spritesound(52, i);
+			        			}
+			        		}
+			        		else if ( (ps[screenpeek].SlotWin & 2) != 0 )
+			        			sprite[i].picnum = 8165;
+			        		else
+			        		{
+			        			sprite[i].picnum = 8168;
+			        			spawn(i, 26);
+			        			ps[screenpeek].SlotWin |= 2;
+			        			spritesound(52, i);
+			        		}
+			        	}
+			        	else if ( (ps[screenpeek].SlotWin & 1) != 0 )
+			        		sprite[i].picnum = 8165;
+			        	else
+			        	{
+			        		sprite[i].picnum = 8164;
+			        		spawn(i, 41);
+			        		ps[screenpeek].SlotWin |= 1;
+			        		spritesound(52, i);
+			        	}
+			        }
+			        else sprite[i].picnum = 8165;
+				}
+			}
+		}
+
+		for (short i = headspritestat[116]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].extra != 0 )
+			{
+				if ( sprite[i].extra == sprite[i].lotag )
+					sound(183);
+				sprite[i].extra--;
+				
+				k = movesprite(
+						i,
+						mulscale(sintable[(sprite[i].ang + 512) & kAngleMask], sprite[i].hitag, 14),
+						mulscale(sintable[sprite[i].ang & kAngleMask], sprite[i].hitag, 14),
+						2 * sprite[i].hitag,
+						CLIPMASK0);
+				if ( k > 0 )
+				{
+					spritesound(14, i);
+					engine.deletesprite(i);
+				}
+				if ( sprite[i].extra == 0 )
+				{
+					sound(215);
+					engine.deletesprite(i);
+					earthquaketime = 32;
+					ps[myconnectindex].pals[0] = 32;
+					ps[myconnectindex].pals[1] = 32;
+					ps[myconnectindex].pals[2] = 32;
+					ps[myconnectindex].pals_time = 48;
+				}
+			}
+		}
+
+		for (short i = headspritestat[117]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].hitag > 2 )
+				sprite[i].hitag = 0;
+			if ( (sprite[i].picnum == 8488 || sprite[i].picnum == 8490)
+					&& sprite[i].hitag != 2 )
+			{
+				sprite[i].hitag = 2;
+				sprite[i].extra = -100;
+			}
+			
+			if ( sprite[i].hitag != 0 )
+		    {
+				if ( sprite[i].hitag == 1 )
+				{
+					sprite[i].extra--;
+					if ( sprite[i].extra <= -30 )
+						sprite[i].hitag = 0;
+				}
+				else if ( sprite[i].hitag == 2 )
+				{
+					sprite[i].extra--;
+					if ( sprite[i].extra <= -104 )
+					{
+						spawn(i, sprite[i].lotag);
+						engine.deletesprite(i);
+					}
+				}
+		    }
+		    else if ( ++sprite[i].extra >= 30 )
+		    	sprite[i].hitag = 1;
+		    
+			movesprite(i, 0, 0, 2 * sprite[i].extra, CLIPMASK0);
+		}
+		
+		for (short i = headspritestat[118]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].hitag > 1 )
+				sprite[i].hitag = 0;
+			if ( sprite[i].hitag != 0)
+			{
+				if ( sprite[i].hitag == 1 )
+				{
+					sprite[i].extra--;
+					if ( sprite[i].extra <= -20 )
+						sprite[i].hitag = 0;
+				}
+			}
+			else if ( ++sprite[i].extra >= 20 )
+				sprite[i].hitag = 1;
+			
+			movesprite(i, 0, 0, sprite[i].extra, CLIPMASK0);
+		}
+		
+		if ( ps[screenpeek].field_609 > 0 && --ps[screenpeek].field_609 == 0 )
+		{
+			LeaveMap();
+		    ud.eog = 1;
+		    if ( ++ud.level_number > 6 )
+		      ud.level_number = 0;
+		    ud.m_level_number = ud.level_number;
+		}
+		
+		if ( ps[screenpeek].field_607 > 0 )
+		{
+			for(j = 0; j < MAXSPRITES; j++)
+			{
+				switch(sprite[j].picnum)
+				{
+					case 4147:
+					case 4162:
+					case 4163:
+					case 4249:
+					case 4260:
+					case 4352:
+					case 4429:
+					case 4649:
+					case 4650:
+					case 4861:
+					case 4916:
+					case 4945:
+					case 5120:
+					case 5121:
+					case 5260:
+					case 5274:
+					case 5278:
+					case 5282:
+					case 5286:
+					case 5376:
+					case 5377:
+					case 5635:
+					case 5890:
+					case 5891:
+					case 5995:
+					case 6225:
+					case 6401:
+					case 6658:
+					case 6659:
+					case 7030:
+					case 7035:
+					case 7192:
+					case 7199:
+					case 7206:
+				 	case 7280:
+				 	case 8705:
+				 		if ( ps[screenpeek].field_607 == 3 )
+						{
+					        sprite[j].xrepeat <<= 1;
+					        sprite[j].yrepeat *= 2;
+					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
+						}
+						else if ( ps[screenpeek].field_607 == 2 )
+						{
+							sprite[j].xrepeat >>= 1;
+					        sprite[j].yrepeat >>= 1;
+					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
+						}
+					 break;
+				}
+			}
+			ps[screenpeek].field_607 = 0;
+		}
+		
+		for (int i = headspritestat[119]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].hitag > 0 )
+		    {
+				if ( sprite[i].extra != 0 )
+					sprite[i].extra--;
+				else
+				{
+					sprite[i].hitag--;
+					sprite[i].extra = 150;
+					spawn(i, 7280);
+				}
+		    }		
+		}
+				
+		for (short i = headspritestat[121]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( ++sprite[i].extra >= 100 )
+			{
+				if ( sprite[i].extra == 200 )
+				{
+					engine.setsprite(i,sprite[i].x,sprite[i].y,sector[sprite[i].sectnum].floorz - 10);
+					sprite[i].extra = 1;
+					sprite[i].picnum = 4956;
+					spawn(i, 1398);
+				} 
+			} else {
+				if ( sprite[i].extra == 90 )
+				{
+					if ( --sprite[i].picnum < 4952 )
+						sprite[i].picnum = 4952;
+					sprite[i].extra = 1;
+				}
+			    
+				movesprite(i, 0, 0, -300, CLIPMASK0);
+			    if ( sector[sprite[i].sectnum].ceilingz + 1024 > sprite[i].z )
+			    {
+			    	sprite[i].picnum = 0;
+			    	sprite[i].extra = 100;
+			    }
+			}
+		}
+		
+		for (int i = headspritestat[122]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].extra != 0)
+			{
+				if ( sprite[i].picnum != 8589 )
+					sprite[i].picnum = 8589;
+				sprite[i].extra--;
+				if ( sprite[i].extra == 0 )
+				{
+					int change = engine.krand() & 0x7F;
+					if ( change >= 96 )
+					{
+						if ( change >= 112 )
+						{
+							if ( change >= 120 )
+							{
+								if ( change >= 126 )
+								{
+									if ( (ps[screenpeek].SlotWin & 8) != 0 )
+										sprite[i].picnum = 8593;
+									else
+									{
+										sprite[i].picnum = 8592;
+										spawn(i, 5595);
+										ps[screenpeek].SlotWin |= 8;
+										spritesound(342, i);
+									}
+								}
+								else if ( (ps[screenpeek].SlotWin & 4) != 0)
+									sprite[i].picnum = 8593;
+								else
+								{
+									sprite[i].picnum = 8591;
+									spawn(i, 52);
+									ps[screenpeek].SlotWin |= 4;
+									spritesound(342, i);
+								}
+							}
+							else if ( (ps[screenpeek].SlotWin & 2) != 0)
+								sprite[i].picnum = 8593;
+							else
+							{
+								sprite[i].picnum = 8595;
+								spawn(i, 26);
+								ps[screenpeek].SlotWin |= 2;
+								spritesound(342, i);
+							}
+						}
+						else if ( (ps[screenpeek].SlotWin & 1) != 0)
+							sprite[i].picnum = 8593;
+						else
+						{
+							sprite[i].picnum = 8594;
+							spawn(i, 41);
+							ps[screenpeek].SlotWin |= 1;
+							spritesound(342, i);
+						}
+					}
+					else sprite[i].picnum = 8593;
+				}
+		    }
+		}
+		
+		for (int i = headspritestat[123]; i >= 0; i = nextspritestat[i]) { //RA
+			if ( sprite[i].lotag == 5 && Sound[WITNESSSTAND].num == 0 )
+			      spritesound(WITNESSSTAND, i);
+		}
 
 		for (int i = headspritestat[107]; i >= 0; i = nextspritestat[i]) {
 			s = sprite[i];
@@ -2709,18 +3031,17 @@ public class Actors {
 
 					makeitfall(currentGame.getCON(),i);
 
-					if (sector[sect].lotag != 1
+					if (sector[sect].lotag != 1 && sector[sect].lotag != 160
 							&& s.z >= hittype[i].floorz - (FOURSLEIGHT)
 							&& s.yvel < 3) {
-						if (s.yvel > 0
-								|| (s.yvel == 0 && hittype[i].floorz == sector[sect].floorz))
+						if (s.yvel > 0 || (s.yvel == 0 && hittype[i].floorz == sector[sect].floorz && s.picnum != 3464))
 							spritesound(PIPEBOMB_BOUNCE, i);
 						s.zvel = (short) -((4 - s.yvel) << 8);
 						if (sector[s.sectnum].lotag == 2)
 							s.zvel >>= 2;
 						s.yvel++;
 					}
-					if (s.z < hittype[i].ceilingz && sector[sect].lotag != 2) {
+					if (s.picnum != 3464 && s.z < hittype[i].ceilingz && sector[sect].lotag != 2) {
 						s.z = hittype[i].ceilingz + (3 << 8);
 						s.zvel = 0;
 					}
@@ -2739,8 +3060,7 @@ public class Actors {
 					} else
 						t[5] = 0;
 
-					if (t[3] == 0 && (s.picnum == MORTER)
-							&& (j != 0 || x < 844)) {
+					if (t[3] == 0 && (s.picnum == MORTER || s.picnum == 3464) && (j != 0 || x < 844)) {
 						t[3] = 1;
 						t[4] = 0;
 						l = 0;
@@ -2789,6 +3109,7 @@ public class Actors {
 							m = currentGame.getCON().tntblastradius;
 							break;
 						case MORTER:
+						case 3464:
 							m = currentGame.getCON().morterblastradius;
 							break;
 						case POWDERKEGSPRITE:
@@ -2822,12 +3143,18 @@ public class Actors {
 							continue;
 						}
 					}
+					if ( s.picnum == 3464 )
+					{
+				        spawn(i, BURNING);
+				        engine.deletesprite(i);
+				        continue;
+					}
 				} else if (s.picnum == DYNAMITE && x < 788 && t[0] > 7
 						&& s.xvel == 0)
 					if (engine.cansee(s.x, s.y, s.z - (8 << 8), s.sectnum,
 							ps[p].posx, ps[p].posy, ps[p].posz,
 							ps[p].cursectnum))
-						if (ps[p].ammo_amount[3] < currentGame.getCON().max_ammo_amount[3]) {
+						if (ps[p].ammo_amount[4] < currentGame.getCON().max_ammo_amount[4]) { //GDX 3.10.2018
 							if (ud.coop >= 1 && s.owner == i) {
 								for (j = 0; j < ps[p].weapreccnt; j++)
 									if (ps[p].weaprecs[j] == s.picnum)
@@ -2929,7 +3256,7 @@ public class Actors {
 				continue;
 
 			case POWDERKEGSPRITE:
-				if (s.xvel != 0) {
+				if (sector[s.sectnum].lotag != 1 && sector[s.sectnum].lotag != 160 && s.xvel != 0) {
 					j = movesprite(i,
 							(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
 							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel,
@@ -3082,7 +3409,7 @@ public class Actors {
 					spritesound(356, i);
 				if (sector[s.sectnum].lotag == 900)
 					stopsound(356);
-			case 3440: // XXX
+			case 3440:
 			case 3441:
 			case HENSTAND:
 			case HENSTAND + 1:
@@ -3180,7 +3507,7 @@ public class Actors {
 					continue;
 				}
 				if (sector[s.sectnum].lotag == 903) {
-					if (sector[s.sectnum].floorz <= s.z) {
+					if (sector[s.sectnum].floorz - 1024 <= s.z) {
 						engine.deletesprite(i);
 						continue;
 					}
@@ -3232,13 +3559,23 @@ public class Actors {
 					continue;
 				}
 				break;
-					
+			case MOTORCYCLE: //RA
+				makeitfall(currentGame.getCON(),i);
+				getglobalz(i);
+				if ( sector[s.sectnum].lotag == 1 )
+					engine.setsprite(i, s.x, s.y, hittype[i].floorz + 4096);
+				break;
+			case SWAMPBUGGY: //RA
+				makeitfall(currentGame.getCON(),i);
+				getglobalz(i);
+				break;
 			case UFO1:
 			case UFO2:
 			case UFO3:
 			case UFO4:
 			case UFO5:
-
+			case MINIONUFO: //RA
+				
 				getglobalz(i);
 
 				if ((sector[s.sectnum].ceilingstat & 1) != 0)
@@ -3279,23 +3616,30 @@ public class Actors {
 						for (l = 0; l < 16; l++)
 							RANDOMSCRAP(s, i);
 						spritesound(LASERTRIP_EXPLODE, i);
-						switch (s.picnum) {
-						case UFO1:
-							spawn(i, HEN);
-							break;
-						case UFO2:
-							spawn(i, COOT);
-							break;
-						case UFO3:
-							spawn(i, COW);
-							break;
-						case UFO4:
-							spawn(i, PIG);
-							break;
-						case UFO5:
-							spawn(i, BILLYRAY);
-							break;
-						}
+						if ( ps[myconnectindex].field_5FD != 0 )
+							spawn(i, MINION);
+		                else {
+							switch (s.picnum) {
+							case UFO1:
+								spawn(i, HEN);
+								break;
+							case UFO2:
+								spawn(i, COOT);
+								break;
+							case UFO3:
+								spawn(i, COW);
+								break;
+							case UFO4:
+								spawn(i, PIG);
+								break;
+							case UFO5:
+								spawn(i, BILLYRAY);
+								break;
+							case MINIONUFO: //RA
+								spawn(i, HEN);
+								break;
+							}
+		                }
 
 						ps[myconnectindex].actors_killed++;
 						engine.deletesprite(i);
@@ -3719,6 +4063,27 @@ public class Actors {
 			case COOTJIBB:
 			case COOTJIBC:
 
+			case 2460: //RA green jibs1
+            case 2465: //RA green jibs2
+			case 5872: //RA motowheel
+        	case 5877: //RA mototank
+        	case 5882: //RA boarddebris
+        	case 6112: //RA bikenbody
+        	case 6117: //RA bikenhead
+        	case 6121: //RA bikerhead2
+        	case 6127: //RA bikerhand
+        	case 7000: //RA babahead
+        	case 7005: //RA bababody
+        	case 7010: //RA babafoot
+        	case 7015: //RA babahand
+        	case 7020: //RA debris
+        	case 7025: //RA debbris
+        	case 7387: //RA deepjibs
+        	case 7392: //RA deepjibs2
+        	case 7397: //RA deepjibs3
+        	case 8890: //RA deep2jibs
+        	case 8895: //RA deep2jibs2
+
 				if (s.xvel > 0)
 					s.xvel--;
 				else
@@ -3784,6 +4149,12 @@ public class Actors {
 					}
 					engine.deletesprite(i);
 				} else {
+					if ( s.picnum == 2465 || s.picnum == 2460 ) //RA
+					{
+						engine.deletesprite(i);
+						continue;
+		            }
+					
 					if (t[2] == 0) {
 						if (s.sectnum == -1) {
 							engine.deletesprite(i);
@@ -3838,7 +4209,7 @@ public class Actors {
 					sprite[ps[p].i].extra -= 4;
 				}
 
-				break;
+				//break GDX 3.10.2018
 			case FIRELASER:
 			case UWHIP:
 			case OWHIP:
@@ -4292,6 +4663,8 @@ public class Actors {
 							spawntile = UFO4;
 							break;
 						}
+						if(currentGame.getCON().type == RRRA)
+							spawntile = MINIONUFO;
 						int nSpawn = spawn(i, spawntile);
 						sprite[nSpawn].z = sector[sprite[nSpawn].sectnum].ceilingz;
 					}
@@ -4979,8 +5352,10 @@ public class Actors {
 							case 21:
 							case 22:
 							case 26:
-								if (getanimationgoal(sector[s.sectnum], CEILZ) >= 0)
-									break;
+								if(currentGame.getCON().type != RRRA) { //GDX 3.10.2018
+									if (getanimationgoal(sector[s.sectnum], CEILZ) >= 0)
+										break;
+								}
 							default:
 								activatebysector(s.sectnum, i);
 								t[0] = 0;
@@ -5048,6 +5423,8 @@ public class Actors {
 				}
 				break;
 			case 12:
+			case 47:
+			case 48:
 				if (t[0] == 3 || t[3] == 1) // Lights going off
 				{
 					sc.floorpal = 0;
@@ -5088,11 +5465,14 @@ public class Actors {
 				if (t[0] == 1) // Lights flickering on
 				{
 					if (sc.floorshade > s.shade) {
-						sc.floorpal = s.pal;
-						sc.ceilingpal = s.pal;
-
-						sc.floorshade -= 2;
-						sc.ceilingshade -= 2;
+						if(st != 48) {
+							sc.floorpal = s.pal;
+							sc.floorshade -= 2;
+						}
+						if(st != 47) {
+							sc.ceilingpal = s.pal;
+							sc.ceilingshade -= 2;
+						}
 
 						startwall = sc.wallptr;
 						endwall = startwall + sc.wallnum;
@@ -5119,7 +5499,7 @@ public class Actors {
 					}
 				}
 				break;
-
+			
 			case 13:
 				if (t[2] != 0) {
 					j = (sprite[i].yvel << 5) | 1;
@@ -5753,12 +6133,18 @@ public class Actors {
 				setinterpolation(sc, CEILZ);
 				if (s.shade != 0) {
 					sc.ceilingz += sprite[i].yvel << 4;
-					if (sc.ceilingz > sc.floorz)
+					if (sc.ceilingz > sc.floorz) {
 						sc.ceilingz = sc.floorz;
+						if(ps[screenpeek].field_601 != 0)
+							spritesound(371, i);
+					}
 				} else {
 					sc.ceilingz -= sprite[i].yvel << 4;
-					if (sc.ceilingz < t[3])
+					if (sc.ceilingz < t[3]) { //XXX data[4] RA
 						sc.ceilingz = t[3];
+						if(ps[screenpeek].field_601 != 0)
+							spritesound(167, i);
+					}
 				}
 
 				break;

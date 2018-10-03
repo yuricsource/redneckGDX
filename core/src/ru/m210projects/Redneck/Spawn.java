@@ -349,10 +349,10 @@ public class Spawn {
             	engine.changespritestat(i,(short) 5);
             	break;
 
-            case 1441: 
-            case 1442: 
-            case 1494: 
-            case 1554: 
+            case EXPLOSION2: 
+            case EXPLOSION3: 
+            case BURNING: 
+            case SMALLSMOKE: 
                 if(j >= 0)
                 {
                     sp.ang = sprite[j].ang;
@@ -361,23 +361,23 @@ public class Spawn {
                 }
                 switch ( sp.picnum )
                 {
-                  case 1441:
+                  case EXPLOSION2:
                 	  sp.xrepeat = 48;
                       sp.yrepeat = 48;
                       sp.shade = -127;
                       sp.cstat |= 128;
                       break;
-                  case 1442:
+                  case EXPLOSION3:
                 	  sp.xrepeat = 128;
                       sp.yrepeat = 128;
                       sp.shade = -127;
                       sp.cstat |= 128;
                       break;
-                  case 1554:
+                  case SMALLSMOKE:
                 	  sp.xrepeat = 12;
                       sp.yrepeat = 12;
                       break;
-                  case 1494:
+                  case BURNING:
                 	  sp.xrepeat = 4;
                       sp.yrepeat = 4;
                       break;
@@ -472,7 +472,7 @@ public class Spawn {
                 sp.extra = 8;
                 engine.changespritestat(i,(short)6);
                 break;
-            case 210: 
+            case FANSPRITEWORK: 
             case 234: 
             case 1066: 
             case 1067: 
@@ -570,6 +570,8 @@ public class Spawn {
             case JIBS4:
             case JIBS5:
             case JIBS6:
+            case 2460: //RA green jibs1
+            case 2465: //RA green jibs2
             case 4041: 
             case 4046: 
             case 4055: 
@@ -584,11 +586,43 @@ public class Spawn {
             case 5602: 
             case 5607: 
             case 5616: 
-            	if(sp.picnum == JIBS6)
-            	{
-            		sp.xrepeat >>= 1;
-                    sp.yrepeat >>= 1;
-            	}
+        	case 5872: //RA motowheel
+        	case 5877: //RA mototank
+        	case 5882: //RA boarddebris
+        	case 6112: //RA bikenbody
+        	case 6117: //RA bikenhead
+        	case 6121: //RA bikerhead2
+        	case 6127: //RA bikerhand
+        	case 7000: //RA babahead
+        	case 7005: //RA bababody
+        	case 7010: //RA babafoot
+        	case 7015: //RA babahand
+        	case 7020: //RA debris
+        	case 7025: //RA debbris
+        	case 7387: //RA deepjibs
+        	case 7392: //RA deepjibs2
+        	case 7397: //RA deepjibs3
+        	case 8890: //RA deep2jibs
+        	case 8895: //RA deep2jibs2
+        		switch(sp.picnum)
+        		{
+        			case JIBS6:
+        				sp.xrepeat >>= 1;
+                        sp.yrepeat >>= 1;
+        				break;
+	    			case 7387:
+	                    sp.xrepeat = 18;
+	                    sp.yrepeat = 18;
+	                    break;
+	    			case 7392:
+	                    sp.xrepeat = 36;
+	                    sp.yrepeat = 36;
+	                    break;
+	    			case 7397:
+	                    sp.xrepeat = 54;
+	                    sp.yrepeat = 54;
+	                    break;
+        		}
                 engine.changespritestat(i,(short)5);
                 break;    
             case 1196:
@@ -753,7 +787,7 @@ public class Spawn {
                 sp.lotag = 0;
                 engine.changespritestat(i,(short) 106);
             	break;
-            case 280: 
+            case BOWLLINE: 
             case 281: 
             case 282: 
             case 283: 
@@ -815,7 +849,8 @@ public class Spawn {
                 engine.changespritestat(i,(short)6);
                 break;
             
-            case 21: 
+            case 14: //RA
+            case FIRSTGUNSPRITE: 
             case 22: 
             case 23: 
             case 24: 
@@ -843,9 +878,11 @@ public class Spawn {
             case 57: 
             case 59: 
             case 61: 
+            case 78: 
             case 1350: 
             case 3437: 
             case 5595:
+            case 8460: //RA BOX
                 if(j >= 0)
                 {
                     sp.lotag = 0;
@@ -873,7 +910,8 @@ public class Spawn {
                 }
 
                 sp.pal = 0;
-
+                if(sp.sectnum >= 0 && sp.sectnum < MAXSECTORS)
+                	sp.shade = sector[sp.sectnum].floorshade;
             case DOORKEY:
 
                 if(sp.picnum == ECLAIRHEALTH)
@@ -892,7 +930,8 @@ public class Spawn {
                     else sp.xrepeat = sp.yrepeat = 32;
                 }
 
-                sp.shade = -17;
+                if(sp.picnum == DOORKEY)
+                	sp.shade = -17;
 
                 if(j >= 0) engine.changespritestat(i,(short)1);
                 else
@@ -903,11 +942,16 @@ public class Spawn {
                 
                 switch(sp.picnum)
                 {
+                	case 78:
+                		sp.xrepeat = 23;
+                		sp.yrepeat = 23;
+                		break;
                 	case FIRSTGUNSPRITE:
                 		sp.xrepeat = 16;
                 		sp.yrepeat = 16;
                 		break;
                 	case CROSSBOWSPRITE:
+                	case 8460:
                 		sp.xrepeat = 16;
                 		sp.yrepeat = 14;
                 		break;
@@ -1526,11 +1570,13 @@ public class Spawn {
             case 4249: 
             case 4504: 
             case 4650: 
+            case 4770: //RA elvisbubba
             case 4862: 
             case 4946: 
             case 5015: 
             case 5121: 
             case 5377: 
+            case 6659: //RA baba
             	hittype[i].actorstayput = sp.sectnum;
             case 256: 
             case 264: 
@@ -1545,6 +1591,7 @@ public class Spawn {
             case 4916: 
             case 4945: 
             case 5120: 
+            case 5260: //RA ufo
             case 5270: 
             case 5274: 
             case 5278: 
@@ -1554,11 +1601,28 @@ public class Spawn {
             case 5376: 
             case 5501: 
             case 5635: 
+            case 5890: //RA biker
+            case 5891: //RA biker
+            case 5995: //RA biker
+        	case 6225: //RA biker + baba
+        	case 6401: //RA biker + baba + moto
+        	case 6658: //RA baba
+            case 7030: //RA banjocoot
+            case 7035: //RA banjobilly
+            case 7192: //RA board
+            case 7199: //RA henboard
+        	case 7206: //RA bababoard
+        	case 7280: //RA deep
+        	case 8035: //RA rock
+        	case 8036: //RA rock2
+            case 8663: //RA green rock
+            case 8705: //RA deep2
             	
             	switch(sp.picnum)
             	{
             		case 5376: 
             		case 5377: 
+            		case 7030:
                         sp.xrepeat = 24;
                         sp.yrepeat = 18;
                         sp.clipdist = 4 * (tilesizx[sp.picnum] * sp.xrepeat >> 7);
@@ -1640,10 +1704,87 @@ public class Spawn {
         			case 4163: 
         			case 4249: 
         			case 4504: 
+        			case 7035:
         				sp.xrepeat = 25;
                         sp.yrepeat = 21;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
         				break;
+                    case 6658:
+                    	sp.xrepeat = 20;
+                        sp.yrepeat = 20;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                    	break;
+                    case 7206:
+                    	sp.xrepeat = 32;
+                        sp.yrepeat = 32;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                    	break;
+                    case 7280:
+                    	sp.xrepeat = 18;
+                        sp.yrepeat = 18;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                    	break;
+                    case 8035:
+                    case 8036:
+                    	sp.xrepeat = 64;
+                        sp.yrepeat = 64;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                    	break;
+                    case 8663:
+                    	sp.xrepeat = 64;
+                        sp.yrepeat = 64;
+                        sp.cstat = 514;
+                        sp.x += (engine.krand() & 0x7FF) - 1024;
+                        sp.y += (engine.krand() & 0x7FF) - 1024;
+                        sp.z += (engine.krand() & 0x7FF) - 1024;
+                    	break;
+                    case 8705:
+                    	if ( sp.pal == 30 )
+                    	{
+                    		sp.xrepeat = 26;
+                    		sp.yrepeat = 26;
+                    		sp.clipdist = 75;
+                        }
+                        else if ( sp.pal == 31 )
+                        {
+                        	sp.xrepeat = 36;
+                        	sp.yrepeat = 36;
+                        	sp.clipdist = 100;
+                        }
+                        else
+                        {
+                        	sp.xrepeat = 50;
+                        	sp.yrepeat = 50;
+                        	sp.clipdist = 100;
+                        }
+                    	break;
+                    case 7192:
+                    	sp.xrepeat = 16;
+                        sp.yrepeat = 16;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                    	break;
+                    case 7199:
+                    	sp.xrepeat = 48;
+                        sp.yrepeat = 48;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                    	break;
+                    case 5890: 
+    	            case 5891: 
+    	            case 6401:
+    	            	sp.xrepeat = 28;
+                        sp.yrepeat = 22;
+                        sp.clipdist = 72;
+                    	break;
+    	            case 5995: 
+    	            	sp.xrepeat = 28;
+                        sp.yrepeat = 22;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+    	            	break;
+    	            case 6225:
+    	            	sp.xrepeat = 26;
+                        sp.yrepeat = 26;
+                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+    	            	break;
             	}
                 
 
@@ -1947,7 +2088,9 @@ public class Spawn {
                 }
 
                 engine.changespritestat(i,(short)2);
-                break;     
+                break;  
+                
+            //RA
             case MOTORCYCLE:
             	if ( ud.multimode < 2 && sp.pal == 1 )
             		sp.xrepeat = sp.yrepeat = 0;
@@ -1989,6 +2132,91 @@ public class Spawn {
             	sp.xrepeat = sp.yrepeat = 0;
                 ps[screenpeek].field_5FD = 1;
                 break;
+            case 1083:
+        	case 1134:
+        	case 1135:
+        	case 1136:
+        	case 1137:
+        	case 1138:
+        		sp.extra = 1;
+        		if ( currentGame.getCON().camerashitable != 0 )
+        			sp.cstat = 257;
+        		else sp.cstat = 0;
+        		if ( ud.multimode < 2 && sp.pal != 0 )
+        		{
+        			sp.xrepeat = sp.yrepeat = 0;
+        			engine.changespritestat(i, (short)5);
+        		}
+        		else
+        		{
+        			sp.pal = 0;
+        			if ( sp.picnum != 1083 )
+        			{
+        				sp.picnum = 1134;
+        				engine.changespritestat(i, (short)1);
+        			}
+        		}
+        		break;
+        	case 6144:
+        		sp.xrepeat = sp.yrepeat = 0;
+                ps[screenpeek].field_5DD = 1;
+        		break;
+        	case 4956:
+        		sp.xrepeat = 16;
+                sp.yrepeat = 16;
+                sp.clipdist = 0;
+                sp.extra = 0;
+                sp.cstat = 0;
+                engine.changespritestat(i, (short)121);
+        		break;
+        	case 7424:
+        		sp.extra = 0;
+                sp.xrepeat = 0;
+                sp.yrepeat = 0;
+                engine.changespritestat(i, (short)11);
+                break;
+        	case 7936:
+        		sp.xrepeat = sp.yrepeat = 0;
+//        		sub_86730(2); //XXX
+                ps[screenpeek].fogtype = 2;
+        		break;
+        	case 8099:
+        		sp.lotag = 5;
+        		sp.clipdist = 0;
+        		engine.changespritestat(i, (short)123);
+        		break;
+        	case 8165:
+        		sp.lotag = 1;
+                sp.clipdist = 0;
+                sp.owner = i;
+                sp.extra = 0;
+        		engine.changespritestat(i, (short)115);
+        		break;
+        	case 8193:
+        		sp.xrepeat = sp.yrepeat = 0;
+        		ps[screenpeek].field_601 = 1;
+        		break;
+        	case 8448:
+        	case 8704:
+        		sp.lotag = 1;
+                sp.clipdist = 0;
+        		break;
+        	case 8487:
+        	case 8489:
+        		sp.xrepeat = 32;
+        		sp.yrepeat = 32;
+        		sp.extra = 0;
+        		sp.cstat |= 257;
+        		sp.hitag = 0;
+        		engine.changespritestat(i, (short)117);
+        		break;
+        	case 8593:
+        		sp.lotag = 1;
+                sp.clipdist = 0;
+                sp.owner = i;
+                sp.extra = 0;
+        		engine.changespritestat(i, (short)122);
+        		break;
 	    }
 	    return i;
 	}

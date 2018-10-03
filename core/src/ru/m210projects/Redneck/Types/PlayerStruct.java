@@ -110,13 +110,17 @@ public class PlayerStruct {
 	public short field_count;
 	
 	//RA
-	public short field_609;
 	public boolean OnBoat;
 	public boolean OnMotorcycle;
 	public short Motospeed;
+	public int SlotWin;
 	public int field_5FD;
 	public int field_5B9;
 	public int field_5DD;
+	public int field_601;
+	public short field_607;
+	public short field_609;
+	public int fogtype;
 
 	public void copy(PlayerStruct src)
 	{
