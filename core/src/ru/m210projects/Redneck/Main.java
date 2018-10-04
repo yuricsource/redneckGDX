@@ -53,6 +53,16 @@ public class Main extends ApplicationAdapter {
 	 * Addons support
 	 * 
 	 * TODO:
+	 * animatesprites
+	 * checkhitswitch
+	 * doincrements
+	 * processinput
+	 * operatesectors
+	 * wallswitchcheck
+	 * isadoorwall
+	 * animatewalls
+	 * 
+	 * не работают комары в R66
 	 * spawn RA fog method
 	 * Joystick sensitive bug
 	 * cd audio from cue

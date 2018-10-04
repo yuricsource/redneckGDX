@@ -639,6 +639,48 @@ public class Premap {
 	    p.field_count = 0;
 	    LeonardCrack = 0;
 	    p.detonate_count = 0;
+	    
+	    //RA
+	    p.chiken_phase = 0;
+	    if ( p.OnMotorcycle )
+	    {
+	    	p.OnMotorcycle = false;
+	    	p.gotweapon[MOTO_WEAPON] = false;
+	    	p.curr_weapon = RATE_WEAPON;
+	    	checkavailweapon(p);
+	    }
+	    
+	    p.field_60B = 0;
+	    p.field_5B5 = 0;
+	    p.MotoOnGround = true;
+	    p.field_5B9 = 0;
+	    p.Motospeed = 0;
+	    p.TiltStatus = 0;
+	    p.field_5C1 = 0;
+	    p.VBumpTarget = 0;
+	    p.VBumpNow = 0;
+	    p.field_5C7 = 0;
+	    p.TurbCount = 0;
+	    p.field_5CD = 0;
+	    p.field_5CF = 0;
+	    if ( p.OnBoat )
+	    {
+	    	p.OnBoat = false;
+	    	p.gotweapon[BOAT_WEAPON] = false;
+	    	 p.curr_weapon = RATE_WEAPON;
+	    	 checkavailweapon(p);
+	    }
+	    p.NotOnWater = 0;
+	    p.field_5D9 = 0;
+	    p.SeaSick = 0;
+	    p.field_5E1 = 0;
+	    p.field_5E9 = 0;
+	    p.DrugMode = 0;
+	    p.field_5F1 = 0;
+	    p.field_5F3 = 0;
+	    p.field_5F5 = 0;
+	    p.field_5F7 = 0;
+	    
 	    if ( numplayers >= 2 )
 	    {
 	    	UFO_SpawnCount = 32;
@@ -672,11 +714,20 @@ public class Premap {
 	    p.gotweapon[KNEE_WEAPON] = true;
 	    p.ammo_amount[PISTOL_WEAPON] = 48;
 	    p.gotweapon[HANDREMOTE_WEAPON] = true;
+	    if(currentGame.getCON().type == RRRA) {
+		    p.gotweapon[15] = true;
+		    p.ammo_amount[15] = 1;
+	    }
 	    p.last_weapon = -1;
 
 	    p.show_empty_weapon= 0;
 	    p.last_pissed_time = 0;
 	    p.holster_weapon = 0;
+	    
+	    p.OnMotorcycle = false;
+	    p.OnBoat = false;
+	    p.field_5B9 = 0;
+	    p.field_60B = 0;
 	}
 
 	public static void resetinventory(int snum)
@@ -780,6 +831,11 @@ public class Premap {
 	    tempwallptr             = 0;
 	    camsprite               =-1;
 	    earthquaketime          = 0;
+	    WindTime = 0;
+	    WindDir = 0;
+	    word_119BD8 = 0;
+	    word_119BE2 = 0;
+	    BellTime = 0;
 
 	    InterpolationCount = 0;
 	    startofdynamicinterpolations = 0;
@@ -820,7 +876,7 @@ public class Premap {
 //	    	p.gotkey[3] = 1;
 //	    	p.gotkey[4] = 1;
 //	    }
-
+	    
 	    p.alcohol_meter = 1647;
 	    p.gut_meter = 1647;
 	    p.alcohol_amount = 0;
@@ -894,6 +950,28 @@ public class Premap {
 	    Arrays.fill(ambienttype, (short)-1);
 	    Arrays.fill(ambientid, (short)-1);
 	    Arrays.fill(ambienthitag, (short)-1);
+	    
+	    //RA
+	    ps[screenpeek].fogtype = 0;
+	    ps[screenpeek].field_5DD = 0;
+	    ps[screenpeek].field_5FD = 0;
+	    ps[screenpeek].field_601 = 0;
+	    ps[screenpeek].SlotWin = 0;
+	    ps[screenpeek].field_607 = 0;
+	    ps[screenpeek].field_609 = 0;
+	    BellSound = 0;
+	    word_119BDA = 15;
+	    word_119BE2 = 0;
+	    if ( ud.level_number != 3 || ud.volume_number != 0 )
+	    {
+	    	if ( ud.level_number == 2 && ud.volume_number == 1 )
+	    		word_119BDA = 10;
+	    	else if ( ud.level_number == 6 && ud.volume_number == 1 )
+	    		word_119BDA = 15;
+	    	else if ( ud.level_number == 4 && ud.volume_number == 1 )
+	    		ps[myconnectindex].moonshine_amount = 0;
+	    }
+	    else word_119BDA = 5;
 
 	    resetprestat(0,g);
 	    
@@ -907,6 +985,28 @@ public class Premap {
 	    plantProcess = false;
 	    
 	    BowlReset();
+	    
+	    word_119BD8 = 0;
+	    word_119BE2 = 0;
+	    word_119BDA = 15;
+	    BellTime = 0;
+	    
+	    for ( j = 0; j < MAXSPRITES; ++j )
+	    {
+	    	if ( sprite[j].pal == 100 )
+	    	{
+	    		if ( numplayers <= 1 )
+	    			sprite[j].pal = 0;
+	    		else engine.deletesprite(j);
+	    	}
+	    	else if ( sprite[j].pal == 101 )
+	    	{
+	    		sprite[j].extra = 0;
+	    		sprite[j].hitag = 1;
+	    		sprite[j].pal = 0;
+	    		engine.changespritestat(j, (short)118);
+	    	}
+	    }
 	    
 	    int distance = 0, speed = 0, sound = 0;
 	    for(i=0;i<numsectors;i++)
@@ -1343,6 +1443,12 @@ public class Premap {
 	        p.gotweapon[KNEE_WEAPON] = true;
 	        p.ammo_amount[PISTOL_WEAPON] = 48;
 	        p.gotweapon[HANDREMOTE_WEAPON] = true;
+	        
+	        if(currentGame.getCON().type == RRRA) {
+		        p.gotweapon[15] = true;
+		        p.ammo_amount[15] = 1;
+	        }
+
 	        p.last_weapon = -1;
 	    }
 

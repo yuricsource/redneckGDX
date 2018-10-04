@@ -40,7 +40,7 @@ public class Names {
 	public static final int LNRDTAG           =   15;
 	public static final int SIGN1             =   16;
 	public static final int SIGN2             =   17;
-	public static final int TORCH             =  18;
+	public static final int TORCH             =   18;
 	public static final int ARROW             =   20;
 	public static final int FIRSTGUNSPRITE    =   21;
 	public static final int RIFLESPRITE       =   22;

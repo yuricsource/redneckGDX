@@ -98,6 +98,23 @@ public class Actors {
 			case COOTSTAYPUT:
 			case 5501:
 			case VIXEN:
+
+			case 5890: //RA
+			case 5891:
+			case 5995:
+			case 6225:
+			case 6401:
+			case 6658:
+			case 6659:
+			case 7030:
+			case 7035:
+			case 7192:
+			case 7199:
+			case 7206:
+			case 7280:
+			case 8035:
+			case 8036:
+			case 8705:
 				return true;
 		}
 		return false;
@@ -149,6 +166,26 @@ public class Actors {
 		    case COOTSTAYPUT:
 		    case 5501:
 		    case VIXEN:
+
+		    case 1147: //RA
+		    case 1344:
+		    case 4249:
+		    case 4770:
+		    case 5260:
+		    case 5890:
+		    case 5891:
+		    case 5995:
+		    case 6225:
+		    case 6401:
+		    case 6658:
+		    case 6659:
+		    case 7030:
+		    case 7035:
+		    case 7192:
+		    case 7199:
+		    case 7206:
+		    case 7280:
+		    case 8705:
 	        	return true;
 	    }
 	    
@@ -192,6 +229,24 @@ public class Actors {
 		    case COOTSTAYPUT:
 		    case 5501:
 		    case VIXEN:
+		    	
+		    	//RA
+		    case 4770:
+		    case 5260:
+		    case 5890:
+		    case 5891:
+		    case 5995:
+		    case 6225:
+		    case 6401:
+		    case 6658:
+		    case 6659:
+		    case 7030:
+		    case 7035:
+		    case 7192:
+		    case 7199:
+		    case 7206:
+		    case 7280:
+		    case 8705:
                 return true;
 	    }
 

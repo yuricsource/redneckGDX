@@ -1237,6 +1237,19 @@ public class Redneck {
 	                if(j == 10 || j == 11)
 	                {
 	                    k = p.curr_weapon;
+	                    switch ( k )
+	                    {
+	                    case CHICKENBOW_WEAPON:
+	                    	k = CROSSBOW_WEAPON;
+	                    	break;
+	                    case BUZSAW_WEAPON:
+	                        k = THROWSAW_WEAPON;
+	                        break;
+	                    case RATE_WEAPON:
+	                        k = KNEE_WEAPON;
+	                        break;
+	                    }
+	                    
 	                    j = ( j == 10 ? -1 : 1 );
 	                    i = 0;
 
@@ -1278,6 +1291,23 @@ public class Redneck {
 	                        k = nextspritestat[k];
 	                    }
 	                }
+	                
+	                if(currentGame.getCON().type == RRRA && j == CROSSBOW_WEAPON)
+	                {
+	                    if( p.curr_weapon != CROSSBOW_WEAPON && p.ammo_amount[CROSSBOW_WEAPON] != 0) 
+	                    {
+                            if( (p.subweapon&4) != 0 || p.ammo_amount[CHICKENBOW_WEAPON] == 0 )
+                            {
+                                j = CROSSBOW_WEAPON;
+                                p.subweapon = 0;
+                            }
+	                    }
+	                    else 
+	                    {
+	                        p.subweapon = 4;
+	                        j = CHICKENBOW_WEAPON;
+	                    }
+	                }
 
 	                if(j == THROWSAW_WEAPON)
 	                {
@@ -1311,6 +1341,24 @@ public class Redneck {
 	                    {
 	                    	j = BOWLING_WEAPON;
 	                    	p.subweapon = (1<<BOWLING_WEAPON);
+	                    }
+	                }
+	                
+	                if(currentGame.getCON().type == RRRA && j == KNEE_WEAPON)
+	                {
+	                	
+	                	if ( p.curr_weapon != KNEE_WEAPON )
+	                	{
+	                		if ( (p.subweapon & 2) != 0 )
+	                		{
+	                			j = KNEE_WEAPON;
+	                        	p.subweapon = 0;
+	                		}
+	                    }
+	                    else
+	                    {
+	                    	j = RATE_WEAPON;
+	                    	p.subweapon = 2;
 	                    }
 	                }
 	                
@@ -1399,12 +1447,23 @@ public class Redneck {
 	                        break;
 	                    case POWDERKEG_WEAPON:
 	                    case BOWLING_WEAPON:
+	                    case CHICKENBOW_WEAPON:
 	                    	if( p.ammo_amount[j] == 0 && p.show_empty_weapon == 0)
 	                    	{
 	                    		p.show_empty_weapon = 32;
 	                    		p.last_full_weapon = p.curr_weapon;
 	                    	}
 	                    	addweapon( p, j );
+	                        break;
+	                    case MOTO_WEAPON:
+	                    case BOAT_WEAPON:
+	                    	if ( p.ammo_amount[j] == 0 && p.show_empty_weapon == 0 )
+	                    		p.show_empty_weapon = 32;
+	                    		addweapon(p, j);
+	                    	break;
+	                    case RATE_WEAPON:
+	                        spritesound(496, p.i);
+	                        addweapon(p, j);
 	                        break;
 	                }
 	            }

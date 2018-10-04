@@ -113,14 +113,37 @@ public class PlayerStruct {
 	public boolean OnBoat;
 	public boolean OnMotorcycle;
 	public short Motospeed;
+	public boolean MotoOnGround;
 	public int SlotWin;
+	public int field_5B5;
 	public int field_5FD;
 	public int field_5B9;
 	public int field_5DD;
 	public int field_601;
+	public int field_603;
+	public int chiken_phase;
 	public short field_607;
 	public short field_609;
+	public int field_60B;
 	public int fogtype;
+	public int TiltStatus;
+    public int field_5C1;
+    public int VBumpTarget;
+    public int VBumpNow;
+    public int field_5C7;
+    public int TurbCount;
+    public int field_5CD;
+    public int field_5CF;
+    public int NotOnWater;
+    public int field_5D9;
+    public int SeaSick;
+    public int field_5E1;
+    public int field_5E9;
+    public int DrugMode;
+    public int field_5F1;
+    public int field_5F3;
+    public int field_5F5;
+    public int field_5F7;
 
 	public void copy(PlayerStruct src)
 	{

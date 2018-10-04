@@ -1365,6 +1365,29 @@ public class View {
                 break;   
 	        case 27:
 	        	continue;   
+	        case MOTORCYCLE:
+	        	k = engine.getangle(s.x-x,s.y-y);
+                k = (short) (((s.ang+3072+128-k)&2047)/170);
+                if(k>6)
+                {
+                    k = (short) (12-k);
+                    t.cstat |= 4;
+                }
+                else t.cstat &= ~4;
+
+                t.picnum = (short) (MOTORCYCLE + k);
+                break;
+	        case SWAMPBUGGY:
+	        	k = engine.getangle(s.x-x,s.y-y);
+                k = (short) (((s.ang+3072+128-k)&2047)/170);
+                if(k>6)
+                {
+                    k = (short) (12-k);
+                    t.cstat |= 4;
+                }
+                else t.cstat &= ~4;
+                t.picnum = (short) (SWAMPBUGGY + k);
+                break;
 	        }
 
 	        if( currentGame.getCON().actorscrptr[s.picnum] != 0 && (t.cstat & 0x30) != 48 )

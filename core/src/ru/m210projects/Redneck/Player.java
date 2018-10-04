@@ -278,6 +278,9 @@ public class Player {
 	    p.player_par++;
 	    checkTrack();
 	    
+	    if(p.chiken_phase > 0)
+	    	p.chiken_phase--;
+	    
 	    if(p.field_count != 0)
 	    	p.field_count--;
 

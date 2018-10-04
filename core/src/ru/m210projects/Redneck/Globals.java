@@ -72,9 +72,13 @@ public class Globals {
 	public static int[] zofslope = new int[2];
 	
 	//XXX RA
-	public static int BellSound = 0;
+	public static int BellTime;
+	public static int BellSound;
 	public static int WindDir;
 	public static int WindTime;
+	public static int word_119BDA;
+	public static int word_119BE2;
+	public static int word_119BD8;
 	
 //	public static int numepisodes, numlevels[] = new int[3];
 	
@@ -155,9 +159,9 @@ public class Globals {
 	public static final int HANDREMOTE_WEAPON   = 10;
 	public static final int BUZSAW_WEAPON       = 11;
 	public static final int BOWLING_WEAPON      = 12;
-	
-	public static final int MOTO_WEAPON      = 14;
-	public static final int BOAT_WEAPON      = 15;
+	public static final int MOTO_WEAPON      = 13;
+	public static final int BOAT_WEAPON      = 14;
+	public static final int RATE_WEAPON      = 15;
 	public static final int CHICKENBOW_WEAPON  = 16;
 	
 	public static boolean kGameCrash;
