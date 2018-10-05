@@ -719,7 +719,7 @@ public class View {
 	    if(sect < 0 || sect >= MAXSECTORS) return;
 
 	    dointerpolations(smoothratio);
-
+//	    animatecamsprite();
 	    if(ud.camerasprite >= 0)
 	    {
 	        SPRITE s = sprite[ud.camerasprite];
@@ -1067,7 +1067,12 @@ public class View {
                     }
                 }
                 break;
-
+	
+	        case 5300:
+            case 5295:
+            case 5290:
+            	if ( t.pal == 19 )
+                    t.shade = -127;
 	        case 4041:
             case 4046:
             case 4055:
@@ -1076,9 +1081,6 @@ public class View {
             case 4748:
             case 4753:
             case 4758:
-            case 5290:
-            case 5295:
-            case 5300:
             case 5602:
             case 5607:
             case 5616: 
@@ -1088,6 +1090,27 @@ public class View {
             case JIBS4:
             case JIBS5:
             case JIBS6:
+            	//RA
+            case 2460:
+	        case 2465:
+	        case 5872: //RA motowheel
+        	case 5877: //RA mototank
+        	case 5882: //RA boarddebris
+        	case 6112: //RA bikenbody
+        	case 6117: //RA bikenhead
+        	case 6121: //RA bikerhead2
+        	case 6127: //RA bikerhand
+        	case 7000: //RA babahead
+        	case 7005: //RA bababody
+        	case 7010: //RA babafoot
+        	case 7015: //RA babahand
+        	case 7020: //RA debris
+        	case 7025: //RA debbris
+        	case 7387: //RA deepjibs
+        	case 7392: //RA deepjibs2
+        	case 7397: //RA deepjibs3
+        	case 8890: //RA deep2jibs
+        	case 8895: //RA deep2jibs2
                 if(ud.lockout != 0)
                 {
                     t.xrepeat = t.yrepeat = 0;
@@ -1097,7 +1120,7 @@ public class View {
                 if ( shadeEffect[s.sectnum] )
                     t.shade = 16;
                     
-            case SCRAP1:
+            case SCRAP1: //464
             case SCRAP2: 
             case SCRAP3: 
             case SCRAP4: 
@@ -1116,7 +1139,24 @@ public class View {
             
                 if( sector[sect].floorpal != 0 )
                     t.pal = sector[sect].floorpal;
-                break;     
+                break;  
+
+            case 1781:
+            	k = engine.getangle(s.x-x,s.y-y);
+                k = (short) (((s.ang+3072+128-k)&2047)/170);
+                if(k>6)
+                {
+                    k = (short) (12-k);
+                    t.cstat |= 4;
+                }
+                else t.cstat &= ~4;
+
+                t.picnum = (short) (1781 + k);
+                break;
+            case 3464:
+            	t.picnum = (short) (((totalclock >> 4) & 3) + 3464);
+            	break;
+
             case BLOODPOOL:
             case FOOTPRINTS:
             case FOOTPRINTS2:
@@ -1124,7 +1164,7 @@ public class View {
             case FOOTPRINTS4:
                 if(t.pal == 6)
                     t.shade = -127;
-            case 1310:
+            case FEATHERS:
             case 1311:
             	if(ud.lockout != 0 && s.pal == 2)
                 {
@@ -1340,6 +1380,61 @@ public class View {
                 if( t.z > hittype[i].floorz && t.xrepeat < 32 )
                     t.z = hittype[i].floorz;
                 
+                if ( ps[p].OnMotorcycle && p == screenpeek ) 
+                {
+                	t.picnum = 7219;
+                	t.xrepeat = 18;
+                	t.yrepeat = 18;
+                	t4 = 0;
+                	t3 = 0;
+                	t1 = 0;
+                } 
+                else if ( ps[p].OnMotorcycle ) 
+                { 
+                	k = engine.getangle(s.x-x,s.y-y);
+	                k = (short) (((s.ang+3072+128-k)&2047)/170);
+	                if(k>6)
+	                {
+	                    k = (short) (12-k);
+	                    t.cstat |= 4;
+	                }
+	                else t.cstat &= ~4;
+	
+	                t.picnum = (short) (7213 + k);
+	                t.xrepeat = 18;
+                	t.yrepeat = 18;
+                	t4 = 0;
+                	t3 = 0;
+                	t1 = 0;
+                } 
+                else if ( ps[p].OnBoat && p == screenpeek ) 
+                {
+                	t.picnum = 7190;
+                	t.xrepeat = 32;
+                	t.yrepeat = 32;
+                	t4 = 0;
+                	t3 = 0;
+                	t1 = 0;
+                } 
+                else if ( ps[p].OnMotorcycle ) 
+                { 
+                	k = engine.getangle(s.x-x,s.y-y);
+	                k = (short) (((s.ang+3072+128-k)&2047)/170);
+	                if(k>6)
+	                {
+	                    k = (short) (12-k);
+	                    t.cstat |= 4;
+	                }
+	                else t.cstat &= ~4;
+	
+	                t.picnum = (short) (7184 + k);
+	                t.xrepeat = 32;
+                	t.yrepeat = 32;
+                	t4 = 0;
+                	t3 = 0;
+                	t1 = 0;
+                }
+                
                 int tx = t.x - x;
 				int ty = t.y - y;
 				int angle = ((1024 + engine.getangle(tx, ty) - a) & kAngleMask) - 1024;
@@ -1478,7 +1573,9 @@ public class View {
 	            else if( ud.shadows != 0 && spritesortcnt < (MAXSPRITESONSCREEN-2))
 	            {
 	                int daz,xrep,yrep;
-
+	                if ( sector[sect].lotag == 160 )
+	                    continue;
+	                
 	                if( (sector[sect].lotag&0xff) > 2 || s.statnum == 4 || s.statnum == 5 || s.picnum == MOSQUITO )
 	                    daz = sector[sect].floorz;
 	                else
@@ -1616,6 +1713,17 @@ public class View {
 	        	 case 3171:
 	        	 case 3216:
 	        	 case 3720:
+	        		 
+	        		 //RA
+	        	 case 3668:
+	        	 case 3795:
+	        	 case 5035:
+	        	 case 7505:
+	        	 case 7506:
+	        	 case 7533:
+	        	 case 8216:
+	        	 case 8218:
+	        	 case 8220:
 	        		 t.shade = -127;
 	        		 break;
 	        	 case UFOBEAM:
@@ -1654,7 +1762,29 @@ public class View {
 	        		 t.shade = -127;
 	        		 break;
 	        	 case SHELL:
+	        	 case SHOTGUNSHELL:
 	        		 t.picnum = (short) (s.picnum+(hittype[i].temp_data[0]&1));
+	        		 break;
+
+	        		 //RA
+	        	 case BILLYRAY:
+	        	 case BILLYRAYSTAYPUT:
+	        		 if ( t.picnum >= 4167 && t.picnum <= 4171 )
+	        			 t.shade = -127;
+	        		 break;
+	        	 case MINION:
+	        		 if ( t.pal == 19 )
+	                     t.shade = -127;
+	        		 break;
+	        	 case BIKERSTAND:
+	        		 if ( t.picnum >= 6049 && t.picnum <= 6053 )
+	                    t.shade = -127;
+	        		 else if ( t.picnum >= 6079 && t.picnum <= 6083 )
+	                    t.shade = -127;
+	        		 break;
+	        	 case DAISYMAE:
+	        		 if(t.picnum >= 6760 && t.picnum <= 6809 )
+	        			 t.shade = -127;
 	        		 break;
 	        }
 

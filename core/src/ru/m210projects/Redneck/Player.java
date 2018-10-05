@@ -85,6 +85,123 @@ public class Player {
 	    }
 	    changepalette = 1;
 	}
+	
+	public static void getMoto(PlayerStruct p, short i)
+	{
+		if(!p.OnMotorcycle)
+		{
+			if ( i != -1 )
+			{
+				p.posx = sprite[i].x;
+		        p.posy = sprite[i].y;
+		        p.ang = sprite[i].ang;
+		        p.ammo_amount[MOTO_WEAPON] = sprite[i].owner;
+		        engine.deletesprite(i);
+			}
+			p.over_shoulder_on = 0;
+			p.OnMotorcycle = true;
+			p.last_full_weapon = p.curr_weapon;
+			p.curr_weapon = MOTO_WEAPON;
+			p.gotweapon[MOTO_WEAPON] = true;
+			p.posxv = 0;
+			p.posyv = 0;
+			p.horiz = 100;
+		}
+		if ( Sound[186].num == 0 )
+		    spritesound(186, p.i);
+	}
+	
+	public static void leaveMoto(PlayerStruct p)
+	{
+		if(p.OnMotorcycle)
+		{
+			if ( Sound[188].num > 0 )
+				stopsound(Sound[188].num);
+			if ( Sound[187].num > 0 )
+				stopsound(Sound[187].num);
+			if ( Sound[186].num > 0 )
+				stopsound(Sound[186].num);
+			if ( Sound[214].num > 0 )
+				stopsound(Sound[214].num);
+			if ( Sound[42].num == 0 )
+				spritesound(42, p.i);
+			    
+			p.OnMotorcycle = false;
+			p.gotweapon[MOTO_WEAPON] = false;
+			p.curr_weapon = p.last_full_weapon;
+			checkavailweapon(p);
+			p.horiz = 100;
+			p.field_5B5 = 0;
+			p.Motospeed = 0;
+			p.TiltStatus = 0;
+			p.field_5C1 = 0;
+			p.VBumpTarget = 0;
+			p.VBumpNow = 0;
+			p.TurbCount = 0;
+			p.posxv = 0;
+			p.posyv = 0;
+			p.posxv -= sintable[((short)p.ang + 512) & kAngleMask] << 7;
+			p.posyv -= sintable[((short)p.ang) & kAngleMask] << 7;
+			int j = spawn(p.i, MOTORCYCLE);
+			sprite[j].ang = (short)p.ang;
+			sprite[j].xvel += sintable[((short)p.ang + 512) & kAngleMask] << 7;
+			sprite[j].yvel += sintable[((short)p.ang) & kAngleMask] << 7;
+			sprite[j].owner = (short) p.ammo_amount[MOTO_WEAPON];
+		}
+	}
+	
+	public static void getBoard(PlayerStruct p, short i)
+	{
+		if(!p.OnBoat)
+		{
+			if ( i != -1 )
+			{
+				p.posx = sprite[i].x;
+		        p.posy = sprite[i].y;
+		        p.ang = sprite[i].ang;
+		        p.ammo_amount[BOAT_WEAPON] = sprite[i].owner;
+		        engine.deletesprite(i);
+			}
+			p.over_shoulder_on = 0;
+			p.OnBoat = true;
+			p.last_full_weapon = p.curr_weapon;
+			p.curr_weapon = BOAT_WEAPON;
+			p.gotweapon[BOAT_WEAPON] = true;
+			p.posxv = 0;
+			p.posyv = 0;
+			p.horiz = 100;
+		}
+		if ( Sound[186].num == 0 )
+		    spritesound(186, p.i);
+	}
+	
+	public static void leaveBoard(PlayerStruct p)
+	{
+		if(p.OnBoat)
+		{
+			p.OnBoat = false;
+			p.gotweapon[BOAT_WEAPON] = false;
+			p.curr_weapon = p.last_full_weapon;
+			checkavailweapon(p);
+			p.horiz = 100;
+			p.field_5B5 = 0;
+			p.Motospeed = 0;
+			p.TiltStatus = 0;
+			p.field_5C1 = 0;
+			p.VBumpTarget = 0;
+			p.VBumpNow = 0;
+			p.TurbCount = 0;
+			p.posxv = 0;
+			p.posyv = 0;
+			p.posxv -= sintable[((short)p.ang + 512) & kAngleMask] << 7;
+			p.posyv -= sintable[((short)p.ang) & kAngleMask] << 7;
+			int j = spawn(p.i, SWAMPBUGGY);
+			sprite[j].ang = (short)p.ang;
+			sprite[j].xvel += sintable[((short)p.ang + 512) & kAngleMask] << 7;
+			sprite[j].yvel += sintable[((short)p.ang) & kAngleMask] << 7;
+			sprite[j].owner = (short) p.ammo_amount[BOAT_WEAPON];
+		}
+	}
 
 	public static void incur_damage( PlayerStruct p )
 	{

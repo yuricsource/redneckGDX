@@ -107,7 +107,8 @@ public class Sounds {
 	            spritesound(121,i);
 	            break;
 	        case COOT:
-	            spritesound(111,i);
+	        	if(currentGame.getCON().type != RRRA || (engine.krand() & 3) == 2)
+	        		spritesound(111,i);
 	            break;
 	    }
 	}

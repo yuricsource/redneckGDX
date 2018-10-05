@@ -175,8 +175,6 @@ public class MenuList extends MenuItem
 				return 0;
 			case 2:
 				l_nFocus--;
-				while(text.get(l_nFocus) == null)
-		    		l_nFocus = (l_nFocus - 1) & (text.size() - 1);
 				if(l_nFocus >= 0 && l_nFocus < l_nMin)
 					if(l_nMin > 0) l_nMin--;
 				if(l_nFocus < 0) {
@@ -184,17 +182,19 @@ public class MenuList extends MenuItem
 					l_nMin = text.size() - nListItems;
 					if(l_nMin < 0) l_nMin = 0;
 				}
+				while(text.get(l_nFocus) == null)
+		    		l_nFocus = (l_nFocus - 1) & (text.size() - 1);
 				return 0;
 			case 3:
 				l_nFocus++;
-				while(text.get(l_nFocus) == null)
-		    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
 				if(l_nFocus >= l_nMin + nListItems && l_nFocus < text.size())
 					l_nMin++;
 				if(l_nFocus >= text.size()) {
 					l_nFocus = 0;
 					l_nMin = 0;
 				}
+				while(text.get(l_nFocus) == null)
+		    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
 				return 0;
 			case 4: //left
 				mNavUp(pMenu);

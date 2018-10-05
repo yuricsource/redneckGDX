@@ -53,21 +53,14 @@ public class Main extends ApplicationAdapter {
 	 * Addons support
 	 * 
 	 * TODO:
-	 * animatesprites
-	 * checkhitswitch
 	 * doincrements
 	 * processinput
-	 * operatesectors
-	 * wallswitchcheck
-	 * isadoorwall
-	 * animatewalls
 	 * 
 	 * не работают комары в R66
 	 * spawn RA fog method
 	 * Joystick sensitive bug
 	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
-	 * у монтировки нет звука атаки
 	 * инфа об юзерэпизоде в меню загрузок
 	 * get crc32 from map and script
 	 * cheat @mario

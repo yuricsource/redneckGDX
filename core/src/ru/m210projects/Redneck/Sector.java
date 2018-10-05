@@ -126,6 +126,13 @@ public class Sector {
 		    case 2255:
 		    case 2259:
 		    case 2260:
+
+		    case 8048: //RA
+		    case 8049:
+		    case 8050:
+		    case 8051:
+		    case 8464:
+		    case 8465:
 	            return true;
 	    }
 	    return false;
@@ -337,6 +344,28 @@ public class Sector {
 		    case 3819:
 		    case 3827:
 		    case 3837:
+		    
+		    	//RA
+		    case 1996:
+		    case 2382:
+		    case 2961:
+		    case 3804:
+		    case 7430:
+		    case 7467:
+		    case 7469:
+		    case 7470:
+		    case 7475:
+		    case 7566:
+		    case 7576:
+		    case 7716:
+		    case 8063:
+		    case 8067:
+		    case 8076:
+		    case 8106:
+		    case 8379:
+		    case 8380:
+		    case 8565:
+		    case 8605:
 	            return true;
 	    }
 	    return false;
@@ -1077,6 +1106,10 @@ public class Sector {
 
 	                sprite[i].extra = 66-12;   // Just a way to killit
 	                break;
+	            case 7424:
+	            	if(!ud.monsters_off)
+	            		engine.changespritestat(i, (short)119);
+	            	break;
 	        }
 	        i = nexti;
 	    }
@@ -1216,6 +1249,7 @@ public class Sector {
 	    }
 	}
 	
+	private static int[] chitsw = new int[3];
 	public static boolean checkhitswitch(int snum,int w,int switchtype)
 	{
 	    int switchpal;
@@ -1336,6 +1370,14 @@ public class Sector {
 	        case 2698: 
 	        case 2707: 
 	        case 2708: 
+
+	        		//RA
+	        case 8048:
+	        case 8049:
+	        case 8050:
+	        case 8051:
+	        case 8464:
+	        case 8660:
 	            if( check_activator_motion( lotag ) ) return false;
 	            break;
 	        default:
@@ -1387,10 +1429,15 @@ public class Sector {
 		        case 2254: 
 		        case 2697: 
 		        case 2707:	
+		        case 8660:
 		        	if ( sprite[i].picnum != 127 || sprite[i].hitag != 999 )
 		        	{
 		        		if ( sprite[i].picnum == 94 )
 		        			plantProcess = false;
+		        		if ( sprite[i].picnum == 8660 ) {
+		        			BellTime = 132;
+		                    word_119BE0 = i;
+		        		}	
 		                sprite[i].picnum++;
 		        	}
 		        	else
@@ -1444,6 +1491,16 @@ public class Sector {
 	            		ud.level_number = 0;
 	            	++sprite[i].picnum;
 	            	break;
+	            	
+	            	//RA
+	            case 8048:
+		        case 8049:
+		        case 8050:
+		        case 8051:
+		        	sprite[i].picnum++;
+		        	if ( sprite[i].picnum > 8051 )
+		        		sprite[i].picnum = 8048;
+		        	break;
 	        }
 	        i = nextspritestat[i];
 	    }
@@ -1492,6 +1549,7 @@ public class Sector {
 	            case 2254: 
 	            case 2697: 
 	            case 2707: 
+	            case 8660:
 	                wall[x].picnum++;
 	                break;
 	            case 85: 
@@ -1510,6 +1568,16 @@ public class Sector {
 	            case 2708: 
 	                wall[x].picnum--;
 	                break;
+	              
+	                //RA
+	            case 8048:
+		        case 8049:
+		        case 8050:
+		        case 8051:
+		        	sprite[i].picnum++;
+		        	if ( sprite[i].picnum > 8051 )
+		        		sprite[i].picnum = 8048;
+		        	break;
 	        }
 	    }
 
@@ -1533,9 +1601,6 @@ public class Sector {
 	        return true;
 	    }
 
-	    
-	    //94
-	    //95
 	    switch(picnum)
 	    {
 	        default:
@@ -1585,11 +1650,7 @@ public class Sector {
 	        case 2707:
 	        case 2708:
 	        	
-	        case 82: 
-	        case MULTISWITCH: 
-	        case MULTISWITCH+1: 
-	        case MULTISWITCH+2: 
-	        case MULTISWITCH+3: 
+	        case 82:  
 	        case 123: 
 	        case 124: 
 	        case 127: 
@@ -1605,64 +1666,145 @@ public class Sector {
 	        case 2255: 
 	        case 2697: 
 	        case 2698: 
-	                if( picnum == MULTISWITCH || picnum == (MULTISWITCH+1) ||
-	                    picnum == (MULTISWITCH+2) || picnum == (MULTISWITCH+3) )
-	                        lotag += picnum-MULTISWITCH;
+	        case MULTISWITCH: 
+	        case MULTISWITCH+1: 
+	        case MULTISWITCH+2: 
+	        case MULTISWITCH+3:
+	        	
+	        	//RA
+            case 8048:
+	        case 8049:
+	        case 8050:
+	        case 8051:
+	        case 8660:
+	        case 8464:
+	        	
+	        	if( picnum == 8660)
+	        	{
+	        		 BellTime = 132;
+	        		 word_119BE0 = (short) w;
+	        		 sprite[w].picnum++;
+	        	}
+	        	
+	        	if(picnum == 8464)
+	        	{
+	        		sprite[w].picnum++;
+	        		if(hitag == 10001)
+	        		{
+	        			if ( ps[snum].SeaSick == 0 )
+	        				ps[snum].SeaSick = 350;
+	        			operateactivators(668, snum);
+	        			operatemasterswitches(668);
+	        			spritesound(328, ps[snum].i);
+	        			return true;
+	        		}
+	        	} else {
+	        		if(hitag == 10000)
+	        		{
+	        			if( picnum == MULTISWITCH 
+        					|| picnum == (MULTISWITCH+1) 
+        					|| picnum == (MULTISWITCH+2) 
+        					|| picnum == (MULTISWITCH+3)
+                            || picnum == 8048
+                            || picnum == 8049
+                            || picnum == 8050 
+                            || picnum == 8051)
+	        			{
+	        				xyzsound(76, w, sx, sy, ps[snum].posz);
+                        
+	        				int count = 0;
+	        				for ( int k = 0; k < MAXSPRITES; ++k )
+	        				{
+	        			        if ( (sprite[k].picnum == 98 || sprite[k].picnum == 8048) && sprite[k].hitag == 10000 && count < 3 )
+	        			        	chitsw[count++] = k;
+	        				}
+	        				
+	        				if ( count == 3 )
+	        				{
+	        			        xyzsound(78, w, sx, sy, ps[snum].posz);
+	        			        for ( int k = 0; k < count; ++k )
+	        			        {
+	        			          sprite[chitsw[k]].hitag = 0;
+	        			          if ( picnum < 8048 )
+	        			        	  sprite[chitsw[k]].picnum = 101;
+	        			          else
+	        			        	  sprite[chitsw[k]].picnum = 8051;
+	        			          checkhitswitch(snum, chitsw[k], 1);
+	        			        }
+	        				}
+	        				
+	        				return true;
+	        			}
+	        		}
+	        	}
+	        	
+	        	//411
+                if( picnum == MULTISWITCH || picnum == (MULTISWITCH+1) ||
+                    picnum == (MULTISWITCH+2) || picnum == (MULTISWITCH+3) )
+                        lotag += picnum-MULTISWITCH;
+                
+                if( picnum == 8048 || picnum == 8049 ||
+	                    picnum == 8050 || picnum == 8051 )
+	                        lotag += picnum-8048;
 
-	                x = headspritestat[3];
-	                while(x >= 0)
-	                {
-	                   if( ((sprite[x].hitag) == lotag) )
-	                   {
-	                       switch(sprite[x].lotag)
-	                       {
-	                           case 12:
-	                                sector[sprite[x].sectnum].floorpal = 0;
-	                                hittype[x].temp_data[0]++;
-	                                if(hittype[x].temp_data[0] == 2)
-	                                   hittype[x].temp_data[0]++;
+                x = headspritestat[3];
+                while(x >= 0)
+                {
+                   if( ((sprite[x].hitag) == lotag) )
+                   {
+                       switch(sprite[x].lotag)
+                       {
+                           case 12:
+                        	   //RA
+                           case 46:
+                           case 47:
+                           case 48:
+                                sector[sprite[x].sectnum].floorpal = 0;
+                                hittype[x].temp_data[0]++;
+                                if(hittype[x].temp_data[0] == 2)
+                                   hittype[x].temp_data[0]++;
 
-	                                break;
-	                           case 24:
-	                           case 34:
-	                           case 25:
-	                               hittype[x].temp_data[4] ^= 1;
-	                               if(hittype[x].temp_data[4] != 0)
-	                                   FTA(15, ps[snum]);
-	                               else FTA(2, ps[snum]);
-	                               break;
-	                           case 21:
-	                               FTA(2, ps[screenpeek]);
-	                               break;
-	                       }
-	                   }
-	                   x = nextspritestat[x];
-	                }
+                                break;
+                           case 24:
+                           case 34:
+                           case 25:
+                               hittype[x].temp_data[4] ^= 1;
+                               if(hittype[x].temp_data[4] != 0)
+                                   FTA(15, ps[snum]);
+                               else FTA(2, ps[snum]);
+                               break;
+                           case 21:
+                               FTA(2, ps[screenpeek]);
+                               break;
+                       }
+                   }
+                   x = nextspritestat[x];
+                }
 
-	                operateactivators(lotag,snum);
-	                operateforcefields(ps[snum].i,lotag);
-	                operatemasterswitches(lotag);
+                operateactivators(lotag,snum);
+                operateforcefields(ps[snum].i,lotag);
+                operatemasterswitches(lotag);
 
-	                if( picnum == 121  || picnum == 122 ||
-	    	                picnum == 125 || picnum == 126 ||
-	    	                picnum == 2259 || picnum == 2260 ) return true;
+                if( picnum == 121  || picnum == 122 ||
+    	                picnum == 125 || picnum == 126 ||
+    	                picnum == 2259 || picnum == 2260 ) return true;
 
-	                if( hitag == 0 && !isadoorwall(picnum) )
-	                {
-	                    if(switchtype == 1)
-	                        xyzsound(SWITCH_ON,w,sx,sy,ps[snum].posz);
-	                    else xyzsound(SWITCH_ON,ps[snum].i,sx,sy,ps[snum].posz);
-	                }
-	                else if(hitag != 0)
-	                {
-	                	if(hitag < NUM_SOUNDS) {
-		                    if(switchtype == 1 && (currentGame.getCON().soundm[hitag]&4) == 0)
-		                        xyzsound(hitag,w,sx,sy,ps[snum].posz);
-		                    else spritesound(hitag,ps[snum].i);
-	                	}
-	                }
+                if( hitag == 0 && !isadoorwall(picnum) )
+                {
+                    if(switchtype == 1)
+                        xyzsound(SWITCH_ON,w,sx,sy,ps[snum].posz);
+                    else xyzsound(SWITCH_ON,ps[snum].i,sx,sy,ps[snum].posz);
+                }
+                else if(hitag != 0)
+                {
+                	if(hitag < NUM_SOUNDS) {
+	                    if(switchtype == 1 && (currentGame.getCON().soundm[hitag]&4) == 0)
+	                        xyzsound(hitag,w,sx,sy,ps[snum].posz);
+	                    else spritesound(hitag,ps[snum].i);
+                	}
+                }
 
-	               return true;
+               return true;
 	    }
 	    return false;
 	}
@@ -1692,6 +1834,14 @@ public class Sector {
 	        switch(sprite[j].picnum)
 	        {
 	            case 1194:
+	            //RA
+	            case 2430:
+	            case 2431:
+	            case 2432:
+	            case 2443:
+	            case 2446:
+	            case 2451:
+	            case 2455:
 	                if(p.hurt_delay < 8 )
 	                {
 	                    sprite[p.i].extra -= 5;
@@ -1891,7 +2041,6 @@ public class Sector {
 	                lotsofmoney(sprite[spr], ((engine.krand() & 7) + 1));
 	                spritesound(20, spr);
 	            	return;
-	            
 	            case 72: 
 	            case 74: 
 	            case 76: 
@@ -1984,6 +2133,114 @@ public class Sector {
 	                    i = nextspritestat[i];
 	                }
 	                break;
+	                
+	                //RA
+	            case 7433:
+	            	wal.picnum = 5018;
+	                spritesound(20, spr);
+	            	return;
+	            case 7441:
+	            	wal.picnum = 5016;
+	                spritesound(20, spr);
+	            	return;
+	            case 7453:
+	            	wal.picnum = 5035;
+	                spritesound(495, spr);
+	            	return;
+	            case 7540:
+	            	wal.picnum = 5023;
+	                spritesound(20, spr);
+	            	return;
+	            case 7552:
+	            	wal.picnum = 5021;
+	                spritesound(20, spr);
+	            	return;
+	            case 7553:
+	            	wal.picnum = 5020;
+	                spritesound(20, spr);
+	            	return;
+	            case 7554:
+	            	wal.picnum = 5025;
+	                spritesound(20, spr);
+	            	return;
+	            case 7555:
+	            	wal.picnum = 5015;
+	                spritesound(20, spr);
+	            	return;
+	            case 7557:
+	            	wal.picnum = 5019;
+	                spritesound(20, spr);
+	            	return;
+	            case 7558:
+	            	wal.picnum = 5024;
+	                spritesound(20, spr);
+	            	return;
+	            case 7559:
+	            	wal.picnum = 5017;
+	                spritesound(20, spr);
+	            	return;
+	            case 7561:
+	            	wal.picnum = 5027;
+	                spritesound(20, spr);
+	            	return;
+	            case 7568:
+	            	wal.picnum = 5022;
+	                spritesound(20, spr);
+	            	return;
+	            case 7579:
+	            	wal.picnum = 5026;
+	                spritesound(20, spr);
+	            	return;
+	            case 7580:
+	            	wal.picnum = 5037;
+	                spritesound(20, spr);
+	            	return;
+	            case 7657:
+	            	wal.picnum = 7659;
+	                spritesound(20, spr);
+	            	return;
+	            case 7859:
+	            	wal.picnum = 5081;
+	                spritesound(20, spr);
+	            	return;
+	            case 8227:
+	            	wal.picnum = 5070;
+	                spritesound(20, spr);
+	            	return;
+	            case 8496:
+	            	wal.picnum = 5061;
+	                spritesound(20, spr);
+	            	return;
+	            case 8497:
+	            	wal.picnum = 5076;
+	                spritesound(495, spr);
+	            	return;
+	            case 8503:
+	            	wal.picnum = 5079;
+	                spritesound(20, spr);
+	            	return;
+	            case 8567:
+	            case 8568:
+	            case 8569:
+	            case 8570:
+	            case 8571:
+	            	wal.picnum = 5082;
+	                spritesound(20, spr);
+	            	return;
+	            case 8617:
+	            	if(numplayers < 2) {
+		            	wal.picnum = 8618;
+		                spritesound(47, spr);
+	            	}
+	            	return;
+	            case 8620:
+	            	wal.picnum = 8621;
+	                spritesound(47, spr);
+	            	return;
+	            case 8622:
+	            	wal.picnum = 8623;
+	                spritesound(495, spr);
+	            	return;
 	    }
 	}
 	
@@ -2174,6 +2431,10 @@ public class Sector {
 	            }
 	            break;     
 	        case 1221:
+	        	//RA
+	        case 2654:
+	        case 2656:
+	        case 3172:
 	            spritesound(GLASS_BREAKING,i);
 	            lotsofglass2(i,-1,10);
 	            engine.deletesprite(i);
@@ -2281,6 +2542,7 @@ public class Sector {
 	        case 1287: 
 	        case 1288: 
 	        case 1289: 
+	        case 1824: //RA
 	        case 2215: 
 	        case 2231:
 	            if(sprite[i].picnum == 1280)
@@ -2374,6 +2636,474 @@ public class Sector {
 	                        engine.krand()&2047,(engine.krand()&63)+64,-(engine.krand()&4095)-sprite[i].zvel>>2,i,(short)5);
 	        	}
 	        	break;
+	        	
+	        	
+	        	
+	        	//RA
+	        case FANSPRITEWORK:
+	        	sprite[i].picnum = FANSPRITEBROKE;
+	            sprite[i].cstat &= (65535-257);
+	            spritesound(GLASS_HEAVYBREAK,i);
+	            s = sprite[i];
+	            for(j=0;j<16;j++) RANDOMSCRAP(s,i);
+	            break;   
+	        case 74:
+	        	sprite[i].picnum = 75;
+	            spritesound(20, i);
+	        	break;
+	        case 2123:
+	        	sprite[i].picnum = 2124;
+	        	spritesound(19, i);
+	        	lotsofglass2(i, -1, 10);
+	        	break;
+	        case 2431:
+	        	if ( sprite[i].pal != 4 )
+                {
+	        		sprite[i].picnum = 2451;
+	        		if ( sprite[i].lotag != 0 )
+	        		{
+	        			for ( j = 0; j < MAXSPRITES; ++j )
+	        			{
+	        				if ( sprite[j].picnum == 2431 && sprite[j].pal == 4 && sprite[i].lotag == sprite[j].lotag )
+	        					sprite[j].picnum = 2451;
+	        			}
+	        		}
+                }
+	        	break;
+	        case 2437:
+	        	spritesound(439, i);
+	        	break;
+	        case 2443:
+                if ( sprite[i].pal != 19 )
+	                sprite[i].picnum = 2455;
+	        	break;
+	        case 2445:
+	        	sprite[i].picnum = 2450;
+	            spritesound(20, i);
+	        	break;
+	        case 2451:
+	        	if ( sprite[i].pal != 4 )
+                {
+	        		spritesound(69, i);
+    
+	        		if ( sprite[i].lotag != 0 )
+	        		{
+	        			for ( int l = 0; l < 4096; ++l )
+	        			{
+	        				if ( sprite[l].picnum == 2451 && sprite[l].pal == 4 && sprite[i].lotag == sprite[l].lotag )
+	        				{
+	        					guts(sprite[i], 2460, 12, myconnectindex);
+	        					guts(sprite[i], 2465, 3, myconnectindex);
+	        					sprite[l].xrepeat = 0;
+	        					sprite[l].yrepeat = 0;
+	        					sprite[i].xrepeat = 0;
+	        					sprite[i].yrepeat = 0;
+	        				}
+	        			}
+                  }
+                  else
+                  {
+                	  guts(sprite[i], 2460, 12, myconnectindex);
+                	  guts(sprite[i], 2465, 3, myconnectindex);
+                	  sprite[i].xrepeat = sprite[i].yrepeat = 0;
+                  }
+                }
+	        	break;
+	        case 2455:
+	        	spritesound(69, i);
+	        	guts(sprite[i], 2465, 3, myconnectindex);
+	        	engine.deletesprite(i);
+	        	break;
+	        case 3462:
+	        	sprite[i].picnum = 5074;
+	        	spritesound(20, i);
+	        	break;
+	        case 3475:
+	        	sprite[i].picnum = 5075;
+	        	spritesound(20, i);
+	        	break;
+	        case 3497:
+	        	sprite[i].picnum = 5076;
+	        	spritesound(20, i);
+	        	break;
+	        case 3498:
+	        	sprite[i].picnum = 5077;
+	        	spritesound(20, i);
+	        	break;
+	        case 3499:
+	        	sprite[i].picnum = 5078;
+	        	spritesound(20, i);
+	        	break;
+	        case 3584:
+	        	sprite[i].picnum = 8681;
+	        	spritesound(495, i);
+	        	hitradius(i, 250, 0, 0, 1, 1);
+	        	break;
+	        case 3773:
+	        	sprite[i].picnum = 8651;
+                spritesound(19, i);
+                lotsofglass2(i, -1, 10);
+	        	break;
+	        case 7441:
+	        	sprite[i].picnum = 5016;
+                spritesound(20, i);
+	        	break;
+	        case 7478:
+	        	sprite[i].picnum = 5035;
+	        	spritesound(20, i);
+	        	break;
+	        case 7533:
+	        	sprite[i].picnum = 5035;
+	        	spritesound(495, i);
+	        	hitradius(i, 10, 0, 0, 1, 1);
+	        	break;
+	        case 7534:
+	        	sprite[i].picnum = 5029;
+	        	spritesound(20, i);
+	        	break;
+	        case 7545:
+	        	sprite[i].picnum = 5030;
+	        	spritesound(20, i);
+	        	break;
+	        case 7547:
+	        	sprite[i].picnum = 5031;
+	        	spritesound(20, i);
+	        	break;
+            case 7553:
+            	sprite[i].picnum = 5035;
+                spritesound(20, i);
+                break;
+            case 7574:
+            	sprite[i].picnum = 5032;
+                spritesound(20, i);
+                break;
+            case 7575:
+            	sprite[i].picnum = 5033;
+                spritesound(20, i);
+                break;
+            case 7578:
+            	sprite[i].picnum = 5034;
+                spritesound(20, i);
+                break;
+            case 7636:
+            case 7875:
+            	sprite[i].picnum += 3;
+                spritesound(18, i);
+            	break;
+            
+            case 8567:
+            case 8568:
+            case 8569:
+            case 8570:
+            case 8571:
+            	sprite[i].picnum = 5082;
+                spritesound(20, i);
+            	break;
+            case 7640:
+            	sprite[i].picnum += 2;
+                spritesound(18, i);
+            	break;
+            case 7696:
+            	sprite[i].picnum = 7697;
+                spritesound(47, i);
+            	break;
+            case 7806:
+            	sprite[i].picnum = 5043;
+                spritesound(20, i);
+            	break;
+            case 7879:
+            	sprite[i].picnum++;
+                spritesound(495, i);
+                hitradius(i, 10, 0, 0, 1, 1);
+            	break;
+            case 7886:
+            	sprite[i].picnum = 5046;
+                spritesound(495, i);
+                hitradius(i, 10, 0, 0, 1, 1);
+            	break;
+            case 7887:
+            	sprite[i].picnum = 5044;
+                spritesound(20, i);
+                hitradius(i, 10, 0, 0, 1, 1);
+            	break;
+            case 7900:
+            	sprite[i].picnum = 5047;
+                spritesound(20, i);
+            	break;
+            case 7901:
+            	sprite[i].picnum = 5080;
+            	spritesound(20, i);
+            	break;
+            case 7906:
+            	sprite[i].picnum = 5048;
+            	spritesound(20, i);
+            	break;
+            case 7912:
+            case 7913:
+            	sprite[i].picnum = 5049;
+                spritesound(20, i);
+            	break;
+            case 8047:
+            	sprite[i].picnum = 5050;
+                spritesound(20, i);
+            	break;
+            case 8059:
+            	 sprite[i].picnum = 5051;
+                 spritesound(20, i);
+            	break;
+            case 8060:
+            	sprite[i].picnum = 5052;
+                spritesound(20, i);
+            	break;
+            case 8099:
+            	if ( sprite[i].lotag == 5 )
+                {
+            		sprite[i].lotag = 0;
+            		sprite[i].picnum = 5087;
+            		spritesound(340, i);
+            		for ( int l = 0; l < MAXSPRITES; ++l )
+            		{
+            			if ( sprite[l].picnum == 8094 )
+            				sprite[l].picnum = 5088;
+            		}
+                }
+            	break;
+            case 8215:
+            	sprite[i].picnum = 5064;
+                spritesound(20, i);
+            	break;
+            case 8216:
+            	sprite[i].picnum = 5065;
+                spritesound(20, i);
+                break;
+            case 8217:
+            	sprite[i].picnum = 5066;
+                spritesound(20, i);
+                break;
+            case 8218:
+            	sprite[i].picnum = 5067;
+                spritesound(20, i);
+            	break;
+            case 8220:
+            	sprite[i].picnum = 5068;
+                spritesound(20, i);
+                break;
+            case 8221:
+            	sprite[i].picnum = 5069;
+                spritesound(20, i);
+                break;
+            case 8222:
+            	sprite[i].picnum = 5053;
+            	spritesound(20, i);
+            	break;
+            case 8223:
+            	sprite[i].picnum = 5054;
+                spritesound(20, i);
+                break;
+            case 8224:
+            	 sprite[i].picnum = 5055;
+                 spritesound(20, i);
+                 break;
+            case 8312:
+            	sprite[i].picnum = 5071;
+                spritesound(472, i);
+                break;
+            case 8370:
+            	sprite[i].picnum = 5056;
+                spritesound(20, i);
+            	break;
+            case 8371:
+            	sprite[i].picnum = 5057;
+                spritesound(20, i);
+                break;
+            case 8372:
+                sprite[i].picnum = 5058;
+                spritesound(20, i);
+            	break;
+            case 8373:
+            	sprite[i].picnum = 5059;
+                spritesound(20, i);
+            	break;
+            case 8385:
+            	sprite[i].picnum = 8386;
+            	spritesound(20, i);
+            	break;
+            case 8387:
+            	sprite[i].picnum = 8388;
+            	spritesound(20, i);
+            	break;
+            case 8389:
+            	sprite[i].picnum = 8390;
+                spritesound(20, i);
+            	break;
+            case 8391:
+            	sprite[i].picnum = 8392;
+                spritesound(20, i);
+            	break;
+            case 8394:
+            	sprite[i].picnum = 5072;
+            	spritesound(495, i);
+            	break;
+            case 8395:
+            	sprite[i].picnum = 5072;
+            	spritesound(20, i);
+            	break;
+            case 8396:
+            	sprite[i].picnum = 5038;
+                spritesound(20, i);
+            	break;
+            case 8397:
+            	sprite[i].picnum = 5039;
+                spritesound(20, i);
+                break;
+            case 8398:
+            	sprite[i].picnum = 5040;
+                spritesound(20, i);
+            	break;
+            case 8399:
+            	sprite[i].picnum = 5041;
+                spritesound(20, i);
+            	break;
+            case 8423:
+            	sprite[i].picnum = 5073;
+                spritesound(20, i);
+            	break;
+            case 8461:
+            case 8462:
+            	sprite[i].picnum = 5074;
+            	spritesound(20, i);
+                break;
+            case 8475:
+            	sprite[i].picnum = 5075;
+                spritesound(472, i);
+            	break;
+            case 8497:
+            	sprite[i].picnum = 5076;
+            	spritesound(20, i);
+            	break;
+            case 8498:
+            	sprite[i].picnum = 5077;
+                spritesound(20, i);
+            	break;
+            case 8499:
+            	sprite[i].picnum = 5078;
+                spritesound(20, i);
+            	break;
+            case 8503:
+            	sprite[i].picnum = 5079;
+                spritesound(20, i);
+            	break;
+            case 8525:
+            	sprite[i].picnum = 5036;
+                spritesound(20, i);
+            	break;
+            case 8537:
+            	sprite[i].picnum = 5062;
+                spritesound(20, i);
+            	break;
+            case 8579:
+            	sprite[i].picnum = 5014;
+                spritesound(20, i);
+            	break;
+            case 8596:
+            	sprite[i].picnum = 8598;
+                spritesound(20, i);
+            	break;
+            case 8608:
+            	sprite[i].picnum = 5083;
+                spritesound(20, i);
+            	break;
+            case 8609:
+            	sprite[i].picnum = 5084;
+                spritesound(20, i);
+            	break;
+            case 8611:
+            	sprite[i].picnum = 5086;
+                spritesound(20, i);
+            	break;
+            case 8640:
+            	sprite[i].picnum = 5085;
+            	spritesound(20, i);
+            	break;
+            case 8679:
+            	sprite[i].picnum = 8680;
+                spritesound(47, i);
+                hitradius(i, 10, 0, 0, 1, 1);
+                if ( sprite[i].lotag != 0 )
+                {
+                	for ( int l = 0; l < MAXSPRITES; ++l )
+                	{
+                		if ( sprite[l].picnum == 8679 && sprite[l].pal == 4 && sprite[i].lotag == sprite[l].lotag )
+                			sprite[l].picnum = 8680;
+                	}
+                }
+            	break;
+            case 8682:
+            	sprite[i].picnum = 8683;
+            	spritesound(20, i);
+            	break;
+            case 8487:
+            case 8489:
+            	spritesound(471, i);
+                sprite[i].picnum++;
+            	break;
+
+            case 8162:
+            case 8163:
+            case 8164:
+            case 8165:
+            case 8166:
+            case 8167:
+            case 8168:
+            	engine.changespritestat(i, (short)5);
+                sprite[i].picnum = 5063;
+                spritesound(20, i);
+                break;
+                
+            case 8589:
+            case 8590:
+            case 8591:
+            case 8592:
+            case 8593:
+            case 8594:
+            case 8595:
+            	engine.changespritestat(i, (short)5);
+                sprite[i].picnum = 8588;
+                spritesound(20, i);
+            	break;
+            case 7648:
+            case 7694:
+            case 7700:
+            case 7702:
+            case 7711:
+            	sprite[i].picnum++;
+            	spritesound(47, i);
+            	break;
+            case 7638:
+            case 7644:
+            case 7646:
+            case 7650:
+            case 7653:
+            case 7655:
+            case 7691:
+            case 7881:
+            case 7883:
+            case 7876:
+            	sprite[i].picnum++;
+            	spritesound(18, i);
+            	break;
+            case 7595:
+            case 7704:
+            	sprite[i].picnum = 7705;
+                spritesound(495, i);
+            	break;
+            case 7885:
+            case 7890:
+            	sprite[i].picnum = 5045;
+                spritesound(495, i);
+                hitradius(i, 10, 0, 0, 1, 1);
+            	break;
+
 	        case PLAYERONWATER:
 	            i = sprite[i].owner;
 	        default:
@@ -2488,18 +3218,21 @@ public class Sector {
 		        	gm = MODE_EOL;
 		            LeaveMap();
 		            sector[p.cursectnum].lotag = 0;
-		            if(ud.from_bonus != 0)
-		            {
-		                ud.level_number = ud.from_bonus;
-		                ud.m_level_number = ud.level_number;
-		                ud.from_bonus = 0;
-		            }
-		            else
-		            {
-		                ud.level_number++;
-		                if( ud.level_number > 6 )
-		                    ud.level_number = 0;
-		                ud.m_level_number = ud.level_number;
+		            if(currentGame.getCON().type != RRRA || word_119BE2 == 0) {
+			            if(ud.from_bonus != 0)
+			            {
+			                ud.level_number = ud.from_bonus;
+			                ud.m_level_number = ud.level_number;
+			                ud.from_bonus = 0;
+			            }
+			            else
+			            {
+			                ud.level_number++;
+			                if( ud.level_number > 6 )
+			                    ud.level_number = 0;
+			                ud.m_level_number = ud.level_number;
+			            }
+			            word_119BE2 = 1;
 		            }
 		            return;
 		        case -2:
@@ -2558,6 +3291,34 @@ public class Sector {
 	        if(hitscanwall >= 0 && wall[hitscanwall].overpicnum == MIRROR)
 	            if( wall[hitscanwall].lotag > 0 && Sound[wall[hitscanwall].lotag].num == 0 && snum == screenpeek)
 	        {
+	            if(currentGame.getCON().type == RRRA)
+	            {
+	            	if(screenpeek == myconnectindex) {
+		            	if ( Sound[27].num == 0 && Sound[28].num == 0 && Sound[29].num == 0 && Sound[257].num == 0 && Sound[258].num == 0 )
+		            	{
+		            		switch ( engine.krand() % 5 )
+		            		{
+		            		case 0:
+		            			spritesound(27, p.i);
+		            			break;
+		            		case 1:
+		            			spritesound(28, p.i);
+		            			break;
+		            		case 2:
+		            			spritesound(29, p.i);
+		            			break;
+		            		case 3:
+		                        spritesound(257, p.i);
+		                        break;
+		                      default:
+		                        spritesound(258, p.i);
+		                        break;
+		                    }
+		            	}
+	            	}
+	            	return;
+	            }
+
 	            spritesound(wall[hitscanwall].lotag,p.i);
 	            return;
 	        }
@@ -2568,6 +3329,19 @@ public class Sector {
 	            default:
 	                if(wall[hitscanwall].lotag != 0)
 	                    return;
+	        }
+	        
+	        if ( p.OnMotorcycle )
+	        {
+	        	if ( p.Motospeed < 20 )
+	        		leaveMoto(p);
+	        	return;
+	        }
+	        if ( p.OnBoat )
+	        {
+	        	if ( p.Motospeed < 20 )
+	        		leaveBoard(p);
+	        	return;
 	        }
 
 	        
@@ -2673,6 +3447,49 @@ public class Sector {
 	                    p.pals[2] = 64;
 	                    p.pals_time = 32;
 	                    break;
+	                case MOTORCYCLE:
+	                	getMoto(p, neartagsprite);
+	                	return;
+	                case SWAMPBUGGY:
+	                	getBoard(p, neartagsprite);
+	                	return;
+	                case 8448:
+	                	if ( Sound[340].num == 0 )
+	                		spritesound(340, neartagsprite);
+	                	return;
+	                case 8704:
+	                	if ( numplayers == 1 )
+	                	{
+	                		if ( Sound[445].num != 0 || dword_119C08 != 0 )
+	                		{
+			                    if ( Sound[445].num == 0 && Sound[446].num == 0 && Sound[447].num == 0 && dword_119C08 != 0 )
+			                    {
+			                    	if ( (engine.krand() % 2) == 1 )
+			                    		spritesound(446, neartagsprite);
+			                    	else
+			                    		spritesound(447, neartagsprite);
+			                    }
+	                		}
+	                		else
+	                		{
+	                			spritesound(445, neartagsprite);
+	                			dword_119C08 = 1;
+	                		}
+	                }
+	                return;
+	                case 8164:
+	                case 8165:
+	                case 8166:
+	                case 8167:
+	                case 8168:
+	                case 8591:
+	                case 8592:
+	                case 8593:
+	                case 8594:
+	                case 8595:
+	                	sprite[neartagsprite].extra = 60;
+	                    spritesound(235, neartagsprite);
+	                	return;
 	            }
 	        }
 

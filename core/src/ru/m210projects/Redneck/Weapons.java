@@ -675,6 +675,7 @@ public class Weapons {
 		                        wall[hitwall].picnum == 127 ||
 		                        wall[hitwall].picnum == 128 ||
 		                        wall[hitwall].picnum == 2249 ||
+		                        wall[hitwall].picnum == 8660 ||
 		                        wall[hitwall].picnum == 2250) )
 		                    {
 		                        checkhitswitch(p,hitwall,0);

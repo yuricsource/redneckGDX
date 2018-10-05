@@ -72,13 +72,15 @@ public class Globals {
 	public static int[] zofslope = new int[2];
 	
 	//XXX RA
-	public static int BellTime;
+	public static short BellTime;
 	public static int BellSound;
+	public static short word_119BE0;
 	public static int WindDir;
 	public static int WindTime;
 	public static int word_119BDA;
 	public static int word_119BE2;
 	public static int word_119BD8;
+	public static int dword_119C08;
 	
 //	public static int numepisodes, numlevels[] = new int[3];
 	
