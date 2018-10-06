@@ -339,12 +339,12 @@ public class Controls {
 			if(plry != 0) {
 				int jrun = 0;
 				if(Math.abs(plry) >= 0.80f) jrun = 1;
-				vel = (short) BClipRange(vel - (20 * plry), -4 * keymove * (jrun + 1), 4 * keymove * (jrun + 1));
+				vel = (short) BClipRange(vel - (80 * plry), -4 * keymove * (jrun + 1), 4 * keymove * (jrun + 1));
 			}
 			if(plrx != 0) {
 				int jrun = 0;
 				if(Math.abs(plrx) >= 0.80f) jrun = 1;
-				svel = (short) BClipRange(svel - (20 * plrx), -4 * keymove * (jrun + 1), 4 * keymove * (jrun + 1));
+				svel = (short) BClipRange(svel - (80 * plrx), -4 * keymove * (jrun + 1), 4 * keymove * (jrun + 1));
 			}
         }
 
