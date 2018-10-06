@@ -653,6 +653,7 @@ public class Weapons {
 	                        sprite[hitsprite].picnum == 127 ||
 	                        sprite[hitsprite].picnum == 128 ||
 	                        sprite[hitsprite].picnum == 2249 ||
+	                        sprite[hitsprite].picnum == 8660 ||
 	                        sprite[hitsprite].picnum == 2250) )
 	                    {
 	                        checkhitswitch(p,hitsprite,1);
@@ -2293,6 +2294,14 @@ public class Weapons {
 			                	(p.kickback_pic) = 1;
 		            	}
 		                break;
+		            case MOTO_WEAPON:
+		            	if(p.ammo_amount[MOTO_WEAPON] != 0 &&  p.hbomb_hold_delay == 0)
+		                	(p.kickback_pic) = 1;
+		            	break;
+		            case BOAT_WEAPON:
+		            	if(p.ammo_amount[BOAT_WEAPON] != 0)
+		                	(p.kickback_pic) = 1;
+		            	break;
 		        }
 		    }
 		    else if(p.kickback_pic != 0)
@@ -2798,6 +2807,52 @@ public class Weapons {
 		            		p.kickback_pic = 0;
 		            		break;
 		            	}
+		            	break;
+		            case MOTO_WEAPON: //XXX
+		            	(p.kickback_pic)++;
+		            	if( (p.kickback_pic) == 2 || (p.kickback_pic) == 4 )
+		            	{
+		            		p.visibility = 0;
+		            		lastvisinc = totalclock+32;
+		            		spritesound(CHAINGUN_FIRE,pi);
+		            		shoot(pi,RIFLE);
+		            		p.field_290 = 0x4000;
+		            		sub_64EF0(snum);
+		            		p.ammo_amount[MOTO_WEAPON]--;
+		            		if(p.ammo_amount[MOTO_WEAPON] > 0)
+		            			checkavailweapon(p);
+		            		else {
+		            			p.kickback_pic = 0;
+		            			break;
+		            		}
+		            	}
+		            	if ( p.kickback_pic == 2 )
+		            		p.ang += 4;
+		            	if ( p.kickback_pic == 4 )
+		            		p.ang -= 4;
+		            	if ( p.kickback_pic > 4 )
+		            		p.kickback_pic = 1;
+		            	if( (sb_snum&(1<<2)) == 0)
+		            		p.kickback_pic = 0;
+
+		            	break;
+		            case BOAT_WEAPON:
+		            	if( (p.kickback_pic) == 3 )
+	            		{
+		            		p.Motospeed -= 20;
+		            		shoot(pi,1790);
+		            		p.ammo_amount[BOAT_WEAPON]--;
+	            		}
+		            	p.kickback_pic++;
+	            		if((p.kickback_pic) > 20)
+	 	                {
+	            			 p.kickback_pic = 0;
+	            			 checkavailweapon(p); 
+	 	                }
+	            		
+	            		if( p.ammo_amount[BOAT_WEAPON] <= 0 )
+	            			p.kickback_pic = 0;
+	                    else checkavailweapon(p);
 		            	break;
 		        }
 		    }

@@ -3433,30 +3433,47 @@ public class Gamedef {
 	        case 135: //ifonboat
 	        	parseifelse(con, ps[g_p].OnBoat);
 	        	break;
-	        case 136: //fakebubba XXX
-	
+	        case 136: //fakebubba
+	        	fakebubba_spawn++;
+        		switch(fakebubba_spawn - 1)
+        		{
+        		case 0:
+        			spawn(g_i, PIG);
+        			break;
+        		case 1:
+        			spawn(g_i, MINION);
+        			break;
+        		case 2:
+        			spawn(g_i, DAISYMAE);
+        			break;
+        		case 3:
+        			spawn(g_i, VIXEN);
+        			operateactivators(666, ps[g_p].i);
+        			break;
+        		}
+  
 	        	insptr++;
 	        	break;
 	        case 137: //mamatrigger
-//	        	sub_56430(667, ps[g_p].i); XXX
+	        	operateactivators(667, ps[g_p].i);
 	        	insptr++;
 	        	break;
-	        case 138: //mamaspawn XXX
-//	        	if (	word_119BDA != 0 )
-//	            {
-//	        		word_119BDA--;
-//	        		sub_76710(g_i, 7280);
-//	            }
+	        case 138: //mamaspawn
+	        	if (	mamaspawn_count != 0 )
+	            {
+	        		mamaspawn_count--;
+	        		spawn(g_i, JACKOLOPE);
+	            }
 	        	insptr++;
 	        	break;
-	        case 139: //mamaquake XXX
-//	        	if ( g_sp.pal == 31 )
-//	        		byte_1D7E72 = 4;
-//	            else if ( g_sp.pal == 32 )
-//	            	byte_1D7E72 = 6;
+	        case 139: //mamaquake
+	        	if ( g_sp.pal == 31 )
+	        		earthquaketime = 4;
+	            else if ( g_sp.pal == 32 )
+	            	earthquaketime = 6;
 	        	insptr++;
 	        	break;
-	        case 140:
+	        case 140: //clipdist
 	        	insptr++;
 	        	g_sp.clipdist = con.script[insptr];
 	        	insptr++;
@@ -3465,7 +3482,7 @@ public class Gamedef {
 	        	insptr++;
 	        	ps[myconnectindex].field_609 = 150;
 	        	break;
-	        case 142:
+	        case 142: //newpic
 	        	insptr++;
 	        	g_sp.picnum = (short) con.script[insptr];
 	        	insptr++;

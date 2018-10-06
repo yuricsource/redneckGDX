@@ -77,9 +77,9 @@ public class Globals {
 	public static short word_119BE0;
 	public static int WindDir;
 	public static int WindTime;
-	public static int word_119BDA;
+	public static int mamaspawn_count;
 	public static int word_119BE2;
-	public static int word_119BD8;
+	public static int fakebubba_spawn;
 	public static int dword_119C08;
 	
 //	public static int numepisodes, numlevels[] = new int[3];

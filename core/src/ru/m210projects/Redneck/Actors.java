@@ -250,7 +250,7 @@ public class Actors {
                 return true;
 	    }
 
-	    if( currentGame.getCON().actortype[pn] != 0 ) return true;
+	    if( pn < MAXTILES && currentGame.getCON().actortype[pn] != 0 ) return true;
 
 	    return false;
 	}
@@ -2023,8 +2023,8 @@ public class Actors {
 								break;
 							}
 						}
-//						else if (!(sectlotag == 1 && ps[p].on_ground))
-//							break; GDX 2.10.18
+						else // if (!(sectlotag == 1 && ps[p].on_ground)) GDX 2.10.18
+							break; 
 
 						if (onfloorz == 0
 								&& klabs(sprite[i].z - ps[p].posz) < 6144)

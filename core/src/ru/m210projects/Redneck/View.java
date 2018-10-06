@@ -1416,7 +1416,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnMotorcycle ) 
+                else if ( ps[p].OnBoat ) 
                 { 
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);

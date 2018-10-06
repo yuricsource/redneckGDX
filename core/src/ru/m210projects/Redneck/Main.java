@@ -55,9 +55,22 @@ public class Main extends ApplicationAdapter {
 	 * TODO:
 	 * doincrements
 	 * processinput
+	 * e1m2 нужно отбирать оружия
+	 * красные миньоны должны кидать огонь
+	 * dobonus другие картинки
+	 * другие фразы игрока
+	 * олень не прыгает вверх
+	 * бабы кидают пилы
+	 * в начале уровня должны выбираться грабли
+	 * -ракетыкурицы должны быть меньше размером
+	 * drug mode (e1m4)
+	 * камин не мерцает
+	 * elvisbubba spawn
+	 * ROR
+	 * spawn RA fog method
+	 * бабы на мотоцикле тоже должны чтото кидать
 	 * 
 	 * не работают комары в R66
-	 * spawn RA fog method
 	 * Joystick sensitive bug
 	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
