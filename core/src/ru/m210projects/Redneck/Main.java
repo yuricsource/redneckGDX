@@ -56,18 +56,13 @@ public class Main extends ApplicationAdapter {
 	 * doincrements
 	 * processinput
 	 * e1m2 нужно отбирать оружия
-	 * красные миньоны должны кидать огонь
 	 * dobonus другие картинки
 	 * другие фразы игрока
-	 * олень не прыгает вверх
-	 * бабы кидают пилы
 	 * в начале уровня должны выбираться грабли
-	 * -ракетыкурицы должны быть меньше размером
 	 * drug mode (e1m4)
 	 * камин не мерцает
-	 * elvisbubba spawn
 	 * ROR
-	 * spawn RA fog method
+	 * spawn RA fog method sub_86730
 	 * бабы на мотоцикле тоже должны чтото кидать
 	 * 
 	 * не работают комары в R66

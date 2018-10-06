@@ -1012,6 +1012,10 @@ public class Spawn {
                 		sp.xrepeat = 11;
                 		sp.yrepeat = 12;
                 		break;
+                	case 14:
+                		sp.xrepeat = 20;
+                		sp.yrepeat = 20;
+                		break;
                 }
                 break;
             case DOORSHOCK:
@@ -1694,11 +1698,13 @@ public class Spawn {
         			case 4249: 
         			case 4504: 
         			case 7035:
+        			case 4770:
         				sp.xrepeat = 25;
                         sp.yrepeat = 21;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
         				break;
                     case 6658:
+                    case 6659:
                     	sp.xrepeat = 20;
                         sp.yrepeat = 20;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
@@ -1774,9 +1780,12 @@ public class Spawn {
                         sp.yrepeat = 26;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
     	            	break;
+    	            default:
+    	            	sp.xrepeat = 40;
+                        sp.yrepeat = 40;
+    	            	break;
             	}
                 
-
                 if(j >= 0) sp.lotag = 0;
 
                 if( ( sp.lotag > ud.player_skill ) || ud.monsters_off )
