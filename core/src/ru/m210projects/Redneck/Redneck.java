@@ -121,7 +121,6 @@ import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Premap.*;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 
 import ru.m210projects.Build.Scriptfile;
 import ru.m210projects.Build.Audio.BAudio;
