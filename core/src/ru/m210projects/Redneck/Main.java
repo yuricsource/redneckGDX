@@ -98,7 +98,8 @@ public class Main extends ApplicationAdapter {
 			LoadUserRes();
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
-			
+			gpmanager.setSmoothing(cfg.gJoySmoothing);
+
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 
