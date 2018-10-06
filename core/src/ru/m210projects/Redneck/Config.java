@@ -713,7 +713,7 @@ public class Config extends BConfig {
 
 			saveString(fil, "[KeyDefinitions]\r\n");
 			for(int i = 0; i < keynames.length; i++) {
-				line = keynames[i] + " = \"" + Keymap.toString(primarykeys[i]) +  "\", \"" + Keymap.toString(secondkeys[i]) +  "\", \"" + Keymap.toString(mousekeys[i]) + "\"\r\n";
+				line = keynames[i] + " = \"" + Keymap.toString(primarykeys[i]) +  "\", \"" + Keymap.toString(secondkeys[i]) +  "\", \"" + Keymap.toString(mousekeys[i])  +  "\", \"" + ButtonMap.buttonName(gpadkeys[i]) + "\"\r\n";
 				saveString(fil, line);
 			}
 			saveString(fil, "MouseDigitalAxes0_0 " + ((mouseaxis[AXISLEFT] != -1)?("= " + keynames[mouseaxis[AXISLEFT]]):"= \"N/A\"") +"\r\n");
