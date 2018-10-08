@@ -130,10 +130,10 @@ public class Config extends BConfig {
 	public  int gJoyStrafeAxis = 1; //Stick1X
 	public  int gJoyLookAxis = 2; //Stick2Y
 	public  int gJoyTurnAxis = 3; //Stick2X
-	public  int gJoyTurnSpeed = 65536;
-	public  int gJoyLookSpeed = 65536;
-	public  int gJoyDeadZone = 6144;
-	public  int gJoySmoothing = 0; // zero equals linear response (unfiltered)
+	public  int gJoyTurnSpeed = 16384;
+	public  int gJoyLookSpeed = 1048576;
+	public  int gJoyDeadZone = 8192;
+	public  int gJoySmoothing = 32768;
 	public  boolean gJoyInvert = false;
 	
 	public String pName = "DUKE";
