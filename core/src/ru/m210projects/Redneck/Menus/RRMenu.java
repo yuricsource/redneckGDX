@@ -1257,7 +1257,7 @@ public class RRMenu {
 				}, -1, -1, false);
 
 		MenuSlider mLookSpeed = new MenuSlider("Look speed:", 1, false, 46, pos += 12, 230, cfg.gJoyLookSpeed, 0,
-				0x28000, 4096, new MENUPROC() {
+				0x140000, 4096, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
@@ -1266,7 +1266,7 @@ public class RRMenu {
 				}, -1, -1, false);
 
 		MenuSlider mTurnSpeed = new MenuSlider("Turn speed:", 1, false, 46, pos += 12, 230, cfg.gJoyTurnSpeed, 0,
-				0x28000, 4096, new MENUPROC() {
+				0x140000, 4096, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
@@ -1283,7 +1283,6 @@ public class RRMenu {
 						gpmanager.setSmoothing(cfg.gJoySmoothing);
 					}
 				}, -1, -1, false);
-
 
 		MenuSwitch mInvert = new MenuSwitch("Invert look axis:", 1, 46, pos += 15, 230, cfg.gJoyInvert, new MENUPROC() {
 			@Override

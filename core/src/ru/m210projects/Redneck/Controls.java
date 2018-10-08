@@ -42,6 +42,7 @@ import static ru.m210projects.Redneck.Globals.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
+import com.badlogic.gdx.math.Vector2;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
@@ -317,34 +318,30 @@ public class Controls {
         	vel =  (short) BClipRange(vel - (mousy * cfg.gMouseMoveSpeed / 65536f), -4 * keymove, 4 * keymove);
 	    
 	    if(cfg.useJoystick) {
-	        float lookx = gpmanager.getAxisValue(cfg.gJoyTurnAxis);
-			float looky = gpmanager.getAxisValue(cfg.gJoyLookAxis);
+			Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
+			float lookx = stick1.x;
+			float looky = stick1.y;
 			if(cfg.gJoyInvert) looky *= -1;
 			
 			if(looky != 0) {
-				float k = 1.5f;
-				if(Math.abs(looky) >= 0.80f) k = 3;
+				float k = 1.0f;
 				horiz = BClipRange(horiz - k * looky * cfg.gJoyLookSpeed / 65536f, -(ydim>>1), 100+(ydim>>1));
 			}
 			
 			if(lookx != 0) {
 				float k = 64;
-				if(Math.abs(lookx) >= 0.80f) k = 128;
 				angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
 			}
 
-			float plrx = gpmanager.getAxisValue(cfg.gJoyStrafeAxis);
-			float plry = gpmanager.getAxisValue(cfg.gJoyMoveAxis);
-			
+			Vector2 stick2 = gpmanager.getStickValue(cfg.gJoyStrafeAxis, cfg.gJoyMoveAxis);
+			float plrx = stick2.x;
+			float plry = stick2.y;
+
 			if(plry != 0) {
-				int jrun = 0;
-				if(Math.abs(plry) >= 0.80f) jrun = 1;
-				vel = (short) BClipRange(vel - (20 * plry), -4 * keymove * (jrun + 1), 4 * keymove * (jrun + 1));
+				vel = (short) BClipRange(vel - (80 * plry), -4 * keymove, 4 * keymove);
 			}
 			if(plrx != 0) {
-				int jrun = 0;
-				if(Math.abs(plrx) >= 0.80f) jrun = 1;
-				svel = (short) BClipRange(svel - (20 * plrx), -4 * keymove * (jrun + 1), 4 * keymove * (jrun + 1));
+				svel = (short) BClipRange(svel - (80 * plrx), -4 * keymove, 4 * keymove);
 			}
         }
 
