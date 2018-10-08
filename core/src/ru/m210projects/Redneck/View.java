@@ -1229,10 +1229,40 @@ public class View {
                 t.picnum = (short) (CROSSBOW+k);
                 break; 
             case SHITBALL:
-            	t.picnum = (short) (((totalclock >> 4) & 3) + SHITBALL);
+            	if ( sprite[s.owner].picnum == 5120 && sprite[s.owner].pal == 8 )
+            		t.picnum = (short) ((totalclock >> 4) % 6 + 3500);
+                else if ( sprite[s.owner].picnum == 5120 && sprite[s.owner].pal == 19 )
+                {
+                	t.picnum = (short) (((totalclock >> 4) & 3) + 5090);
+                	t.shade = -127;
+                }
+                else if ( sprite[s.owner].picnum == 8705 )
+                {
+                	k = (short) ((((s.ang+3072+128-a)&2047)>>8)&7);
+                    if(k>4)
+                    {
+                        k = (short) (8-k);
+                        t.cstat |= 4;
+                    }
+                    else t.cstat &= ~4;
+
+                    if(sector[t.sectnum].lotag == 2) k += 1795-1405;
+                    else if( (hittype[i].floorz-s.z) > (64<<8) ) k += 60;
+
+                    t.picnum = (short) (7274 + k);
+                }
+                else
+                	t.picnum = (short) (((totalclock >> 4) & 3) + SHITBALL);
             	break;
             case CIRCLESAW:
-            	t.picnum = (short) (((totalclock >> 4) & 7) + CIRCLESAW);
+            	if ( sprite[s.owner].picnum != DAISYMAE && sprite[s.owner].picnum != DAISYMAE+1 )
+            		t.picnum = (short) (((totalclock >> 4) & 7) + CIRCLESAW);
+                else
+                {
+                	t.picnum = (short) (((totalclock >> 4) & 3) + 3460);
+                	t.shade = -127;
+                }
+
             	break;
             case FORCESPHERE:
                 if(t.statnum == 5)
@@ -1416,7 +1446,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnMotorcycle ) 
+                else if ( ps[p].OnBoat ) 
                 { 
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);

@@ -55,9 +55,17 @@ public class Main extends ApplicationAdapter {
 	 * TODO:
 	 * doincrements
 	 * processinput
+	 * e1m2 нужно отбирать оружия
+	 * dobonus другие картинки
+	 * другие фразы игрока
+	 * в начале уровня должны выбираться грабли
+	 * drug mode (e1m4)
+	 * камин не мерцает
+	 * ROR
+	 * spawn RA fog method sub_86730
+	 * бабы на мотоцикле тоже должны чтото кидать
 	 * 
 	 * не работают комары в R66
-	 * spawn RA fog method
 	 * Joystick sensitive bug
 	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
@@ -99,7 +107,7 @@ public class Main extends ApplicationAdapter {
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 			gpmanager.setSmoothing(cfg.gJoySmoothing);
-
+			
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 

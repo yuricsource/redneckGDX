@@ -87,6 +87,12 @@ public class Gamedef {
 	public static final int seekplayer = 512;
 	public static final int furthestdir = 1024;
 	public static final int dodgebullet = 4096;
+
+		//RA
+	public static final int justjump1 = 256;
+	public static final int justjump2 = 8192;
+	public static final int windang = 16384;
+	public static final int antifaceplayerslow = 32768; 
 	
 	// Some misc public static final ints;
 	public static final int NO       = 0;
@@ -1927,11 +1933,56 @@ public class Gamedef {
 	        g_sp.ang += angdif;
 	    }
 
+	    if((a&antifaceplayerslow) != 0)
+	    {
+	    	if(ps[g_p].newowner >= 0)
+	            goalang = engine.getangle(ps[g_p].oposx-g_sp.x,ps[g_p].oposy-g_sp.y);
+	        else goalang = engine.getangle(ps[g_p].posx-g_sp.x,ps[g_p].posy-g_sp.y);
+	    	angdif = (short) (ksgn(getincangle(g_sp.ang,(goalang+512)&kAngleMask))<<5);
+	        if(angdif > -32 && angdif < 0)
+	        {
+	            angdif = 0;
+	            g_sp.ang = goalang;
+	        }
+	        g_sp.ang += angdif;
+	    }
 
 	    if((a&jumptoplayer) == jumptoplayer)
 	    {
-	        if(g_t[0] < 16)
-	            g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047]>>5);
+	    	if ( g_sp.picnum == DAISYMAE )	
+	    	{
+	    		if(g_t[0] < 16)
+		            g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 40);
+	    	} else {
+		        if(g_t[0] < 16)
+		            g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047]>>5);
+	    	}
+	    }
+	    
+	    if ( (a & justjump1) != 0 )
+	    {
+	    	if ( g_sp.picnum == JACKOLOPE )
+	    	{
+	    		if ( g_t[0] < 8 )
+	    			g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047]>>5);
+	    	}
+	    	else if ( g_sp.picnum == MAMAJACKOLOPE && g_t[0] < 8 )
+	    		g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 35);
+	    }
+	    
+	    if((a & justjump2) != 0) {
+	    	if ( g_sp.picnum == JACKOLOPE )
+	    	{
+	    		if ( g_t[0] < 8 )
+	    			g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 24);
+	    	}
+	    	else if ( g_sp.picnum == MAMAJACKOLOPE && g_t[0] < 8 )
+	    		g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 28);
+	    }
+	    
+	    if((a & windang) != 0) {
+	    	if ( g_t[0] < 8 )
+    			g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 24);
 	    }
 
 	    if((a&face_player_smart) != 0)
@@ -2034,7 +2085,8 @@ public class Gamedef {
             		&& g_sp.picnum != UFO2 
             		&& g_sp.picnum != UFO3 
             		&& g_sp.picnum != UFO4 
-            		&& g_sp.picnum != UFO5)
+            		&& g_sp.picnum != UFO5 
+            		&& g_sp.picnum != MINIONUFO)
 	            {
 	                if( hittype[g_i].bposz != g_sp.z || ( ud.multimode < 2 && ud.player_skill < 2 ) )
 	                {
@@ -2047,6 +2099,27 @@ public class Gamedef {
 	                    else daxvel <<= 2;
 	                }
 	            }
+	        }
+	        
+	        if ( sector[g_sp.sectnum].lotag == 1 )
+	        {
+	        	switch(g_sp.picnum)
+	        	{
+		        	case BIKERRIDE:
+		        	case BIKERRIDE+1:
+		        	case BIKERRIDEDAISY:
+		        		daxvel >>= 1;
+	                    break;
+	        	}
+	        } else {
+	        	switch(g_sp.picnum)
+	        	{	
+		        	case MINIONAIRBOAT:
+		        	case HULKAIRBOAT:
+		        	case DAISYAIRBOAT:
+		        		daxvel >>= 1;
+	                    break;
+	        	}
 	        }
 
 	        hittype[g_i].movflag = movesprite(g_i,
@@ -3433,30 +3506,47 @@ public class Gamedef {
 	        case 135: //ifonboat
 	        	parseifelse(con, ps[g_p].OnBoat);
 	        	break;
-	        case 136: //fakebubba XXX
-	
+	        case 136: //fakebubba
+	        	fakebubba_spawn++;
+        		switch(fakebubba_spawn - 1)
+        		{
+        		case 0:
+        			spawn(g_i, PIG);
+        			break;
+        		case 1:
+        			spawn(g_i, MINION);
+        			break;
+        		case 2:
+        			spawn(g_i, DAISYMAE);
+        			break;
+        		case 3:
+        			spawn(g_i, VIXEN);
+        			operateactivators(666, ps[g_p].i);
+        			break;
+        		}
+  
 	        	insptr++;
 	        	break;
 	        case 137: //mamatrigger
-//	        	sub_56430(667, ps[g_p].i); XXX
+	        	operateactivators(667, ps[g_p].i);
 	        	insptr++;
 	        	break;
-	        case 138: //mamaspawn XXX
-//	        	if (	word_119BDA != 0 )
-//	            {
-//	        		word_119BDA--;
-//	        		sub_76710(g_i, 7280);
-//	            }
+	        case 138: //mamaspawn
+	        	if (	mamaspawn_count != 0 )
+	            {
+	        		mamaspawn_count--;
+	        		spawn(g_i, JACKOLOPE);
+	            }
 	        	insptr++;
 	        	break;
-	        case 139: //mamaquake XXX
-//	        	if ( g_sp.pal == 31 )
-//	        		byte_1D7E72 = 4;
-//	            else if ( g_sp.pal == 32 )
-//	            	byte_1D7E72 = 6;
+	        case 139: //mamaquake
+	        	if ( g_sp.pal == 31 )
+	        		earthquaketime = 4;
+	            else if ( g_sp.pal == 32 )
+	            	earthquaketime = 6;
 	        	insptr++;
 	        	break;
-	        case 140:
+	        case 140: //clipdist
 	        	insptr++;
 	        	g_sp.clipdist = con.script[insptr];
 	        	insptr++;
@@ -3465,7 +3555,7 @@ public class Gamedef {
 	        	insptr++;
 	        	ps[myconnectindex].field_609 = 150;
 	        	break;
-	        case 142:
+	        case 142: //newpic
 	        	insptr++;
 	        	g_sp.picnum = (short) con.script[insptr];
 	        	insptr++;

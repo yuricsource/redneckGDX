@@ -24,19 +24,7 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Build.Engine.CLIPMASK0;
-import static ru.m210projects.Build.Engine.MAXSPRITES;
-import static ru.m210projects.Build.Engine.MAXSECTORS;
-import static ru.m210projects.Build.Engine.MAXSTATUS;
-import static ru.m210projects.Build.Engine.headspritestat;
-import static ru.m210projects.Build.Engine.nextspritestat;
-import static ru.m210projects.Build.Engine.sector;
-import static ru.m210projects.Build.Engine.show2dsector;
-import static ru.m210projects.Build.Engine.show2dsprite;
-import static ru.m210projects.Build.Engine.sintable;
-import static ru.m210projects.Build.Engine.sprite;
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.wall;
+import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
@@ -113,7 +101,7 @@ public class Spawn {
 	    }
 
 	    hittype[i].temp_data[0]=hittype[i].temp_data[2]=hittype[i].temp_data[3]=hittype[i].temp_data[5]=0;
-	    if( currentGame.getCON().actorscrptr[s_pn] != 0 )
+	    if( s_pn < MAXTILES && currentGame.getCON().actorscrptr[s_pn] != 0 )
 	    {
 	        s.extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[s_pn]];
 	        hittype[i].temp_data[4] = currentGame.getCON().script[currentGame.getCON().actorscrptr[s_pn]+1];
@@ -1024,6 +1012,10 @@ public class Spawn {
                 		sp.xrepeat = 11;
                 		sp.yrepeat = 12;
                 		break;
+                	case 14:
+                		sp.xrepeat = 20;
+                		sp.yrepeat = 20;
+                		break;
                 }
                 break;
             case DOORSHOCK:
@@ -1474,14 +1466,15 @@ public class Spawn {
 
                             for(s=startwall;s<endwall;s++)
                             {
-                                if( wall[ s ].nextsector >= 0 &&
-                                    sector[ wall[ s ].nextsector].hitag == 0 &&
-                                        sector[ wall[ s ].nextsector].lotag < 3 )
-                                    {
-                                        s = wall[s].nextsector;
-                                        j = 1;
-                                        break;
-                                    }
+                            	if ( wall[s].nextsector >= 0
+                        			&& sector[wall[ s ].nextsector].hitag == 0
+                                    && (sector[wall[ s ].nextsector].lotag < 3
+                                     || sector[wall[ s ].nextsector].lotag == 160) )
+                                {
+                                    s = wall[s].nextsector;
+                                    j = 1;
+                                    break;
+                                }
                             }
 
                             if(j == 0)
@@ -1705,11 +1698,13 @@ public class Spawn {
         			case 4249: 
         			case 4504: 
         			case 7035:
+        			case 4770:
         				sp.xrepeat = 25;
                         sp.yrepeat = 21;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
         				break;
                     case 6658:
+                    case 6659:
                     	sp.xrepeat = 20;
                         sp.yrepeat = 20;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
@@ -1785,9 +1780,12 @@ public class Spawn {
                         sp.yrepeat = 26;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
     	            	break;
+    	            default:
+    	            	sp.xrepeat = 40;
+                        sp.yrepeat = 40;
+    	            	break;
             	}
                 
-
                 if(j >= 0) sp.lotag = 0;
 
                 if( ( sp.lotag > ud.player_skill ) || ud.monsters_off )

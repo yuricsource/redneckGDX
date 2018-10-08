@@ -250,7 +250,7 @@ public class Actors {
                 return true;
 	    }
 
-	    if( currentGame.getCON().actortype[pn] != 0 ) return true;
+	    if( pn < MAXTILES && currentGame.getCON().actortype[pn] != 0 ) return true;
 
 	    return false;
 	}
@@ -677,7 +677,7 @@ public class Actors {
 								          || s.picnum == GUITARBILLY
 								          || s.picnum == 6225
 								          || s.picnum == MAMAJACKOLOPE
-								          || s.picnum == MINION && s.pal == 8 ) 
+								          || (s.picnum == MINION && s.pal == 8) ) 
 								{
 									int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 									int cz2 = s.z - (engine.krand() % (52 << 8));
@@ -1087,7 +1087,7 @@ public class Actors {
 					j = spawn(i, sprite[i].hitag);
 					if(currentGame.getCON().type == RRRA) {
 						sprite[j].pal = sprite[i].pal;
-						if ( sprite[j].picnum == 8705 )
+						if ( sprite[j].picnum == MAMAJACKOLOPE )
 						{
 							 if ( sprite[j].pal == 30 )
 							 {
@@ -1117,11 +1117,8 @@ public class Actors {
 						}
 						else 
 							engine.deletesprite(i);
-					} else {
+					} else 
 						engine.deletesprite(i);
-						i = nexti;
-						continue;
-					}
 				} else if (sprite[i].extra > (66 - 13))
 					sprite[i].extra++;
 				break;
@@ -2023,8 +2020,8 @@ public class Actors {
 								break;
 							}
 						}
-//						else if (!(sectlotag == 1 && ps[p].on_ground))
-//							break; GDX 2.10.18
+						else // if (!(sectlotag == 1 && ps[p].on_ground)) GDX 2.10.18
+							break; 
 
 						if (onfloorz == 0
 								&& klabs(sprite[i].z - ps[p].posz) < 6144)

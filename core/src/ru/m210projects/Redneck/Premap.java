@@ -833,7 +833,7 @@ public class Premap {
 	    earthquaketime          = 0;
 	    WindTime = 0;
 	    WindDir = 0;
-	    word_119BD8 = 0;
+	    fakebubba_spawn = 0;
 	    word_119BE2 = 0;
 	    BellTime = 0;
 
@@ -960,18 +960,18 @@ public class Premap {
 	    ps[screenpeek].field_607 = 0;
 	    ps[screenpeek].field_609 = 0;
 	    BellSound = 0;
-	    word_119BDA = 15;
+	    mamaspawn_count = 15;
 	    word_119BE2 = 0;
 	    if ( ud.level_number != 3 || ud.volume_number != 0 )
 	    {
 	    	if ( ud.level_number == 2 && ud.volume_number == 1 )
-	    		word_119BDA = 10;
+	    		mamaspawn_count = 10;
 	    	else if ( ud.level_number == 6 && ud.volume_number == 1 )
-	    		word_119BDA = 15;
+	    		mamaspawn_count = 15;
 	    	else if ( ud.level_number == 4 && ud.volume_number == 1 )
 	    		ps[myconnectindex].moonshine_amount = 0;
 	    }
-	    else word_119BDA = 5;
+	    else mamaspawn_count = 5;
 
 	    resetprestat(0,g);
 	    
@@ -986,9 +986,9 @@ public class Premap {
 	    
 	    BowlReset();
 	    
-	    word_119BD8 = 0;
+	    fakebubba_spawn = 0;
 	    word_119BE2 = 0;
-	    word_119BDA = 15;
+	    mamaspawn_count = 15;
 	    BellTime = 0;
 	    
 	    for ( j = 0; j < MAXSPRITES; ++j )

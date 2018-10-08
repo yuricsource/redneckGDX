@@ -484,7 +484,7 @@ public class Sector {
 
 	    if ( ps[screenpeek].field_5DD == 1 )
 	    {
-	    	for ( i = 0; i < MAXTILES; ++i )
+	    	for ( i = 0; i < MAXWALLS; ++i )
 	    	{
 	    		if ( wall[i].picnum == 7873 )
 	    			wall[i].xpanning += 6;
@@ -1099,7 +1099,8 @@ public class Sector {
 	        if(sprite[i].lotag == low) switch(sprite[i].picnum)
 	        {
 	            case RESPAWN:
-	                if( badguypic(sprite[i].hitag) && ud.monsters_off ) break;
+	                if( sprite[i].hitag < 0 || sprite[i].hitag >= MAXTILES || (badguypic(sprite[i].hitag) && ud.monsters_off) )
+	                	break;
 
 	                j = (short) spawn(i,TRANSPORTERSTAR);
 	                sprite[j].z -= (32<<8);

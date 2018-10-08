@@ -976,6 +976,16 @@ public class Redneck {
 	            checksectors(i);
 	        }
 	    }
+	    
+//	    if(Gdx.input.isKeyPressed(Keys.E))
+//	    {
+//	    	engine.hitscan(ps[0].posx,ps[0].posy,ps[0].posz,ps[0].cursectnum,
+//	    	        sintable[((short)ps[0].ang+512)&2047],
+//	    	        sintable[(short)ps[0].ang&2047],
+//	    	        0,pHitInfo,CLIPMASK1);
+//	    	if(pHitInfo.hitsprite != -1)
+//	    	System.err.println(sprite[pHitInfo.hitsprite].picnum);
+//	    }
 
 	    if( ud.pause_on == 0 )
 	    {
