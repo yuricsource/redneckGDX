@@ -111,6 +111,8 @@ public class Main extends ApplicationAdapter {
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 
+			Animlib.isEnabled = cfg.gPlayVideos;
+
 			gm = MODE_LOGO;
 			initanm("rr_intro.anm",5, -1);
 

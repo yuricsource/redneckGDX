@@ -1846,7 +1846,6 @@ public class RRMenu {
 			}
 		}, null, null);
 
-		pos += 5;
 		MenuSwitch UseVoxels = new MenuSwitch("Voxels:", 1, 47, pos += 12, 240, usevoxels, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
@@ -1885,6 +1884,19 @@ public class RRMenu {
 			}
 		};
 
+		MenuSwitch UseVids = new MenuSwitch("Play movie sequences:", 1, 47, pos += 12, 240, cfg.gPlayVideos, new MENUPROC() {
+			@Override
+			public void run(MenuItem pItem) {
+				MenuSwitch sw = (MenuSwitch) pItem;
+				cfg.gPlayVideos = sw.value;
+			}
+		}, null, null) {
+			@Override
+			public void open(MENU pMenu) {
+				value = cfg.gPlayVideos;
+			}
+		};
+
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], mVideoMode, true);
 		mAddItem(mMenus[nMenuId], mColorMode, false);
@@ -1896,6 +1908,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], UseVoxels, false);
 		mAddItem(mMenus[nMenuId], UseModels, false);
 		mAddItem(mMenus[nMenuId], Usehrp, false);
+		mAddItem(mMenus[nMenuId], UseVids, false);
 	}
 	
 	public static int snddriver;
