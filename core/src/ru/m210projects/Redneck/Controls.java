@@ -319,29 +319,31 @@ public class Controls {
 	    
 	    if(cfg.useJoystick) {
 			Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
-			float lookx = stick1.x;
-			float looky = stick1.y;
-			if(cfg.gJoyInvert) looky *= -1;
-			
-			if(looky != 0) {
-				float k = 1.0f;
-				horiz = BClipRange(horiz - k * looky * cfg.gJoyLookSpeed / 65536f, -(ydim>>1), 100+(ydim>>1));
-			}
-			
-			if(lookx != 0) {
-				float k = 64;
-				angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
-			}
-
-			Vector2 stick2 = gpmanager.getStickValue(cfg.gJoyStrafeAxis, cfg.gJoyMoveAxis);
-			float plrx = stick2.x;
-			float plry = stick2.y;
-
-			if(plry != 0) {
-				vel = (short) BClipRange(vel - (80 * plry), -4 * keymove, 4 * keymove);
-			}
-			if(plrx != 0) {
-				svel = (short) BClipRange(svel - (80 * plrx), -4 * keymove, 4 * keymove);
+			if(stick1 != null) {
+				float lookx = stick1.x;
+				float looky = stick1.y;
+				if(cfg.gJoyInvert) looky *= -1;
+				
+				if(looky != 0) {
+					float k = 1.0f;
+					horiz = BClipRange(horiz - k * looky * cfg.gJoyLookSpeed / 65536f, -(ydim>>1), 100+(ydim>>1));
+				}
+				
+				if(lookx != 0) {
+					float k = 64;
+					angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
+				}
+	
+				Vector2 stick2 = gpmanager.getStickValue(cfg.gJoyStrafeAxis, cfg.gJoyMoveAxis);
+				float plrx = stick2.x;
+				float plry = stick2.y;
+	
+				if(plry != 0) {
+					vel = (short) BClipRange(vel - (80 * plry), -4 * keymove, 4 * keymove);
+				}
+				if(plrx != 0) {
+					svel = (short) BClipRange(svel - (80 * plrx), -4 * keymove, 4 * keymove);
+				}
 			}
         }
 

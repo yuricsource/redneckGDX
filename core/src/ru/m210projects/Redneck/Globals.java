@@ -134,7 +134,7 @@ public class Globals {
 	public static final int MODE_CUTSCENE   = 4096;
 	public static final int MODE_WAIT  		= 8192;
 	
-	public static boolean MODE_TYPE;
+	public static boolean MODE_TYPE; //== 16
 
 	public static final int GET_STEROIDS     = 0;
 	public static final int GET_SHIELD       = 1;

@@ -53,20 +53,18 @@ public class Main extends ApplicationAdapter {
 	 * Addons support
 	 * 
 	 * TODO:
-	 * doincrements
-	 * processinput
-	 * e1m2 нужно отбирать оружия
+	 * shoot (boat, biker baba)
+	 * cutscenes MVE
 	 * dobonus другие картинки
-	 * другие фразы игрока
+	 * faketimerhandler
+	 * 
+	 * e1m2 нужно отбирать оружия
 	 * в начале уровня должны выбираться грабли
-	 * drug mode (e1m4)
 	 * камин не мерцает
 	 * ROR
 	 * spawn RA fog method sub_86730
-	 * бабы на мотоцикле тоже должны чтото кидать
 	 * 
 	 * не работают комары в R66
-	 * Joystick sensitive bug
 	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * инфа об юзерэпизоде в меню загрузок

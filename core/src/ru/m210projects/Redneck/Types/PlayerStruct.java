@@ -140,10 +140,10 @@ public class PlayerStruct {
     public int field_5E1;
     public int field_5E9;
     public int DrugMode;
-    public int field_5F1;
-    public int field_5F3;
-    public int field_5F5;
-    public int field_5F7;
+    public int drug_type;
+    public int drug_intensive;
+    public int drug_timer;
+    public int drug_aspect;
 
 	public void copy(PlayerStruct src)
 	{

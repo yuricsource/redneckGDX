@@ -676,10 +676,10 @@ public class Premap {
 	    p.field_5E1 = 0;
 	    p.field_5E9 = 0;
 	    p.DrugMode = 0;
-	    p.field_5F1 = 0;
-	    p.field_5F3 = 0;
-	    p.field_5F5 = 0;
-	    p.field_5F7 = 0;
+	    p.drug_type = 0;
+	    p.drug_intensive = 0;
+	    p.drug_timer = 0;
+	    p.drug_aspect = 0;
 	    
 	    if ( numplayers >= 2 )
 	    {
@@ -1622,7 +1622,9 @@ public class Premap {
 	    palette[765] = palette[766] = palette[767] = 0;
 	    slimepal[765] = slimepal[766] = slimepal[767] = 0;
 	    waterpal[765] = waterpal[766] = waterpal[767] = 0;
-
+	    
+		System.arraycopy(palette, 1, drugpal, 0, 767);
+		
 	    kClose(fp);
 	    
 	    for(int i = 0; i < 768; i++)
