@@ -1284,17 +1284,6 @@ public class RRMenu {
 					}
 				}, -1, -1, false);
 
-
-		MenuSlider mSmoothing = new MenuSlider("Smoothing:", 1, false, 46, pos += 12, 230, cfg.gJoySmoothing,
-				0,0x8000, 2048, new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuSlider slider = (MenuSlider) pItem;
-						cfg.gJoySmoothing = slider.value;
-						gpmanager.setSmoothing(cfg.gJoySmoothing);
-					}
-				}, -1, -1, false);
-
 		MenuSwitch mInvert = new MenuSwitch("Invert look axis:", 1, 46, pos += 15, 230, cfg.gJoyInvert, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
