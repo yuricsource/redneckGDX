@@ -808,7 +808,7 @@ public class View {
                     choriz = (p.ohoriz+p.ohorizoff+((p.horiz+p.horizoff-p.ohoriz-p.ohorizoff) * smoothratio) / 65536.0f);
               }
               cang += p.look_ang;
-
+   
               if (p.newowner >= 0)
               {
                     cang = (short) (p.ang+p.look_ang);
@@ -819,7 +819,6 @@ public class View {
                     sect = sprite[p.newowner].sectnum;
                     smoothratio = 65536;
               }
-
               else if( p.over_shoulder_on == 0 )
             	  cposz += p.opyoff+mulscale((p.pyoff-p.opyoff),smoothratio, 16);
               else {
@@ -943,7 +942,7 @@ public class View {
 	    }
 	}
 
-	public static void animatesprites(int x,int y,int z, short a,int smoothratio) //XXX
+	public static void animatesprites(int x,int y,int z, short a,int smoothratio)
 	{
 	    short i, j, k, p, sect;
 	    int l, t1,t3,t4;
@@ -1450,7 +1449,7 @@ public class View {
                 if( t.z > hittype[i].floorz && t.xrepeat < 32 )
                     t.z = hittype[i].floorz;
                 
-                if ( ps[p].OnMotorcycle && p == screenpeek ) 
+                /*if ( ps[p].OnMotorcycle && p == screenpeek ) 
                 {
                 	t.picnum = 7219;
                 	t.xrepeat = 18;
@@ -1459,7 +1458,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnMotorcycle ) 
+                else */if ( ps[p].OnMotorcycle ) 
                 { 
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);
@@ -1477,7 +1476,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnBoat && p == screenpeek ) 
+                /*else if ( ps[p].OnBoat && p == screenpeek ) 
                 {
                 	t.picnum = 7190;
                 	t.xrepeat = 32;
@@ -1486,7 +1485,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnBoat ) 
+                else */if ( ps[p].OnBoat ) 
                 { 
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);

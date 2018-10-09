@@ -30,7 +30,6 @@ import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
-import static ru.m210projects.Redneck.Premap.LeaveMap;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Build.Net.Mmulti.*;
@@ -486,6 +485,7 @@ public class Sector {
 	    {
 	    	for ( i = 0; i < MAXWALLS; ++i )
 	    	{
+	    		if(wall[i] == null) continue;
 	    		if ( wall[i].picnum == 7873 )
 	    			wall[i].xpanning += 6;
 	    		else if ( wall[i].picnum == 7870 )
@@ -1488,8 +1488,7 @@ public class Sector {
 	                numdips++;
 	                break;
 	            case 2214:
-	            	if ( ud.level_number > 6 )
-	            		ud.level_number = 0;
+	            	checknextlevel();
 	            	++sprite[i].picnum;
 	            	break;
 	            	
@@ -1595,8 +1594,7 @@ public class Sector {
 	        else
 	        {
 	            ud.level_number++;
-	            if( ud.level_number > 6 )
-	                ud.level_number = 0;
+	            checknextlevel();
 	            ud.m_level_number = ud.level_number;
 	        }
 	        return true;
@@ -1764,7 +1762,6 @@ public class Sector {
                                 hittype[x].temp_data[0]++;
                                 if(hittype[x].temp_data[0] == 2)
                                    hittype[x].temp_data[0]++;
-
                                 break;
                            case 24:
                            case 34:
@@ -3229,8 +3226,7 @@ public class Sector {
 			            else
 			            {
 			                ud.level_number++;
-			                if( ud.level_number > 6 )
-			                    ud.level_number = 0;
+			                checknextlevel();
 			                ud.m_level_number = ud.level_number;
 			            }
 			            word_119BE2 = 1;
@@ -3345,7 +3341,6 @@ public class Sector {
 	        	return;
 	        }
 
-	        
 	        if(p.newowner >= 0) 
 	            neartag(p.oposx,p.oposy,p.oposz,sprite[p.i].sectnum,(short)p.oang,1280,1); 
 	        else

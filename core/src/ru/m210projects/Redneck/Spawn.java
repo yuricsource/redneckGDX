@@ -1157,7 +1157,8 @@ public class Spawn {
                         }
                         break;
                     case 12: 
-
+                    case 47:
+                    case 48: //RA
                         hittype[i].temp_data[1] = sector[sect].floorshade;
                         hittype[i].temp_data[2] = sector[sect].ceilingshade;
                         break;
@@ -1583,8 +1584,8 @@ public class Spawn {
             case 4861: 
             case 4916: 
             case 4945: 
-            case 5120: 
-            case 5260: //RA ufo
+            case MINION: 
+            case MINIONUFO: //RA
             case 5270: 
             case 5274: 
             case 5278: 
@@ -1667,11 +1668,16 @@ public class Spawn {
         				break;
         			case 4260: 
         			case 4945: 
-        			case 5120: 
-        			case 5121: 
+        			case MINION: 
+        			case MINION+1: 
         				sp.xrepeat = 16;
                         sp.yrepeat = 16;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        if(sp.picnum == MINION || sp.picnum == MINION+1)
+                        {
+                        	if ( ps[screenpeek].field_5FD != 0 )
+                                sp.pal = 8;
+                        } 	
         				break;
         			case 4352:
         				sp.xrepeat = 24;

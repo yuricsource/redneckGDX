@@ -31,7 +31,7 @@ import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Gamedef.getincangle;
 import static ru.m210projects.Redneck.Gameutils.sgn;
 import static ru.m210projects.Redneck.Main.engine;
-import static ru.m210projects.Redneck.Premap.LeaveMap;
+import static ru.m210projects.Redneck.Premap.*;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Redneck.Types.Demo.*;
@@ -714,8 +714,11 @@ public class Player {
 
 	    psect = p.cursectnum;
 	    
+	    p.ohoriz = p.horiz;
+	    p.ohorizoff = p.horizoff;
 	    if ( p.OnMotorcycle && s.extra > 0 )
 	    {
+	    	p.oang = p.ang;
 	    	if ( p.Motospeed < 0 )
 	    		p.Motospeed = 0;
 	    	int var = 0, var2 = 0;
@@ -874,6 +877,7 @@ public class Player {
 		    	else if ( (var5 != 0 || p.field_5C1 > 0) && p.field_5C1 > 0 )
 		    		p.field_5C1--;
 	        }
+	    	
 	    	if ( p.TurbCount != 0 )
 	        {
 	    		if ( p.TurbCount > 1 )
@@ -937,13 +941,13 @@ public class Player {
 	        	  {
 	        		  p.posxv += (speed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
 	        		  p.posyv += (speed >> 5) * 16 * sintable[angvel & kAngleMask];
-	        		  p.ang -= (dang >> 2) & kAngleMask;
+	        		  p.ang = ((short)p.ang - (dang >> 2)) & kAngleMask;
 	        	  }
 	        	  else
 	        	  {
 	        		  p.posxv += (speed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
 	        		  p.posyv += (speed >> 7) * 16 * sintable[angvel & kAngleMask];
-	        		  p.ang -= (dang >> 6) & kAngleMask;
+	        		  p.ang = ((short)p.ang - (dang >> 6)) & kAngleMask;
 	        	  }
 	        	  p.field_5CD = 0;
 	        	  p.field_5CF = 0;
@@ -952,7 +956,7 @@ public class Player {
 	    		{
 	    			p.posxv += (p.Motospeed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
 	    			p.posyv += (p.Motospeed >> 5) * 16 * sintable[angvel & kAngleMask];
-	    			p.ang -= (dang >> 4) & kAngleMask;
+	    			p.ang = ((short)p.ang - (dang >> 4)) & kAngleMask;
 	    			if ( Sound[220].num == 0 )
 	    				spritesound(220, p.i);
 	    		}
@@ -960,7 +964,7 @@ public class Player {
 	    		{
 	    			p.posxv += (p.Motospeed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
 	    			p.posyv += (p.Motospeed >> 7) * 16 * sintable[angvel & kAngleMask];
-	    			p.ang -= (dang >> 4) & kAngleMask;
+	    			p.ang = ((short)p.ang - (dang >> 4)) & kAngleMask;
 	    		}
 	        }
 	        else if ( p.Motospeed >= 20 && p.on_ground && (p.field_5CD != 0 || p.field_5CF != 0) )
@@ -981,6 +985,7 @@ public class Player {
 	    }
 	    else if ( p.OnBoat && s.extra > 0 )
 	    {
+	    	p.oang = p.ang;
 	    	if ( p.NotOnWater != 0 )
 	    	{
 		        if ( p.Motospeed <= 0 )
@@ -1216,13 +1221,13 @@ public class Player {
 	    	  {
 	    		  p.posxv += (speed >> 6) * 16 * sintable[(angvel + 512) & 0x7FF];
 		          p.posyv += (speed >> 6) * 16 * sintable[angvel & 0x7FF];
-		          p.ang -= (dang >> 5) & 0x7FF;
+		          p.ang = ((short)p.ang - (dang >> 5)) & kAngleMask;
 	    	  }
 	    	  else
 	    	  {
 		          p.posxv += (speed >> 7) * 16 * sintable[(angvel + 512) & 0x7FF];
 		          p.posyv += (speed >> 7) * 16 * sintable[angvel & 0x7FF];
-		          p.ang -= (dang >> 6) & 0x7FF;
+		          p.ang = ((short)p.ang - (dang >> 6)) & kAngleMask;
 	    	  }
 	      }
 	      
@@ -1287,9 +1292,6 @@ public class Player {
 
 	    hittype[pi].floorz = fz;
 	    hittype[pi].ceilingz = cz;
-
-	    p.ohoriz = p.horiz;
-	    p.ohorizoff = p.horizoff;
 
 	    if( p.aim_mode == 0 && p.on_ground && psectlotag != 2 && (sector[psect].floorstat&2) != 0 )
 	    {
@@ -1443,7 +1445,7 @@ public class Player {
 	                        ud.level_number = ud.from_bonus;
 	                    else ud.level_number++;
 
-	                    if(ud.level_number > 6) ud.level_number = 0;
+	                    checknextlevel();
 	                    ud.m_level_number = ud.level_number;
 
 	                }
@@ -1615,6 +1617,11 @@ public class Player {
 	            p.rotscrnang = (short) ((p.dead_flag + ( (fz+p.posz)>>7))&2047);
 
 	        p.on_warping_sector = 0;
+	        
+	        if ( p.OnMotorcycle )
+	        	leaveMoto(p);
+	        if ( p.OnBoat )
+	        	leaveBoard(p);
 
 	        return;
 	    }
@@ -1654,7 +1661,10 @@ public class Player {
 		    if (p.rotscrnang > 0) p.rotscrnang -= ((p.rotscrnang>>1)+1);
 		    else if (p.rotscrnang < 0) p.rotscrnang += (((-p.rotscrnang)>>1)+1);
 	
-		    p.look_ang -= (p.look_ang>>2);
+		    if((!p.OnMotorcycle && !p.OnBoat) || p.Motospeed >= 80)
+		    	p.look_ang -= (p.look_ang>>2);
+		    else 
+		    	p.look_ang = (short) BClipRange(p.look_ang, -512, 512);	
 	
 		    if( (sb_snum&(1<<6)) != 0 && !p.OnMotorcycle )
 		    {
@@ -1733,7 +1743,8 @@ public class Player {
 		
 			    p.oposz = p.posz;
 			    p.opyoff = p.pyoff;
-			    p.oang = p.ang;
+			    if(!p.OnBoat && !p.OnMotorcycle)
+			    	p.oang = p.ang; //for interpolation
 		
 			    if(p.one_eighty_count < 0)
 			    {
@@ -2047,7 +2058,6 @@ public class Player {
 			                    }
 			            }
 			        }
-		
 			        else
 			        {
 			            p.falling_counter = 0;
@@ -2134,7 +2144,7 @@ public class Player {
 			        }
 		
 			        p.posz += p.poszv;
-		
+			      
 			        if(p.posz < (cz+(4<<8)))
 			        {
 			            p.jumping_counter = 0;

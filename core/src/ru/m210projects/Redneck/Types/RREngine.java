@@ -21,32 +21,9 @@ import static ru.m210projects.Redneck.Main.gpmanager;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
-import static ru.m210projects.Redneck.Controls.getinput;
+import static ru.m210projects.Redneck.Controls.*;
 import static ru.m210projects.Redneck.Redneck.gShowMenu;
-import static ru.m210projects.Redneck.Globals.MOVEFIFOSIZ;
-import static ru.m210projects.Redneck.Globals.TICSPERFRAME;
-import static ru.m210projects.Redneck.Globals.TIMERUPDATESIZ;
-import static ru.m210projects.Redneck.Globals.avgavel;
-import static ru.m210projects.Redneck.Globals.avgbits;
-import static ru.m210projects.Redneck.Globals.avgfvel;
-import static ru.m210projects.Redneck.Globals.avghorz;
-import static ru.m210projects.Redneck.Globals.avgsvel;
-import static ru.m210projects.Redneck.Globals.bufferjitter;
-import static ru.m210projects.Redneck.Globals.inputfifo;
-import static ru.m210projects.Redneck.Globals.loc;
-import static ru.m210projects.Redneck.Globals.movefifoend;
-import static ru.m210projects.Redneck.Globals.movefifosendplc;
-import static ru.m210projects.Redneck.Globals.movesperpacket;
-import static ru.m210projects.Redneck.Globals.mymaxlag;
-import static ru.m210projects.Redneck.Globals.myminlag;
-import static ru.m210projects.Redneck.Globals.otherminlag;
-import static ru.m210projects.Redneck.Globals.ototalclock;
-import static ru.m210projects.Redneck.Globals.playerquitflag;
-import static ru.m210projects.Redneck.Globals.ready2send;
-import static ru.m210projects.Redneck.Globals.syncval;
-import static ru.m210projects.Redneck.Globals.syncvalhead;
-import static ru.m210projects.Redneck.Globals.syncvaltail;
-import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Network.getpackets;
 import static ru.m210projects.Redneck.Network.kPacketEmpty;
 import static ru.m210projects.Redneck.Network.kPacketMasterFrame;
@@ -121,7 +98,11 @@ public class RREngine extends Engine {
 	    handleevents();
 		if(gpmanager != null)
 			gpmanager.handler();
-		getinput(myconnectindex);
+		if ( ps[myconnectindex].OnMotorcycle )
+			motoinput(myconnectindex);
+		else if ( ps[myconnectindex].OnBoat ) {
+			boatinput(myconnectindex);
+		} else getinput(myconnectindex);
 
 		avgfvel += loc.fvel;
 		avgsvel += loc.svel;

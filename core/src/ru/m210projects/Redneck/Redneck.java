@@ -44,7 +44,7 @@ import static ru.m210projects.Redneck.Animate.doanimations;
 import static ru.m210projects.Redneck.Interpolation.updateinterpolations;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.MIRROR;
-import static ru.m210projects.Redneck.Screen.vscrn;
+import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.Sector.animatewalls;
 import static ru.m210projects.Redneck.Sector.ceilingspace;
 import static ru.m210projects.Redneck.Sector.checksectors;
@@ -58,7 +58,7 @@ import static ru.m210projects.Redneck.Animlib.anmInited;
 import static ru.m210projects.Redneck.Animlib.closeanm;
 import static ru.m210projects.Redneck.Animlib.initanm;
 import static ru.m210projects.Redneck.Animlib.playanm;
-import static ru.m210projects.Redneck.Controls.nonsharedkeys;
+import static ru.m210projects.Redneck.Controls.*;
 import static ru.m210projects.Redneck.Gameutils.toCharArray;
 import static ru.m210projects.Redneck.LoadSave.*;
 import static ru.m210projects.Redneck.Main.cfg;
@@ -93,15 +93,14 @@ import static ru.m210projects.Redneck.Screen.scrReset;
 import static ru.m210projects.Redneck.Screen.screensize;
 import static ru.m210projects.Redneck.Screen.tinc;
 import static ru.m210projects.Redneck.Types.Demo.demofiles;
-import static ru.m210projects.Redneck.Config.Menu_open;
-import static ru.m210projects.Redneck.Config.Screenshot;
-import static ru.m210projects.Redneck.Controls.ctrlGetInputKey;
+import static ru.m210projects.Redneck.Config.*;
 import static ru.m210projects.Redneck.Menus.RRMenu.GAME;
 import static ru.m210projects.Redneck.Types.RTS.*;
 import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Types.Demo.*;
 import static ru.m210projects.Redneck.Menus.RRMenu.mInit;
+import static ru.m210projects.Redneck.Sector.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
@@ -156,6 +155,7 @@ public class Redneck {
 	
 	public static boolean gShowMenu;
 	public static GameInfo currentGame;
+	public static int gCutsClock = 0;
 	
 	public static void InitUserDefs()
 	{
@@ -320,8 +320,8 @@ public class Redneck {
 					@Override
 					public void execute() {
 						LeaveMap();
-						if(++ud.level_number > 6)
-			        		ud.level_number = 0;
+						ud.level_number++;
+						checknextlevel();
 			            ud.m_level_number = ud.level_number;
 					}
 		}));
@@ -447,7 +447,9 @@ public class Redneck {
 				FTA(103,ps[myconnectindex]);
 		    }
 			
-			if(!MODE_TYPE && !gShowMenu && ctrlGetInputKey(Menu_open, true)
+			if(!MODE_TYPE && !gShowMenu 
+					&& (gm & MODE_CUTSCENE) == 0
+					&& ctrlGetInputKey(Menu_open, true)
 					&& (gm == MODE_MENU 
 					|| gm == MODE_GAME 
 					|| gm == MODE_DEMO))
@@ -466,10 +468,21 @@ public class Redneck {
 			if((gm & MODE_CUTSCENE)!= 0)
 			{
 				boolean skip;
+				if(getInput().getKey(ANYKEY) != 0)
+					gCutsClock = totalclock;
+
 				if(scenestatus == 0)
-					skip = getInput().getKey(ANYKEY) != 0;
-				else skip = getInput().getKey(ANYKEY) != 0 || scenestatus == 2;
+					skip = (ctrlGetInputKey(Menu_open, true) || ctrlPadStatusOnce(cfg.gpadkeys[Open]));
+				else skip = (ctrlGetInputKey(Menu_open, true) || ctrlPadStatusOnce(cfg.gpadkeys[Open]) || scenestatus == 2);
 				int playing = playanm();
+
+				int shade = mulscale(64, sintable[(20 * totalclock) & kAngleMask], 16);
+				if (totalclock - gCutsClock < 200) {// 2 sec
+					Arrays.fill(buf, (char)0);
+					buildString(buf, 0, "Press ESC to skip");
+					mGetAlign(0, buf);
+					minitext(160 - alignx / 2, 10, buf, 65536, shade, 0, 0);
+				}
 				
 				if((gm & MODE_EOL) == MODE_EOL)
 				{ 
@@ -479,12 +492,8 @@ public class Redneck {
 						{
 							engine.clearview(0);
 							engine.rotatesprite(0,0,65536,0,LOADSCREEN,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
-							
-							if(ud.volume_number == 0) {
-					    		ud.level_number = 0;
-					            ud.volume_number = 1;
-					            ud.eog = 0;
-					            
+							if(getInput().getKey(ANYKEY) != 0 && ud.volume_number == 1 && ud.level_number == 0) 
+							{
 					            closeanm();
 					            gm = MODE_EOL;
 					    	}
@@ -739,6 +748,11 @@ public class Redneck {
 	                    	getInput().resetKeyStatus();
 							gpmanager.resetButtonStatus();
 	                    	gm |= MODE_CUTSCENE;
+	                    	gCutsClock = totalclock - 199;
+	                    	if(ud.volume_number == 0) {
+					    		ud.level_number = 0;
+					            ud.volume_number = 1;
+					    	}
 		                    return;
 	                    }
 	                    else
@@ -1004,6 +1018,9 @@ public class Redneck {
 	        doanimations();
 	        movefx();               //ST 11
 	    }
+	    
+	    if ( numtorcheffects != 0)
+	    	torchesprocess();
 
 	    fakedomovethingscorrect();
 
