@@ -89,7 +89,10 @@ public class Weapons {
 	    int xv, yv;
 	    int a = s.ang;
 	    
-	    if(s.picnum == APLAYER && (ps[s.yvel].auto_aim == 0 && ps[s.yvel].curr_weapon != CHICKENBOW_WEAPON)) return -1;
+	    if(s.picnum == APLAYER && (ps[s.yvel].auto_aim == 0 
+	    		&& ps[s.yvel].curr_weapon != CHICKENBOW_WEAPON
+	    		&& ps[s.yvel].curr_weapon != MOTO_WEAPON
+	    		&& ps[s.yvel].curr_weapon != BOAT_WEAPON)) return -1;
 
 	    j = -1;
 
@@ -935,7 +938,7 @@ public class Weapons {
 	        case CROSSBOW:
 	        case CIRCLESAW:
 	        case CHIKENCROSSBOW:
-
+	        case 1790:
 	            if( s.extra >= 0 ) s.shade = -96;
 
 	            scount = 1;
@@ -1072,6 +1075,7 @@ public class Weapons {
 
 	        case BOUNCEMINE:
 	        case MORTER:
+	        case 3464:
 
 	            if( s.extra >= 0 ) s.shade = -96;
 
@@ -1083,11 +1087,19 @@ public class Weapons {
 	            if(zvel < -4096)
 	                zvel = -2048;
 	            vel = x>>4;
+	            
+	            int sizex = 32;
+	            int sizey = 32;
+	            if(atwith == 3464)
+	            {
+	 	            sizex = 16;
+	 	            sizey = 16;
+	            }
 
 	            EGS(sect,
 	                sx+(sintable[(512+sa+512)&2047]>>8),
 	                sy+(sintable[(sa+512)&2047]>>8),
-	                sz+(6<<8),atwith,-64,32,32,sa,vel,zvel,i,(short)1);
+	                sz+(6<<8),atwith,-64,sizex,sizey,sa,vel,zvel,i,(short)1);
 	            break;
             case BOWLINGBALL:
                 sp = spawn(i, atwith);
@@ -1209,6 +1221,7 @@ public class Weapons {
 			case UWHIP:
 			case OWHIP:
 			case DILDO:
+			case 1790:
 				p = -1;
 
 				if (s.picnum == CROSSBOW && sector[s.sectnum].lotag == 2) {
@@ -1654,6 +1667,8 @@ public class Weapons {
 	    }
 	    else if(p.OnMotorcycle) 
 	    {
+	    	if(p.over_shoulder_on != 0)
+	    		return;
 	    	int pic = 7170;
 	    	if(numplayers == 1)
 	    	{
@@ -1718,6 +1733,8 @@ public class Weapons {
 	    } 
 	    else if(p.OnBoat)
 	    {
+	    	if(p.over_shoulder_on != 0)
+	    		return;
 	    	int pic = 7175;
 	    	if(p.TiltStatus <= 0)
 	    	{
@@ -2808,7 +2825,7 @@ public class Weapons {
 		            		break;
 		            	}
 		            	break;
-		            case MOTO_WEAPON: //XXX
+		            case MOTO_WEAPON:
 		            	(p.kickback_pic)++;
 		            	if( (p.kickback_pic) == 2 || (p.kickback_pic) == 4 )
 		            	{

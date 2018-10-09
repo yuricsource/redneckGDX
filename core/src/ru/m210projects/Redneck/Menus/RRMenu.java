@@ -2741,6 +2741,8 @@ public class RRMenu {
 		MenuPicnum bLogo = new MenuPicnum(null, 0, 160, 28, INGAMELNRDTHREEDEE, INGAMELNRDTHREEDEE) {
 			@Override
 			public void draw() {
+				if (currentGame.getCON().type == RRRA)
+					engine.rotatesprite(x<<16,(y+27)<<16,16384,0,1686,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
 				engine.rotatesprite(x << 16, y << 16, 24000, 0, nTile, 0, 0, 10, 0, 0, xdim - 1, ydim - 1);
 			}
 		};
@@ -2800,6 +2802,8 @@ public class RRMenu {
 		MenuPicnum bLogo = new MenuPicnum(null, 0, 160, 28, INGAMELNRDTHREEDEE, INGAMELNRDTHREEDEE) {
 			@Override
 			public void draw() {
+				if (currentGame.getCON().type == RRRA)
+					engine.rotatesprite(x<<16,(y+27)<<16,16384,0,1686,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
 				engine.rotatesprite(x << 16, y << 16, 24000, 0, nTile, 0, 0, 10, 0, 0, xdim - 1, ydim - 1);
 			}
 		};

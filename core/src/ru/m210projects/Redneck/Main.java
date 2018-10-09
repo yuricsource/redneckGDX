@@ -51,18 +51,16 @@ public class Main extends ApplicationAdapter {
 	 * v0.753
 	 * Autoload folder can load resources as cusspack
 	 * Addons support
+	 * Joystick fix + smooth feature by aybe0
+	 * Torches fix
+	 * Cow "use" fix
 	 * 
 	 * TODO:
-	 * shoot (boat, biker baba)
-	 * cutscenes MVE
 	 * dobonus другие картинки
-	 * faketimerhandler
-	 * 
-	 * e1m2 нужно отбирать оружия
-	 * в начале уровня должны выбираться грабли
-	 * камин не мерцает
+	 * fog / spawn RA fog method sub_86730
 	 * ROR
-	 * spawn RA fog method sub_86730
+	 * первый эпизод сбрасывается после завершения
+	 * 
 	 * 
 	 * не работают комары в R66
 	 * cd audio from cue
@@ -74,6 +72,7 @@ public class Main extends ApplicationAdapter {
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
+	 * cutscenes MVE
 	 */
 
 	public static final String appname = "RedneckGDX";

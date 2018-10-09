@@ -20,10 +20,7 @@ import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Network.*;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Build.Gameutils.BClampAngle;
-import static ru.m210projects.Build.Gameutils.BClipRange;
-import static ru.m210projects.Build.Gameutils.BCosAngle;
-import static ru.m210projects.Build.Gameutils.BSinAngle;
+import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Build.Input.Keymap.KEY_PAUSE;
 import static ru.m210projects.Build.Net.Mmulti.*;
@@ -194,7 +191,6 @@ public class Controls {
 	    if ( ps[snum].alcohol_amount <= 88 )
 	    	loc.bits |= ctrlGetInputKey(Tilt_Left, false)?64:0;
 	    else loc.bits = loc.bits | 64;
-	    
 	    
 	    if ( ps[snum].alcohol_amount > 99 )
 	    	loc.bits |= 1 << 14;
@@ -384,6 +380,384 @@ public class Controls {
 	    loc.svel = (short) momy;
 	    loc.avel = angvel;
 	    loc.horz = horiz;
+	}
+	
+	public static void motoinput(int snum)
+	{
+		float daang;
+	    int tics;
+
+	    PlayerStruct p = ps[snum];
+
+	    if( gShowMenu || Console.IsShown() || MODE_TYPE || (ud.pause_on != 0 && !ctrlKeyStatus(KEY_PAUSE)) )
+	    {
+	    	loc.fvel = vel = 0;
+	    	loc.svel = svel = 0;
+	    	loc.avel = angvel = 0;
+	    	loc.horz = horiz = 0;
+	    	loc.bits = ((gamequit)<<26);
+	    	
+	    	if(Console.IsShown())
+	    		MODE_TYPE = false;
+	         
+	    	if(MODE_TYPE)
+	    	{
+	    		int input = getInput().putMessage(getInput().getMessageBuffer().length, false, false, true);
+	 	    	if(input != 0) MODE_TYPE = false;
+	 	    	if(input == 1) {
+	 	    		SendMessage(getInput().getMessageBuffer(), getInput().getMessageLength());
+	 	    	}
+	    	}
+
+	    	return;
+	    }
+	    
+	    tics = totalclock-lastcontroltime;
+	    lastcontroltime = totalclock;
+	    
+	    loc.bits =   ctrlGetInputKey(Weapon_Fire, false)?4:0;
+	    loc.bits |=   ctrlGetInputKey(Moonshine, false)? 1 << 12 : 0;
+	    loc.bits |=   ctrlGetInputKey(Yeehaa, false)? 1 << 15 : 0;
+	    loc.bits |=   ctrlGetInputKey(Wiskey, false)? 1 << 16 : 0;
+	    
+	    if(multiflag == 1)
+	    {
+	        loc.bits =   1<<17;
+	        loc.bits |=   multiwhat<<18;
+	        loc.bits |=   multipos<<19;
+	        multiflag = 0;
+	        return;
+	    }
+	    
+	    loc.bits |=   ctrlGetInputKey(Inventory_Left, false)? 1 << 20 : 0;
+	    loc.bits |=   getInput().keyStatus(KEY_PAUSE)? 1 << 21 : 0;
+	    loc.bits |=   ctrlGetInputKey(Beer, false)? 1 << 24 : 0;
+	    loc.bits |=   ctrlGetInputKey(Cowpie, false)? 1 << 25 : 0;
+	    loc.bits |=   gamequit << 26;
+	    loc.bits |=   ctrlGetInputKey(Inventory_Right, false)? 1 << 27 : 0;
+	    loc.bits |=   ctrlGetInputKey(Open, false)? 1 << 29 : 0;
+	    loc.bits |=   ctrlGetInputKey(Inventory_Use, false)? 1 << 30 : 0;
+	    
+	    angvel = 0;
+	    horiz = 0;
+	    vel = 0;
+	    svel = 0;
+	    
+	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
+	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
+	    int bike_turn = 0; 
+	    if(cfg.useJoystick) { 
+	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
+	    	if(stick1 != null) bike_turn = (int) stick1.x;
+	    }
+	    if ( bike_turn > 0 ) left = true;
+	    if ( bike_turn < 0 ) right = true;
+	    
+	    if ( p.field_5B9 == 0 )
+	    {
+	    	loc.bits |=   ctrlGetInputKey(Move_Forward, false)?1:0;
+	    	loc.bits |=   ctrlGetInputKey(Run, false)?2:0;
+	    	loc.bits |=   ctrlGetInputKey(Move_Backward, false)?8:0;
+	    }
+	    
+	    if(left) loc.bits |= 16;
+	    if(right) loc.bits |= 64;
+	    
+	    boolean revers = (p.Motospeed <= 0);
+	    if ( p.Motospeed != 0 && p.on_ground )
+	    {
+	    	if ( left || p.field_5C1 < 0 )
+	        {
+	    		turnheldtime += tics;
+	    		p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	            {
+	    			if ( bike_turn != 0 )
+	                	angvel -= 20;
+	                else angvel -= 10; 
+	            }
+	    		else {
+	    			if ( bike_turn != 0 )
+		    			angvel -= 10 * (revers ? -1 : 1);
+		            else angvel -= 3 * (revers ? -1 : 1);
+	    		}
+	        }
+	    	else if ( right || p.field_5C1 > 0 )
+	    	{
+	    		turnheldtime += tics;
+	    		p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	            {
+	    			if ( bike_turn != 0 )
+	                	angvel += 20;
+	                else angvel += 10; 
+	            }
+	    		else {
+	    			if ( bike_turn != 0 )
+		    			angvel += 10 * (revers ? -1 : 1);
+		            else angvel += 3 * (revers ? -1 : 1);
+	    		}
+	    	}
+	    	else
+	        {
+	    		turnheldtime = 0;
+	    		if ( p.TiltStatus < 0 ) p.TiltStatus++;
+	    		if ( p.TiltStatus > 0 ) p.TiltStatus--;
+	        }
+	    }
+	    else if ( left )
+	        p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+	    else if ( right )
+	    	p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+	    
+	    if ( p.field_5B9 != 0 )
+	    	p.Motospeed = 0;
+	    
+	    vel += p.Motospeed;
+	    if ( vel < -15 ) vel = -15;
+	    if ( vel > 120 ) vel = 120;
+	    if(angvel < -MAXANGVEL) angvel = -MAXANGVEL;
+	    if(angvel > MAXANGVEL) angvel = MAXANGVEL;
+
+	    if(ud.scrollmode && ud.overhead_on != 0)
+	    {
+	        ud.folfvel = vel;
+	        ud.folavel = angvel;
+	        loc.fvel = 0;
+	        loc.svel = 0;
+	        loc.avel = 0;
+	        loc.horz = 0;
+	        return;
+	    }
+
+	    if( numplayers > 1 )
+	        daang = myang;
+	    else daang = p.ang;
+	    
+	    short momx = (short) (vel * BCosAngle(BClampAngle(daang)) / 512.0f);
+	    short momy = (short) (vel * BSinAngle(BClampAngle(daang)) / 512.0f);
+
+	    momx += fricxv;
+	    momy += fricyv;
+
+	    loc.fvel = momx;
+	    loc.svel = momy;
+
+	    loc.avel = angvel;
+	    loc.horz = horiz;
+	    
+	    if(p.Motospeed < 80) {
+		    int dx = Gdx.input.getX() - oldPosX;
+			
+			float sensscale = cfg.gSensitivity / 65536.0f;
+			float xscale = sensscale / 2;
+			float mousx = dx * xscale;
+		    p.look_ang += mousx;
+	    }
+	    resetMousePos();
+	}
+	
+	public static void boatinput(int snum)
+	{
+		float daang;
+	    int tics;
+
+	    PlayerStruct p = ps[snum];
+
+	    if( gShowMenu || Console.IsShown() || MODE_TYPE || (ud.pause_on != 0 && !ctrlKeyStatus(KEY_PAUSE)) )
+	    {
+	    	loc.fvel = vel = 0;
+	    	loc.svel = svel = 0;
+	    	loc.avel = angvel = 0;
+	    	loc.horz = horiz = 0;
+	    	loc.bits = ((gamequit)<<26);
+	    	
+	    	if(Console.IsShown())
+	    		MODE_TYPE = false;
+	         
+	    	if(MODE_TYPE)
+	    	{
+	    		int input = getInput().putMessage(getInput().getMessageBuffer().length, false, false, true);
+	 	    	if(input != 0) MODE_TYPE = false;
+	 	    	if(input == 1) {
+	 	    		SendMessage(getInput().getMessageBuffer(), getInput().getMessageLength());
+	 	    	}
+	    	}
+
+	    	return;
+	    }
+	    
+	    tics = totalclock-lastcontroltime;
+	    lastcontroltime = totalclock;
+	    
+	    loc.bits =   ctrlGetInputKey(Weapon_Fire, false)?4:0;
+	    loc.bits |=   ctrlGetInputKey(Moonshine, false)? 1 << 12 : 0;
+	    loc.bits |=   ctrlGetInputKey(Yeehaa, false)? 1 << 15 : 0;
+	    loc.bits |=   ctrlGetInputKey(Wiskey, false)? 1 << 16 : 0;
+	    
+	    if(multiflag == 1)
+	    {
+	        loc.bits =   1<<17;
+	        loc.bits |=   multiwhat<<18;
+	        loc.bits |=   multipos<<19;
+	        multiflag = 0;
+	        return;
+	    }
+	    
+	    loc.bits |=   ctrlGetInputKey(Inventory_Left, false)? 1 << 20 : 0;
+	    loc.bits |=   getInput().keyStatus(KEY_PAUSE)? 1 << 21 : 0;
+	    loc.bits |=   ctrlGetInputKey(Beer, false)? 1 << 24 : 0;
+	    loc.bits |=   ctrlGetInputKey(Cowpie, false)? 1 << 25 : 0;
+	    loc.bits |=   gamequit << 26;
+	    loc.bits |=   ctrlGetInputKey(Inventory_Right, false)? 1 << 27 : 0;
+	    loc.bits |=   ctrlGetInputKey(Open, false)? 1 << 29 : 0;
+	    loc.bits |=   ctrlGetInputKey(Inventory_Use, false)? 1 << 30 : 0;
+	    
+	    angvel = 0;
+	    horiz = 0;
+	    vel = 0;
+	    svel = 0;
+	    
+	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
+	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
+	    int bike_turn = 0; 
+	    if(cfg.useJoystick) { 
+	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
+	    	if(stick1 != null) bike_turn = (int) stick1.x;
+	    }
+	    if ( bike_turn > 0 ) left = true;
+	    if ( bike_turn < 0 ) right = true;
+	    
+	    if ( p.field_5B9 == 0 )
+	    {
+	    	loc.bits |=   ctrlGetInputKey(Move_Forward, false)?1:0;
+	    	loc.bits |=   ctrlGetInputKey(Run, false)?2:0;
+	    	loc.bits |=   ctrlGetInputKey(Move_Backward, false)?8:0;
+	    }
+	    
+	    if(left) loc.bits |= 16;
+	    if(right) loc.bits |= 64;
+	    
+	    if ( p.Motospeed != 0 )
+	    {
+	    	if ( left || p.field_5C1 < 0 )
+	        {
+	    		turnheldtime += tics;
+	    		if ( p.NotOnWater == 0)
+	    			p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	            {
+	    			if ( p.NotOnWater == 0)
+	    			{
+	    				if ( bike_turn != 0 )
+	    					angvel -= 6;
+	    				else angvel -= 3; 
+	    			} else {
+		    			if ( bike_turn != 0 )
+		                	angvel -= 20;
+		                else angvel -= 10; 
+	    			}
+	            }
+	    		else if ( p.Motospeed != 0 ) {
+	    			if ( p.NotOnWater == 0)
+	    			{
+	    				if ( bike_turn != 0 )
+	    					angvel -= 2;
+	    				else angvel--; 
+	    			} else {
+		    			if ( bike_turn != 0 )
+		                	angvel -= 6;
+		                else angvel -= 3; 
+	    			}
+	    		}
+	        }
+	    	else if ( right || p.field_5C1 > 0 )
+	    	{
+	    		turnheldtime += tics;
+	    		if ( p.NotOnWater == 0)
+	    			p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	            {
+	    			if ( p.NotOnWater == 0)
+	    			{
+	    				if ( bike_turn != 0 )
+	    					angvel += 6;
+	    				else angvel += 3; 
+	    			} else {
+		    			if ( bike_turn != 0 )
+		                	angvel += 20;
+		                else angvel += 10; 
+	    			}
+	            }
+	    		else if ( p.Motospeed != 0 ) {
+	    			if ( p.NotOnWater == 0)
+	    			{
+	    				if ( bike_turn != 0 )
+	    					angvel += 2;
+	    				else angvel++; 
+	    			} else {
+		    			if ( bike_turn != 0 )
+		                	angvel += 6;
+		                else angvel += 3; 
+	    			}
+	    		}
+	    	}
+	    	else if ( p.NotOnWater == 0)
+	        {
+	    		turnheldtime = 0;
+	    		if ( p.TiltStatus < 0 ) p.TiltStatus++;
+	    		if ( p.TiltStatus > 0 ) p.TiltStatus--;
+	        }
+	    }
+	    else if ( p.NotOnWater == 0) {
+	    	if ( left )
+	    		p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+	    	else if ( right )
+	    		p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+	    }
+
+	    vel += p.Motospeed;
+	    if ( vel < -15 ) vel = -15;
+	    if ( vel > 120 ) vel = 120;
+	    if(angvel < -MAXANGVEL) angvel = -MAXANGVEL;
+	    if(angvel > MAXANGVEL) angvel = MAXANGVEL;
+
+	    if(ud.scrollmode && ud.overhead_on != 0)
+	    {
+	        ud.folfvel = vel;
+	        ud.folavel = angvel;
+	        loc.fvel = 0;
+	        loc.svel = 0;
+	        loc.avel = 0;
+	        loc.horz = 0;
+	        return;
+	    }
+
+	    if( numplayers > 1 )
+	        daang = myang;
+	    else daang = p.ang;
+	    
+	    short momx = (short) (vel * BCosAngle(BClampAngle(daang)) / 512.0f);
+	    short momy = (short) (vel * BSinAngle(BClampAngle(daang)) / 512.0f);
+
+	    momx += fricxv;
+	    momy += fricyv;
+
+	    loc.fvel = momx;
+	    loc.svel = momy;
+
+	    loc.avel = angvel;
+	    loc.horz = horiz;
+	    
+	    if(p.Motospeed < 80) {
+		    int dx = Gdx.input.getX() - oldPosX;
+			
+			float sensscale = cfg.gSensitivity / 65536.0f;
+			float xscale = sensscale / 2;
+			float mousx = dx * xscale;
+		    p.look_ang += mousx;
+	    }
+	    resetMousePos();
 	}
 	
 	public static void nonsharedkeys()

@@ -171,7 +171,7 @@ public class Actors {
 		    case 1344:
 		    case 4249:
 		    case 4770:
-		    case 5260:
+		    case MINIONUFO:
 		    case 5890:
 		    case 5891:
 		    case 5995:
@@ -232,7 +232,7 @@ public class Actors {
 		    	
 		    	//RA
 		    case 4770:
-		    case 5260:
+		    case MINIONUFO:
 		    case 5890:
 		    case 5891:
 		    case 5995:
@@ -2554,8 +2554,8 @@ public class Actors {
 		{
 			LeaveMap();
 		    ud.eog = 1;
-		    if ( ++ud.level_number > 6 )
-		      ud.level_number = 0;
+		    ud.level_number++;
+		    checknextlevel();
 		    ud.m_level_number = ud.level_number;
 		}
 		
@@ -2579,7 +2579,7 @@ public class Actors {
 					case 4945:
 					case 5120:
 					case 5121:
-					case 5260:
+					case MINIONUFO:
 					case 5274:
 					case 5278:
 					case 5282:
@@ -3051,6 +3051,7 @@ public class Actors {
 
 			case MORTER:
 			case DYNAMITE:
+			case 3464:
 				if ((s.cstat & 32768) != 0) {
 					t[2]--;
 					if (t[2] <= 0) {
@@ -3088,10 +3089,19 @@ public class Actors {
 							&& s.yvel < 3) {
 						if (s.yvel > 0 || (s.yvel == 0 && hittype[i].floorz == sector[sect].floorz && s.picnum != 3464))
 							spritesound(PIPEBOMB_BOUNCE, i);
-						s.zvel = (short) -((4 - s.yvel) << 8);
-						if (sector[s.sectnum].lotag == 2)
-							s.zvel >>= 2;
-						s.yvel++;
+						
+						if ( s.picnum != 3464 )
+						{
+							s.zvel = (short) -((4 - s.yvel) << 8);
+							if (sector[s.sectnum].lotag == 2)
+								s.zvel >>= 2;
+							s.yvel++;
+						} else {
+							t[3] = 1;
+							t[4] = 1;
+							l = 0;
+							break;
+						}
 					}
 					if (s.picnum != 3464 && s.z < hittype[i].ceilingz && sector[sect].lotag != 2) {
 						s.z = hittype[i].ceilingz + (3 << 8);
@@ -3112,7 +3122,7 @@ public class Actors {
 					} else
 						t[5] = 0;
 
-					if (t[3] == 0 && (s.picnum == MORTER || s.picnum == 3464) && (j != 0 || x < 844)) {
+					if (t[3] == 0 && (s.picnum == MORTER || s.picnum == 3464 ) && (j != 0 || x < 844)) {
 						t[3] = 1;
 						t[4] = 0;
 						l = 0;
@@ -3143,9 +3153,16 @@ public class Actors {
 
 						k = engine.getangle(wall[wall[j].point2].x - wall[j].x,
 								wall[wall[j].point2].y - wall[j].y);
-
-						s.ang = (short) (((k << 1) - s.ang) & 2047);
-						s.xvel >>= 1;
+						if ( s.picnum == 3464 )
+						{
+			                t[3] = 1;
+			                t[4] = 0;
+			                m = 0;
+			                s.xvel = 0;
+						} else {
+							s.ang = (short) (((k << 1) - s.ang) & 2047);
+							s.xvel >>= 1;
+						}
 					}
 
 				} while (false);
@@ -5514,31 +5531,51 @@ public class Actors {
 						continue;
 					}
 				}
+				
 				if (t[0] == 1) // Lights flickering on
 				{
-					if (sc.floorshade > s.shade) {
-						if(st != 48) {
+					if(st != 48) {
+						if (sc.floorshade > s.shade) {
 							sc.floorpal = s.pal;
 							sc.floorshade -= 2;
-						}
-						if(st != 47) {
+							if(st != 47) {
+								sc.ceilingpal = s.pal;
+								sc.ceilingshade -= 2;
+							}
+
+							startwall = sc.wallptr;
+							endwall = startwall + sc.wallnum;
+
+							for (j = startwall; j < endwall; j++) {
+								WALL wal = wall[j];
+								if (wal.hitag != 1) {
+									wal.pal = s.pal;
+									wal.shade -= 2;
+								}
+							}
+						} else
+							t[0] = 2;
+					} 
+					else
+					{
+						if (sc.ceilingshade > s.shade) {
 							sc.ceilingpal = s.pal;
 							sc.ceilingshade -= 2;
-						}
+							
+							startwall = sc.wallptr;
+							endwall = startwall + sc.wallnum;
 
-						startwall = sc.wallptr;
-						endwall = startwall + sc.wallnum;
-
-						for (j = startwall; j < endwall; j++) {
-							WALL wal = wall[j];
-							if (wal.hitag != 1) {
-								wal.pal = s.pal;
-								wal.shade -= 2;
+							for (j = startwall; j < endwall; j++) {
+								WALL wal = wall[j];
+								if (wal.hitag != 1) {
+									wal.pal = s.pal;
+									wal.shade -= 2;
+								}
 							}
-						}
-					} else
-						t[0] = 2;
-
+						} else
+							t[0] = 2;
+					}
+					
 					j = headspritesect[sprite[i].sectnum];
 					while (j >= 0) {
 						if ((sprite[j].cstat & 16) != 0) {

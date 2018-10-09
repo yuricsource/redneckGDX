@@ -2476,8 +2476,8 @@ public class Gamedef {
 	        case 124:
 	        	insptr++;
 	        	LeaveMap();
-	        	if(++ud.level_number > 6)
-	        		ud.level_number = 0;
+	        	ud.level_number++;
+	        	checknextlevel();
 	            ud.m_level_number = ud.level_number;
 	        	break;
 	        case 119:
@@ -2500,9 +2500,9 @@ public class Gamedef {
 	        case 112:
 	        case 111:
 	        	int d = g_sp.detail;
-	        	if(d == 1)
+	        	if(d == 1) 
 	        		g_sp.detail++;
-	        	parseifelse(con, d > 0);
+	        	parseifelse(con, d == 1);
 	        	break;
 	        case 123:
 	            insptr++;
