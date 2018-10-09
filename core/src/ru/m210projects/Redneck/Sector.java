@@ -485,6 +485,7 @@ public class Sector {
 	    {
 	    	for ( i = 0; i < MAXWALLS; ++i )
 	    	{
+	    		if(wall[i] == null) continue;
 	    		if ( wall[i].picnum == 7873 )
 	    			wall[i].xpanning += 6;
 	    		else if ( wall[i].picnum == 7870 )
