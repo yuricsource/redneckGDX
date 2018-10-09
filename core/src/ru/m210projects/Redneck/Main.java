@@ -51,22 +51,22 @@ public class Main extends ApplicationAdapter {
 	 * v0.753
 	 * Autoload folder can load resources as cusspack
 	 * Addons support
+	 * Joystick fix + smooth feature by aybe0
+	 * Torches fix
+	 * Cow "use" fix
 	 * 
 	 * TODO:
-	 * doincrements
-	 * processinput
-	 * e1m2 нужно отбирать оружия
+	 * сохранения
+	 * грабли выключаются в читах
+	 * мотоцикл перестал стрелять
+	 * на уровне с кораблем странный стук
+	 * seasick неправильно работает
 	 * dobonus другие картинки
-	 * другие фразы игрока
-	 * в начале уровня должны выбираться грабли
-	 * drug mode (e1m4)
-	 * камин не мерцает
+	 * fog / spawn RA fog method sub_86730
 	 * ROR
-	 * spawn RA fog method sub_86730
-	 * бабы на мотоцикле тоже должны чтото кидать
+	 * 
 	 * 
 	 * не работают комары в R66
-	 * Joystick sensitive bug
 	 * cd audio from cue
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * инфа об юзерэпизоде в меню загрузок
@@ -76,6 +76,7 @@ public class Main extends ApplicationAdapter {
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
+	 * cutscenes MVE
 	 */
 
 	public static final String appname = "RedneckGDX";

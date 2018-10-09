@@ -26,39 +26,7 @@ package ru.m210projects.Redneck;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static ru.m210projects.Build.Engine.waloff;
-import static ru.m210projects.Build.Engine.CLIPMASK1;
-import static ru.m210projects.Build.Engine.MAXSECTORS;
-import static ru.m210projects.Build.Engine.MAXSPRITESONSCREEN;
-import static ru.m210projects.Build.Engine.MAXSTATUS;
-import static ru.m210projects.Build.Engine.CEIL;
-import static ru.m210projects.Build.Engine.FLOOR;
-import static ru.m210projects.Build.Engine.getInput;
-import static ru.m210projects.Build.Engine.gotpic;
-import static ru.m210projects.Build.Engine.headspritesect;
-import static ru.m210projects.Build.Engine.mirrorang;
-import static ru.m210projects.Build.Engine.mirrorx;
-import static ru.m210projects.Build.Engine.mirrory;
-import static ru.m210projects.Build.Engine.nextspritesect;
-import static ru.m210projects.Build.Engine.pHitInfo;
-import static ru.m210projects.Build.Engine.picanm;
-import static ru.m210projects.Build.Engine.sector;
-import static ru.m210projects.Build.Engine.show2dsector;
-import static ru.m210projects.Build.Engine.sintable;
-import static ru.m210projects.Build.Engine.sprite;
-import static ru.m210projects.Build.Engine.spritesortcnt;
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
-import static ru.m210projects.Build.Engine.totalclock;
-import static ru.m210projects.Build.Engine.tsprite;
-import static ru.m210projects.Build.Engine.visibility;
-import static ru.m210projects.Build.Engine.wall;
-import static ru.m210projects.Build.Engine.windowx1;
-import static ru.m210projects.Build.Engine.windowx2;
-import static ru.m210projects.Build.Engine.windowy1;
-import static ru.m210projects.Build.Engine.windowy2;
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
+import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
@@ -74,6 +42,7 @@ import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Redneck.*;
+import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.LoadSave.gScreenCapture;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
@@ -121,7 +90,8 @@ public class View {
 	
 	public static int cameradist = 0, cameraclock = 0;
 	public static int gNameShowTime;
-	
+	public static int oviewingrange;
+
 	public static void adduserquote(char[] daquote)
 	{
 	    for(int i=MAXUSERQUOTES-1;i>0;i--)
@@ -710,7 +680,8 @@ public class View {
 	    	return;
 
 	    smoothratio = min(max(smoothratio,0),65536);
-
+	    if ( p.fogtype != 0)
+	        p.visibility = currentGame.getCON().const_visibility;
 	    visibility = p.visibility;
 
 	    if(ud.pause_on != 0 || ps[snum].on_crane > -1) smoothratio = 65536;
@@ -743,6 +714,11 @@ public class View {
 	        	oyrepeat = i;
 	            vscrn(ud.screen_size);
 	        }
+	        
+	        if ( oviewingrange != viewingrange && p.DrugMode == 0 ) {
+	            engine.setaspect_new();
+	            oviewingrange = viewingrange;
+	        }
 
 	        if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
 	        {
@@ -751,6 +727,68 @@ public class View {
                 engine.getrender().settiltang(p.orotscrnang + mulscale(((p.rotscrnang - p.orotscrnang + 1024)&2047)-1024,smoothratio, 16));
         		p.orotscrnang = p.rotscrnang;	// JBF: save it for next time 	  
 	        } else engine.getrender().settiltang(0);
+
+	        if ( p.DrugMode > 0 && !MODE_TYPE && ud.pause_on == 0)
+	        {
+	        	if ( p.drug_type != 0)
+	        	{
+	        		if ( p.drug_type == 3)
+	        		{
+	        			int new_aspect = 5000 * p.drug_intensive + oviewingrange;
+	        			if ( new_aspect >= oviewingrange )
+	        			{
+	        				engine.setaspect(new_aspect, yxaspect);
+	        				p.drug_aspect = new_aspect;
+	        			}
+	        			else
+	        			{
+	        				engine.setaspect(oviewingrange, yxaspect);
+	        				p.DrugMode = 0;
+	        				p.drug_type = 0;
+	        				p.drug_timer = 0;
+	        				p.drug_intensive = 0;
+	        				setpal(p);
+	        			}
+	        		}
+	        		else if ( p.drug_type == 2 )
+	                {
+	        			if ( p.drug_timer <= 30 )
+	        			{
+	        				int new_aspect = 3 * oviewingrange + 500 * p.drug_timer;
+	        				engine.setaspect(new_aspect, yxaspect);
+	        				p.drug_aspect = new_aspect;
+	        			}
+	        			else p.drug_type = 1;
+	                } 
+	        		else if ( p.drug_timer >= 1 )
+	                {
+	        			int new_aspect = 3 * oviewingrange + 500 * p.drug_timer;
+	                    engine.setaspect(new_aspect, yxaspect);
+	                    p.drug_aspect = new_aspect;
+	                }
+	        		else
+	        		{
+	        			p.drug_type = 2;
+	        			if ( --p.DrugMode == 1 )
+	        				p.drug_type = 3;
+	        		}
+	        	} 
+	        	else 
+	        	{
+	        		int new_aspect = 5000 * p.drug_intensive + oviewingrange;
+	        		if ( 3 * oviewingrange >= new_aspect )
+	        		{
+	        			engine.setaspect(new_aspect, yxaspect);
+	        			p.drug_aspect = new_aspect;
+	                }
+	                else
+	                {
+	                	engine.setaspect(3 * oviewingrange, yxaspect);
+	                	p.drug_aspect = 3 * oviewingrange;
+	                	p.drug_type = 2;
+	                }
+	        	}
+	        }
 
 	          if ( (snum == myconnectindex) && (numplayers > 1) )
               {
@@ -770,7 +808,7 @@ public class View {
                     choriz = (p.ohoriz+p.ohorizoff+((p.horiz+p.horizoff-p.ohoriz-p.ohorizoff) * smoothratio) / 65536.0f);
               }
               cang += p.look_ang;
-
+   
               if (p.newowner >= 0)
               {
                     cang = (short) (p.ang+p.look_ang);
@@ -781,7 +819,6 @@ public class View {
                     sect = sprite[p.newowner].sectnum;
                     smoothratio = 65536;
               }
-
               else if( p.over_shoulder_on == 0 )
             	  cposz += p.opyoff+mulscale((p.pyoff-p.opyoff),smoothratio, 16);
               else {
@@ -867,12 +904,14 @@ public class View {
 
 	    restoreinterpolations();
 
-	    if (totalclock < lastvisinc)
-	    {
-	        if (klabs(p.visibility-currentGame.getCON().const_visibility) > 8)
-	            p.visibility += (currentGame.getCON().const_visibility-p.visibility)>>2;
+	    if ( p.fogtype == 0 ) {
+		    if (totalclock < lastvisinc)
+		    {
+		        if (klabs(p.visibility-currentGame.getCON().const_visibility) > 8)
+		            p.visibility += (currentGame.getCON().const_visibility-p.visibility)>>2;
+		    }
+		    else p.visibility = currentGame.getCON().const_visibility;
 	    }
-	    else p.visibility = currentGame.getCON().const_visibility;
 	}
 
 	public static String lastmessage;
@@ -903,7 +942,7 @@ public class View {
 	    }
 	}
 
-	public static void animatesprites(int x,int y,int z, short a,int smoothratio) //XXX
+	public static void animatesprites(int x,int y,int z, short a,int smoothratio)
 	{
 	    short i, j, k, p, sect;
 	    int l, t1,t3,t4;
@@ -1410,7 +1449,7 @@ public class View {
                 if( t.z > hittype[i].floorz && t.xrepeat < 32 )
                     t.z = hittype[i].floorz;
                 
-                if ( ps[p].OnMotorcycle && p == screenpeek ) 
+                /*if ( ps[p].OnMotorcycle && p == screenpeek ) 
                 {
                 	t.picnum = 7219;
                 	t.xrepeat = 18;
@@ -1419,7 +1458,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnMotorcycle ) 
+                else */if ( ps[p].OnMotorcycle ) 
                 { 
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);
@@ -1437,7 +1476,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnBoat && p == screenpeek ) 
+                /*else if ( ps[p].OnBoat && p == screenpeek ) 
                 {
                 	t.picnum = 7190;
                 	t.xrepeat = 32;
@@ -1446,7 +1485,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 } 
-                else if ( ps[p].OnBoat ) 
+                else */if ( ps[p].OnBoat ) 
                 { 
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);

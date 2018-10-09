@@ -38,6 +38,7 @@ import static ru.m210projects.Redneck.Types.INTERPOLATION.FLOORZ;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLX;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLY;
 import static ru.m210projects.Redneck.Animate.*;
+import static ru.m210projects.Redneck.Animlib.closeanm;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.*;
@@ -667,8 +668,8 @@ public class Premap {
 	    {
 	    	p.OnBoat = false;
 	    	p.gotweapon[BOAT_WEAPON] = false;
-	    	 p.curr_weapon = RATE_WEAPON;
-	    	 checkavailweapon(p);
+	    	p.curr_weapon = RATE_WEAPON;
+	    	checkavailweapon(p);
 	    }
 	    p.NotOnWater = 0;
 	    p.field_5D9 = 0;
@@ -676,10 +677,10 @@ public class Premap {
 	    p.field_5E1 = 0;
 	    p.field_5E9 = 0;
 	    p.DrugMode = 0;
-	    p.field_5F1 = 0;
-	    p.field_5F3 = 0;
-	    p.field_5F5 = 0;
-	    p.field_5F7 = 0;
+	    p.drug_type = 0;
+	    p.drug_intensive = 0;
+	    p.drug_timer = 0;
+	    p.drug_aspect = 0;
 	    
 	    if ( numplayers >= 2 )
 	    {
@@ -1416,6 +1417,16 @@ public class Premap {
 	    gNameShowTime = 500;
 	}
 	
+	public static void checknextlevel()
+	{
+		if ( ud.level_number > 6 ) {
+			if(ud.volume_number == 0) {
+	    		ud.level_number = 0;
+	            ud.volume_number = 1;
+	    	} else ud.level_number = 0;
+		}
+	}
+	
 	public static void newgame(int vn,int ln,int sk)
 	{
 	    PlayerStruct p = ps[0];
@@ -1622,7 +1633,9 @@ public class Premap {
 	    palette[765] = palette[766] = palette[767] = 0;
 	    slimepal[765] = slimepal[766] = slimepal[767] = 0;
 	    waterpal[765] = waterpal[766] = waterpal[767] = 0;
-
+	    
+		System.arraycopy(palette, 1, drugpal, 0, 767);
+		
 	    kClose(fp);
 	    
 	    for(int i = 0; i < 768; i++)
@@ -1750,6 +1763,19 @@ public class Premap {
 			    
 			    Arrays.fill(gotpic, (byte)0);
 			    prelevel(g);
+			    
+			    if ( ud.level_number == 2 && ud.volume_number == 0 )
+			    {
+			    	for ( int i = 1; i < 17; ++i )
+			    		ps[0].gotweapon[i] = false;
+			    	for ( int j = 1; j < 17; ++j )
+			    		ps[0].ammo_amount[j] = 0;
+			    	ps[0].gotweapon[RATE_WEAPON] = true;
+			    	ps[0].ammo_amount[RATE_WEAPON] = 1;
+			    	ps[0].curr_weapon = RATE_WEAPON;
+			    }
+			    
+			    
 			    allignwarpelevators();
 			    resetpspritevars(g);
 		

@@ -30,10 +30,8 @@ import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Gamedef.getincangle;
 import static ru.m210projects.Redneck.Gameutils.sgn;
-import static ru.m210projects.Redneck.Globals.global_random;
-import static ru.m210projects.Redneck.Globals.sync;
 import static ru.m210projects.Redneck.Main.engine;
-import static ru.m210projects.Redneck.Premap.LeaveMap;
+import static ru.m210projects.Redneck.Premap.*;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Redneck.Types.Demo.*;
@@ -66,11 +64,13 @@ public class Player {
 
 	public static final byte[] waterpal = new byte[768], 
 			slimepal = new byte[768], titlepal = new byte[768], 
-			drealms = new byte[768], endingpal = new byte[768];
-	
+			drealms = new byte[768], endingpal = new byte[768],
+			drugpal = new byte[768];
+
 	public static void setpal(PlayerStruct p)
 	{
-	    if(p.heat_on != 0) p.palette = slimepal;
+		if(p.DrugMode != 0) p.palette = drugpal;
+		else if(p.heat_on != 0) p.palette = slimepal;
 	    else switch(sector[p.cursectnum].ceilingpicnum)
 	    {
 	        case FLOORSLIME:
@@ -395,9 +395,31 @@ public class Player {
 	    p.player_par++;
 	    checkTrack();
 	    
+	    if(currentGame.getCON().type == RRRA) {
+		    if ( WindTime <= 0 )
+		    {
+		    	if ( (engine.krand() & 0x7F) == 8 )
+		    	{
+		    		WindTime = 4 * (engine.krand() & 0x3F) + 120;
+		    		WindDir = engine.krand() & kAngleMask;
+		    	}
+		    }
+		    else
+		      WindTime--;
+	    }
+	    
+	    if ( BellTime > 0 && --BellTime == 0)
+	        sprite[BellTime >> 16].picnum++;
+	    
 	    if(p.chiken_phase > 0)
 	    	p.chiken_phase--;
 	    
+	    if ( p.SeaSick != 0)
+	    {
+	    	if ( --p.SeaSick == 0 )
+	    		p.field_5DD = 0;
+	    }
+
 	    if(p.field_count != 0)
 	    	p.field_count--;
 
@@ -405,6 +427,24 @@ public class Player {
 	    	p.detonate_count++;
 	    	p.field_57C--;
 	    }
+	    
+	    if ( p.DrugMode > 0 && !MODE_TYPE)
+        {
+        	if ( p.drug_type != 0)
+        	{
+        		if ( p.drug_type == 3)
+        			p.drug_intensive--;
+        		else if ( p.drug_type == 2 )
+                {
+        			if ( p.drug_timer <= 30 )
+        				p.drug_timer++;
+                } 
+        		else if ( p.drug_timer >= 1 )
+        			p.drug_timer--;
+        	} 
+        	else 
+        		p.drug_intensive++;
+        }
 
 	    p.alcohol_count--;
 	    if(p.alcohol_count <= 0)
@@ -488,6 +528,7 @@ public class Player {
 	        		spritesound(435,p.i);
 	        		break;
 	        	case 4919:
+	        	case 5472:
 	        		spritesound(433,p.i);
 	        		break;
 	        	}
@@ -630,7 +671,11 @@ public class Player {
 	        	{
 	        		switch( ud.level_number )
         			{
-	        			case 0: snd = 391; break;
+	        			case 0: 
+	        				if(currentGame.getCON().type == RRRA)
+	        					snd = 63;
+	        				else snd = 391; 
+	        			break;
 	    				case 1: snd = 64; break;
 	    				case 2: snd = 77; break;
 	    				case 3: snd = 80; break;
@@ -668,6 +713,528 @@ public class Player {
 	    else sb_snum = 0;
 
 	    psect = p.cursectnum;
+	    
+	    p.ohoriz = p.horiz;
+	    p.ohorizoff = p.horizoff;
+	    if ( p.OnMotorcycle && s.extra > 0 )
+	    {
+	    	p.oang = p.ang;
+	    	if ( p.Motospeed < 0 )
+	    		p.Motospeed = 0;
+	    	int var = 0, var2 = 0;
+	    	if ( (sb_snum & 2) != 0 )
+	    	{
+	    		var = 1;
+	    		sb_snum &= ~2;
+	    	}
+	    	
+	    	if ( (sb_snum & 1) != 0 )
+	    	{
+	    		var2 = 1;
+	    		sb_snum &= ~1;
+	    		if ( p.on_ground )
+	    		{
+	    			if ( p.Motospeed == 0 && var != 0 )
+	    	        {
+	    				if ( Sound[187].num == 0 )
+	    					spritesound(187, pi);
+	    	        }
+	    	        else if ( p.Motospeed != 0 || Sound[214].num != 0 )
+	    	        {
+	    	        	if ( p.Motospeed < 50 || Sound[188].num != 0 )
+	    	        	{
+	    	        		if ( Sound[188].num == 0 && Sound[214].num == 0 )
+	    	        			spritesound(188, pi);
+	    	        	}
+	    	        	else
+	    	        	{
+	    	        		spritesound(188, pi);
+	    	        	}
+	    	        }
+	    	        else
+	    	        {
+	    	        	if ( Sound[187].num > 0 )
+	    	        		stopsound(Sound[187].num);
+	    	        	spritesound(214, pi);
+	    	        }
+	    		}
+	    	} 
+	    	else
+	    	{
+	    		var2 = 0;
+	    		if ( Sound[214].num > 0 )
+	    		{
+	    			stopsound(Sound[214].num);
+	    	        if ( Sound[189].num == 0 )
+	    	        	spritesound(189, pi);
+	    		}
+	    		if ( Sound[188].num > 0 )
+	    		{
+	    			stopsound(Sound[188].num);
+	    			if ( Sound[189].num == 0 )
+	    				spritesound(189, pi);
+	    		}
+	    		if ( Sound[189].num == 0 && Sound[187].num == 0 )
+	    			spritesound(187, pi);
+	    	}
+	    	int var3 = 0, var4 = 0, var5 = 0;
+	    	if ( (sb_snum & 8) != 0 )
+	        {
+	    		var3 = 1;
+	    		sb_snum &= ~8;
+	        }
+	    	
+	    	if ( (sb_snum & 16) != 0 )
+	        {
+	    		var4 = 1;
+	    		sb_snum &= ~16;
+	        }
+	    	
+	    	if ( (sb_snum & 64) != 0 )
+	        {
+	    		var5 = 1;
+	    		sb_snum &= ~64;
+	        }
+	    	
+	    	if ( p.alcohol_amount <= 88 || p.field_5C1 != 0 )
+	        {
+	    		if ( p.alcohol_amount > 99 && p.field_5C1 == 0 )
+	    		{
+	    			int ch = (engine.krand() & 0x1F);
+	    			if ( ch == 1 )
+	    			{
+	    				p.field_5C1 = -20;
+	    			}
+	    			else if ( ch == 2 )
+	    			{
+	    				p.field_5C1 = 20;
+	    			}
+	    		}
+	        } 
+	    	else
+	        {
+	    		int ch = (engine.krand() & 0x3F);
+    			if ( ch == 1 )
+    			{
+    				p.field_5C1 = -10;
+    			}
+    			else if ( ch == 2 )
+    			{
+    				p.field_5C1 = 10;
+    			}
+	        }
+	    	
+	    	if ( p.on_ground )
+	    	{
+	    		if ( var != 0 && p.Motospeed > 0 )
+	    	    {
+	    			if ( p.field_5CF != 0 )
+	    				p.Motospeed -= 2;
+	    			else
+	    				p.Motospeed -= 4;
+	    			if ( p.Motospeed < 0 )
+	    				p.Motospeed = 0;
+	    			p.VBumpTarget = -30;
+	    			p.field_5B5 = 1;
+	    	    }
+	    		else if ( var2 != 0 && var == 0)
+	    		{
+	    			if ( p.Motospeed < 40 )
+	    			{
+	    				p.VBumpTarget = 70;
+	    				p.field_5C7 = 1;
+	    	        }
+	    	        p.Motospeed += 2;
+	    	        if ( p.Motospeed > 120 )
+	    	        	p.Motospeed = 120;
+	    	        if ( p.NotOnWater == 0 && p.Motospeed > 80 )
+	    	        	p.Motospeed = 80;
+	    		} else if ( p.Motospeed > 0 )
+	    			p.Motospeed--;
+	    		if ( p.field_5B5 != 0 && (var == 0 || p.Motospeed == 0) )
+	    		{
+	    	        p.VBumpTarget = 0;
+	    	        p.field_5B5 = 0;
+	    		}
+	    		if ( var3 != 0 && p.Motospeed <= 0 && var == 0 )
+	    		{
+	    			p.Motospeed = -15;
+	    	        int swap = var5;
+	    	        var5 = var4;
+	    	        var4 = swap;
+	    		} 
+	    	}
+	    	if ( p.Motospeed != 0 && p.on_ground )
+	        {
+	    		if ( p.VBumpNow == 0 && (engine.krand() & 3) == 2 )
+	    			p.VBumpTarget = ((engine.krand() & 7) - 4) * (p.Motospeed >> 4);
+	        
+		    	if ( var4 != 0 || p.field_5C1 < 0 )
+		    	{
+		    		if ( p.field_5C1 < 0 )
+		              ++p.field_5C1;
+		    	}
+		    	else if ( (var5 != 0 || p.field_5C1 > 0) && p.field_5C1 > 0 )
+		    		p.field_5C1--;
+	        }
+	    	
+	    	if ( p.TurbCount != 0 )
+	        {
+	    		if ( p.TurbCount > 1 )
+	    		{
+	    			p.horiz = (engine.krand() & 0xF) + 93;
+	    			--p.TurbCount;
+	    			p.field_5C1 = (engine.krand() & 3) - 2;
+	    		}
+	    		else
+	    		{
+		            p.horiz = 100;
+		            p.TurbCount = 0;
+		            p.VBumpTarget = 0;
+		            p.VBumpNow = 0;
+	    		}
+	        }
+	    	else if ( p.VBumpTarget <= p.VBumpNow )
+	        {
+	    		if ( p.VBumpTarget >= p.VBumpNow )
+	    		{
+	    			p.VBumpTarget = 0;
+	    			p.field_5C7 = 0;
+	    		}
+	    		else
+	    		{
+	    			if ( p.field_5C7 != 0 )
+	    				p.VBumpNow -= 6;
+	    			else p.VBumpNow--;
+	    			if ( p.VBumpTarget > p.VBumpNow )
+	    				p.VBumpNow = p.VBumpTarget;
+	    			p.horiz = (p.VBumpNow) / 3 + 100;
+	    		}
+	        }
+	    	else
+	        {
+	    		if ( p.field_5C7 != 0 )
+	    			p.VBumpNow += 6;
+	    		else p.VBumpNow++;
+	    		if ( p.VBumpTarget < p.VBumpNow )
+	    			p.VBumpNow = p.VBumpTarget;
+	    		p.horiz = (p.VBumpNow) / 3 + 100;
+	        }
+
+	    	if ( p.Motospeed >= 20 && p.on_ground && (var4 != 0 || var5 != 0) )
+	        {
+	    		int angvel = (int) (p.ang - 510);
+	    		if ( var4 != 0 )
+	    			angvel = (int) (p.ang + 510);
+	    	
+	    		short dang = 350;
+	    		if ( var4 == 0 )
+	    			dang = -350;
+
+	    		if ( p.field_5CD != 0 || p.field_5CF != 0 || p.NotOnWater == 0 )
+	    		{
+	        	  int speed = 4 * p.Motospeed;
+	        	  if ( p.field_5CF != 0 )
+	        		  speed = 8 * p.Motospeed;
+	           
+	        	  if ( p.field_5B5 != 0 )
+	        	  {
+	        		  p.posxv += (speed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
+	        		  p.posyv += (speed >> 5) * 16 * sintable[angvel & kAngleMask];
+	        		  p.ang = ((short)p.ang - (dang >> 2)) & kAngleMask;
+	        	  }
+	        	  else
+	        	  {
+	        		  p.posxv += (speed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
+	        		  p.posyv += (speed >> 7) * 16 * sintable[angvel & kAngleMask];
+	        		  p.ang = ((short)p.ang - (dang >> 6)) & kAngleMask;
+	        	  }
+	        	  p.field_5CD = 0;
+	        	  p.field_5CF = 0;
+	    		}
+	    		else if ( p.field_5B5 != 0 )
+	    		{
+	    			p.posxv += (p.Motospeed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
+	    			p.posyv += (p.Motospeed >> 5) * 16 * sintable[angvel & kAngleMask];
+	    			p.ang = ((short)p.ang - (dang >> 4)) & kAngleMask;
+	    			if ( Sound[220].num == 0 )
+	    				spritesound(220, p.i);
+	    		}
+	    		else
+	    		{
+	    			p.posxv += (p.Motospeed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
+	    			p.posyv += (p.Motospeed >> 7) * 16 * sintable[angvel & kAngleMask];
+	    			p.ang = ((short)p.ang - (dang >> 4)) & kAngleMask;
+	    		}
+	        }
+	        else if ( p.Motospeed >= 20 && p.on_ground && (p.field_5CD != 0 || p.field_5CF != 0) )
+	        {
+	        	int angvel = (int) (p.ang + 510);
+	        	if ( (engine.krand() & 1) == 1 )
+	        		angvel = (int) (p.ang - 510);
+
+	        	int speed = 5 * p.Motospeed;
+	        	if ( p.field_5CF != 0 )
+	        		speed = 10 * p.Motospeed;
+
+	        	p.posxv += (speed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
+	        	p.posyv += (speed >> 7) * 16 * sintable[angvel & kAngleMask];
+	        }
+	        p.field_5CD = 0;
+	        p.field_5CF = 0;
+	    }
+	    else if ( p.OnBoat && s.extra > 0 )
+	    {
+	    	p.oang = p.ang;
+	    	if ( p.NotOnWater != 0 )
+	    	{
+		        if ( p.Motospeed <= 0 )
+		        {
+		        	if ( Sound[87].num == 0 )
+		        		spritesound(87, pi);
+		        }
+		        else if ( Sound[88].num == 0)
+		        	spritesound(88, pi);
+	    	}
+	    	if ( p.Motospeed < 0 )
+	    		p.Motospeed = 0;
+	    	boolean var1 = false, var2 = false, var3 = false, var4 = false, var5 = false, var6 = false;
+	    	if ( (sb_snum & 2) != 0 && (sb_snum & 1) != 0 )
+	    	{
+	        	var1 = true;
+	        	sb_snum &= ~3;
+	    	}
+
+	    	if ( (sb_snum & 1) != 0 )
+	    	{
+	    		var2 = true;
+	    		sb_snum &= ~1;
+		        if ( p.Motospeed != 0 || Sound[89].num != 0 )
+		        {
+		        	if ( p.Motospeed < 50 || Sound[88].num != 0 )
+		        	{
+		        		if ( Sound[88].num == 0 && Sound[89].num == 0 )
+		        			spritesound(88, pi);
+		         	}
+		        	else
+		        		spritesound(88, pi);
+		        }
+		        else
+		        {
+		        	if ( Sound[87].num > 0 )
+		        		stopsound(Sound[87].num);
+		        	spritesound(89, pi);
+		        }
+	    	}
+	    	else
+	    	{
+		        var2 = false;
+		        if ( Sound[89].num > 0 )
+		        {
+		        	stopsound(Sound[89].num);
+		        	if ( Sound[90].num == 0 )
+		        		spritesound(90, pi);
+		        }
+		        if ( Sound[88].num > 0 )
+		        {
+		        	stopsound(Sound[88].num);
+		        	if ( Sound[90].num == 0 )
+		        		spritesound(90, pi);
+		        }
+		        if ( Sound[90].num == 0 && Sound[87].num == 0)
+		        	spritesound(87, pi);
+	    	}
+	      if ( (sb_snum & 2) != 0 )
+	      {
+	    	  var3 = true;
+	    	  sb_snum &= ~2;
+	      }
+	      
+	      if ( (sb_snum & 8) != 0 )
+	      {
+	      	 var4 = true;
+	      	 sb_snum &= ~8;
+	      }
+	      
+	      if ( (sb_snum & 16) != 0 )
+	      {
+	    	  var5 = true;
+	    	  sb_snum &= ~16;
+	    	  if ( Sound[91].num == 0 && p.Motospeed > 30 && p.NotOnWater == 0 )
+	    		  spritesound(91, pi);
+	      }
+	      
+	      if ( (sb_snum & 64) != 0 )
+	      {
+	    	  var6 = true;
+	    	  sb_snum &= ~64;
+	    	  if ( Sound[91].num == 0 && p.Motospeed > 30 && p.NotOnWater == 0 )
+	    		  spritesound(91, pi);
+	      }
+	      
+	      if ( p.NotOnWater == 0 )
+	      {
+	    	  if ( p.alcohol_amount <= 88 || p.field_5C1 != 0)
+	    	  {
+	    		  if ( p.alcohol_amount > 99 && p.field_5C1 == 0 )
+	    		  {
+	    			  int ch = engine.krand() & 0x1F;
+	    			  if ( ch == 1 )
+	    				  p.field_5C1 = -20;
+	    			  else if ( ch == 2 )
+	    				  p.field_5C1 = 20;
+	    		  }
+	    	  }
+	    	  else
+	    	  {
+	    		  int ch = engine.krand() & 0x3F;
+	    		  if ( ch == 1 )
+	    			  p.field_5C1 = -10;
+	    		  else if ( ch == 2 )
+	    			  p.field_5C1 = 10;
+	    	  }
+	      }
+	      if ( p.on_ground )
+	      {
+	    	  if ( var1 )
+	    	  {
+		          if ( p.Motospeed > 25 )
+		          {
+		        	  p.Motospeed -= 2;
+		        	  if ( p.Motospeed < 0 )
+		        		  p.Motospeed = 0;
+		        	  p.VBumpTarget = 30;
+		        	  p.field_5B5 = 1;
+		          }
+		          else
+		          {
+		        	  ++p.Motospeed;
+		        	  if ( Sound[182].num == 0 )
+		        		  spritesound(182, pi);
+		          }
+	    	  }
+	    	  else if ( var3 && p.Motospeed > 0 )
+	    	  {
+	    		  p.Motospeed -= 2;
+	    		  if ( p.Motospeed < 0 )
+	    			  p.Motospeed = 0;
+		          p.VBumpTarget = 30;
+		          p.field_5B5 = 1;
+	    	  }
+	    	  else if ( var2 )
+	    	  {
+		          if ( p.Motospeed < 40 && p.NotOnWater == 0)
+		          {
+		        	  p.VBumpTarget = -30;
+		        	  p.field_5C7 = 1;
+		          }
+		          if ( ++p.Motospeed > 120 )
+		        	  p.Motospeed = 120;
+	    	  }
+	    	  else if ( p.Motospeed > 0 )
+	    		  --p.Motospeed;
+	        
+	    	  if ( p.field_5B5 != 0 && (!var3 || p.Motospeed == 0) )
+	    	  {
+	    		  p.VBumpTarget = 0;
+	    		  p.field_5B5 = 0;
+	    	  }
+	    	  if ( var4 && p.Motospeed == 0 && !var3 )
+	    	  {
+		          if ( p.NotOnWater != 0 )
+		        	  p.Motospeed = -20;
+		          else
+		        	  p.Motospeed = -25;
+		          boolean swap = var6;
+		          var6 = var5;
+		          var5 = swap;
+	    	  }
+	      }
+	      if ( p.Motospeed != 0 && p.on_ground )
+	      {
+	    	  if ( p.VBumpNow == 0 && (engine.krand() & 0xF) == 14 )
+	    		  p.VBumpTarget = ((engine.krand() & 3) - 2) * (p.Motospeed >> 4);
+	    	  if ( var5 || p.field_5C1 < 0 )
+	    	  {
+	    		  if ( p.field_5C1 < 0 )
+	    			  ++p.field_5C1;
+	    	  }
+	    	  else if ( (var6 || p.field_5C1 > 0) && p.field_5C1 > 0 )
+	    		  --p.field_5C1;
+	        
+	      }
+	      if ( p.TurbCount != 0 )
+	      {
+	    	  if ( p.TurbCount > 1 )
+	    	  {
+	    		  p.horiz = (engine.krand() & 0xF) + 93;
+	    		  p.field_5C1 = (engine.krand() & 3) - 2;
+	    		  p.TurbCount--;
+	    	  }
+	    	  else
+	    	  {
+	    		  p.horiz = 100;
+	    		  p.TurbCount = 0;
+	    		  p.VBumpTarget = 0;
+	    		  p.VBumpNow = 0;
+	    	  }
+	      }
+	      else if ( p.VBumpTarget <= p.VBumpNow )
+	      {
+	    	  if ( p.VBumpTarget >= p.VBumpNow )
+	    	  {
+	    		  p.VBumpTarget = 0;
+	    		  p.field_5C7 = 0;
+	    	  }
+	    	  else
+	    	  {
+		          if ( p.field_5C7 != 0 )
+		        	  p.VBumpNow -= 6;
+		          else
+		          		--p.VBumpNow;
+		          if ( p.VBumpTarget > p.VBumpNow )
+		        	  p.VBumpNow = p.VBumpTarget;
+		          p.horiz = (p.VBumpNow) / 3 + 100;
+	    	  }
+	      }
+	      else
+	      {
+	    	  if ( p.field_5C7 != 0 )
+	    		  p.VBumpNow += 6;
+	    	  else
+	    		  ++p.VBumpNow;
+	    	  if ( p.VBumpTarget < p.VBumpNow )
+	    		  p.VBumpNow = p.VBumpTarget;
+	    	  p.horiz = (p.VBumpNow) / 3 + 100;
+	      }
+	      if ( p.Motospeed > 0 && p.on_ground && (var5 || var6) )
+	      {
+	    	  int angvel = (int) (p.ang - 510);
+	    	  if ( var5 )
+	    		  angvel = (int) (p.ang + 510);
+	    	  short dang = 350;
+	    	  if ( !var5 )
+	    		  dang = -350;
+	       
+	    	  int speed = 4 * p.Motospeed;
+	    	  if ( p.field_5B5 != 0 )
+	    	  {
+	    		  p.posxv += (speed >> 6) * 16 * sintable[(angvel + 512) & 0x7FF];
+		          p.posyv += (speed >> 6) * 16 * sintable[angvel & 0x7FF];
+		          p.ang = ((short)p.ang - (dang >> 5)) & kAngleMask;
+	    	  }
+	    	  else
+	    	  {
+		          p.posxv += (speed >> 7) * 16 * sintable[(angvel + 512) & 0x7FF];
+		          p.posyv += (speed >> 7) * 16 * sintable[angvel & 0x7FF];
+		          p.ang = ((short)p.ang - (dang >> 6)) & kAngleMask;
+	    	  }
+	      }
+	      
+	      if ( p.NotOnWater != 0 && p.Motospeed > 50 )
+	    	  p.Motospeed -= p.Motospeed >> 1;
+	    }
+
 	    if(psect == -1)
 	    {
 	        if(s.extra > 0 && !ud.clipping)
@@ -690,7 +1257,7 @@ public class Player {
 	    else if ( psectlotag == 7777 && ud.volume_number == 1 && ud.level_number == 6 )
 	    {
 	    	LeaveMap();
-	    	ud.level_number = 7;
+	    	ud.level_number = 7; //gEndGame
 	    	return;
 	    }
 	    
@@ -725,9 +1292,6 @@ public class Player {
 
 	    hittype[pi].floorz = fz;
 	    hittype[pi].ceilingz = cz;
-
-	    p.ohoriz = p.horiz;
-	    p.ohorizoff = p.horizoff;
 
 	    if( p.aim_mode == 0 && p.on_ground && psectlotag != 2 && (sector[psect].floorstat&2) != 0 )
 	    {
@@ -769,7 +1333,7 @@ public class Player {
 	            else
 	            {
 	            	p.field_280 = 10;
-	            	if ( (sb_snum & 1) != 0 )
+	            	if ( (sb_snum & 1) != 0 && !p.OnMotorcycle )
 	            	{
 	            		hz = 0;
 	            		cz = p.truecz;
@@ -788,6 +1352,22 @@ public class Player {
 	            p.footprintcount = 0;
 	            p.spritebridge = 1;
 	        }
+	        
+	        if ( p.OnMotorcycle && badguy(sprite[j]) )
+	        {
+	        	hittype[j].picnum = 7170;
+	        	hittype[j].extra = (p.Motospeed >> 1) + 2;
+	        	p.Motospeed -= p.Motospeed >> 4;
+	        }
+	        if ( p.OnBoat )
+	        {
+	        	if ( badguy(sprite[j]) )
+	        	{
+	        		hittype[j].picnum = 7170;
+	        		hittype[j].extra = (p.Motospeed >> 1) + 2;
+	        		p.Motospeed -= p.Motospeed >> 4;
+	        	}
+	        }
 	        else if(badguy(sprite[j]) && sprite[j].xrepeat > 24 && klabs(s.z-sprite[j].z) < (84<<8) )
 	        {
 	            j = engine.getangle(sprite[j].x-p.posx,sprite[j].y-p.posy);
@@ -802,7 +1382,7 @@ public class Player {
 	            else
 	            {
 	            	p.field_280 = 10;
-	            	if ( (sb_snum & 2) != 0 )
+	            	if ( (sb_snum & 2) != 0 && !p.OnMotorcycle )
 	            	{
 	            		cz = sprite[j].z;
 	                    hz = 0;
@@ -810,7 +1390,7 @@ public class Player {
 	            	}
 	            }
 	        }
-		    else if ( (sprite[j].picnum == 1098 || sprite[j].picnum == 2121) && (sb_snum & 2) != 0 && Sound[436].num == 0 ) 
+		    else if ( (sprite[j].picnum == 1098 || sprite[j].picnum == 2121) && (sb_snum & 2) != 0 && Sound[436].num == 0 && !p.OnMotorcycle ) 
 		    {
 		    	spritesound(436, p.i);
 		    	p.last_pissed_time = 4000;
@@ -865,7 +1445,7 @@ public class Player {
 	                        ud.level_number = ud.from_bonus;
 	                    else ud.level_number++;
 
-	                    if(ud.level_number > 6) ud.level_number = 0;
+	                    checknextlevel();
 	                    ud.m_level_number = ud.level_number;
 
 	                }
@@ -1037,6 +1617,11 @@ public class Player {
 	            p.rotscrnang = (short) ((p.dead_flag + ( (fz+p.posz)>>7))&2047);
 
 	        p.on_warping_sector = 0;
+	        
+	        if ( p.OnMotorcycle )
+	        	leaveMoto(p);
+	        if ( p.OnBoat )
+	        	leaveBoard(p);
 
 	        return;
 	    }
@@ -1076,18 +1661,53 @@ public class Player {
 		    if (p.rotscrnang > 0) p.rotscrnang -= ((p.rotscrnang>>1)+1);
 		    else if (p.rotscrnang < 0) p.rotscrnang += (((-p.rotscrnang)>>1)+1);
 	
-		    p.look_ang -= (p.look_ang>>2);
+		    if((!p.OnMotorcycle && !p.OnBoat) || p.Motospeed >= 80)
+		    	p.look_ang -= (p.look_ang>>2);
+		    else 
+		    	p.look_ang = (short) BClipRange(p.look_ang, -512, 512);	
 	
-		    if( (sb_snum&(1<<6)) != 0 )
+		    if( (sb_snum&(1<<6)) != 0 && !p.OnMotorcycle )
 		    {
 		        p.look_ang -= 152;
 		        p.rotscrnang += 24;
 		    }
 	
-		    if( (sb_snum&(1<<7)) != 0)
+		    if( (sb_snum&(1<<7)) != 0 && !p.OnMotorcycle )
 		    {
 		        p.look_ang += 152;
 		        p.rotscrnang -= 24;
+		    }
+		    
+		    if ( p.SeaSick != 0 )
+		    {
+		    	if ( p.SeaSick < 250 )
+		    	{
+		    		if ( p.SeaSick < 180 )
+		    		{
+		    			if ( p.SeaSick < 130 )
+		    			{
+		    				if ( p.SeaSick < 70 )
+		    				{
+		    					if ( p.SeaSick >= 20 )
+		    						p.rotscrnang += 24;
+		    				}
+		    				else
+		    				{
+		    					p.rotscrnang += 24;
+		    				}
+		    			}
+		    			else
+		    			{
+		    				p.rotscrnang -= 24;
+		    			}
+		    		}
+		    		else
+		    		{
+		    			p.rotscrnang += 24;
+		    		}
+		    	}
+		    	if ( p.SeaSick < 250 )
+		    		p.look_ang += engine.krand() - 128;
 		    }
 	
 		    if(p.on_crane < 0) 
@@ -1123,7 +1743,8 @@ public class Player {
 		
 			    p.oposz = p.posz;
 			    p.opyoff = p.pyoff;
-			    p.oang = p.ang;
+			    if(!p.OnBoat && !p.OnMotorcycle)
+			    	p.oang = p.ang; //for interpolation
 		
 			    if(p.one_eighty_count < 0)
 			    {
@@ -1131,14 +1752,24 @@ public class Player {
 			        p.ang += 128;
 			    }
 			    
-			    if ( psectlotag == 17 )
+			    if ( psectlotag == 17 || psectlotag == 18)
 			    {
 			    	if ( getanimationgoal(sector[p.cursectnum], FLOORZ) < 0 )
 			      		stopsound(432);
 			    	else if ( Sound[432].num == 0 )
 			    		spritesound(432, pi);
 			    }
-		
+
+			    if ( p.field_5DD != 0 )
+			    {
+			    	p.pycount += 32;
+			    	p.pycount &= kAngleMask;
+
+			     	if ( p.SeaSick != 0 )
+			     		p.pyoff = sintable[p.pycount] >> 2;
+			      	else p.pyoff = sintable[p.pycount] >> 7;
+			    }
+			    
 			    // Shrinking code
 		
 			    i = 40;
@@ -1154,17 +1785,25 @@ public class Player {
 			        if( Sound[DUKE_UNDERWATER].num == 0 )
 			            spritesound(DUKE_UNDERWATER,pi);
 		
-			        if ( (sb_snum&1) != 0)
+			        if ( (sb_snum&1) != 0 && !p.OnMotorcycle)
 			        {
 			            if(p.poszv > 0) p.poszv = 0;
 			            p.poszv -= 348;
 			            if(p.poszv < -(256*6)) p.poszv = -(256*6);
 			        }
-			        else if ((sb_snum&(1<<1)) != 0)
+			        else if ((sb_snum&(1<<1)) != 0 && !p.OnMotorcycle)
 			        {
 			            if(p.poszv < 0) p.poszv = 0;
 			            p.poszv += 348;
 			            if(p.poszv > (256*6)) p.poszv = (256*6);
+			        }
+			        else if ( p.OnMotorcycle )
+			        {
+			        	if ( p.poszv < 0 )
+			        		p.poszv = 0;
+			        	p.poszv += 348;
+			        	if ( p.poszv > 1536 )
+			        		p.poszv = 1536;
 			        }
 			        else
 			        {
@@ -1286,16 +1925,28 @@ public class Player {
 			                        p.dummyplayersprite = (short) spawn(pi,PLAYERONWATER);
 		
 			                    p.footprintcount = 6;
-			                    if(sector[p.cursectnum].floorpicnum == FLOORSLIME)
-			                        p.footprintpal = 8;
-			                    else p.footprintpal = 0;
-			                    p.footprintshade = 0;
+			                    if ( sector[p.cursectnum].floorpicnum == FLOORSLIME )
+			                    {
+			                    	p.footprintpal = 8;
+			                    	p.footprintshade = 0;
+			                    }
+			                    else if ( sector[p.cursectnum].floorpicnum != 7756
+			                    		&& sector[p.cursectnum].floorpicnum != 7888 )
+			                    {
+			                    	p.footprintpal = 0;
+			                   	  	p.footprintshade = 0;
+			                    }
+			                    else
+			                    {
+			                    	p.footprintpal = 0;
+			                    	p.footprintshade = 40;
+			                    }
 			                }
 			            }
 			        }
 			        else
 			        {
-			            if(p.footprintcount > 0 && p.on_ground)
+			            if(!p.OnMotorcycle && p.footprintcount > 0 && p.on_ground)
 			                if( (sector[p.cursectnum].floorstat&2) != 2 )
 			            {
 			                for(j=headspritesect[psect];j>=0;j=nextspritesect[j])
@@ -1329,7 +1980,27 @@ public class Player {
 			            else
 			            {
 			                p.on_ground = false;
-			                p.poszv += (currentGame.getCON().gc+80); // (TICSPERFRAME<<6);
+			                if ( (p.OnMotorcycle || p.OnBoat) && fz - (i << 9) > p.posz )
+			                {
+			                  if ( p.MotoOnGround )
+			                  {
+			                    p.VBumpTarget = 80;
+			                    p.field_5C7 = 1;
+			                    p.poszv -= (p.Motospeed >> 4) * currentGame.getCON().gc;
+			                    p.MotoOnGround = false;
+			                    if ( Sound[188].num > 0 )
+			                      stopsound(Sound[188].num);
+			                    spritesound(189, pi);
+			                  }
+			                  else
+			                  {
+			                    p.poszv += 120 - p.Motospeed + currentGame.getCON().gc - 80;
+			                    if ( Sound[189].num == 0 && Sound[190].num == 0 )
+			                      spritesound(190, pi);
+			                  }
+			                }
+			                else p.poszv += (currentGame.getCON().gc+80); // (TICSPERFRAME<<6);
+			                
 			                if(p.poszv >= (4096+2048)) p.poszv = (4096+2048);
 			                if(p.poszv > 2400 && p.falling_counter < 255)
 			                {
@@ -1366,11 +2037,27 @@ public class Player {
 			                            p.pals[2] = 0;
 			                            p.pals_time = 32;
 			                        }
-			                        else if(p.poszv > 2048) spritesound(DUKE_LAND,pi);
+			                        else {
+			                        	if ( p.poszv <= 2048 )
+			                        	{
+			                        		if ( p.poszv > 1024 && p.OnMotorcycle )
+			                        		{
+			                        			spritesound(DUKE_LAND, pi);
+			                        			p.TurbCount = 12;
+			                        		}
+			                            }
+			                            else if ( p.OnMotorcycle )
+			                            {
+			                            	if ( Sound[190].num > 0 )
+			                            		stopsound(Sound[190].num);
+			                            	spritesound(191, pi);
+			                            	p.TurbCount = 12;
+			                            }
+			                            else spritesound(DUKE_LAND, pi);
+			                        }
 			                    }
 			            }
 			        }
-		
 			        else
 			        {
 			            p.falling_counter = 0;
@@ -1407,13 +2094,13 @@ public class Player {
 		
 			            p.on_warping_sector = 0;
 		
-			            if( (sb_snum&2)!= 0)
+			            if( (sb_snum&2)!= 0 && !p.OnMotorcycle)
 			            {
 			                p.posz += (2048+768);
 			                p.crack_time = 777;
 			            }
 		
-			            if( (sb_snum&1) == 0 && p.jumping_toggle == 1)
+			            if( (sb_snum&1) == 0 && p.jumping_toggle == 1 && !p.OnMotorcycle)
 			                p.jumping_toggle = 0;
 		
 			            else if( (sb_snum&1) != 0 && p.jumping_toggle == 0 )
@@ -1432,7 +2119,7 @@ public class Player {
 		
 			        if(p.jumping_counter != 0)
 			        {
-			            if( (sb_snum&1) == 0 && p.jumping_toggle == 1)
+			            if( (sb_snum&1) == 0 && !p.OnMotorcycle &&p.jumping_toggle == 1)
 			                p.jumping_toggle = 0;
 		
 			            if( p.jumping_counter < 768 )
@@ -1457,7 +2144,7 @@ public class Player {
 			        }
 		
 			        p.posz += p.poszv;
-		
+			      
 			        if(p.posz < (cz+(4<<8)))
 			        {
 			            p.jumping_counter = 0;
@@ -1560,6 +2247,17 @@ public class Player {
 			                        }
 			                    }
 			                    break;
+			                case 7768:
+			                case 7820:
+			                	if((engine.krand() & 3) == 1 && p.on_ground)
+			                	{
+			                		if ( p.OnMotorcycle )
+			                			s.extra -= 2;
+			                		else
+			                            s.extra -= 4;
+			                		spritesound(211, pi);
+			                	}
+			                	break;
 			            }
 			        }
 		
@@ -1577,6 +2275,21 @@ public class Player {
 			        p.crack_time = 777;
 		
 			        k = sintable[p.bobcounter&2047]>>12;
+			            if(p.spritebridge == 0 && p.on_ground)
+			            {
+			            switch( psectlotag )
+		                {
+		                    case 1:
+		                        p.NotOnWater = 0;
+		                        break;
+		                    default:
+		                    	if ( p.OnBoat )
+		                    		p.NotOnWater = psectlotag != 1234?1:0;
+		                        else
+		                        	p.NotOnWater = 1;
+		                    	break;
+		                }
+			            }
 		
 			        if(truefdist < PHEIGHT+(8<<8) )
 			            if( k == 1 || k == 3 )
@@ -1586,7 +2299,7 @@ public class Player {
 			                switch( psectlotag )
 			                {
 			                    case 1:
-			                        if((engine.krand()&1) == 0)
+			                        if((engine.krand()&1) == 0 && !p.OnBoat && !p.OnMotorcycle)
 			                            spritesound(DUKE_ONWATER,pi);
 			                        p.walking_snd_toggle = 1;
 			                        break;
@@ -1602,33 +2315,55 @@ public class Player {
 			        p.posxv += ((sync[snum].fvel*doubvel)<<6);
 			        p.posyv += ((sync[snum].svel*doubvel)<<6);
 		
-			        if( ( p.curr_weapon == KNEE_WEAPON && p.kickback_pic > 10 && p.on_ground ) || ( p.on_ground && (sb_snum&2) != 0 ) )
-			        {
-			            p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-0x2000,16);
-			            p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-0x2000,16);
-			        }
-			        else
-			        {
-			            if(psectlotag == 2)
-			            {
-			                p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-0x1400,16);
-			                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-0x1400,16);
-			            }
-			            else
-			            {
-			                p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction,16);
+		            if(psectlotag == 2)
+		            {
+		                p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-0x1400,16);
+		                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-0x1400,16);
+		            }
+		            else
+		            {
+		                p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction,16);
+		                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction,16);
+		            }
+		            
+		            switch(sector[p.cursectnum].floorpicnum)
+		            {
+		            case 7888:
+		            	if ( p.OnMotorcycle && p.on_ground )
+		            		p.field_5CF = 1;
+		            	break;
+		            case 7889:
+		            	if ( p.OnMotorcycle )
+		            	{
+		            		if ( p.on_ground )
+		            			p.field_5CD = 1;
+		                }
+		                else if ( p.boot_amount <= 0 )
+		                {
+		                	p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction,16);
 			                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction,16);
-			            }
-			        }
-			        
-			        if(sector[p.cursectnum].floorpicnum == 3073 || sector[p.cursectnum].floorpicnum == 2702)
-			        {
-			        	if(p.boot_amount <= 0) {
+		                }
+		                else
+		                  p.boot_amount--;
+		                
+		                break;
+		            case 3073:
+		            case 2702:
+		            	if ( p.OnMotorcycle )
+		                {
+		            		if ( p.on_ground )
+		            		{
+		            			p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-6144,16);
+		            			p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-6144,16);
+		            		}
+		                }
+		            	else if(p.boot_amount <= 0) {
 				        	p.posxv = mulscale(p.posxv,currentGame.getCON().dukefriction-6144,16);
 			                p.posyv = mulscale(p.posyv,currentGame.getCON().dukefriction-6144,16);
 			        	} else p.boot_amount--;
-			        }
-			        
+		            	break;
+		            }
+
 			        if( abs(p.posxv) < 2048 && abs(p.posyv) < 2048 )
 			            p.posxv = p.posyv = 0;
 		
@@ -1674,13 +2409,98 @@ public class Player {
 	        if(p.jetpack_on == 0 && psectlotag != 2 && psectlotag != 1 && shrunk)
 	            p.posz += 32<<8;
 
-	        if(j != 0)
+	        if(j != 0) 
 	            checkplayerhurt(p,j);
+	        else if( p.hurt_delay > 0)
+	        	p.hurt_delay--;
 	        
 	        if ((j&kHitTypeMask) == kHitWall)
 	        {
 	        	int nwall = j&kHitIndexMask;
-	        	if (wall[nwall].lotag >= 40 && wall[nwall].lotag <= 44)
+	        	if ( p.OnMotorcycle )
+	            {
+	        		int dang = (int) klabs((short)p.ang - engine.getangle(wall[wall[nwall].point2].x - wall[nwall].x, wall[wall[nwall].point2].y - wall[nwall].y));
+	        		if ( (engine.krand() & 1) == 1 )
+	        			p.ang -= p.Motospeed >> 1;
+	        		else p.ang += p.Motospeed >> 1;
+	                
+	                int damage = 0;
+	                if ( dang >= 441 && dang <= 581 )
+	                {
+	                	damage = (p.Motospeed * p.Motospeed) >> 8;
+	               		p.Motospeed = 0;
+	               		if ( Sound[238].num == 0 )
+	               			spritesound(238, p.i);
+	                }
+	                else if ( dang >= 311 && dang <= 711 )
+	                {
+	                	damage = (p.Motospeed * p.Motospeed) >> 11;
+	                  	 p.Motospeed -= ((p.Motospeed >> 2) + (p.Motospeed >> 1));        
+	                  	 if ( Sound[238].num == 0 )
+	                  		 spritesound(238, p.i);
+	                }
+	                else if ( dang >= 111 && dang <= 911 )
+	                {
+	                	damage = (p.Motospeed * p.Motospeed) >> 14;
+	                	p.Motospeed -= (p.Motospeed >> 1);  
+	                	if ( Sound[238].num == 0 )
+	                		spritesound(238, p.i);
+	                }
+	                else
+	                {
+	                	damage = (p.Motospeed * p.Motospeed) >> 15;
+			            p.Motospeed -= (p.Motospeed >> 3);  
+			            if ( Sound[240].num == 0 )
+			            	spritesound(240, p.i);
+	                }
+	                s.extra -= damage;
+	                if ( s.extra > 0 )
+	                {
+	                	if ( damage != 0 )
+	                		spritesound(200, pi);
+	                }
+	                else
+	                {
+	                	spritesound(69, pi);
+	                	p.pals[0] = 63;
+	                	p.pals[1] = 0;
+	                	p.pals[2] = 0;
+	                	p.pals_time = 63;
+	                }
+	            }
+	        	else if ( p.OnBoat )
+	            {
+	        		int dang = (int) klabs((short)p.ang - engine.getangle(wall[wall[nwall].point2].x - wall[nwall].x, wall[wall[nwall].point2].y - wall[nwall].y));
+	        		if ( (engine.krand() & 1) == 1 )
+	        			p.ang -= p.Motospeed >> 1;
+	        		else p.ang += p.Motospeed >> 1;
+	                
+	                if ( dang >= 441 && dang <= 581 )
+	                {
+	                	p.Motospeed = (short) (((p.Motospeed >> 1) * (p.Motospeed >> 2)) >> 2);
+	               		if ( psectlotag == 1 && Sound[178].num == 0 )
+	               			spritesound(178, p.i);
+	                }
+	                else if ( dang >= 311 && dang <= 711 )
+	                {
+			        	p.Motospeed -= ((p.Motospeed >> 1) + (p.Motospeed >> 2)) >> 2;        
+		    			if ( psectlotag == 1 && Sound[179].num == 0 )
+		    				spritesound(179, p.i);
+	                }
+	                else if ( dang >= 111 && dang <= 911 )
+	                {
+	                	p.Motospeed -= (p.Motospeed >> 4);  
+	                	if ( psectlotag == 1 && Sound[180].num == 0 )
+	               			spritesound(180, p.i);
+	                }
+	                else
+	                {
+			            p.Motospeed -= (p.Motospeed >> 6);  
+			            if ( Sound[181].num == 0 )
+			            	spritesound(181, p.i);
+	                }
+	            }
+	        	else if (wall[nwall].lotag >= 40 && wall[nwall].lotag <= 44)
 	        	{
 	        		if (wall[nwall].lotag < 44)
 	        			pushwall(nwall, p.cursectnum, snum);
@@ -1696,7 +2516,80 @@ public class Player {
 	        if ((j&kHitTypeMask) == kHitSprite)
 	        {
 	        	int nspr = j&kHitIndexMask;
-	        	if(badguy(sprite[nspr]))
+	        	if ( p.OnMotorcycle )
+	            {
+	        		if ( badguy(sprite[nspr]) || sprite[nspr].picnum == APLAYER )
+	        		{
+	        			if ( sprite[nspr].picnum == APLAYER )
+	        				hittype[nspr].owner = p.i;
+	        			else if ( numplayers == 1 )
+	        			{
+	        				movesprite(
+	        						(short)nspr,
+	        						sintable[((short)p.ang + 20 * p.TiltStatus + 512) & 0x7FF] >> 8,
+		        			  		sintable[((short)p.ang + 20 * p.TiltStatus) & 0x7FF] >> 8,
+		                      		sprite[nspr].zvel,
+		                      		CLIPMASK0);
+	        			}
+	        			hittype[nspr].picnum = 7170;
+	        			hittype[nspr].extra = p.Motospeed >> 1;
+	        			p.Motospeed -= p.Motospeed >> 2;
+	        			p.TurbCount = 6;
+	                } else if ( (sprite[nspr].picnum == 2431
+	                        || sprite[nspr].picnum == 2443
+	                        || sprite[nspr].picnum == 2451
+	                        || sprite[nspr].picnum == 2455)
+	                       && sprite[nspr].picnum != 4
+	                       && p.Motospeed > 45 )
+	                {
+	                	spritesound(69, nspr);
+	                	if ( sprite[nspr].picnum != 2431 && sprite[nspr].picnum != 2451 )
+	                		guts(sprite[nspr], 2465, 3, myconnectindex);
+	                    else
+	                    {
+	                    	if ( sprite[nspr].lotag != 0 )
+	                    	{
+	                    		for ( int l = 0; l < 4096; ++l )
+	                    		{
+	                    			if ( (sprite[l].picnum == 2431 || sprite[l].picnum == 2451)
+		                            && sprite[l].pal == 4
+		                            && sprite[nspr].lotag == sprite[l].lotag )
+	                    			{
+	                    				sprite[l].xrepeat = 0;
+	                    				sprite[l].yrepeat = 0;
+	                    			}
+	                    		}
+	                    	}
+	                    	guts(sprite[nspr], 2460, 12, myconnectindex);
+	                    	guts(sprite[nspr], 2465, 3, myconnectindex);
+	                    }
+	                    guts(sprite[nspr], 2465, 3, myconnectindex);
+	                    sprite[nspr].xrepeat = 0;
+	                    sprite[nspr].yrepeat = 0;
+	                }
+	            } 
+	        	else if ( p.OnBoat )
+	            {
+	        		if ( badguy(sprite[nspr]) || sprite[nspr].picnum == APLAYER )
+	        		{
+	        			if ( sprite[nspr].picnum == APLAYER )
+	        				hittype[nspr].owner = p.i;
+	        			else if ( numplayers == 1 )
+	        			{
+	        				movesprite(
+	        						(short)nspr,
+	        						sintable[((short)p.ang + 20 * p.TiltStatus + 512) & 0x7FF] >> 9,
+		        			  		sintable[((short)p.ang + 20 * p.TiltStatus) & 0x7FF] >> 9,
+		                      		sprite[nspr].zvel,
+		                      		CLIPMASK0);
+	        			}
+	        			hittype[nspr].picnum = 7170;
+	        			hittype[nspr].extra = p.Motospeed >> 2;
+	        			p.Motospeed -= p.Motospeed >> 2;
+	        			p.TurbCount = 6;
+	                }
+	            }
+	            else if(badguy(sprite[nspr]))
 	        	{
 	        		if ( sprite[nspr].statnum != 1 )
 	        	   	{
@@ -1711,7 +2604,14 @@ public class Player {
 	        	    {
 	        	      quickkill(p);
 	        	      spritesound(446, pi);
-	        	    }
+	        	    } 
+	        	else if ( sprite[nspr].picnum == 2443 && sprite[nspr].pal == 19 )
+	        	{
+	        		sprite[nspr].pal = 0;
+	        		p.DrugMode = 5;
+	        		sprite[ps[snum].i].extra = (short) currentGame.getCON().max_player_health;
+	        		setpal(p);
+	        	}
 	        }
 	
 	        if(p.jetpack_on == 0)
@@ -1751,7 +2651,7 @@ public class Player {
 	        }
 	       
 	        if(truefdist < PHEIGHT && p.on_ground && psectlotag != 1 && !shrunk && sector[p.cursectnum].lotag == 1)
-	            if( Sound[DUKE_ONWATER].num == 0 )
+	            if( Sound[DUKE_ONWATER].num == 0 && !p.OnBoat && !p.OnMotorcycle && sector[p.cursectnum].hitag != 321)
 	                spritesound(DUKE_ONWATER,pi);
 	
 	        if (p.cursectnum != s.sectnum)
@@ -1811,13 +2711,13 @@ public class Player {
 	            p.horiz -= 12;
 	        }
 	
-	        else if( (sb_snum&(1<<3)) != 0 )
+	        else if( (sb_snum&(1<<3)) != 0 && !p.OnMotorcycle )
 	        {
 	            if( (sb_snum&(1<<5)) != 0 ) p.horiz += 6;
 	            p.horiz += 6;
 	        }
 	
-	        else if( (sb_snum&(1<<4)) != 0 )
+	        else if( (sb_snum&(1<<4)) != 0 && !p.OnMotorcycle )
 	        {
 	            if( (sb_snum&(1<<5)) != 0 ) p.horiz -= 6;
 	            p.horiz -= 6;
