@@ -145,8 +145,6 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 
 public class Redneck {
 
-	static boolean demo = false;
-
 	public static int playerswhenstarted;
 	public static float gLoadingTicks = 0;
 	public static String boardfilename;
@@ -640,7 +638,8 @@ public class Redneck {
 					mKeyHandler(mMenuHistory[0]);
 					if(gm != MODE_MENU)
 						break; //new game started
-					
+					if(tilesizx[BACKGROUND] == 0 || tilesizy[BACKGROUND] == 0) 
+						break;
 					int framesx = xdim / tilesizx[BACKGROUND];
 					int framesy = ydim / tilesizy[BACKGROUND];
 			
@@ -2136,6 +2135,7 @@ public class Redneck {
 		if(anmInited())
 			closeanm();
 		
+		mClose();
 		gm = MODE_WAIT;
 		gNetFlags = 0;
 		new Thread(new Runnable() {

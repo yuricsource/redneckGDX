@@ -453,7 +453,7 @@ public class Controls {
 	    if ( bike_turn > 0 ) left = true;
 	    if ( bike_turn < 0 ) right = true;
 	    
-	    if ( p.field_5B9 == 0 )
+	    if ( p.CarVar1 == 0 )
 	    {
 	    	loc.bits |=   ctrlGetInputKey(Move_Forward, false)?1:0;
 	    	loc.bits |=   ctrlGetInputKey(Run, false)?2:0;
@@ -463,14 +463,14 @@ public class Controls {
 	    if(left) loc.bits |= 16;
 	    if(right) loc.bits |= 64;
 	    
-	    boolean revers = (p.Motospeed <= 0);
-	    if ( p.Motospeed != 0 && p.on_ground )
+	    boolean revers = (p.CarSpeed <= 0);
+	    if ( p.CarSpeed != 0 && p.on_ground )
 	    {
-	    	if ( left || p.field_5C1 < 0 )
+	    	if ( left || p.CarVar2 < 0 )
 	        {
 	    		turnheldtime += tics;
 	    		p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
-	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	    		if ( turnheldtime >= 15 && p.CarSpeed > 0 )
 	            {
 	    			if ( bike_turn != 0 )
 	                	angvel -= 20;
@@ -482,11 +482,11 @@ public class Controls {
 		            else angvel -= 3 * (revers ? -1 : 1);
 	    		}
 	        }
-	    	else if ( right || p.field_5C1 > 0 )
+	    	else if ( right || p.CarVar2 > 0 )
 	    	{
 	    		turnheldtime += tics;
 	    		p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
-	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	    		if ( turnheldtime >= 15 && p.CarSpeed > 0 )
 	            {
 	    			if ( bike_turn != 0 )
 	                	angvel += 20;
@@ -510,10 +510,10 @@ public class Controls {
 	    else if ( right )
 	    	p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
 	    
-	    if ( p.field_5B9 != 0 )
-	    	p.Motospeed = 0;
+	    if ( p.CarVar1 != 0 )
+	    	p.CarSpeed = 0;
 	    
-	    vel += p.Motospeed;
+	    vel += p.CarSpeed;
 	    if ( vel < -15 ) vel = -15;
 	    if ( vel > 120 ) vel = 120;
 	    if(angvel < -MAXANGVEL) angvel = -MAXANGVEL;
@@ -546,7 +546,7 @@ public class Controls {
 	    loc.avel = angvel;
 	    loc.horz = horiz;
 	    
-	    if(p.Motospeed < 80) {
+	    if(p.CarSpeed < 80) {
 		    int dx = Gdx.input.getX() - oldPosX;
 			
 			float sensscale = cfg.gSensitivity / 65536.0f;
@@ -628,7 +628,7 @@ public class Controls {
 	    if ( bike_turn > 0 ) left = true;
 	    if ( bike_turn < 0 ) right = true;
 	    
-	    if ( p.field_5B9 == 0 )
+	    if ( p.CarVar1 == 0 )
 	    {
 	    	loc.bits |=   ctrlGetInputKey(Move_Forward, false)?1:0;
 	    	loc.bits |=   ctrlGetInputKey(Run, false)?2:0;
@@ -638,14 +638,14 @@ public class Controls {
 	    if(left) loc.bits |= 16;
 	    if(right) loc.bits |= 64;
 	    
-	    if ( p.Motospeed != 0 )
+	    if ( p.CarSpeed != 0 )
 	    {
-	    	if ( left || p.field_5C1 < 0 )
+	    	if ( left || p.CarVar2 < 0 )
 	        {
 	    		turnheldtime += tics;
 	    		if ( p.NotOnWater == 0)
 	    			p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
-	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	    		if ( turnheldtime >= 15 && p.CarSpeed > 0 )
 	            {
 	    			if ( p.NotOnWater == 0)
 	    			{
@@ -658,7 +658,7 @@ public class Controls {
 		                else angvel -= 10; 
 	    			}
 	            }
-	    		else if ( p.Motospeed != 0 ) {
+	    		else if ( p.CarSpeed != 0 ) {
 	    			if ( p.NotOnWater == 0)
 	    			{
 	    				if ( bike_turn != 0 )
@@ -671,12 +671,12 @@ public class Controls {
 	    			}
 	    		}
 	        }
-	    	else if ( right || p.field_5C1 > 0 )
+	    	else if ( right || p.CarVar2 > 0 )
 	    	{
 	    		turnheldtime += tics;
 	    		if ( p.NotOnWater == 0)
 	    			p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
-	    		if ( turnheldtime >= 15 && p.Motospeed > 0 )
+	    		if ( turnheldtime >= 15 && p.CarSpeed > 0 )
 	            {
 	    			if ( p.NotOnWater == 0)
 	    			{
@@ -689,7 +689,7 @@ public class Controls {
 		                else angvel += 10; 
 	    			}
 	            }
-	    		else if ( p.Motospeed != 0 ) {
+	    		else if ( p.CarSpeed != 0 ) {
 	    			if ( p.NotOnWater == 0)
 	    			{
 	    				if ( bike_turn != 0 )
@@ -716,7 +716,7 @@ public class Controls {
 	    		p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
 	    }
 
-	    vel += p.Motospeed;
+	    vel += p.CarSpeed;
 	    if ( vel < -15 ) vel = -15;
 	    if ( vel > 120 ) vel = 120;
 	    if(angvel < -MAXANGVEL) angvel = -MAXANGVEL;
@@ -749,7 +749,7 @@ public class Controls {
 	    loc.avel = angvel;
 	    loc.horz = horiz;
 	    
-	    if(p.Motospeed < 80) {
+	    if(p.CarSpeed < 80) {
 		    int dx = Gdx.input.getX() - oldPosX;
 			
 			float sensscale = cfg.gSensitivity / 65536.0f;

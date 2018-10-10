@@ -40,6 +40,8 @@ import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Redneck.Premap.rorsector;
+import static ru.m210projects.Redneck.Premap.rortype;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Player.*;
@@ -590,9 +592,15 @@ public class View {
 	        int wpic = 930;
 	        for(int w = 0; w < 9; w++, wpic++)
 	        {
-	        	if(p.gotweapon[w+1])
-	        		engine.rotatesprite((32 * w + 18) << 16, 10485760, 0x8020, 0, wpic, 0, 0, 10+16, 0, 0, xdim - 1, ydim - 1);
-	        	invennum(32 * w + 38, 160, p.ammo_amount[w+1], 0, 8+16);
+	        	if(w == 4 && p.curr_weapon == CHICKENBOW_WEAPON)
+	        	{
+	        		engine.rotatesprite((32 * w + 18) << 16, 10485760, 0x8020, 0, 940, 0, 0, 10+16, 0, 0, xdim - 1, ydim - 1);
+	        		invennum(32 * w + 38, 160, p.ammo_amount[CHICKENBOW_WEAPON], 0, 8+16);
+	        	} else {
+	        		if(p.gotweapon[w+1])
+	        			engine.rotatesprite((32 * w + 18) << 16, 10485760, 0x8020, 0, wpic, 0, 0, 10+16, 0, 0, xdim - 1, ydim - 1);
+	        		invennum(32 * w + 38, 160, p.ammo_amount[w+1], 0, 8+16);
+	        	}
 	        }
         }
         
@@ -700,7 +708,7 @@ public class View {
 
 	        cang = (hittype[ud.camerasprite].tempang+mulscale((((s.ang+1024-hittype[ud.camerasprite].tempang)&2047)-1024),smoothratio, 16));
 
-//	        se40code(s.x,s.y,s.z,cang,s.yvel,smoothratio);
+	        se40code(s.x,s.y,s.z,cang,s.yvel,smoothratio);
 
 	        engine.drawrooms(s.x,s.y,s.z-(4<<8),cang,s.yvel,s.sectnum);
 	        animatesprites(s.x,s.y,s.z-(4<<8),(short)cang,smoothratio);
@@ -719,7 +727,7 @@ public class View {
 	            engine.setaspect_new();
 	            oviewingrange = viewingrange;
 	        }
-
+	  
 	        if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
 	        {
                 if (ud.screen_tilting != 0) tang = p.rotscrnang; else tang = 0;
@@ -859,7 +867,7 @@ public class View {
 	        if(choriz > 299) choriz = 299;
 	        else if(choriz < -99) choriz = -99;
 
-//	        se40code(cposx,cposy,cposz,cang,choriz,smoothratio); XXX
+	        se40code(cposx,cposy,cposz,cang,choriz,smoothratio);
 
 	        if ((gotpic[MIRROR>>3]&(1<<(MIRROR&7))) > 0)
 	        {
@@ -1862,6 +1870,80 @@ public class View {
 	            t.xrepeat = t.yrepeat = 0;
 	    }
 	}
+	
+	public static void se40code(int x,int y,int z,float a,float h, int smoothratio)
+	{
+	    for( int i = headspritestat[15]; i >= 0;  i = nextspritestat[i])
+	    {
+	        switch(sprite[i].lotag)
+	        {
+	        	case 150: //floor
+	        	case 151: //ceiling
+	        		SE40_Draw(i,x,y,z,a,h,smoothratio);
+	        		break;
+	        }
+	    }
+	}
+	
+	public static byte[] oldgotsector = new byte[MAXSECTORS>>3];
+	public static void SE40_Draw(int spnum,int x,int y,int z,float a,float h,int smoothratio)
+	{
+		int rtype=0;
+		boolean drawror = false;
+		for(int i = 0; i < 16; i++)
+		{
+			if(rorsector[i] != -1) {
+				if( (  gotsector[rorsector[i]>>3]&(1<<(rorsector[i]&7))  ) != 0 
+						&& ((rortype[i] == 1 && sprite[spnum].lotag == 151) 
+						|| (rortype[i] == 2 && sprite[spnum].lotag == 150)))
+				{
+					drawror = true; 
+					rtype=rortype[i]; 
+					break;
+				}
+			}
+		}
+		if (!drawror) return;
+
+		int nUpper = -1, nLower = -1;
+		if(rtype == 1) //ceiling
+			nLower = spnum;
+		if(rtype == 2) //floor
+			nUpper = spnum;
+		
+		for( int i = headspritestat[15]; i >= 0;  i = nextspritestat[i])
+		{
+			if(i != spnum && sprite[i].picnum==1
+					&& sprite[i].hitag==sprite[spnum].hitag) 
+			{ 
+				if(rtype == 1) nUpper = i;
+				if(rtype == 2) nLower = i;
+				break;
+			}
+		}
+
+		int rsect = -1, rx = 0, ry = 0, rz = 0;
+		if(rtype == 1) {
+			rsect = sprite[nUpper].sectnum;
+			rx = sprite[nUpper].x - sprite[nLower].x;
+			ry = sprite[nUpper].y - sprite[nLower].y;
+			rz = sector[sprite[nUpper].sectnum].floorz - sector[sprite[nLower].sectnum].ceilingz;
+		}
+		
+		if(rtype == 2) {
+			rsect = sprite[nLower].sectnum;
+			rx = sprite[nLower].x - sprite[nUpper].x;
+			ry = sprite[nLower].y - sprite[nUpper].y;
+			rz = sector[sprite[nLower].sectnum].ceilingz - sector[sprite[nUpper].sectnum].floorz;
+		}
+
+		System.arraycopy(gotsector, 0, oldgotsector, 0, gotsector.length);
+		engine.drawrooms(x+rx,y+ry,z+rz,(short)a,h, (short) (rsect | MAXSECTORS));
+		animatesprites(x+rx,y+ry,z+rz,(short)a,smoothratio);
+		engine.drawmasks();
+		
+		System.arraycopy(oldgotsector, 0, gotsector, 0, gotsector.length);
+	} 
 	
 	public static void addmessage(String message) {
 		buildString(currentGame.getCON().fta_quotes[122], 0, message);

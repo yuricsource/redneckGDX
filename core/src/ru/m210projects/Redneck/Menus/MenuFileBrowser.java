@@ -257,13 +257,9 @@ public class MenuFileBrowser extends MenuItem {
 		tmpList.clear();
 		
 		buildAddons(tmpList, dir);
-
+		
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
 			FileEntry file = it.next();
-			String name = file.getFile().getName();
-			if(file.getExtension().equals("map"))
-				tmpList.add(toLowerCase(name));
-			
 			if(file.getExtension().equals("grp") || file.getExtension().equals("zip"))
 			{
 				try {
@@ -278,6 +274,17 @@ public class MenuFileBrowser extends MenuItem {
 					e.printStackTrace();
 				}
 			}
+		}
+		
+		Collections.sort(tmpList);
+		list[FILE].addAll(tmpList);
+		tmpList.clear();
+
+		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
+			FileEntry file = it.next();
+			String name = file.getFile().getName();
+			if(file.getExtension().equals("map"))
+				tmpList.add(toLowerCase(name));
 		}
 		
 		Collections.sort(tmpList);

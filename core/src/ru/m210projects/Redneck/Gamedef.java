@@ -3488,7 +3488,7 @@ public class Gamedef {
 	            parseifelse(con,  j == NUM_SOUNDS );
 	            break; 
 	        case 131: //ifmotofast
-	        	parseifelse(con, ps[g_p].Motospeed > 60);
+	        	parseifelse(con, ps[g_p].CarSpeed > 60);
 	        	break;
 	        case 132: //ifwind
 	        	parseifelse(con, WindTime > 0);
@@ -3553,7 +3553,7 @@ public class Gamedef {
 	        	break;
 	        case 141: //mamaend
 	        	insptr++;
-	        	ps[myconnectindex].field_609 = 150;
+	        	ps[myconnectindex].MamaEnd = 150;
 	        	break;
 	        case 142: //newpic
 	        	insptr++;
@@ -3840,14 +3840,9 @@ public class Gamedef {
 	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");
 
 	    if(error != 0)
-	    {
-	    	if(GameMessage("\nErrors found in " + filenam + " file.", false))
-	    		return null;
-	    }
+	    	return null;
 	    else
-	    {
 	        Console.Println("Code Size:" + (((scriptptr)<<2)-4) + " bytes(" + labelcnt + " labels).");
-	    }
 	    
 	    return con;
 	}

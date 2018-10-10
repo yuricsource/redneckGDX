@@ -481,7 +481,7 @@ public class Sector {
 	{
 	    int i, j, p, t;
 
-	    if ( ps[screenpeek].field_5DD == 1 )
+	    if ( ps[screenpeek].isSea )
 	    {
 	    	for ( i = 0; i < MAXWALLS; ++i )
 	    	{
@@ -639,13 +639,15 @@ public class Sector {
 	    		            {
 	    		              jailstatus[i] = 1;
 	    		              jailcount2[i] = jaildistance[i];
-	    		              spritesound(jailsound[i], ps[screenpeek].i);
+	    		              if(jailsound[i] != 0)
+	    		            	  spritesound(jailsound[i], ps[screenpeek].i);
 	    		            }
 	    		            if ( jailstatus[i] == 2 )
 	    		            {
 	    		              jailstatus[i] = 3;
 	    		              jailcount2[i] = jaildistance[i];
-	    		              spritesound(jailsound[i], ps[screenpeek].i);
+	    		              if(jailsound[i] != 0)
+	    		            	  spritesound(jailsound[i], ps[screenpeek].i);
 	    		            }
 	    				}
 	    			}
@@ -3330,13 +3332,13 @@ public class Sector {
 	        
 	        if ( p.OnMotorcycle )
 	        {
-	        	if ( p.Motospeed < 20 )
+	        	if ( p.CarSpeed < 20 )
 	        		leaveMoto(p);
 	        	return;
 	        }
 	        if ( p.OnBoat )
 	        {
-	        	if ( p.Motospeed < 20 )
+	        	if ( p.CarSpeed < 20 )
 	        		leaveBoard(p);
 	        	return;
 	        }

@@ -143,6 +143,10 @@ public class SafeLoader {
 	public short[] prevspritesect, prevspritestat;
 	public short[] nextspritesect, nextspritestat;
 	
+	public short[] rorsector = new short[16];
+	public byte[] rortype = new byte[16];
+	public int rorcnt;
+	
 	public SECTOR[] sector = new SECTOR[MAXSECTORS];
 	public WALL[] wall = new WALL[MAXWALLS];
 	public SPRITE[] sprite = new SPRITE[MAXSPRITES];
@@ -417,6 +421,12 @@ public class SafeLoader {
 			prevspritestat[i] = bb.getShort();
 			nextspritesect[i] = bb.getShort();
 			nextspritestat[i] = bb.getShort();
+		}
+		
+		rorcnt = bb.getInt();
+		for(int i = 0; i < 16; i++) {
+			rorsector[i] = bb.getShort();
+			rortype[i] = bb.get();
 		}
 	}
 	

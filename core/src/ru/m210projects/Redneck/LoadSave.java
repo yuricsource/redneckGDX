@@ -73,7 +73,7 @@ public class LoadSave {
 	public static final String savsign = "RGDX";
 	
 	public static final int gdxSave = 100;
-	public static final int currentGdxSave = 101;
+	public static final int currentGdxSave = 102;
 	public static final int SAVEVERSION = savsign.length() + 2; //version (2 bytes)
 	public static final int SAVETIME = 8;
 	public static final int SAVENAME = 32;
@@ -206,7 +206,7 @@ public class LoadSave {
 				+ 2 + (numwalls * WALL.sizeof)
 				+ (MAXSPRITES * SPRITE.sizeof) 
 				+ (MAXSECTORS+1) * 2
-				+ (MAXSTATUS+1) * 2 + MAXSPRITES * 8;
+				+ (MAXSTATUS+1) * 2 + MAXSPRITES * 8 + 3 * 16 + 4;
 		
 		ByteBuffer bb = ByteBuffer.allocate(bufsize); 
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
@@ -231,6 +231,12 @@ public class LoadSave {
 			bb.putShort(prevspritestat[i]);
 			bb.putShort(nextspritesect[i]);
 			bb.putShort(nextspritestat[i]);
+		}
+		
+		bb.putInt(rorcnt);
+		for(int i = 0; i < 16; i++) {
+			bb.putShort(rorsector[i]);
+			bb.put(rortype[i]);
 		}
 
 		Bwrite(fil,bb.array(),bb.capacity());
@@ -718,13 +724,15 @@ public class LoadSave {
 		
 		System.arraycopy(bb.headspritesect, 0, headspritesect, 0, MAXSECTORS+1);
 		System.arraycopy(bb.headspritestat, 0, headspritestat, 0, MAXSTATUS+1);
+		
+		System.arraycopy(bb.prevspritesect, 0, prevspritesect, 0, MAXSPRITES);
+		System.arraycopy(bb.prevspritestat, 0, prevspritestat, 0, MAXSPRITES);
+		System.arraycopy(bb.nextspritesect, 0, nextspritesect, 0, MAXSPRITES);
+		System.arraycopy(bb.nextspritestat, 0, nextspritestat, 0, MAXSPRITES);
 
-		for(int i = 0; i < MAXSPRITES; i++) {
-			prevspritesect[i] = bb.prevspritesect[i];
-			prevspritestat[i] = bb.prevspritestat[i];
-			nextspritesect[i] = bb.nextspritesect[i];
-			nextspritestat[i] = bb.nextspritestat[i];
-		}
+		rorcnt = bb.rorcnt;
+		System.arraycopy(bb.rorsector, 0, rorsector, 0, 16);
+		System.arraycopy(bb.rortype, 0, rortype, 0, 16);
 	}
 	
 	public static void LoadGDXBlock(SafeLoader bb)

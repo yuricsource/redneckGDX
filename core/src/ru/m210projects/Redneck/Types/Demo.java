@@ -72,7 +72,11 @@ public class Demo {
 	
 			if(firstdemofile != null) {
 				if ((recfilep = kOpen(firstdemofile,loadfromgrouponly)) == -1) return false;
-			} else if ((recfilep = kOpen(demofiles.get(which_demo),loadfromgrouponly)) == -1) return false;
+			} else {
+				if(which_demo >= demofiles.size())
+					which_demo = 0;
+				if ((recfilep = kOpen(demofiles.get(which_demo), loadfromgrouponly)) == -1) return false;
+			}
 	
 			ud.reccnt = kRead(recfilep, 4);
 			version = (kRead(recfilep, 1) & 0xFF);

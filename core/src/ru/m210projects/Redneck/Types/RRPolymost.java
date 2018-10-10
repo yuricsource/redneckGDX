@@ -608,10 +608,16 @@ public class RRPolymost extends Polymost {
 
 			if(p == screenpeek || ud.coop == 1 )
 			{
-				if(sprite[ps[p].i].xvel > 16 && ps[p].on_ground)
-					i = APLAYERTOP+((totalclock>>4)&3);
-				else
-					i = APLAYERTOP;
+				if (ps[p].OnMotorcycle )
+					i = 7169;
+		        else if ( ps[p].OnBoat )
+		        	i = 7191;
+		        else {
+					if(sprite[ps[p].i].xvel > 16 && ps[p].on_ground)
+						i = APLAYERTOP+((totalclock>>4)&3);
+					else
+						i = APLAYERTOP;
+		        }
 
 				j = (int) (klabs(ps[p].truefz-ps[p].posz)>>8);
 				j = mulscale(czoom*(sprite[ps[p].i].yrepeat+j),yxaspect,16);

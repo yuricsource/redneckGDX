@@ -30,6 +30,7 @@ import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
+import static ru.m210projects.Redneck.Premap.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
@@ -1535,8 +1536,28 @@ public class Spawn {
                         setsectinterpolate(i);
                         break;
                 }
-                engine.changespritestat(i,(short)3);
-                break;
+               
+                switch(sprite[i].lotag)
+                {
+                    case 150:
+                    case 151:
+                        engine.changespritestat(i,(short)15);
+                        if(rorcnt < 16) {
+	                        if(sprite[i].lotag == 151)
+	                        	rortype[rorcnt] = 1; //ceiling
+	                        if(sprite[i].lotag == 150)
+	                        	rortype[rorcnt] = 2; //floor
+	                        rorsector[rorcnt++] = sprite[i].sectnum;
+	                        System.err.println("ROR in " + rorsector[rorcnt-1]);
+                        }
+                        break;
+                    default:
+                        engine.changespritestat(i,(short)3);
+                        break;
+                }
+
+                break;   
+                
             case SEENINE:
             case OOZFILTER:
 
@@ -1675,7 +1696,7 @@ public class Spawn {
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
                         if(sp.picnum == MINION || sp.picnum == MINION+1)
                         {
-                        	if ( ps[screenpeek].field_5FD != 0 )
+                        	if ( ps[screenpeek].isSwamp )
                                 sp.pal = 8;
                         } 	
         				break;
@@ -2134,7 +2155,7 @@ public class Spawn {
             	break;
             case 8192:
             	sp.xrepeat = sp.yrepeat = 0;
-                ps[screenpeek].field_5FD = 1;
+                ps[screenpeek].isSwamp = true;
                 break;
             case 1083:
         	case 1134:
@@ -2163,7 +2184,7 @@ public class Spawn {
         		break;
         	case 6144:
         		sp.xrepeat = sp.yrepeat = 0;
-                ps[screenpeek].field_5DD = 1;
+                ps[screenpeek].isSea = true;
         		break;
         	case 4956:
         		sp.xrepeat = 16;
@@ -2181,7 +2202,7 @@ public class Spawn {
                 break;
         	case 7936:
         		sp.xrepeat = sp.yrepeat = 0;
-//        		sub_86730(2); //XXX
+        		applyfog(2);
                 ps[screenpeek].fogtype = 2;
         		break;
         	case 8099:

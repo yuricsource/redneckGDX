@@ -131,10 +131,10 @@ public class Player {
 			p.curr_weapon = p.last_full_weapon;
 			checkavailweapon(p);
 			p.horiz = 100;
-			p.field_5B5 = 0;
-			p.Motospeed = 0;
+			p.CarVar6 = 0;
+			p.CarSpeed = 0;
 			p.TiltStatus = 0;
-			p.field_5C1 = 0;
+			p.CarVar2 = 0;
 			p.VBumpTarget = 0;
 			p.VBumpNow = 0;
 			p.TurbCount = 0;
@@ -184,10 +184,10 @@ public class Player {
 			p.curr_weapon = p.last_full_weapon;
 			checkavailweapon(p);
 			p.horiz = 100;
-			p.field_5B5 = 0;
-			p.Motospeed = 0;
+			p.CarVar6 = 0;
+			p.CarSpeed = 0;
 			p.TiltStatus = 0;
-			p.field_5C1 = 0;
+			p.CarVar2 = 0;
 			p.VBumpTarget = 0;
 			p.VBumpNow = 0;
 			p.TurbCount = 0;
@@ -417,7 +417,7 @@ public class Player {
 	    if ( p.SeaSick != 0)
 	    {
 	    	if ( --p.SeaSick == 0 )
-	    		p.field_5DD = 0;
+	    		p.isSea = false;
 	    }
 
 	    if(p.field_count != 0)
@@ -719,8 +719,8 @@ public class Player {
 	    if ( p.OnMotorcycle && s.extra > 0 )
 	    {
 	    	p.oang = p.ang;
-	    	if ( p.Motospeed < 0 )
-	    		p.Motospeed = 0;
+	    	if ( p.CarSpeed < 0 )
+	    		p.CarSpeed = 0;
 	    	int var = 0, var2 = 0;
 	    	if ( (sb_snum & 2) != 0 )
 	    	{
@@ -734,14 +734,14 @@ public class Player {
 	    		sb_snum &= ~1;
 	    		if ( p.on_ground )
 	    		{
-	    			if ( p.Motospeed == 0 && var != 0 )
+	    			if ( p.CarSpeed == 0 && var != 0 )
 	    	        {
 	    				if ( Sound[187].num == 0 )
 	    					spritesound(187, pi);
 	    	        }
-	    	        else if ( p.Motospeed != 0 || Sound[214].num != 0 )
+	    	        else if ( p.CarSpeed != 0 || Sound[214].num != 0 )
 	    	        {
-	    	        	if ( p.Motospeed < 50 || Sound[188].num != 0 )
+	    	        	if ( p.CarSpeed < 50 || Sound[188].num != 0 )
 	    	        	{
 	    	        		if ( Sound[188].num == 0 && Sound[214].num == 0 )
 	    	        			spritesound(188, pi);
@@ -796,18 +796,18 @@ public class Player {
 	    		sb_snum &= ~64;
 	        }
 	    	
-	    	if ( p.alcohol_amount <= 88 || p.field_5C1 != 0 )
+	    	if ( p.alcohol_amount <= 88 || p.CarVar2 != 0 )
 	        {
-	    		if ( p.alcohol_amount > 99 && p.field_5C1 == 0 )
+	    		if ( p.alcohol_amount > 99 && p.CarVar2 == 0 )
 	    		{
 	    			int ch = (engine.krand() & 0x1F);
 	    			if ( ch == 1 )
 	    			{
-	    				p.field_5C1 = -20;
+	    				p.CarVar2 = -20;
 	    			}
 	    			else if ( ch == 2 )
 	    			{
-	    				p.field_5C1 = 20;
+	    				p.CarVar2 = 20;
 	    			}
 	    		}
 	        } 
@@ -816,66 +816,66 @@ public class Player {
 	    		int ch = (engine.krand() & 0x3F);
     			if ( ch == 1 )
     			{
-    				p.field_5C1 = -10;
+    				p.CarVar2 = -10;
     			}
     			else if ( ch == 2 )
     			{
-    				p.field_5C1 = 10;
+    				p.CarVar2 = 10;
     			}
 	        }
 	    	
 	    	if ( p.on_ground )
 	    	{
-	    		if ( var != 0 && p.Motospeed > 0 )
+	    		if ( var != 0 && p.CarSpeed > 0 )
 	    	    {
-	    			if ( p.field_5CF != 0 )
-	    				p.Motospeed -= 2;
+	    			if ( p.CarVar4 != 0 )
+	    				p.CarSpeed -= 2;
 	    			else
-	    				p.Motospeed -= 4;
-	    			if ( p.Motospeed < 0 )
-	    				p.Motospeed = 0;
+	    				p.CarSpeed -= 4;
+	    			if ( p.CarSpeed < 0 )
+	    				p.CarSpeed = 0;
 	    			p.VBumpTarget = -30;
-	    			p.field_5B5 = 1;
+	    			p.CarVar6 = 1;
 	    	    }
 	    		else if ( var2 != 0 && var == 0)
 	    		{
-	    			if ( p.Motospeed < 40 )
+	    			if ( p.CarSpeed < 40 )
 	    			{
 	    				p.VBumpTarget = 70;
-	    				p.field_5C7 = 1;
+	    				p.CarVar3 = 1;
 	    	        }
-	    	        p.Motospeed += 2;
-	    	        if ( p.Motospeed > 120 )
-	    	        	p.Motospeed = 120;
-	    	        if ( p.NotOnWater == 0 && p.Motospeed > 80 )
-	    	        	p.Motospeed = 80;
-	    		} else if ( p.Motospeed > 0 )
-	    			p.Motospeed--;
-	    		if ( p.field_5B5 != 0 && (var == 0 || p.Motospeed == 0) )
+	    	        p.CarSpeed += 2;
+	    	        if ( p.CarSpeed > 120 )
+	    	        	p.CarSpeed = 120;
+	    	        if ( p.NotOnWater == 0 && p.CarSpeed > 80 )
+	    	        	p.CarSpeed = 80;
+	    		} else if ( p.CarSpeed > 0 )
+	    			p.CarSpeed--;
+	    		if ( p.CarVar6 != 0 && (var == 0 || p.CarSpeed == 0) )
 	    		{
 	    	        p.VBumpTarget = 0;
-	    	        p.field_5B5 = 0;
+	    	        p.CarVar6 = 0;
 	    		}
-	    		if ( var3 != 0 && p.Motospeed <= 0 && var == 0 )
+	    		if ( var3 != 0 && p.CarSpeed <= 0 && var == 0 )
 	    		{
-	    			p.Motospeed = -15;
+	    			p.CarSpeed = -15;
 	    	        int swap = var5;
 	    	        var5 = var4;
 	    	        var4 = swap;
 	    		} 
 	    	}
-	    	if ( p.Motospeed != 0 && p.on_ground )
+	    	if ( p.CarSpeed != 0 && p.on_ground )
 	        {
 	    		if ( p.VBumpNow == 0 && (engine.krand() & 3) == 2 )
-	    			p.VBumpTarget = ((engine.krand() & 7) - 4) * (p.Motospeed >> 4);
+	    			p.VBumpTarget = (short) (((engine.krand() & 7) - 4) * (p.CarSpeed >> 4));
 	        
-		    	if ( var4 != 0 || p.field_5C1 < 0 )
+		    	if ( var4 != 0 || p.CarVar2 < 0 )
 		    	{
-		    		if ( p.field_5C1 < 0 )
-		              ++p.field_5C1;
+		    		if ( p.CarVar2 < 0 )
+		              ++p.CarVar2;
 		    	}
-		    	else if ( (var5 != 0 || p.field_5C1 > 0) && p.field_5C1 > 0 )
-		    		p.field_5C1--;
+		    	else if ( (var5 != 0 || p.CarVar2 > 0) && p.CarVar2 > 0 )
+		    		p.CarVar2--;
 	        }
 	    	
 	    	if ( p.TurbCount != 0 )
@@ -884,7 +884,7 @@ public class Player {
 	    		{
 	    			p.horiz = (engine.krand() & 0xF) + 93;
 	    			--p.TurbCount;
-	    			p.field_5C1 = (engine.krand() & 3) - 2;
+	    			p.CarVar2 = (short) ((engine.krand() & 3) - 2);
 	    		}
 	    		else
 	    		{
@@ -899,11 +899,11 @@ public class Player {
 	    		if ( p.VBumpTarget >= p.VBumpNow )
 	    		{
 	    			p.VBumpTarget = 0;
-	    			p.field_5C7 = 0;
+	    			p.CarVar3 = 0;
 	    		}
 	    		else
 	    		{
-	    			if ( p.field_5C7 != 0 )
+	    			if ( p.CarVar3 != 0 )
 	    				p.VBumpNow -= 6;
 	    			else p.VBumpNow--;
 	    			if ( p.VBumpTarget > p.VBumpNow )
@@ -913,7 +913,7 @@ public class Player {
 	        }
 	    	else
 	        {
-	    		if ( p.field_5C7 != 0 )
+	    		if ( p.CarVar3 != 0 )
 	    			p.VBumpNow += 6;
 	    		else p.VBumpNow++;
 	    		if ( p.VBumpTarget < p.VBumpNow )
@@ -921,7 +921,7 @@ public class Player {
 	    		p.horiz = (p.VBumpNow) / 3 + 100;
 	        }
 
-	    	if ( p.Motospeed >= 20 && p.on_ground && (var4 != 0 || var5 != 0) )
+	    	if ( p.CarSpeed >= 20 && p.on_ground && (var4 != 0 || var5 != 0) )
 	        {
 	    		int angvel = (int) (p.ang - 510);
 	    		if ( var4 != 0 )
@@ -931,13 +931,13 @@ public class Player {
 	    		if ( var4 == 0 )
 	    			dang = -350;
 
-	    		if ( p.field_5CD != 0 || p.field_5CF != 0 || p.NotOnWater == 0 )
+	    		if ( p.CarVar5 != 0 || p.CarVar4 != 0 || p.NotOnWater == 0 )
 	    		{
-	        	  int speed = 4 * p.Motospeed;
-	        	  if ( p.field_5CF != 0 )
-	        		  speed = 8 * p.Motospeed;
+	        	  int speed = 4 * p.CarSpeed;
+	        	  if ( p.CarVar4 != 0 )
+	        		  speed = 8 * p.CarSpeed;
 	           
-	        	  if ( p.field_5B5 != 0 )
+	        	  if ( p.CarVar6 != 0 )
 	        	  {
 	        		  p.posxv += (speed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
 	        		  p.posyv += (speed >> 5) * 16 * sintable[angvel & kAngleMask];
@@ -949,46 +949,46 @@ public class Player {
 	        		  p.posyv += (speed >> 7) * 16 * sintable[angvel & kAngleMask];
 	        		  p.ang = ((short)p.ang - (dang >> 6)) & kAngleMask;
 	        	  }
-	        	  p.field_5CD = 0;
-	        	  p.field_5CF = 0;
+	        	  p.CarVar5 = 0;
+	        	  p.CarVar4 = 0;
 	    		}
-	    		else if ( p.field_5B5 != 0 )
+	    		else if ( p.CarVar6 != 0 )
 	    		{
-	    			p.posxv += (p.Motospeed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
-	    			p.posyv += (p.Motospeed >> 5) * 16 * sintable[angvel & kAngleMask];
+	    			p.posxv += (p.CarSpeed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
+	    			p.posyv += (p.CarSpeed >> 5) * 16 * sintable[angvel & kAngleMask];
 	    			p.ang = ((short)p.ang - (dang >> 4)) & kAngleMask;
 	    			if ( Sound[220].num == 0 )
 	    				spritesound(220, p.i);
 	    		}
 	    		else
 	    		{
-	    			p.posxv += (p.Motospeed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
-	    			p.posyv += (p.Motospeed >> 7) * 16 * sintable[angvel & kAngleMask];
+	    			p.posxv += (p.CarSpeed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
+	    			p.posyv += (p.CarSpeed >> 7) * 16 * sintable[angvel & kAngleMask];
 	    			p.ang = ((short)p.ang - (dang >> 4)) & kAngleMask;
 	    		}
 	        }
-	        else if ( p.Motospeed >= 20 && p.on_ground && (p.field_5CD != 0 || p.field_5CF != 0) )
+	        else if ( p.CarSpeed >= 20 && p.on_ground && (p.CarVar5 != 0 || p.CarVar4 != 0) )
 	        {
 	        	int angvel = (int) (p.ang + 510);
 	        	if ( (engine.krand() & 1) == 1 )
 	        		angvel = (int) (p.ang - 510);
 
-	        	int speed = 5 * p.Motospeed;
-	        	if ( p.field_5CF != 0 )
-	        		speed = 10 * p.Motospeed;
+	        	int speed = 5 * p.CarSpeed;
+	        	if ( p.CarVar4 != 0 )
+	        		speed = 10 * p.CarSpeed;
 
 	        	p.posxv += (speed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
 	        	p.posyv += (speed >> 7) * 16 * sintable[angvel & kAngleMask];
 	        }
-	        p.field_5CD = 0;
-	        p.field_5CF = 0;
+	        p.CarVar5 = 0;
+	        p.CarVar4 = 0;
 	    }
 	    else if ( p.OnBoat && s.extra > 0 )
 	    {
 	    	p.oang = p.ang;
 	    	if ( p.NotOnWater != 0 )
 	    	{
-		        if ( p.Motospeed <= 0 )
+		        if ( p.CarSpeed <= 0 )
 		        {
 		        	if ( Sound[87].num == 0 )
 		        		spritesound(87, pi);
@@ -996,8 +996,8 @@ public class Player {
 		        else if ( Sound[88].num == 0)
 		        	spritesound(88, pi);
 	    	}
-	    	if ( p.Motospeed < 0 )
-	    		p.Motospeed = 0;
+	    	if ( p.CarSpeed < 0 )
+	    		p.CarSpeed = 0;
 	    	boolean var1 = false, var2 = false, var3 = false, var4 = false, var5 = false, var6 = false;
 	    	if ( (sb_snum & 2) != 0 && (sb_snum & 1) != 0 )
 	    	{
@@ -1009,9 +1009,9 @@ public class Player {
 	    	{
 	    		var2 = true;
 	    		sb_snum &= ~1;
-		        if ( p.Motospeed != 0 || Sound[89].num != 0 )
+		        if ( p.CarSpeed != 0 || Sound[89].num != 0 )
 		        {
-		        	if ( p.Motospeed < 50 || Sound[88].num != 0 )
+		        	if ( p.CarSpeed < 50 || Sound[88].num != 0 )
 		        	{
 		        		if ( Sound[88].num == 0 && Sound[89].num == 0 )
 		        			spritesound(88, pi);
@@ -1060,7 +1060,7 @@ public class Player {
 	      {
 	    	  var5 = true;
 	    	  sb_snum &= ~16;
-	    	  if ( Sound[91].num == 0 && p.Motospeed > 30 && p.NotOnWater == 0 )
+	    	  if ( Sound[91].num == 0 && p.CarSpeed > 30 && p.NotOnWater == 0 )
 	    		  spritesound(91, pi);
 	      }
 	      
@@ -1068,99 +1068,99 @@ public class Player {
 	      {
 	    	  var6 = true;
 	    	  sb_snum &= ~64;
-	    	  if ( Sound[91].num == 0 && p.Motospeed > 30 && p.NotOnWater == 0 )
+	    	  if ( Sound[91].num == 0 && p.CarSpeed > 30 && p.NotOnWater == 0 )
 	    		  spritesound(91, pi);
 	      }
 	      
 	      if ( p.NotOnWater == 0 )
 	      {
-	    	  if ( p.alcohol_amount <= 88 || p.field_5C1 != 0)
+	    	  if ( p.alcohol_amount <= 88 || p.CarVar2 != 0)
 	    	  {
-	    		  if ( p.alcohol_amount > 99 && p.field_5C1 == 0 )
+	    		  if ( p.alcohol_amount > 99 && p.CarVar2 == 0 )
 	    		  {
 	    			  int ch = engine.krand() & 0x1F;
 	    			  if ( ch == 1 )
-	    				  p.field_5C1 = -20;
+	    				  p.CarVar2 = -20;
 	    			  else if ( ch == 2 )
-	    				  p.field_5C1 = 20;
+	    				  p.CarVar2 = 20;
 	    		  }
 	    	  }
 	    	  else
 	    	  {
 	    		  int ch = engine.krand() & 0x3F;
 	    		  if ( ch == 1 )
-	    			  p.field_5C1 = -10;
+	    			  p.CarVar2 = -10;
 	    		  else if ( ch == 2 )
-	    			  p.field_5C1 = 10;
+	    			  p.CarVar2 = 10;
 	    	  }
 	      }
 	      if ( p.on_ground )
 	      {
 	    	  if ( var1 )
 	    	  {
-		          if ( p.Motospeed > 25 )
+		          if ( p.CarSpeed > 25 )
 		          {
-		        	  p.Motospeed -= 2;
-		        	  if ( p.Motospeed < 0 )
-		        		  p.Motospeed = 0;
+		        	  p.CarSpeed -= 2;
+		        	  if ( p.CarSpeed < 0 )
+		        		  p.CarSpeed = 0;
 		        	  p.VBumpTarget = 30;
-		        	  p.field_5B5 = 1;
+		        	  p.CarVar6 = 1;
 		          }
 		          else
 		          {
-		        	  ++p.Motospeed;
+		        	  ++p.CarSpeed;
 		        	  if ( Sound[182].num == 0 )
 		        		  spritesound(182, pi);
 		          }
 	    	  }
-	    	  else if ( var3 && p.Motospeed > 0 )
+	    	  else if ( var3 && p.CarSpeed > 0 )
 	    	  {
-	    		  p.Motospeed -= 2;
-	    		  if ( p.Motospeed < 0 )
-	    			  p.Motospeed = 0;
+	    		  p.CarSpeed -= 2;
+	    		  if ( p.CarSpeed < 0 )
+	    			  p.CarSpeed = 0;
 		          p.VBumpTarget = 30;
-		          p.field_5B5 = 1;
+		          p.CarVar6 = 1;
 	    	  }
 	    	  else if ( var2 )
 	    	  {
-		          if ( p.Motospeed < 40 && p.NotOnWater == 0)
+		          if ( p.CarSpeed < 40 && p.NotOnWater == 0)
 		          {
 		        	  p.VBumpTarget = -30;
-		        	  p.field_5C7 = 1;
+		        	  p.CarVar3 = 1;
 		          }
-		          if ( ++p.Motospeed > 120 )
-		        	  p.Motospeed = 120;
+		          if ( ++p.CarSpeed > 120 )
+		        	  p.CarSpeed = 120;
 	    	  }
-	    	  else if ( p.Motospeed > 0 )
-	    		  --p.Motospeed;
+	    	  else if ( p.CarSpeed > 0 )
+	    		  --p.CarSpeed;
 	        
-	    	  if ( p.field_5B5 != 0 && (!var3 || p.Motospeed == 0) )
+	    	  if ( p.CarVar6 != 0 && (!var3 || p.CarSpeed == 0) )
 	    	  {
 	    		  p.VBumpTarget = 0;
-	    		  p.field_5B5 = 0;
+	    		  p.CarVar6 = 0;
 	    	  }
-	    	  if ( var4 && p.Motospeed == 0 && !var3 )
+	    	  if ( var4 && p.CarSpeed == 0 && !var3 )
 	    	  {
 		          if ( p.NotOnWater != 0 )
-		        	  p.Motospeed = -20;
+		        	  p.CarSpeed = -20;
 		          else
-		        	  p.Motospeed = -25;
+		        	  p.CarSpeed = -25;
 		          boolean swap = var6;
 		          var6 = var5;
 		          var5 = swap;
 	    	  }
 	      }
-	      if ( p.Motospeed != 0 && p.on_ground )
+	      if ( p.CarSpeed != 0 && p.on_ground )
 	      {
 	    	  if ( p.VBumpNow == 0 && (engine.krand() & 0xF) == 14 )
-	    		  p.VBumpTarget = ((engine.krand() & 3) - 2) * (p.Motospeed >> 4);
-	    	  if ( var5 || p.field_5C1 < 0 )
+	    		  p.VBumpTarget = (short) (((engine.krand() & 3) - 2) * (p.CarSpeed >> 4));
+	    	  if ( var5 || p.CarVar2 < 0 )
 	    	  {
-	    		  if ( p.field_5C1 < 0 )
-	    			  ++p.field_5C1;
+	    		  if ( p.CarVar2 < 0 )
+	    			  ++p.CarVar2;
 	    	  }
-	    	  else if ( (var6 || p.field_5C1 > 0) && p.field_5C1 > 0 )
-	    		  --p.field_5C1;
+	    	  else if ( (var6 || p.CarVar2 > 0) && p.CarVar2 > 0 )
+	    		  --p.CarVar2;
 	        
 	      }
 	      if ( p.TurbCount != 0 )
@@ -1168,7 +1168,7 @@ public class Player {
 	    	  if ( p.TurbCount > 1 )
 	    	  {
 	    		  p.horiz = (engine.krand() & 0xF) + 93;
-	    		  p.field_5C1 = (engine.krand() & 3) - 2;
+	    		  p.CarVar2 = (short) ((engine.krand() & 3) - 2);
 	    		  p.TurbCount--;
 	    	  }
 	    	  else
@@ -1184,11 +1184,11 @@ public class Player {
 	    	  if ( p.VBumpTarget >= p.VBumpNow )
 	    	  {
 	    		  p.VBumpTarget = 0;
-	    		  p.field_5C7 = 0;
+	    		  p.CarVar3 = 0;
 	    	  }
 	    	  else
 	    	  {
-		          if ( p.field_5C7 != 0 )
+		          if ( p.CarVar3 != 0 )
 		        	  p.VBumpNow -= 6;
 		          else
 		          		--p.VBumpNow;
@@ -1199,7 +1199,7 @@ public class Player {
 	      }
 	      else
 	      {
-	    	  if ( p.field_5C7 != 0 )
+	    	  if ( p.CarVar3 != 0 )
 	    		  p.VBumpNow += 6;
 	    	  else
 	    		  ++p.VBumpNow;
@@ -1207,7 +1207,7 @@ public class Player {
 	    		  p.VBumpNow = p.VBumpTarget;
 	    	  p.horiz = (p.VBumpNow) / 3 + 100;
 	      }
-	      if ( p.Motospeed > 0 && p.on_ground && (var5 || var6) )
+	      if ( p.CarSpeed > 0 && p.on_ground && (var5 || var6) )
 	      {
 	    	  int angvel = (int) (p.ang - 510);
 	    	  if ( var5 )
@@ -1216,8 +1216,8 @@ public class Player {
 	    	  if ( !var5 )
 	    		  dang = -350;
 	       
-	    	  int speed = 4 * p.Motospeed;
-	    	  if ( p.field_5B5 != 0 )
+	    	  int speed = 4 * p.CarSpeed;
+	    	  if ( p.CarVar6 != 0 )
 	    	  {
 	    		  p.posxv += (speed >> 6) * 16 * sintable[(angvel + 512) & 0x7FF];
 		          p.posyv += (speed >> 6) * 16 * sintable[angvel & 0x7FF];
@@ -1231,8 +1231,8 @@ public class Player {
 	    	  }
 	      }
 	      
-	      if ( p.NotOnWater != 0 && p.Motospeed > 50 )
-	    	  p.Motospeed -= p.Motospeed >> 1;
+	      if ( p.NotOnWater != 0 && p.CarSpeed > 50 )
+	    	  p.CarSpeed -= p.CarSpeed >> 1;
 	    }
 
 	    if(psect == -1)
@@ -1356,16 +1356,16 @@ public class Player {
 	        if ( p.OnMotorcycle && badguy(sprite[j]) )
 	        {
 	        	hittype[j].picnum = 7170;
-	        	hittype[j].extra = (p.Motospeed >> 1) + 2;
-	        	p.Motospeed -= p.Motospeed >> 4;
+	        	hittype[j].extra = (p.CarSpeed >> 1) + 2;
+	        	p.CarSpeed -= p.CarSpeed >> 4;
 	        }
 	        if ( p.OnBoat )
 	        {
 	        	if ( badguy(sprite[j]) )
 	        	{
 	        		hittype[j].picnum = 7170;
-	        		hittype[j].extra = (p.Motospeed >> 1) + 2;
-	        		p.Motospeed -= p.Motospeed >> 4;
+	        		hittype[j].extra = (p.CarSpeed >> 1) + 2;
+	        		p.CarSpeed -= p.CarSpeed >> 4;
 	        	}
 	        }
 	        else if(badguy(sprite[j]) && sprite[j].xrepeat > 24 && klabs(s.z-sprite[j].z) < (84<<8) )
@@ -1481,7 +1481,7 @@ public class Player {
 	        }
 	    }
 
-	    if(p.pals_time > 0)
+	    if(p.pals_time > 0) 
 	        p.pals_time--;
 
 	    if(p.fta > 0)
@@ -1661,7 +1661,7 @@ public class Player {
 		    if (p.rotscrnang > 0) p.rotscrnang -= ((p.rotscrnang>>1)+1);
 		    else if (p.rotscrnang < 0) p.rotscrnang += (((-p.rotscrnang)>>1)+1);
 	
-		    if((!p.OnMotorcycle && !p.OnBoat) || p.Motospeed >= 80)
+		    if((!p.OnMotorcycle && !p.OnBoat) || p.CarSpeed >= 80)
 		    	p.look_ang -= (p.look_ang>>2);
 		    else 
 		    	p.look_ang = (short) BClipRange(p.look_ang, -512, 512);	
@@ -1680,34 +1680,13 @@ public class Player {
 		    
 		    if ( p.SeaSick != 0 )
 		    {
-		    	if ( p.SeaSick < 250 )
-		    	{
-		    		if ( p.SeaSick < 180 )
-		    		{
-		    			if ( p.SeaSick < 130 )
-		    			{
-		    				if ( p.SeaSick < 70 )
-		    				{
-		    					if ( p.SeaSick >= 20 )
-		    						p.rotscrnang += 24;
-		    				}
-		    				else
-		    				{
-		    					p.rotscrnang += 24;
-		    				}
-		    			}
-		    			else
-		    			{
-		    				p.rotscrnang -= 24;
-		    			}
-		    		}
-		    		else
-		    		{
-		    			p.rotscrnang += 24;
-		    		}
+		    	if ( p.SeaSick < 250 ) {
+			    	if(p.SeaSick >= 130 && p.SeaSick < 180)
+			    		p.rotscrnang -= 24;
+			    	else if(p.SeaSick >= 20) 
+			    		p.rotscrnang += 24;
+			    	p.look_ang += (engine.krand() & 255) - 128;
 		    	}
-		    	if ( p.SeaSick < 250 )
-		    		p.look_ang += engine.krand() - 128;
 		    }
 	
 		    if(p.on_crane < 0) 
@@ -1760,7 +1739,7 @@ public class Player {
 			    		spritesound(432, pi);
 			    }
 
-			    if ( p.field_5DD != 0 )
+			    if ( p.isSea )
 			    {
 			    	p.pycount += 32;
 			    	p.pycount &= kAngleMask;
@@ -1982,19 +1961,19 @@ public class Player {
 			                p.on_ground = false;
 			                if ( (p.OnMotorcycle || p.OnBoat) && fz - (i << 9) > p.posz )
 			                {
-			                  if ( p.MotoOnGround )
+			                  if ( p.CarOnGround )
 			                  {
 			                    p.VBumpTarget = 80;
-			                    p.field_5C7 = 1;
-			                    p.poszv -= (p.Motospeed >> 4) * currentGame.getCON().gc;
-			                    p.MotoOnGround = false;
+			                    p.CarVar3 = 1;
+			                    p.poszv -= (p.CarSpeed >> 4) * currentGame.getCON().gc;
+			                    p.CarOnGround = false;
 			                    if ( Sound[188].num > 0 )
 			                      stopsound(Sound[188].num);
 			                    spritesound(189, pi);
 			                  }
 			                  else
 			                  {
-			                    p.poszv += 120 - p.Motospeed + currentGame.getCON().gc - 80;
+			                    p.poszv += 120 - p.CarSpeed + currentGame.getCON().gc - 80;
 			                    if ( Sound[189].num == 0 && Sound[190].num == 0 )
 			                      spritesound(190, pi);
 			                  }
@@ -2330,13 +2309,13 @@ public class Player {
 		            {
 		            case 7888:
 		            	if ( p.OnMotorcycle && p.on_ground )
-		            		p.field_5CF = 1;
+		            		p.CarVar4 = 1;
 		            	break;
 		            case 7889:
 		            	if ( p.OnMotorcycle )
 		            	{
 		            		if ( p.on_ground )
-		            			p.field_5CD = 1;
+		            			p.CarVar5 = 1;
 		                }
 		                else if ( p.boot_amount <= 0 )
 		                {
@@ -2421,35 +2400,35 @@ public class Player {
 	            {
 	        		int dang = (int) klabs((short)p.ang - engine.getangle(wall[wall[nwall].point2].x - wall[nwall].x, wall[wall[nwall].point2].y - wall[nwall].y));
 	        		if ( (engine.krand() & 1) == 1 )
-	        			p.ang -= p.Motospeed >> 1;
-	        		else p.ang += p.Motospeed >> 1;
+	        			p.ang = ((short)p.ang - (p.CarSpeed >> 1)) & kAngleMask;
+	        		else p.ang = ((short)p.ang + (p.CarSpeed >> 1)) & kAngleMask;
 	                
 	                int damage = 0;
 	                if ( dang >= 441 && dang <= 581 )
 	                {
-	                	damage = (p.Motospeed * p.Motospeed) >> 8;
-	               		p.Motospeed = 0;
+	                	damage = (p.CarSpeed * p.CarSpeed) >> 8;
+	               		p.CarSpeed = 0;
 	               		if ( Sound[238].num == 0 )
 	               			spritesound(238, p.i);
 	                }
 	                else if ( dang >= 311 && dang <= 711 )
 	                {
-	                	damage = (p.Motospeed * p.Motospeed) >> 11;
-	                  	 p.Motospeed -= ((p.Motospeed >> 2) + (p.Motospeed >> 1));        
+	                	damage = (p.CarSpeed * p.CarSpeed) >> 11;
+	                  	 p.CarSpeed -= ((p.CarSpeed >> 2) + (p.CarSpeed >> 1));        
 	                  	 if ( Sound[238].num == 0 )
 	                  		 spritesound(238, p.i);
 	                }
 	                else if ( dang >= 111 && dang <= 911 )
 	                {
-	                	damage = (p.Motospeed * p.Motospeed) >> 14;
-	                	p.Motospeed -= (p.Motospeed >> 1);  
+	                	damage = (p.CarSpeed * p.CarSpeed) >> 14;
+	                	p.CarSpeed -= (p.CarSpeed >> 1);  
 	                	if ( Sound[238].num == 0 )
 	                		spritesound(238, p.i);
 	                }
 	                else
 	                {
-	                	damage = (p.Motospeed * p.Motospeed) >> 15;
-			            p.Motospeed -= (p.Motospeed >> 3);  
+	                	damage = (p.CarSpeed * p.CarSpeed) >> 15;
+			            p.CarSpeed -= (p.CarSpeed >> 3);  
 			            if ( Sound[240].num == 0 )
 			            	spritesound(240, p.i);
 	                }
@@ -2472,30 +2451,30 @@ public class Player {
 	            {
 	        		int dang = (int) klabs((short)p.ang - engine.getangle(wall[wall[nwall].point2].x - wall[nwall].x, wall[wall[nwall].point2].y - wall[nwall].y));
 	        		if ( (engine.krand() & 1) == 1 )
-	        			p.ang -= p.Motospeed >> 1;
-	        		else p.ang += p.Motospeed >> 1;
+	        			p.ang = ((short)p.ang - (p.CarSpeed >> 1)) & kAngleMask;
+	        		else p.ang = ((short)p.ang + (p.CarSpeed >> 1)) & kAngleMask;
 	                
 	                if ( dang >= 441 && dang <= 581 )
 	                {
-	                	p.Motospeed = (short) (((p.Motospeed >> 1) * (p.Motospeed >> 2)) >> 2);
+	                	p.CarSpeed = (short) (((p.CarSpeed >> 1) * (p.CarSpeed >> 2)) >> 2);
 	               		if ( psectlotag == 1 && Sound[178].num == 0 )
 	               			spritesound(178, p.i);
 	                }
 	                else if ( dang >= 311 && dang <= 711 )
 	                {
-			        	p.Motospeed -= ((p.Motospeed >> 1) + (p.Motospeed >> 2)) >> 2;        
+			        	p.CarSpeed -= ((p.CarSpeed >> 1) + (p.CarSpeed >> 2)) >> 2;        
 		    			if ( psectlotag == 1 && Sound[179].num == 0 )
 		    				spritesound(179, p.i);
 	                }
 	                else if ( dang >= 111 && dang <= 911 )
 	                {
-	                	p.Motospeed -= (p.Motospeed >> 4);  
+	                	p.CarSpeed -= (p.CarSpeed >> 4);  
 	                	if ( psectlotag == 1 && Sound[180].num == 0 )
 	               			spritesound(180, p.i);
 	                }
 	                else
 	                {
-			            p.Motospeed -= (p.Motospeed >> 6);  
+			            p.CarSpeed -= (p.CarSpeed >> 6);  
 			            if ( Sound[181].num == 0 )
 			            	spritesound(181, p.i);
 	                }
@@ -2532,15 +2511,15 @@ public class Player {
 		                      		CLIPMASK0);
 	        			}
 	        			hittype[nspr].picnum = 7170;
-	        			hittype[nspr].extra = p.Motospeed >> 1;
-	        			p.Motospeed -= p.Motospeed >> 2;
+	        			hittype[nspr].extra = p.CarSpeed >> 1;
+	        			p.CarSpeed -= p.CarSpeed >> 2;
 	        			p.TurbCount = 6;
 	                } else if ( (sprite[nspr].picnum == 2431
 	                        || sprite[nspr].picnum == 2443
 	                        || sprite[nspr].picnum == 2451
 	                        || sprite[nspr].picnum == 2455)
 	                       && sprite[nspr].picnum != 4
-	                       && p.Motospeed > 45 )
+	                       && p.CarSpeed > 45 )
 	                {
 	                	spritesound(69, nspr);
 	                	if ( sprite[nspr].picnum != 2431 && sprite[nspr].picnum != 2451 )
@@ -2584,8 +2563,8 @@ public class Player {
 		                      		CLIPMASK0);
 	        			}
 	        			hittype[nspr].picnum = 7170;
-	        			hittype[nspr].extra = p.Motospeed >> 2;
-	        			p.Motospeed -= p.Motospeed >> 2;
+	        			hittype[nspr].extra = p.CarSpeed >> 2;
+	        			p.CarSpeed -= p.CarSpeed >> 2;
 	        			p.TurbCount = 6;
 	                }
 	            }

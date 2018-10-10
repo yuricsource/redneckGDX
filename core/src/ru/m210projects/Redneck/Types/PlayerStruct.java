@@ -28,7 +28,7 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1756;
+	public static final int sizeof = 1831;
 	
 	public int zoom,exitx,exity,loogiex[] = new int[64],loogiey[] = new int[64],numloogs,loogcnt;
 	public int posx, posy, posz, ohorizoff, invdisptime;
@@ -112,37 +112,32 @@ public class PlayerStruct {
 	//RA
 	public boolean OnBoat;
 	public boolean OnMotorcycle;
-	public short Motospeed;
-	public boolean MotoOnGround;
-	public int SlotWin;
-	public int field_5B5;
-	public int field_5FD;
-	public int field_5B9;
-	public int field_5DD;
-	public int field_601;
-	public int field_603;
+	public short CarSpeed;
+	public boolean CarOnGround;
+	public short SlotWin;
+	public int CarVar6;
+	public boolean isSwamp;
+	public int CarVar1;
+	public boolean isSea;
+	public int field_601; //isMoto?
 	public int chiken_phase;
-	public short field_607;
-	public short field_609;
-	public int field_60B;
+	public short field_607; //not used
+	public short MamaEnd;
 	public int fogtype;
 	public int TiltStatus;
-    public int field_5C1;
-    public int VBumpTarget;
-    public int VBumpNow;
-    public int field_5C7;
-    public int TurbCount;
-    public int field_5CD;
-    public int field_5CF;
+    public short CarVar2;
+    public short VBumpTarget;
+    public short VBumpNow;
+    public int CarVar3;
+    public short TurbCount;
+    public short CarVar5;
+    public short CarVar4;
     public int NotOnWater;
-    public int field_5D9;
     public int SeaSick;
-    public int field_5E1;
-    public int field_5E9;
     public int DrugMode;
-    public int drug_type;
-    public int drug_intensive;
-    public int drug_timer;
+    public short drug_type;
+    public short drug_intensive;
+    public short drug_timer;
     public int drug_aspect;
 
 	public void copy(PlayerStruct src)
@@ -307,6 +302,36 @@ public class PlayerStruct {
 		this.shotgun_splitshot = src.shotgun_splitshot;
 		this.kickback = src.kickback;
 		this.field_count = src.field_count;
+
+		this.OnBoat = src.OnBoat;
+		this.OnMotorcycle = src.OnMotorcycle;
+		this.CarSpeed = src.CarSpeed;
+		this.CarOnGround = src.CarOnGround;
+		this.SlotWin = src.SlotWin;
+		this.CarVar6 = src.CarVar6;
+		this.isSwamp = src.isSwamp;
+		this.CarVar1 = src.CarVar1;
+		this.isSea = src.isSea;
+		this.field_601 = src.field_601;
+		this.chiken_phase = src.chiken_phase;
+		this.field_607 = src.field_607;
+		this.MamaEnd = src.MamaEnd;
+		this.fogtype = src.fogtype;
+		this.TiltStatus = src.TiltStatus;
+		this.CarVar2 = src.CarVar2;
+		this.VBumpTarget = src.VBumpTarget;
+		this.VBumpNow = src.VBumpNow;
+		this.CarVar3 = src.CarVar3;
+		this.TurbCount = src.TurbCount;
+		this.CarVar5 = src.CarVar5;
+		this.CarVar4 = src.CarVar4;
+		this.NotOnWater = src.NotOnWater;
+		this.SeaSick = src.SeaSick;
+		this.DrugMode = src.DrugMode;
+		this.drug_type = src.drug_type;
+		this.drug_intensive = src.drug_intensive;
+		this.drug_timer = src.drug_timer;
+		this.drug_aspect = src.drug_aspect;
 	}
 	private byte[] buf = new byte[sizeof];
 	public byte[] getBytes() {
@@ -494,6 +519,37 @@ public class PlayerStruct {
 
 		LittleEndian.putShort(buf, ptr, kickback); ptr+=2;
 		LittleEndian.putShort(buf, ptr, field_count); ptr+=2;
+		
+		//RA
+		buf[ptr++] = OnBoat?(byte)1:0;
+		buf[ptr++] = OnMotorcycle?(byte)1:0;
+		LittleEndian.putShort(buf, ptr, CarSpeed); ptr+=2;
+		buf[ptr++] = CarOnGround?(byte)1:0;
+		LittleEndian.putShort(buf, ptr, SlotWin); ptr+=2;
+		LittleEndian.putInt(buf, ptr, CarVar6); ptr+=4;
+		buf[ptr++] = isSwamp?(byte)1:0;
+		LittleEndian.putInt(buf, ptr, CarVar1); ptr+=4;
+		buf[ptr++] = isSea?(byte)1:0;
+		LittleEndian.putInt(buf, ptr, field_601); ptr+=4;
+		LittleEndian.putInt(buf, ptr, chiken_phase); ptr+=4;
+		LittleEndian.putShort(buf, ptr, field_607); ptr+=2;
+		LittleEndian.putShort(buf, ptr, MamaEnd); ptr+=2;
+		LittleEndian.putInt(buf, ptr, fogtype); ptr+=4;
+		LittleEndian.putInt(buf, ptr, TiltStatus); ptr+=4;
+		LittleEndian.putShort(buf, ptr, CarVar2); ptr+=2;
+		LittleEndian.putShort(buf, ptr, VBumpTarget); ptr+=2;
+		LittleEndian.putShort(buf, ptr, VBumpNow); ptr+=2;
+		LittleEndian.putInt(buf, ptr, CarVar3); ptr+=4;
+	    LittleEndian.putShort(buf, ptr, TurbCount); ptr+=2;
+	    LittleEndian.putShort(buf, ptr, CarVar5); ptr+=2;
+	    LittleEndian.putShort(buf, ptr, CarVar4); ptr+=2;
+	    LittleEndian.putInt(buf, ptr, NotOnWater); ptr+=4;
+	    LittleEndian.putInt(buf, ptr, SeaSick); ptr+=4;
+	    LittleEndian.putInt(buf, ptr, DrugMode); ptr+=4;
+	    LittleEndian.putShort(buf, ptr, drug_type); ptr+=2;
+	    LittleEndian.putShort(buf, ptr, drug_intensive); ptr+=2;
+	    LittleEndian.putShort(buf, ptr, drug_timer); ptr+=2;
+	    LittleEndian.putInt(buf, ptr, drug_aspect); ptr+=4;
 
 		return buf;
 	}
@@ -681,5 +737,36 @@ public class PlayerStruct {
 
 		kickback = bb.getShort(); //weapon horiz
 		field_count = bb.getShort();
+		
+		//RA
+		OnBoat = bb.get() == 1;
+		OnMotorcycle = bb.get() == 1;
+		CarSpeed = bb.getShort();
+		CarOnGround = bb.get() == 1;
+		SlotWin = bb.getShort();
+		CarVar6 = bb.getInt();
+		isSwamp = bb.get() == 1;
+		CarVar1 = bb.getInt();
+		isSea = bb.get() == 1;
+		field_601 = bb.getInt();
+		chiken_phase = bb.getInt();
+		field_607 = bb.getShort();
+		MamaEnd = bb.getShort();
+		fogtype = bb.getInt();
+		TiltStatus = bb.getInt();
+		CarVar2 = bb.getShort();
+		VBumpTarget = bb.getShort();
+		VBumpNow = bb.getShort();
+		CarVar3 = bb.getInt();
+	    TurbCount = bb.getShort();
+	    CarVar5 = bb.getShort();
+	    CarVar4 = bb.getShort();
+	    NotOnWater = bb.getInt();
+	    SeaSick = bb.getInt();
+	    DrugMode = bb.getInt();
+	    drug_type = bb.getShort();
+	    drug_intensive = bb.getShort();
+	    drug_timer = bb.getShort();
+	    drug_aspect = bb.getInt();
 	}
 }

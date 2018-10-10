@@ -284,6 +284,8 @@ public class Sounds {
 	    Source voice;
 	    int pitch;
 
+	    if(num == 0)
+	    System.err.println(num);
 	    if( num >= NUM_SOUNDS ||
 	        !engine.getAudio().IsInited(SOUNDDRV) ||
 	        ( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) ||

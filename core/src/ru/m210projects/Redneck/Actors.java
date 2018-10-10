@@ -640,7 +640,7 @@ public class Actors {
 								continue;
 							}
 
-							if(currentGame.getCON().type == RR) {
+							if(currentGame.getCON().type != RRRA) {
 								if ( (s.pal == 33 || s.picnum == VIXEN) ) {
 									int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 									int cz2 = s.z - (engine.krand() % (52 << 8));
@@ -2090,7 +2090,7 @@ public class Actors {
 							spritesound(DUKE_UNDERWATER, j);
 							ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].ceilingz + (7 << 8);
 							if ( ps[p].OnMotorcycle )
-		                        ps[p].field_5B9 = 1;
+		                        ps[p].CarVar1 = 1;
 							
 //							ps[p].posxv = 4096 - (engine.krand() & 8192); GDX
 //							ps[p].posyv = 4096 - (engine.krand() & 8192);
@@ -2467,7 +2467,8 @@ public class Actors {
 			}
 		}
 
-		for (short i = headspritestat[116]; i >= 0; i = nextspritestat[i]) { //RA
+		for (short i = headspritestat[116], nexti; i >= 0; i = nexti) { //RA
+			nexti = nextspritestat[i];
 			if ( sprite[i].extra != 0 )
 			{
 				if ( sprite[i].extra == sprite[i].lotag )
@@ -2498,7 +2499,8 @@ public class Actors {
 			}
 		}
 
-		for (short i = headspritestat[117]; i >= 0; i = nextspritestat[i]) { //RA
+		for (short i = headspritestat[117], nexti; i >= 0; i = nexti) { //RA
+			nexti = nextspritestat[i];
 			if ( sprite[i].hitag > 2 )
 				sprite[i].hitag = 0;
 			if ( (sprite[i].picnum == 8488 || sprite[i].picnum == 8490)
@@ -2550,7 +2552,7 @@ public class Actors {
 			movesprite(i, 0, 0, sprite[i].extra, CLIPMASK0);
 		}
 		
-		if ( ps[screenpeek].field_609 > 0 && --ps[screenpeek].field_609 == 0 )
+		if ( ps[screenpeek].MamaEnd > 0 && --ps[screenpeek].MamaEnd == 0 )
 		{
 			LeaveMap();
 		    ud.eog = 1;
@@ -2604,7 +2606,7 @@ public class Actors {
 				 		if ( ps[screenpeek].field_607 == 3 )
 						{
 					        sprite[j].xrepeat <<= 1;
-					        sprite[j].yrepeat *= 2;
+					        sprite[j].yrepeat <<= 1;
 					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
 						}
 						else if ( ps[screenpeek].field_607 == 2 )
@@ -2854,7 +2856,8 @@ public class Actors {
 
 		}
 
-		for (int i = headspritestat[108]; i >= 0; i = nextspritestat[i]) {
+		for (short i = headspritestat[108], nexti; i >= 0; i = nexti) {
+			nexti = nextspritestat[i];
 			if (sprite[i].picnum == 296) {
 				p = (short) findplayer(sprite[i]);
 
@@ -3685,7 +3688,7 @@ public class Actors {
 						for (l = 0; l < 16; l++)
 							RANDOMSCRAP(s, i);
 						spritesound(LASERTRIP_EXPLODE, i);
-						if ( ps[myconnectindex].field_5FD != 0 )
+						if ( ps[myconnectindex].isSwamp )
 							spawn(i, MINION);
 		                else {
 							switch (s.picnum) {
@@ -6753,7 +6756,8 @@ public class Actors {
 	
 	public static void BowlUpdate(int nSprite)
 	{
-		for (short i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
+		for (short i = headspritesect[nSprite], nexti; i >= 0; i = nexti) {
+			nexti = nextspritesect[i];
 			if(sprite[i].picnum == 3440) //pin sprite
 				engine.deletesprite(i);
 		}

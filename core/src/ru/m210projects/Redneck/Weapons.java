@@ -202,7 +202,6 @@ public class Weapons {
 		        break;
 		    	case RATE_WEAPON:
 		        p.gotweapon[RATE_WEAPON] = true;
-		        p.ammo_amount[RATE_WEAPON] = 1;
 		        break;
 		    }
 			return;
@@ -222,7 +221,6 @@ public class Weapons {
 				}
 				if (weapon == RATE_WEAPON) {
 					p.gotweapon[RATE_WEAPON] = true;
-					p.ammo_amount[RATE_WEAPON] = 50;
 				}
 			}
 		}
@@ -1872,43 +1870,42 @@ public class Weapons {
 			            switch(weap5_frames[kb])
 			            {	
 			            	case 2:
-			            		myospal(weapon_xoffset + 200 - (p.look_ang>>1),looking_arc + 250 - gun_pos,
-			            				36700, weap5_frames[kb] + 3452,gs,o, pal);
+			            		myospal( posx - (p.look_ang>>1) - 3, posy - 5, 36700, weap5_frames[kb] + 3452,gs,o, pal);
 			            		break;
 			            	case 3:
-			            		myospal( weapon_xoffset + 200 - (p.look_ang>>1), looking_arc + 250 - gun_pos, 36700, weap5_frames[kb] + 3452, gs, o, pal);
+			            		myospal( posx - (p.look_ang>>1) - 10, posy - 5, 36700, weap5_frames[kb] + 3452, gs, o, pal);
 			            		break;
 			            	case 1:
-			            		myospal( weapon_xoffset + 200 - (p.look_ang>>1), looking_arc + 250 - gun_pos, 36700, 3453, gs, o, pal);
+			            		myospal( posx - (p.look_ang>>1) - 10, posy - 5, 36700, weap5_frames[kb] + 3452, gs, o, pal);
 			            		break;
 			            	default:
-			            		myospal(posx - (p.look_ang>>1), posy, 36700, weap5_frames[kb] +  3452, gs, o, pal);
+			            		myospal( posx - (p.look_ang>>1), posy, 36700, weap5_frames[kb] +  3452, gs, o, pal);
 			            		break;
 			            }
 		            } else myospal(posx - (p.look_ang>>1), posy, 36700, 3452, gs, o, pal);
 	            }
 	            
 	            if(cw == CHICKENBOW_WEAPON) {
+	            	posy -= 40;
 		            if(kb != 0) {
 			            switch(weap5_frames[kb])
 			            {	
 			            	case 2:
-			            		myospal(weapon_xoffset + 200 - (p.look_ang>>1),looking_arc + 250 - gun_pos,
-			            				36700, weap5_frames[kb] + 3482,gs,o, pal);
+			            		myospal( posx - (p.look_ang>>1) - 10, posy + 33, 36700, weap5_frames[kb] + 3482,gs,o, pal);
 			            		break;
 			            	case 3:
-			            		myospal( weapon_xoffset + 200 - (p.look_ang>>1), looking_arc + 250 - gun_pos, 36700, weap5_frames[kb] + 3482, gs, o, pal);
+			            		myospal( posx - (p.look_ang>>1) - 7, posy + 48, 36700, weap5_frames[kb] + 3482, gs, o, pal);
 			            		break;
 			            	case 1:
-			            		myospal( weapon_xoffset + 200 - (p.look_ang>>1), looking_arc + 250 - gun_pos, 36700, 3482, gs, o, pal);
+			            		myospal( posx - (p.look_ang>>1) - 10, posy + 10, 36700, weap5_frames[kb] + 3482, gs, o, pal);
 			            		break;
 			            	default:
-			            		myospal(posx - (p.look_ang>>1), posy, 36700, weap5_frames[kb] +  3482, gs, o, pal);
+			            		myospal( posx - (p.look_ang>>1), posy, 36700, weap5_frames[kb] +  3482, gs, o, pal);
 			            		break;
 			            }
 		            } else {
 		            	if(ud.multimode >= 2)
-		            		myospal(posx - (p.look_ang>>1), posy, 36700, 3482, gs, o, pal);
+		            		myospal(posx - (p.look_ang>>1), posy - 3, 36700, 3482, gs, o, pal);
 		            	else {
 		            		if(p.chiken_phase != 0)
 		            			myospal(posx - (p.look_ang>>1), posy - 3, 36700, 3489, gs, o, pal);
@@ -1917,7 +1914,8 @@ public class Weapons {
 		            			myospal(posx - (p.look_ang>>1), posy - 3, 36700, 3489, gs, o, pal);
 		            			p.chiken_phase = 6;
 		            			spritesound(327, p.i);
-		            		} else myospal(posx - (p.look_ang>>1), posy, 36700, 3482, gs, o, pal);
+		            		} else 
+		            			myospal(posx - (p.look_ang>>1), posy, 36700, 3482, gs, o, pal);
 		            	}
 		            }
 	            }
@@ -2208,7 +2206,6 @@ public class Weapons {
 		    else if ( !shrunk && ((sb_snum&(1<<2)) != 0) && (p.kickback_pic) == 0 && p.fist_incs == 0 &&
 		         p.last_weapon == -1 && ( p.weapon_pos == 0 || p.holster_weapon == 1 ) )
 		    {
-
 		        p.crack_time = 777;
 
 		        if(p.holster_weapon == 1)
@@ -2307,13 +2304,15 @@ public class Weapons {
 		            		if(/*p.ammo_amount[KNEE_WEAPON] != 0 && */ p.quick_kick == 0)
 			                	(p.kickback_pic) = 1;
 		            	} else {
-		            		if(p.ammo_amount[RATE_WEAPON] != 0 && p.quick_kick == 0)
+		            		if(/*p.ammo_amount[RATE_WEAPON] != 0 && */ p.quick_kick == 0)
 			                	(p.kickback_pic) = 1;
 		            	}
 		                break;
 		            case MOTO_WEAPON:
-		            	if(p.ammo_amount[MOTO_WEAPON] != 0 &&  p.hbomb_hold_delay == 0)
+		            	if(p.ammo_amount[MOTO_WEAPON] != 0 ) {
 		                	(p.kickback_pic) = 1;
+		                	p.hbomb_hold_delay ^= 1;
+		            	}
 		            	break;
 		            case BOAT_WEAPON:
 		            	if(p.ammo_amount[BOAT_WEAPON] != 0)
@@ -2856,7 +2855,7 @@ public class Weapons {
 		            case BOAT_WEAPON:
 		            	if( (p.kickback_pic) == 3 )
 	            		{
-		            		p.Motospeed -= 20;
+		            		p.CarSpeed -= 20;
 		            		shoot(pi,1790);
 		            		p.ammo_amount[BOAT_WEAPON]--;
 	            		}

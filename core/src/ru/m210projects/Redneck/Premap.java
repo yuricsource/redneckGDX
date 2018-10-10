@@ -38,7 +38,6 @@ import static ru.m210projects.Redneck.Types.INTERPOLATION.FLOORZ;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLX;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLY;
 import static ru.m210projects.Redneck.Animate.*;
-import static ru.m210projects.Redneck.Animlib.closeanm;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.*;
@@ -66,6 +65,10 @@ import ru.m210projects.Redneck.Types.INTERPOLATION;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Premap {
+	
+	public static short[] rorsector = new short[16];
+	public static byte[] rortype = new byte[16];
+	public static int rorcnt;
 	
 	public static char[] lastmapname;
 	public static boolean shadeEffect[] = new boolean[MAXSECTORS];
@@ -651,19 +654,18 @@ public class Premap {
 	    	checkavailweapon(p);
 	    }
 	    
-	    p.field_60B = 0;
-	    p.field_5B5 = 0;
-	    p.MotoOnGround = true;
-	    p.field_5B9 = 0;
-	    p.Motospeed = 0;
+	    p.CarVar6 = 0;
+	    p.CarOnGround = true;
+	    p.CarVar1 = 0;
+	    p.CarSpeed = 0;
 	    p.TiltStatus = 0;
-	    p.field_5C1 = 0;
+	    p.CarVar2 = 0;
 	    p.VBumpTarget = 0;
 	    p.VBumpNow = 0;
-	    p.field_5C7 = 0;
+	    p.CarVar3 = 0;
 	    p.TurbCount = 0;
-	    p.field_5CD = 0;
-	    p.field_5CF = 0;
+	    p.CarVar5 = 0;
+	    p.CarVar4 = 0;
 	    if ( p.OnBoat )
 	    {
 	    	p.OnBoat = false;
@@ -672,10 +674,7 @@ public class Premap {
 	    	checkavailweapon(p);
 	    }
 	    p.NotOnWater = 0;
-	    p.field_5D9 = 0;
 	    p.SeaSick = 0;
-	    p.field_5E1 = 0;
-	    p.field_5E9 = 0;
 	    p.DrugMode = 0;
 	    p.drug_type = 0;
 	    p.drug_intensive = 0;
@@ -715,10 +714,8 @@ public class Premap {
 	    p.gotweapon[KNEE_WEAPON] = true;
 	    p.ammo_amount[PISTOL_WEAPON] = 48;
 	    p.gotweapon[HANDREMOTE_WEAPON] = true;
-	    if(currentGame.getCON().type == RRRA) {
-		    p.gotweapon[15] = true;
-		    p.ammo_amount[15] = 1;
-	    }
+	    if(currentGame.getCON().type == RRRA) 
+		    p.gotweapon[RATE_WEAPON] = true;
 	    p.last_weapon = -1;
 
 	    p.show_empty_weapon= 0;
@@ -727,8 +724,7 @@ public class Premap {
 	    
 	    p.OnMotorcycle = false;
 	    p.OnBoat = false;
-	    p.field_5B9 = 0;
-	    p.field_60B = 0;
+	    p.CarVar1 = 0;
 	}
 
 	public static void resetinventory(int snum)
@@ -954,12 +950,13 @@ public class Premap {
 	    
 	    //RA
 	    ps[screenpeek].fogtype = 0;
-	    ps[screenpeek].field_5DD = 0;
-	    ps[screenpeek].field_5FD = 0;
+	    applyfog(0);
+	    ps[screenpeek].isSea = false;
+	    ps[screenpeek].isSwamp = false;
 	    ps[screenpeek].field_601 = 0;
 	    ps[screenpeek].SlotWin = 0;
 	    ps[screenpeek].field_607 = 0;
-	    ps[screenpeek].field_609 = 0;
+	    ps[screenpeek].MamaEnd = 0;
 	    BellSound = 0;
 	    mamaspawn_count = 15;
 	    word_119BE2 = 0;
@@ -1414,6 +1411,10 @@ public class Premap {
 	    tilesizx[0] = 0;
 	    waloff[0] = null;
 	    
+	    tilesizy[13] = 0; //ROR tile
+	    tilesizx[13] = 0;
+	    waloff[13] = null;
+	    
 	    gNameShowTime = 500;
 	}
 	
@@ -1455,10 +1456,8 @@ public class Premap {
 	        p.ammo_amount[PISTOL_WEAPON] = 48;
 	        p.gotweapon[HANDREMOTE_WEAPON] = true;
 	        
-	        if(currentGame.getCON().type == RRRA) {
-		        p.gotweapon[15] = true;
-		        p.ammo_amount[15] = 1;
-	        }
+	        if(currentGame.getCON().type == RRRA) 
+		        p.gotweapon[RATE_WEAPON] = true;
 
 	        p.last_weapon = -1;
 	    }
@@ -1622,6 +1621,8 @@ public class Premap {
 	        look_pos = kRead(fp,1);
 	        kRead(fp,tempbuf,256);
 	        engine.makepalookup(look_pos,tempbuf,0,0,0,1);
+	        if(look_pos == 8)
+	        	engine.makepalookup(54,tempbuf,32,32,32,1);
 	    }
 
 	    kRead(fp,waterpal,768);
@@ -1649,6 +1650,7 @@ public class Premap {
 	    engine.makepalookup(31, tempbuf, 0, 0, 0, 1);
 	    engine.makepalookup(32, tempbuf, 0, 0, 0, 1);
 	    engine.makepalookup(33, tempbuf, 0, 0, 0, 1);
+	    engine.makepalookup(105, tempbuf, 0, 0, 0, 1);
 	    
 	    int col = 63;
 	    for(int i = 64; i < 80; i++) {
@@ -1666,6 +1668,47 @@ public class Premap {
 	    for(int i = 16; i < 32; i++) 
 	    	tempbuf[i] = (byte) (i - 64);
 	    engine.makepalookup(35, tempbuf, 0, 0, 0, 1);
+	}
+	
+	private static boolean fogInited = false;
+	private static byte[] opalookup0;
+	private static byte[] opalookup8;
+	private static byte[] opalookup23;
+	private static byte[] opalookup30;
+	private static byte[] opalookup33;
+	public static void applyfog(int type)
+	{
+		if(!fogInited)
+		{
+			opalookup0 = palookup[0];
+			opalookup8 = palookup[8];
+			opalookup23 = palookup[23];
+			opalookup30 = palookup[30];
+			opalookup33 = palookup[33];
+
+			for(int i = 0; i < 256; i++)
+		    	tempbuf[i] = (byte) i;
+			engine.makepalookup(50, tempbuf, 12, 12, 12, 1);
+			engine.makepalookup(51, tempbuf, 12, 12, 12, 1);
+		}
+		
+		if(type == 2)
+		{
+//			palookup[0] = palookup[50];
+//			palookup[30] = palookup[51];
+//			palookup[33] = palookup[51];
+//			palookup[23] = palookup[51];
+//			palookup[8] = palookup[54];
+		}
+		
+		if(type == 0)
+		{
+			palookup[0] = opalookup0;
+		    palookup[30] = opalookup30;
+		    palookup[33] = opalookup33;
+		    palookup[23] = opalookup23;
+		    palookup[8] = opalookup8;
+		}
 	}
 
 	public static void dofrontscreens()
@@ -1762,6 +1805,10 @@ public class Premap {
 			    ps[0].cursectnum = sect[0];
 			    
 			    Arrays.fill(gotpic, (byte)0);
+			    Arrays.fill(rorsector, (short) -1);
+			    Arrays.fill(rortype, (byte) -1);
+			    rorcnt = 0;
+			    
 			    prelevel(g);
 			    
 			    if ( ud.level_number == 2 && ud.volume_number == 0 )
@@ -1771,7 +1818,6 @@ public class Premap {
 			    	for ( int j = 1; j < 17; ++j )
 			    		ps[0].ammo_amount[j] = 0;
 			    	ps[0].gotweapon[RATE_WEAPON] = true;
-			    	ps[0].ammo_amount[RATE_WEAPON] = 1;
 			    	ps[0].curr_weapon = RATE_WEAPON;
 			    }
 			    
