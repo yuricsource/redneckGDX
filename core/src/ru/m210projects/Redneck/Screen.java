@@ -708,9 +708,9 @@ public class Screen {
 					engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
 				}
 	    	} else {
-			    
-			    
-	    		playanm(); //TODO init check
+	    		if(anmInited())
+	    			playanm();
+	    		else engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
 	    	}
 		    
 		    mGetAlign(2, mapname);

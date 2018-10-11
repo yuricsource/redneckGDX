@@ -35,9 +35,6 @@ import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Strhandler.*;
-import static ru.m210projects.Redneck.Globals.MODE_RESTART;
-import static ru.m210projects.Redneck.Globals.gm;
-import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Menus.RRMenu.LOADGAME;
 import static ru.m210projects.Redneck.Menus.MENU.mMenus;
@@ -606,7 +603,7 @@ public class Gamedef {
 
 	    if( !Character.isDigit(text[textptr]) && text[textptr] != '-')
 	    {
-	    	Console.Println("  * ERROR!(L" + line_number + ") Parameter '" + tempbuf[0] + "' is undefined.");
+	    	Console.Println("  * ERROR!(L" + line_number + ") Parameter '" + new String(text, textptr, l) + "' is undefined.");
 	        error++;
 	        textptr+=l;
 	        return;
@@ -2103,13 +2100,15 @@ public class Gamedef {
 	        
 	        if ( sector[g_sp.sectnum].lotag == 1 )
 	        {
-	        	switch(g_sp.picnum)
-	        	{
-		        	case BIKERRIDE:
-		        	case BIKERRIDE+1:
-		        	case BIKERRIDEDAISY:
-		        		daxvel >>= 1;
-	                    break;
+	        	if(currentGame.getCON().type == RRRA) {
+		        	switch(g_sp.picnum)
+		        	{
+			        	case BIKERRIDE:
+			        	case BIKERRIDE+1:
+			        	case BIKERRIDEDAISY:
+			        		daxvel >>= 1;
+		                    break;
+		        	}
 	        	}
 	        } else {
 	        	switch(g_sp.picnum)

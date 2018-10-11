@@ -559,8 +559,6 @@ public class Spawn {
             case JIBS4:
             case JIBS5:
             case JIBS6:
-            case 2460: //RA green jibs1
-            case 2465: //RA green jibs2
             case 4041: 
             case 4046: 
             case 4055: 
@@ -575,6 +573,8 @@ public class Spawn {
             case 5602: 
             case 5607: 
             case 5616: 
+            case 2460: //RA green jibs1
+            case 2465: //RA green jibs2
         	case 5872: //RA motowheel
         	case 5877: //RA mototank
         	case 5882: //RA boarddebris
@@ -593,6 +593,31 @@ public class Spawn {
         	case 7397: //RA deepjibs3
         	case 8890: //RA deep2jibs
         	case 8895: //RA deep2jibs2
+        		
+        		if(currentGame.getCON().type != RRRA
+        				&& (sp.picnum == 2460
+    		            || sp.picnum == 2465
+    		        	|| sp.picnum == 5872 
+    		        	|| sp.picnum == 5877 
+    		        	|| sp.picnum == 5882 
+    		        	|| sp.picnum == 6112
+    		        	|| sp.picnum == 6117 
+    		        	|| sp.picnum == 6121 
+    		        	|| sp.picnum == 6127 
+    		        	|| sp.picnum == 7000 
+    		        	|| sp.picnum == 7005 
+    		        	|| sp.picnum == 7010
+    		        	|| sp.picnum == 7015
+    		        	|| sp.picnum == 7020
+    		        	|| sp.picnum == 7025 
+    		        	|| sp.picnum == 7387
+    		        	|| sp.picnum == 7392
+    		        	|| sp.picnum == 7397 
+    		        	|| sp.picnum == 8890 
+    		        	|| sp.picnum == 8895))
+        			break;
+
+        		
         		switch(sp.picnum)
         		{
         			case JIBS6:
@@ -1580,18 +1605,21 @@ public class Spawn {
 	            sp.xrepeat = 21;
 	            sp.yrepeat = 15;
 	            engine.changespritestat(i,(short) 2);
-	            break;  
+	            break; 
+	            
+            case 4770: //RA elvisbubba
+            case 6659: //RA baba   
+	            if(currentGame.getCON().type != RRRA)
+            		break;
             case 4163: 
             case 4249: 
             case 4504: 
             case 4650: 
-            case 4770: //RA elvisbubba
             case 4862: 
             case 4946: 
             case 5015: 
             case 5121: 
             case 5377: 
-            case 6659: //RA baba
             	hittype[i].actorstayput = sp.sectnum;
             case 256: 
             case 264: 
@@ -1603,10 +1631,9 @@ public class Spawn {
             case 4352: 
             case 4649: 
             case 4861: 
-            case 4916: 
+            case MOSQUITO: 
             case 4945: 
             case MINION: 
-            case MINIONUFO: //RA
             case 5270: 
             case 5274: 
             case 5278: 
@@ -1616,6 +1643,7 @@ public class Spawn {
             case 5376: 
             case 5501: 
             case 5635: 
+            case MINIONUFO: //RA
             case 5890: //RA biker
             case 5891: //RA biker
             case 5995: //RA biker
@@ -1632,6 +1660,27 @@ public class Spawn {
         	case 8036: //RA rock2
             case 8663: //RA green rock
             case 8705: //RA deep2
+            	
+            	if(currentGame.getCON().type != RRRA
+            			&& (sp.picnum == MINIONUFO
+	    				|| sp.picnum == 5890
+			            || sp.picnum == 5891
+			            || sp.picnum == 5995
+			        	|| sp.picnum == 6225
+			        	|| sp.picnum == 6401
+			        	|| sp.picnum == 6658
+			            || sp.picnum == 7030
+			            || sp.picnum == 7035
+			            || sp.picnum == 7192
+			            || sp.picnum == 7199
+			        	|| sp.picnum == 7206 
+			        	|| sp.picnum == 7280
+			        	|| sp.picnum == 8035
+			        	|| sp.picnum == 8036
+			            || sp.picnum == 8663
+			            || sp.picnum == 8705))
+            		break;
+            	
             	
             	switch(sp.picnum)
             	{
@@ -1671,7 +1720,7 @@ public class Spawn {
                         sp.yrepeat = 32;
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
         				break;
-        			case 4916: 
+        			case MOSQUITO: 
         				sp.xrepeat = 14;
                         sp.yrepeat = 7;
                         sp.clipdist = 128;

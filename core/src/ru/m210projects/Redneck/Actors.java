@@ -98,7 +98,8 @@ public class Actors {
 			case COOTSTAYPUT:
 			case 5501:
 			case VIXEN:
-
+				return true;
+				
 			case 5890: //RA
 			case 5891:
 			case 5995:
@@ -115,7 +116,9 @@ public class Actors {
 			case 8035:
 			case 8036:
 			case 8705:
-				return true;
+				if(currentGame.getCON().type == RRRA)
+		    		return true;
+                break;
 		}
 		return false;
 	}
@@ -166,7 +169,8 @@ public class Actors {
 		    case COOTSTAYPUT:
 		    case 5501:
 		    case VIXEN:
-
+		    	return true;
+		    	
 		    case 1147: //RA
 		    case 1344:
 		    case 4249:
@@ -186,7 +190,9 @@ public class Actors {
 		    case 7206:
 		    case 7280:
 		    case 8705:
-	        	return true;
+		    	if(currentGame.getCON().type == RRRA)
+		    		return true;
+                break;
 	    }
 	    
 	    if( currentGame.getCON().actortype[s.picnum] != 0 ) 
@@ -229,6 +235,7 @@ public class Actors {
 		    case COOTSTAYPUT:
 		    case 5501:
 		    case VIXEN:
+		    	return true;
 		    	
 		    	//RA
 		    case 4770:
@@ -247,7 +254,9 @@ public class Actors {
 		    case 7206:
 		    case 7280:
 		    case 8705:
-                return true;
+		    	if(currentGame.getCON().type == RRRA)
+		    		return true;
+                break;
 	    }
 
 	    if( pn < MAXTILES && currentGame.getCON().actortype[pn] != 0 ) return true;

@@ -136,7 +136,7 @@ public class Config extends BConfig {
 	public  int gJoySmoothing = 32768;
 	public  boolean gJoyInvert = false;
 	
-	public String pName = "DUKE";
+	public String pName = "LEONARD";
 	public String mAddress = "localhost";
 	public int mPort = NETPORT;
 	

@@ -30,6 +30,7 @@ import static ru.m210projects.Redneck.Types.BugReport.saveToFTP;
 import java.util.HashMap;
 
 import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Premap.setloading;
 import static ru.m210projects.Redneck.Sounds.*;
 
 import com.badlogic.gdx.Gdx;
@@ -379,7 +380,7 @@ public class Globals {
 			cfg.fullscreen = 0;
 		Console.Println("Game error: "+ errorText, OSDTEXT_RED);
 		getInput().setKey(ANYKEY, 0);
-
+		setloading(null, 0, false);
 		kGameCrash = true;
 	}
 	

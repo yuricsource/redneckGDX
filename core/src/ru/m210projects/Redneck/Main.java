@@ -56,9 +56,9 @@ public class Main extends ApplicationAdapter {
 	 * Cow "use" fix
 	 * 
 	 * TODO:
-	 * dobonus другие картинки
-	 * RR66 большой спрайт в воротах
-	 * 
+	 * anykey не работает после заставки в конце игры
+	 * e2m1 no bubba
+	 * не сохраняется анизотропная фильтрация
 	 * get crc32 from map and script
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * инфа об юзерэпизоде в меню загрузок

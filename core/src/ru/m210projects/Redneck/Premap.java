@@ -1866,7 +1866,7 @@ public class Premap {
 			    
 			    prelevel(g);
 			    
-			    if ( ud.level_number == 2 && ud.volume_number == 0 )
+			    if ( currentGame.getCON().type == RRRA && ud.level_number == 2 && ud.volume_number == 0 )
 			    {
 			    	for ( int i = 1; i < 17; ++i )
 			    		ps[0].gotweapon[i] = false;
