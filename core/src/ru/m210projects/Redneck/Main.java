@@ -57,7 +57,7 @@ public class Main extends ApplicationAdapter {
 	 * 
 	 * TODO:
 	 * dobonus другие картинки
-	 * 
+	 * RR66 большой спрайт в воротах
 	 * 
 	 * get crc32 from map and script
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт

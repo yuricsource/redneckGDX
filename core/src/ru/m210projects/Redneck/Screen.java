@@ -50,6 +50,7 @@ import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 import static ru.m210projects.Redneck.Sounds.sound;
+import static ru.m210projects.Redneck.Animlib.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
 
@@ -544,6 +545,64 @@ public class Screen {
 		    getInput().resetKeyStatus();
 			gpmanager.resetButtonStatus();
 		    showbonus = true;
+		    
+		    if(currentGame.getCON().type == RRRA)
+		    {
+		    	closeanm();
+		    	if ( ud.volume_number != 0 )
+		    	{
+		    		switch ( ud.level_number )
+		    		{
+		    		case 1:
+		    			initanm("lvl8.anm",0, 0);
+		    			break;
+		    		case 2:
+		    			initanm("lvl9.anm",0, 0);
+		    			break;
+		    		case 3:
+		    			initanm("lvl10.anm",0, 0);
+		    			break;
+		    		case 4:
+		    			initanm("lvl11.anm",0, 0);
+		    			break;
+		    		case 5:
+		    			initanm("lvl12.anm",0, 0);
+		    			break;
+		    		case 6:
+		    			initanm("lvl13.anm",0, 0);
+		    			break;
+		    		default:
+		    			break;
+		    		}
+		    	} 
+		    	else
+		    	{
+		    		switch ( ud.level_number )
+		    		{
+		    		case 1:
+		    			initanm("lvl1.anm",0, 0);
+		    			break;
+		    		case 2:
+		    			initanm("lvl2.anm",0, 0);
+		    			break;
+		    		case 3:
+		    			initanm("lvl3.anm",0, 0);
+		    			break;
+		    		case 4:
+		    			initanm("lvl4.anm",0, 0);
+		    			break;
+		    		case 5:
+		    			initanm("lvl5.anm",0, 0);
+		    			break;
+		    		case 6:
+		    			initanm("lvl6.anm",0, 0);
+		    			break;
+		    		default:
+		    			initanm("lvl7.anm",0, 0);
+		    			break;
+		    		}
+		    	}
+		    }
 		}
 
 		engine.clearview(0);
@@ -627,22 +686,32 @@ public class Screen {
 	    }
 	 
 	    if(!bonusonly && (ud.multimode < 2 || ud.coop == 1)) {
-	    	int level = ud.level_number;
-	    	if ( ud.volume_number != 0 ) 
-	    		gfx = 408 + level;	
-	        else {
-	        	if(level == 0) level = 1;
-	        	gfx = 402 + level;
-	        }
-
-		    if (ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2) {
+	    	if (ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2) {
 				FileEntry file = cache.checkFile(boardfilename);
 				mapname = file.getName().toCharArray();
-				engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
-			} else {
-				engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
-				mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].title.toCharArray(); //lastmapname;
-			}
+			} else
+				mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].title.toCharArray();
+	    	
+	    	if(currentGame.getCON().type != RRRA)
+	    	{
+		    	int level = ud.level_number;
+		    	if ( ud.volume_number != 0 ) 
+		    		gfx = 408 + level;	
+		        else {
+		        	if(level == 0) level = 1;
+		        	gfx = 402 + level;
+		        }
+	
+			    if (ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2) {
+					engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
+				} else {
+					engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
+				}
+	    	} else {
+			    
+			    
+	    		playanm(); //TODO init check
+	    	}
 		    
 		    mGetAlign(2, mapname);
 		    menutext(160-alignx/2,20-6,0,0,mapname, 0);
@@ -685,7 +754,12 @@ public class Screen {
                     while(voice != null && voice.isActive());
                 }
             }
-            else if( totalclock > (10240+120) ) { showbonus = false; return true; }
+            else if( totalclock > (10240+120) ) { 
+            	showbonus = false; 
+            	if(currentGame.getCON().type == RRRA)
+            		closeanm();
+            	return true; 
+            }
 			
 			int pos = 40;
             if( totalclock > (60*3) )
