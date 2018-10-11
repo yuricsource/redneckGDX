@@ -591,8 +591,9 @@ public class RRMenu {
 			public void run(MenuItem pItem) {
 				final MenuSlotList item = (MenuSlotList) pItem;
 				final int oFlags = gm;
-				gm = MODE_LOADING;
 				mClose();
+				
+				setloading(null, 0, false);
 				
 				Gdx.app.postRunnable(new Runnable() {
 					public void run() {

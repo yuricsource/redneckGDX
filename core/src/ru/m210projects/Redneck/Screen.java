@@ -52,7 +52,6 @@ import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Premap.*;
 
 import com.badlogic.gdx.Gdx;
 
@@ -636,13 +635,13 @@ public class Screen {
 	        	gfx = 402 + level;
 	        }
 
-		    if (boardfilename != null) {
+		    if (ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2) {
 				FileEntry file = cache.checkFile(boardfilename);
 				mapname = file.getName().toCharArray();
 				engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
 			} else {
 				engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2+8+16+64, 0, 0, xdim - 1, ydim - 1);
-				mapname = lastmapname;
+				mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].title.toCharArray(); //lastmapname;
 			}
 		    
 		    mGetAlign(2, mapname);
@@ -654,11 +653,11 @@ public class Screen {
 
 		    int ii, ij;
 
-			for (ii=ps[myconnectindex].player_par/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			for (ii=ps[myconnectindex].player_par/(26*60), ij=1; ii>9; ii/=10, ij++);
 				clockpad = max(clockpad,ij);
-			for (ii=currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].partime/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			for (ii=currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].partime/(26*60), ij=1; ii>9; ii/=10, ij++);
 				clockpad = max(clockpad,ij);
-			for (ii=currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].designertime/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			for (ii=currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level-1].designertime/(26*60), ij=1; ii>9; ii/=10, ij++);
 				clockpad = max(clockpad,ij);
 
 			if( totalclock >= (1000000000) && totalclock < (1000000320) )

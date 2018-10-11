@@ -1445,7 +1445,7 @@ public class Player {
 	                        ud.level_number = ud.from_bonus;
 	                    else ud.level_number++;
 
-	                    checknextlevel();
+//	                    checknextlevel();
 	                    ud.m_level_number = ud.level_number;
 
 	                }

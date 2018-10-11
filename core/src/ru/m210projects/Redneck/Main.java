@@ -56,21 +56,18 @@ public class Main extends ApplicationAdapter {
 	 * Cow "use" fix
 	 * 
 	 * TODO:
-	 * названия карт в загрузке / завершении
 	 * dobonus другие картинки
-	 * fog / spawn RA fog method sub_86730
 	 * 
 	 * 
-	 * не работают комары в R66
-	 * cd audio from cue
+	 * get crc32 from map and script
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * инфа об юзерэпизоде в меню загрузок
-	 * get crc32 from map and script
 	 * cheat @mario
 	 * добавить kills и alchogol
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
+	 * cd audio from cue
 	 * cutscenes MVE
 	 */
 

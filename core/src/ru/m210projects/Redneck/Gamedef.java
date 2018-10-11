@@ -2477,7 +2477,7 @@ public class Gamedef {
 	        	insptr++;
 	        	LeaveMap();
 	        	ud.level_number++;
-	        	checknextlevel();
+//	        	checknextlevel();
 	            ud.m_level_number = ud.level_number;
 	        	break;
 	        case 119:
@@ -3738,7 +3738,7 @@ public class Gamedef {
 
 		if(defGame.episodes[1] != null) {
 			defGame.episodes[1].gMapInfo[7] = new MapInfo("endgame.map", "Close encounters", defGame.episodes[1].gMapInfo[0].partime, defGame.episodes[1].gMapInfo[0].designertime); //EndGame map
-			defGame.episodes[1].nMaps = 7;
+			defGame.episodes[1].nMaps = 8;
 		}
 		defGame.isInited = true;
 		currentGame = defGame;

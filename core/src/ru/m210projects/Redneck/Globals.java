@@ -135,6 +135,10 @@ public class Globals {
 	public static final int MODE_WAIT  		= 8192;
 	
 	public static boolean MODE_TYPE; //== 16
+	
+	public static String loading_mapname;
+	public static int loading_type;
+	public static boolean loading_usermap;
 
 	public static final int GET_STEROIDS     = 0;
 	public static final int GET_SHIELD       = 1;

@@ -1490,7 +1490,7 @@ public class Sector {
 	                numdips++;
 	                break;
 	            case 2214:
-	            	checknextlevel();
+//	            	checknextlevel();
 	            	++sprite[i].picnum;
 	            	break;
 	            	
@@ -1596,7 +1596,7 @@ public class Sector {
 	        else
 	        {
 	            ud.level_number++;
-	            checknextlevel();
+//	            checknextlevel();
 	            ud.m_level_number = ud.level_number;
 	        }
 	        return true;
@@ -3228,7 +3228,7 @@ public class Sector {
 			            else
 			            {
 			                ud.level_number++;
-			                checknextlevel();
+//			                checknextlevel();
 			                ud.m_level_number = ud.level_number;
 			            }
 			            word_119BE2 = 1;

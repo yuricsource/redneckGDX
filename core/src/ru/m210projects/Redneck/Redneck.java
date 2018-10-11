@@ -319,7 +319,7 @@ public class Redneck {
 					public void execute() {
 						LeaveMap();
 						ud.level_number++;
-						checknextlevel();
+//						checknextlevel();
 			            ud.m_level_number = ud.level_number;
 					}
 		}));
@@ -490,7 +490,7 @@ public class Redneck {
 						{
 							engine.clearview(0);
 							engine.rotatesprite(0,0,65536,0,LOADSCREEN,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
-							if(getInput().getKey(ANYKEY) != 0 && ud.volume_number == 1 && ud.level_number == 0) 
+							if(getInput().getKey(ANYKEY) != 0 && ud.volume_number == 0 && ud.level_number == 7) 
 							{
 					            closeanm();
 					            gm = MODE_EOL;
@@ -748,10 +748,6 @@ public class Redneck {
 							gpmanager.resetButtonStatus();
 	                    	gm |= MODE_CUTSCENE;
 	                    	gCutsClock = totalclock - 199;
-	                    	if(ud.volume_number == 0) {
-					    		ud.level_number = 0;
-					            ud.volume_number = 1;
-					    	}
 		                    return;
 	                    }
 	                    else
@@ -797,34 +793,30 @@ public class Redneck {
 				ready2send = false;
 				engine.clearview(0);
 				engine.rotatesprite(320<<15,200<<15,65536,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
-				
-				char[] mapname;
-				boolean usermap = false;
-				if(ud.warp_on != 2 || boardfilename == null) {
-					if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
-						mapname = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title.toCharArray();
-					else {
-						GameCrash("No MapInfo!");
-						return;
-					}
-				}
-				else {
+
+				switch(loading_type)
+				{
+				case 0:
 					Arrays.fill(buf, (char)0);
-					int index = boardfilename.lastIndexOf(File.separator);
-					if(boardfilename.length() < buf.length)
-						boardfilename.getChars(index+1, boardfilename.length(), buf, 0);
-					mapname = buf;
-					usermap = true;
+					buildString(buf, 0, "Please wait ");
+					mGetAlign(2, buf);
+					menutext(160 - alignx / 2, 90+16+8, -128, 0, buf, 0);
+					break;
+				case 1:
+					Arrays.fill(buf, (char)0);
+					buildString(buf, 0, loading_mapname);
+
+					mGetAlign(2, buf);
+					menutext(160 - alignx / 2, 90+16+8, -128, 0, buf, 0);
+					
+					Arrays.fill(buf, (char)0);
+					buildString(buf, 0, "Entering ");
+					if(loading_usermap) buildString(buf, 9, "user map");
+					
+					mGetAlign(2, buf);
+					menutext(160 - alignx / 2, 90, -128, 0, buf, 0);
+					break;
 				}
-				mGetAlign(2, mapname);
-				menutext(160 - alignx / 2, 90+16+8, -128, 0, mapname, 0);
-				
-				Arrays.fill(buf, (char)0);
-				buildString(buf, 0, "Entering ");
-				if(usermap) buildString(buf, 9, "user map");
-				
-				mGetAlign(2, buf);
-				menutext(160 - alignx / 2, 90, -128, 0, buf, 0);
 			}
 			
 			if(ud.pause_on == 0)

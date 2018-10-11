@@ -25,6 +25,7 @@ public class LSInfo {
 	public int level;
 	public String info;
 	public String date;
+	public String addonfile;
 	
 	public void read(ByteBuffer bb)
 	{
@@ -47,5 +48,6 @@ public class LSInfo {
 		level = 0;
 		info = "Empty slot";
 		date = null;
+		addonfile = null;
 	}
 }

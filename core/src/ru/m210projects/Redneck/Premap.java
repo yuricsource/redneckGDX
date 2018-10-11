@@ -26,6 +26,7 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
+import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Screen.vscrn;
 import static ru.m210projects.Redneck.Types.Demo.opendemowrite;
@@ -56,10 +57,13 @@ import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
 
+import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
+import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
+import ru.m210projects.Build.Types.BDisplay.DisplayType;
 import ru.m210projects.Redneck.PlayerInfo;
 import ru.m210projects.Redneck.Types.INTERPOLATION;
 import ru.m210projects.Redneck.Types.PlayerStruct;
@@ -70,7 +74,6 @@ public class Premap {
 	public static byte[] rortype = new byte[16];
 	public static int rorcnt;
 	
-	public static char[] lastmapname;
 	public static boolean shadeEffect[] = new boolean[MAXSECTORS];
 
 	public static final int MAXJAILDOORS = 32;
@@ -1420,12 +1423,21 @@ public class Premap {
 	
 	public static void checknextlevel()
 	{
-		if ( ud.level_number > 6 ) {
+		if ( ud.level_number >= currentGame.episodes[ud.volume_number].nMaps ) {
 			if(ud.volume_number == 0) {
 	    		ud.level_number = 0;
 	            ud.volume_number = 1;
 	    	} else ud.level_number = 0;
 		}
+		ud.m_level_number = ud.level_number;
+	}
+	
+	public static void setloading(String mapname, int type, boolean isUserMap)
+	{
+		gm = MODE_LOADING;
+		loading_mapname = mapname;
+		loading_type = type;
+		loading_usermap = isUserMap;
 	}
 	
 	public static void newgame(int vn,int ln,int sk)
@@ -1486,8 +1498,6 @@ public class Premap {
 		ready2send = false;
 		gLoadingTicks = 0.0f;
 		closedemowrite();
-		
-		lastmapname = defGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title.toCharArray();
 	}
 	
 	public static PlayerInfo[] info = new PlayerInfo[MAXPLAYERS];
@@ -1671,50 +1681,69 @@ public class Premap {
 	}
 	
 	private static boolean fogInited = false;
-	private static byte[] opalookup0;
-	private static byte[] opalookup8;
-	private static byte[] opalookup23;
-	private static byte[] opalookup30;
-	private static byte[] opalookup33;
+	
+	private static byte[][] opalookup = new byte[5][];
+	private static byte[][] opalookupfog = new byte[5][];
+	
 	public static void applyfog(int type)
 	{
 		if(!fogInited)
 		{
-			opalookup0 = palookup[0];
-			opalookup8 = palookup[8];
-			opalookup23 = palookup[23];
-			opalookup30 = palookup[30];
-			opalookup33 = palookup[33];
+			opalookup[0] = palookup[0];
+			opalookup[1] = palookup[8];
+			opalookup[2] = palookup[23];
+			opalookup[3] = palookup[30];
+			opalookup[4] = palookup[33];
+			
+			if(((BGraphics)Gdx.graphics).getDisplayType() == DisplayType.GL) {
+				opalookupfog[0] = palookupfog[0];
+				opalookupfog[1] = palookupfog[8];
+				opalookupfog[2] = palookupfog[23];
+				opalookupfog[3] = palookupfog[30];
+				opalookupfog[4] = palookupfog[33];
+			}
 
 			for(int i = 0; i < 256; i++)
 		    	tempbuf[i] = (byte) i;
 			engine.makepalookup(50, tempbuf, 12, 12, 12, 1);
 			engine.makepalookup(51, tempbuf, 12, 12, 12, 1);
+			
+			fogInited = true;
 		}
 		
 		if(type == 2)
 		{
-//			palookup[0] = palookup[50];
-//			palookup[30] = palookup[51];
-//			palookup[33] = palookup[51];
-//			palookup[23] = palookup[51];
-//			palookup[8] = palookup[54];
+			palookup[0] = palookup[50];
+			palookup[30] = palookup[51];
+			palookup[33] = palookup[51];
+			palookup[23] = palookup[51];
+			palookup[8] = palookup[54];
+			
+			if(((BGraphics)Gdx.graphics).getDisplayType() == DisplayType.GL) {
+				palookupfog[0] = palookupfog[50];
+				palookupfog[30] = palookupfog[51];
+				palookupfog[33] = palookupfog[51];
+				palookupfog[23] = palookupfog[51];
+				palookupfog[8] = palookupfog[54];
+			}
 		}
 		
 		if(type == 0)
 		{
-			palookup[0] = opalookup0;
-		    palookup[30] = opalookup30;
-		    palookup[33] = opalookup33;
-		    palookup[23] = opalookup23;
-		    palookup[8] = opalookup8;
+			palookup[0] = opalookup[0];
+		    palookup[30] = opalookup[3];
+		    palookup[33] = opalookup[4];
+		    palookup[23] = opalookup[2];
+		    palookup[8] = opalookup[1];
+		    
+		    if(((BGraphics)Gdx.graphics).getDisplayType() == DisplayType.GL) {
+			    palookupfog[0] = opalookupfog[0];
+			    palookupfog[30] = opalookupfog[3];
+			    palookupfog[33] = opalookupfog[4];
+			    palookupfog[23] = opalookupfog[2];
+			    palookupfog[8] = opalookupfog[1];
+		    }
 		}
-	}
-
-	public static void dofrontscreens()
-	{
-		gLoadingTicks = 0;
-		gm = MODE_LOADING;
 	}
 
 	public static void clearfifo()
@@ -1766,6 +1795,8 @@ public class Premap {
 	
 	public static void enterlevel(final int g)
 	{
+		checknextlevel();
+		
 		if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
 		ud.respawn_monsters = ud.m_respawn_monsters;
 	    ud.respawn_items    = ud.m_respawn_items;
@@ -1782,20 +1813,44 @@ public class Premap {
 	    clearsoundlocks();
 	    engine.getAudio().getSound().setReverb(false, 0);
 
-	    dofrontscreens();
-		    
+	    gLoadingTicks = 0;
+
+		final boolean isUsermap = ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2;
+		String loading_name;
+		if(!isUsermap) {
+			if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
+				loading_name = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title;
+			else {
+				GameCrash("MapInfo not found! Episode: " + ud.volume_number + " Level: " + ud.level_number + " " + currentGame.episodes[ud.volume_number].nMaps);
+				return;
+			}
+		} else {
+			FileEntry file = cache.checkFile(boardfilename);
+			if(file != null)
+				loading_name = file.getName();
+			else {
+				GameCrash("Map " + boardfilename + " not found!");
+				return;
+			}
+		}
+		setloading(loading_name, 1, isUsermap);
+
 	    Gdx.app.postRunnable(new Runnable() {
 			public void run() {
 				if(kGameCrash) return;
-			    if( ud.warp_on == 2 && boardfilename != null && ud.m_level_number == 3 && ud.m_volume_number == 2 )
+			    if( isUsermap )
 			    {
-			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 )
+			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 ) {
 			            GameCrash("Map " + boardfilename + " not found!");
+			            return;
+			        }
 			    }
 			    else {
 			    	String map = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].path;
-			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1)
+			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1) {
 			    		GameCrash("Map " + map + " not found!");
+			    		return;
+			    	}
 			    }
 			    
 			    ps[0].posx = posx[0];

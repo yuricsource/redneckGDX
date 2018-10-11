@@ -517,7 +517,7 @@ public class LoadSave {
 		if(loadname != null)
 		{
 			final int oFlags = gm;
-			gm = MODE_LOADING;
+			setloading(null, 0, false);
 			Gdx.app.postRunnable(new Runnable() {
 				public void run() {
 					if(!loadgame(loadname))
@@ -780,7 +780,11 @@ public class LoadSave {
 		}
 
 		screenpeek = myconnectindex;
-
+		
+		if(ps[screenpeek].fogtype == 2)
+			applyfog(2);
+		else applyfog(0);
+     
 		Arrays.fill(gotpic, (byte)0);
 		clearsoundlocks();
 		cacheit();

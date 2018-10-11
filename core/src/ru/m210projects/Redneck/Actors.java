@@ -2557,7 +2557,7 @@ public class Actors {
 			LeaveMap();
 		    ud.eog = 1;
 		    ud.level_number++;
-		    checknextlevel();
+//		    checknextlevel();
 		    ud.m_level_number = ud.level_number;
 		}
 		
