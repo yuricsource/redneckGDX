@@ -96,12 +96,13 @@ public class Main extends ApplicationAdapter {
 			LoadUserRes();
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
-			gpmanager.setSmoothing(cfg.gJoySmoothing);
-			
+
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 			engine.setanisotropy(cfg, cfg.anisotropy);
 			engine.setwidescreen(cfg, cfg.widescreen != 0);
+
+			Animlib.isEnabled = cfg.gPlayVideos;
 
 			gm = MODE_LOGO;
 			initanm("rr_intro.anm",5, -1);

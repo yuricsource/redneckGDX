@@ -1192,7 +1192,7 @@ public class RRMenu {
 		};
 		mAddItem(mMenus[nMenuId], mJoyName, false);
 
-		int pos = 40;
+		int pos = 45;
 		MenuSwitch mEnable = new MenuSwitch("Enable joystick:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
@@ -1291,16 +1291,6 @@ public class RRMenu {
 						cfg.gJoyTurnSpeed = slider.value;
 					}
 				}, -1, -1, false);
-		
-		MenuSlider mSmoothing = new MenuSlider("Smoothing:", 1, false, 46, pos += 12, 230, cfg.gJoySmoothing,
-				0,0x8000, 2048, new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuSlider slider = (MenuSlider) pItem;
-						cfg.gJoySmoothing = slider.value;
-						gpmanager.setSmoothing(cfg.gJoySmoothing);
-					}
-				}, -1, -1, false);
 
 		MenuSwitch mInvert = new MenuSwitch("Invert look axis:", 1, 46, pos += 15, 230, cfg.gJoyInvert, new MENUPROC() {
 			@Override
@@ -1319,7 +1309,6 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], mDeadZone, false);
 		mAddItem(mMenus[nMenuId], mLookSpeed, false);
 		mAddItem(mMenus[nMenuId], mTurnSpeed, false);
-		mAddItem(mMenus[nMenuId], mSmoothing, false);
 		mAddItem(mMenus[nMenuId], mInvert, false);
 	}
 	
@@ -1864,7 +1853,6 @@ public class RRMenu {
 			}
 		}, null, null);
 
-		pos += 5;
 		MenuSwitch UseVoxels = new MenuSwitch("Voxels:", 1, 47, pos += 12, 240, usevoxels, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
@@ -1903,6 +1891,19 @@ public class RRMenu {
 			}
 		};
 
+		MenuSwitch UseVids = new MenuSwitch("Play movie sequences:", 1, 47, pos += 12, 240, cfg.gPlayVideos, new MENUPROC() {
+			@Override
+			public void run(MenuItem pItem) {
+				MenuSwitch sw = (MenuSwitch) pItem;
+				cfg.gPlayVideos = sw.value;
+			}
+		}, null, null) {
+			@Override
+			public void open(MENU pMenu) {
+				value = cfg.gPlayVideos;
+			}
+		};
+
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], mVideoMode, true);
 		mAddItem(mMenus[nMenuId], mColorMode, false);
@@ -1914,6 +1915,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], UseVoxels, false);
 		mAddItem(mMenus[nMenuId], UseModels, false);
 		mAddItem(mMenus[nMenuId], Usehrp, false);
+		mAddItem(mMenus[nMenuId], UseVids, false);
 	}
 	
 	public static int snddriver;
