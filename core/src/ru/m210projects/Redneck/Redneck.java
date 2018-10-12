@@ -490,10 +490,12 @@ public class Redneck {
 						{
 							engine.clearview(0);
 							engine.rotatesprite(0,0,65536,0,LOADSCREEN,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
-							if(getInput().getKey(ANYKEY) != 0 && ud.volume_number == 0 && ud.level_number == 7) 
+							if(getInput().getKey(ANYKEY) != 0) 
 							{
-					            closeanm();
-					            gm = MODE_EOL;
+								if(ud.volume_number == 0 && ud.level_number == 7) {
+						            closeanm();
+						            gm = MODE_EOL;
+								} else skip = true;
 					    	}
 						}
 						
@@ -987,9 +989,9 @@ public class Redneck {
 //	    	engine.hitscan(ps[0].posx,ps[0].posy,ps[0].posz,ps[0].cursectnum,
 //	    	        sintable[((short)ps[0].ang+512)&2047],
 //	    	        sintable[(short)ps[0].ang&2047],
-//	    	        0,pHitInfo,CLIPMASK1);
+//	    	        0,pHitInfo,CLIPMASK0);
 //	    	if(pHitInfo.hitsprite != -1)
-//	    	System.err.println(sprite[pHitInfo.hitsprite].picnum);
+//	    	System.err.println(pHitInfo.hitsprite + " " + sprite[pHitInfo.hitsprite].picnum);
 //	    }
 
 	    if( ud.pause_on == 0 )

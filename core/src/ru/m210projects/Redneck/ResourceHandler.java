@@ -9,14 +9,19 @@ import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.currentGame;
-import static ru.m210projects.Redneck.Gameutils.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.CRC32;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
@@ -31,6 +36,93 @@ public class ResourceHandler {
 	private static int usergroup;
 	private static boolean usecustomarts;
 
+	public static final int[][] replace = {
+		{ 3363, 9217, 0x7dbfeb81 }, 
+		{ 3364, 9218, 0xa5597825 }, 
+		{ 3415, 9219, 0x8e7e5403 }, 
+		{ 3416, 9220, 0x85e8efed }, 
+		{ 3417, 9221, 0xc8593b46 }, 
+		{ 3418, 9222, 0x33e84b95 }, 
+		{ 3453, 9223, 0x6b3fe05b },
+		{ 3454, 9224, 0x94fd4ae7 },
+		{ 3455, 9225, 0xdac92bd0 },
+		{ 3456, 9226, 0xe24aad2f },
+		{ 3457, 9227, 0x951da8a7 },
+		{ 3458, 9228, 0x1f712375 },
+		
+		{ 7170, 9238, 0x6ae0ef58 }, //RA
+		{ 7171, 9239, 0xca7aade1 },
+		{ 7172, 9240, 0x2ffabf2f },
+		{ 7173, 9241, 0x1752cc40 },
+		{ 7174, 9242, 0x68d8cb91 },
+		{ 7175, 9243, 0xc340bd18 },
+		{ 7176, 9244, 0x81906353 },
+		{ 7177, 9245, 0x80f6302b },
+		{ 7178, 9246, 0xc2fa1ec },
+		{ 7179, 9247, 0xc7158fae },
+		{ 7180, 9248, 0xb0579843 },
+		{ 7181, 9249, 0xa8ce255b },
+		{ 7182, 9250, 0xe303385 },
+		{ 7183, 9251, 0x461043d },
+	};
+
+	public static void LoadUserRes()
+	{
+		FileHandle fil = Gdx.files.internal("RedneckGDX.ART");
+		if(fil != null)
+		{
+			ByteBuffer bb = ByteBuffer.wrap(fil.readBytes());
+	    	bb.order( ByteOrder.LITTLE_ENDIAN);
+
+			int artversion = bb.getInt();
+			if (artversion != 1)
+				return;
+			
+			numtiles = bb.getInt();
+			int localtilestart = bb.getInt();
+			int localtileend = bb.getInt();
+			if(localtilestart >= MAXTILES || localtileend >= MAXTILES)
+				return;
+			
+			for (int i = localtilestart; i <= localtileend; i++) 
+				tilesizx[i] = bb.getShort();
+			for (int i = localtilestart; i <= localtileend; i++) 
+				tilesizy[i] = bb.getShort();
+			for (int i = localtilestart; i <= localtileend; i++)
+				picanm[i] = bb.getInt();
+			
+			for (int tilenume = localtilestart; tilenume <= localtileend; tilenume++) {
+				if(bb.position() == bb.capacity())
+					break;
+				int dasiz = tilesizx[tilenume] * tilesizy[tilenume];
+				waloff[tilenume] = new byte[dasiz];
+				bb.get(waloff[tilenume]);
+			}
+			bb.clear();
+			bb = null;
+			
+			CRC32 tilecrc32 = new CRC32();
+			for(int i = 0; i < replace.length; i++)
+			{
+				int tilenume = replace[i][0];
+				int newtile = replace[i][1];
+				long crc32 = replace[i][2] & 0xFFFFFFFFL;
+				if(waloff[tilenume] == null)
+					engine.loadtile(tilenume);
+				
+				tilecrc32.update(waloff[tilenume]);
+				if(tilecrc32.getValue() != crc32) //RA protect
+					continue;
+				
+				waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
+				System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
+				tilesizx[tilenume] = tilesizx[newtile];
+				tilesizy[tilenume] = tilesizy[newtile];
+				picanm[tilenume] = picanm[newtile];
+			}
+		}
+	}
+		
 	public static void resetEpisodeResources()
 	{
 		kDynamicClear();

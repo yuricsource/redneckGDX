@@ -580,6 +580,17 @@ public class View {
 	            }
 	            invennum(x+27, 194, i, 0, 8 | 256);
 	        }
+	        
+	        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, 9236, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
+	        p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
+			if(p.alcohol_amount >= 100)
+			{
+				p.alcohol_amount = 100;
+				p.alcohol_meter = 400;
+			}  
+			engine.rotatesprite(251 << 16, 187 << 16, 0x8000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+			engine.rotatesprite(293 << 16, 187 << 16, 0x8000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+
 	        return;
 	    }
 

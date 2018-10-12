@@ -143,6 +143,25 @@ public class LoadSave {
 
 				if(Bread(fil, waloff[TILE_LOADSHOT], SAVESCREENSHOTSIZE) == -1)
 					return -1;
+				
+				int gUserEpisode = Bread(fil, 1); 
+				lsInf.addonfile = null;
+				if(gUserEpisode == 1) {
+					Bread(fil, buf, 144); 
+		
+					String ininame;
+					String fullname = new String(buf).trim();
+					
+					int filenameIndex = -1;
+					if((filenameIndex = fullname.indexOf(":")) != -1) {
+						String ext = BfileExtension(fullname.substring(0, filenameIndex));
+						ininame = ext + ":" + getFilename(fullname.substring(filenameIndex+1));
+					}
+					else ininame = getFilename(fullname);
+	
+					if (!ininame.isEmpty() )
+						lsInf.addonfile = "File: " + ininame;
+				}
 
 				engine.invalidatetile(TILE_LOADSHOT, 0, 255);
 				Bclose(fil);

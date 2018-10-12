@@ -136,8 +136,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 		
 //		System.err.println("/*" + cheatnum++ + "*/" + "\"" + cheat + "\", // " + message);
 
-		/*
-		if (cheat.startsWith(cheatCode[2]) || cheat.startsWith(cheatCode[9])) {
+		if (cheat.startsWith(cheatCode[7]) || cheat.startsWith(cheatCode[10])) {
 			i = 0;
 			while (i < message.length() && message.charAt(i) != 0
 					&& message.charAt(i) != ' ')
@@ -170,13 +169,18 @@ public class RROSDFunc extends DEFOSDFUNC {
 								lvl = Integer.parseInt(nLevel);
 								wrap2 = true;
 							}
+						} else {
+							Console.Println("rdmeadow [episode] [level]");
+							return false;
 						}
 					} catch (Exception e) {
 					}
+				} else {
+					Console.Println("rdmeadow [episode] [level]");
+					return false;
 				}
 			}
 		}
-		*/
 
 		boolean isCheat = false;
 		for (int nCheatCode = 0; nCheatCode < cheatCode.length; nCheatCode++)

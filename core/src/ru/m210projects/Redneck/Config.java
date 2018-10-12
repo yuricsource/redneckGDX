@@ -390,9 +390,10 @@ public class Config extends BConfig {
 
 	public  int gInterpolation = 1;
 
-	public  int gStatSize = 65536;
-	public  int gCrossSize = 65536;
+	public  int gStatSize = 8192;
+	public  int gCrossSize = 8192;
 	public int gShowStat = 1;
+	public int gColoredKeys = 0;
 
 	public int showMapInfo = 1;
 	public IniFile RRcfg;
@@ -614,6 +615,10 @@ public class Config extends BConfig {
 				int port = RRcfg.GetKeyInt("Port");
 				if(port != -1)
 					mPort = port;
+				
+				int coloredk = RRcfg.GetKeyInt("Colored_keys");
+				if(coloredk != -1)
+					gColoredKeys = coloredk;
 			}
 			RRcfg.close();
 		} 
@@ -771,7 +776,8 @@ public class Config extends BConfig {
 			saveString(fil,  "Player_name", pName);	
 			saveString(fil,  "IP_Address", mAddress);	
 			saveInteger(fil, "Port", mPort);
-			
+			saveInteger(fil, "Colored_keys", gColoredKeys);
+
 			Bclose(fil);
 		}
 	}

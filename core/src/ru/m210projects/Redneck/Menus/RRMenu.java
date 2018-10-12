@@ -513,7 +513,13 @@ public class RRMenu {
 			}
 		};
 
-		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills);
+		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills) {
+			@Override
+			public void open(MENU pMenu) {
+				if(this.text.size() > 1)
+					l_nFocus = 1;
+			}
+		};
 		mAddItem(mMenus[nMenuId], mSlot, true);
 	}
 	
@@ -525,13 +531,20 @@ public class RRMenu {
 			@Override
 			public void draw() {
 				int ty = y;
+				if (lsInf.addonfile != null && !lsInf.addonfile.isEmpty()) {
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x+1, ty+1, -128, 4, 0, 0);
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x, ty, -128, 12, 0, 0);
+					ty -= 10;
+				}
 				if (lsInf.date != null && !lsInf.date.isEmpty()) {
-
+					mDrawText(textStyle, toCharArray(lsInf.date), x+1, ty+1, -128, 4, 0, 0);
 					mDrawText(textStyle, toCharArray(lsInf.date), x, ty, -128, 12, 0, 0);
 					ty -= 10;
 				}
-				if (lsInf.info != null)
+				if (lsInf.info != null) {
+					mDrawText(textStyle, toCharArray(lsInf.info), x+1, ty+1, -128, 4, 0, 0);
 					mDrawText(textStyle, toCharArray(lsInf.info), x, ty, -128, 12, 0, 0);
+				}
 			}
 		};
 
@@ -619,8 +632,12 @@ public class RRMenu {
 			@Override
 			public void draw() {
 				int ty = y;
+				if (lsInf.addonfile != null && !lsInf.addonfile.isEmpty()) {
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x+1, ty+1, -128, 4, 0, 0);
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x, ty, -128, 12, 0, 0);
+					ty -= 10;
+				}
 				if (lsInf.date != null && !lsInf.date.isEmpty()) {
-
 					mDrawText(textStyle, toCharArray(lsInf.date), x+1, ty+1, -128, 4, 0, 0);
 					mDrawText(textStyle, toCharArray(lsInf.date), x, ty, -128, 12, 0, 0);
 					ty -= 10;
@@ -1399,7 +1416,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSlider sCrossSize = new MenuSlider("Crosshair size:", 1, false, 47, pos += 12, 240, cfg.gCrossSize, 16384,
+		MenuSlider sCrossSize = new MenuSlider("Crosshair size:", 1, false, 47, pos += 12, 240, cfg.gCrossSize, 8192,
 				65536, 8192, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
@@ -1427,7 +1444,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSlider sStatSize = new MenuSlider("Statistics size:", 1, false, 47, pos += 12, 240, cfg.gStatSize, 16384,
+		MenuSlider sStatSize = new MenuSlider("Statistics size:", 1, false, 47, pos += 12, 240, cfg.gStatSize, 8192,
 				65536, 8192, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {

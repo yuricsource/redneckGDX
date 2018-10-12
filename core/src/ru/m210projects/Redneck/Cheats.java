@@ -27,8 +27,9 @@ import static ru.m210projects.Redneck.Weapons.*;
 
 import java.util.Arrays;
 
-import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
+import ru.m210projects.Build.OnSceenDisplay.Console;
 
+import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
 
 public class Cheats {
 
@@ -144,8 +145,39 @@ public class Cheats {
 					ud.coords = 1 - ud.coords;
 					break;
 				case 10: //rdmeadow
+					if(opt.length == 2)
+					{
+						int volnume = opt[0] - 1;
+						int levnume = opt[1] - 1;
+						ud.m_volume_number = ud.volume_number = volnume;
+                        ud.m_level_number = ud.level_number = levnume;
+					}
 				case 7: //rdskill
-					//gEndGame = 0;
+					if(opt.length >= 1)
+					{
+						int skill = opt[0] - 1;
+						ud.m_player_skill = ud.player_skill = skill;
+
+		                if(numplayers > 1 && myconnectindex == connecthead)
+		                {
+		                    tempbuf[0] = 5;
+		                    tempbuf[1] = (byte) ud.m_level_number;
+		                    tempbuf[2] = (byte) ud.m_volume_number;
+		                    tempbuf[3] = (byte) ud.m_player_skill;
+		                    tempbuf[4] = ud.m_monsters_off?(byte)1:0;
+		                    tempbuf[5] = ud.m_respawn_monsters?(byte)1:0;
+		                    tempbuf[6] = ud.m_respawn_items?(byte)1:0;
+		                    tempbuf[7] = ud.m_respawn_inventory?(byte)1:0;
+		                    tempbuf[8] = (byte) ud.m_coop;
+		                    tempbuf[9] = (byte) ud.m_marker;
+		                    tempbuf[10] = (byte) ud.m_ffire;
+		
+		                    for(int i=connecthead;i>=0;i=connectpoint2[i])
+		                        sendpacket(i,tempbuf,11);
+		                }
+		                else gm = MODE_RESTART; 
+		                Console.show();
+					} else return false;
 					break;
 					
 				case 3: //rdguns
