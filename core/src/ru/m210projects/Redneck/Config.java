@@ -133,7 +133,6 @@ public class Config extends BConfig {
 	public  int gJoyTurnSpeed = 16384;
 	public  int gJoyLookSpeed = 1048576;
 	public  int gJoyDeadZone = 8192;
-	public  int gJoySmoothing = 32768;
 	public  boolean gJoyInvert = false;
 	
 	public String pName = "LEONARD";
@@ -570,8 +569,6 @@ public class Config extends BConfig {
 				if(value != -1) gJoyInvert = value == 1;
 				value = RRcfg.GetKeyInt("JoyDeadZone");
 				if(value != -1) gJoyDeadZone = value;
-				value = RRcfg.GetKeyInt("JoySmoothing");
-				if(value != -1) gJoySmoothing = value;
 			}
 			
 			if(RRcfg.set("Options")) {
@@ -752,7 +749,6 @@ public class Config extends BConfig {
 			saveInteger(fil, "JoyLookSpeed", gJoyLookSpeed);
 			saveBoolean(fil, "JoyInvertLook", gJoyInvert);
 			saveInteger(fil, "JoyDeadZone", gJoyDeadZone);
-			saveInteger(fil, "JoySmoothing", gJoySmoothing);
 			saveString(fil, ";\r\n;\r\n");
 		
 			saveString(fil, "[Options]\r\n");	
