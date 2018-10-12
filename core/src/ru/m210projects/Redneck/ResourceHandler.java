@@ -108,7 +108,8 @@ public class ResourceHandler {
 				int newtile = replace[i][1];
 				long crc32 = replace[i][2] & 0xFFFFFFFFL;
 				if(waloff[tilenume] == null)
-					engine.loadtile(tilenume);
+					if(engine.loadtile(tilenume) == null)
+						continue; //nothing replace
 				
 				tilecrc32.update(waloff[tilenume]);
 				if(tilecrc32.getValue() != crc32) //RA protect

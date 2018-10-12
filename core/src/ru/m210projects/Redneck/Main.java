@@ -51,11 +51,11 @@ public class Main extends ApplicationAdapter {
 	 * v0.753
 	 * Autoload folder can load resources as cusspack
 	 * Addons support
-	 * Joystick fix + smooth feature by aybe0
 	 * Torches fix
 	 * Cow "use" fix
 	 * Apply anisotropy fix
 	 * Alcohol / gut meter in minihud
+	 * Colored keys option
 	 * 
 	 * TODO:
 	 * keys multiplayer bug

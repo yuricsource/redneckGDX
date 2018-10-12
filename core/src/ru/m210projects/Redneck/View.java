@@ -136,7 +136,7 @@ public class View {
 	    	cf = pp.pals_time;
 	    }
 
-	    if (dotint) 
+	    if (dotint && !gShowMenu) 
 		    palto(cr,cg,cb,cf|128);
 
 	    i = pp.cursectnum;
