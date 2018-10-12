@@ -614,16 +614,13 @@ public class Config extends BConfig {
 				int port = RRcfg.GetKeyInt("Port");
 				if(port != -1)
 					mPort = port;
-<<<<<<< HEAD
-				
+
 				int coloredk = RRcfg.GetKeyInt("Colored_keys");
 				if(coloredk != -1)
 					gColoredKeys = coloredk;
-=======
 
 				// NOTE this assumes true when not set explicitly (which is the case in default config)
 				gPlayVideos = RRcfg.GetKeyInt("PlayVideos") != 0;
->>>>>>> 442fe3c5e90b5523b6715e0991836f27f028fcb3
 			}
 			RRcfg.close();
 		} 
@@ -780,11 +777,8 @@ public class Config extends BConfig {
 			saveString(fil,  "Player_name", pName);	
 			saveString(fil,  "IP_Address", mAddress);	
 			saveInteger(fil, "Port", mPort);
-<<<<<<< HEAD
 			saveInteger(fil, "Colored_keys", gColoredKeys);
-=======
 			saveBoolean(fil, "PlayVideos", gPlayVideos);
->>>>>>> 442fe3c5e90b5523b6715e0991836f27f028fcb3
 
 			Bclose(fil);
 		}

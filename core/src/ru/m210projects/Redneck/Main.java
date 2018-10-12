@@ -102,8 +102,6 @@ public class Main extends ApplicationAdapter {
 			engine.setanisotropy(cfg, cfg.anisotropy);
 			engine.setwidescreen(cfg, cfg.widescreen != 0);
 
-			Animlib.isEnabled = cfg.gPlayVideos;
-
 			gm = MODE_LOGO;
 			initanm("rr_intro.anm",5, -1);
 
