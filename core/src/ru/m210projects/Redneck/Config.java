@@ -139,7 +139,9 @@ public class Config extends BConfig {
 	public String pName = "LEONARD";
 	public String mAddress = "localhost";
 	public int mPort = NETPORT;
-	
+
+	public boolean gPlayVideos = true;
+
 	public int screen_size = 2;
 	public int crosshair = 1;
 	public int screen_tilting = 1;
@@ -614,6 +616,9 @@ public class Config extends BConfig {
 				int port = RRcfg.GetKeyInt("Port");
 				if(port != -1)
 					mPort = port;
+
+				// NOTE this assumes true when not set explicitly (which is the case in default config)
+				gPlayVideos = RRcfg.GetKeyInt("PlayVideos") != 0;
 			}
 			RRcfg.close();
 		} 
@@ -771,7 +776,8 @@ public class Config extends BConfig {
 			saveString(fil,  "Player_name", pName);	
 			saveString(fil,  "IP_Address", mAddress);	
 			saveInteger(fil, "Port", mPort);
-			
+			saveBoolean(fil, "PlayVideos", gPlayVideos);
+
 			Bclose(fil);
 		}
 	}

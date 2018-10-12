@@ -33,7 +33,8 @@ public class Animlib {
 	public static int lastanimhack;
 	public static int frame;
 	public static int anmnum;
-	
+	public static boolean isEnabled;
+
 	private static long anmtime;
 	private static long LastMS;
 	
@@ -46,6 +47,9 @@ public class Animlib {
 	
 	public static boolean initanm(String fn, int t, int num)
 	{
+		if(!isEnabled)
+			return false;
+
 		if(anmfil != null) return false;
 		
 		byte[] animbuf = kGetBytes(fn, 0);
