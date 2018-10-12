@@ -1296,32 +1296,44 @@ public class Sector {
 	        case 129: 
 	            if(ps[snum].access_incs == 0)
 	            {
+	            	if(currentGame.getCON().key_quotes == null)
+	            	{
+	            		currentGame.getCON().key_quotes = new char[3][64];
+	            		System.arraycopy(currentGame.getCON().fta_quotes[70], 0, currentGame.getCON().key_quotes[0], 0, 64);
+	            		System.arraycopy(currentGame.getCON().fta_quotes[71], 0, currentGame.getCON().key_quotes[1], 0, 64);
+	            		System.arraycopy(currentGame.getCON().fta_quotes[72], 0, currentGame.getCON().key_quotes[2], 0, 64);
+	            	}
+	            	
 	                if( switchpal == 0 )
 	                {
 	                    if( ps[snum].gotkey[1] != 0 )
 	                        ps[snum].access_incs = 1;
 	                    else {
-	                    	buildString(currentGame.getCON().fta_quotes[70], 0, "BLUE KEY REQUIRED"); //v0.751
+	                    	if(cfg.gColoredKeys)
+	                    		buildString(currentGame.getCON().fta_quotes[70], 0, "BLUE KEY REQUIRED"); //v0.751
+	                    	else System.arraycopy(currentGame.getCON().key_quotes[0], 0, currentGame.getCON().fta_quotes[70], 0, 64);
 	                    	FTA(70,ps[snum]);
 	                    }
 	                }
-
 	                else if( switchpal == 21 )
 	                {
 	                    if( ps[snum].gotkey[2] != 0 )
 	                        ps[snum].access_incs = 1;
 	                    else {
-	                    	buildString(currentGame.getCON().fta_quotes[71], 0, "RED KEY REQUIRED");
+	                    	if(cfg.gColoredKeys)
+	                    		buildString(currentGame.getCON().fta_quotes[71], 0, "RED KEY REQUIRED");
+	                    	else System.arraycopy(currentGame.getCON().key_quotes[1], 0, currentGame.getCON().fta_quotes[71], 0, 64);
 	                    	FTA(71,ps[snum]);
 	                    }
 	                }
-
 	                else if( switchpal == 23 )
 	                {
 	                    if( ps[snum].gotkey[3] != 0 )
 	                        ps[snum].access_incs = 1;
 	                    else {
-	                    	buildString(currentGame.getCON().fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                    	if(cfg.gColoredKeys)
+	                    		buildString(currentGame.getCON().fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                    	else System.arraycopy(currentGame.getCON().key_quotes[2], 0, currentGame.getCON().fta_quotes[72], 0, 64);
 	                    	FTA(72,ps[snum]);
 	                    }
 	                }
@@ -3527,17 +3539,31 @@ public class Sector {
 	            	if ( sector[neartagsector].filler > 3 )
                 		spritesound(99, p.i);
                     else spritesound(419, p.i);
+	            	
+	            	if(currentGame.getCON().key_quotes == null)
+	            	{
+	            		currentGame.getCON().key_quotes = new char[3][64];
+	            		System.arraycopy(currentGame.getCON().fta_quotes[70], 0, currentGame.getCON().key_quotes[0], 0, 64);
+	            		System.arraycopy(currentGame.getCON().fta_quotes[71], 0, currentGame.getCON().key_quotes[1], 0, 64);
+	            		System.arraycopy(currentGame.getCON().fta_quotes[72], 0, currentGame.getCON().key_quotes[2], 0, 64);
+	            	}
 
 	            	if( sector[neartagsector].filler == 1 ) { //v0.751
-	            		buildString(currentGame.getCON().fta_quotes[70], 0, "BLUE KEY REQUIRED");
+	            		if(cfg.gColoredKeys)
+	            			buildString(currentGame.getCON().fta_quotes[70], 0, "BLUE KEY REQUIRED");
+	            		else System.arraycopy(currentGame.getCON().key_quotes[0], 0, currentGame.getCON().fta_quotes[70], 0, 64);
 	                    FTA(70,ps[snum]);
 	            	}
 	                else if( sector[neartagsector].filler == 2 ) {
-	                	buildString(currentGame.getCON().fta_quotes[71], 0, "RED KEY REQUIRED");
+	                	if(cfg.gColoredKeys)
+	                		buildString(currentGame.getCON().fta_quotes[71], 0, "RED KEY REQUIRED");
+	                	else System.arraycopy(currentGame.getCON().key_quotes[1], 0, currentGame.getCON().fta_quotes[71], 0, 64);
 	                    FTA(71,ps[snum]);
 	                }
 	                else if( sector[neartagsector].filler == 3 ) {
-	                	buildString(currentGame.getCON().fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                	if(cfg.gColoredKeys)
+	                		buildString(currentGame.getCON().fta_quotes[72], 0, "BROWN KEY REQUIRED");
+	                	else System.arraycopy(currentGame.getCON().key_quotes[2], 0, currentGame.getCON().fta_quotes[72], 0, 64);
 	                    FTA(72,ps[snum]);
 	                }
 	                else FTA(41, ps[snum]);

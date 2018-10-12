@@ -1496,6 +1496,15 @@ public class RRMenu {
 				if(numplayers > 1) getnames();
 			}
 		}, null, null);
+		
+		MenuSwitch sColoredKeys = new MenuSwitch("Colored keys:", 1, 46, pos += 12, 240, cfg.gColoredKeys,
+			new MENUPROC() {
+				@Override
+				public void run(MenuItem pItem) {
+					MenuSwitch sw = (MenuSwitch) pItem;
+					cfg.gColoredKeys = sw.value;
+				}
+			}, null, null);
 
 		MenuSwitch sStartup = new MenuSwitch("Startup window:", 1, 46, pos += 12, 240, cfg.startup, new MENUPROC() {
 			@Override
@@ -1554,6 +1563,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], sSlopeTilt, true);
 		mAddItem(mMenus[nMenuId], sAutoAim, false);
+		mAddItem(mMenus[nMenuId], sColoredKeys, false);
 		mAddItem(mMenus[nMenuId], sStartup, false);
 		mAddItem(mMenus[nMenuId], sCheckVersion, false);
 		mAddItem(mMenus[nMenuId], mPlayingDemo, false);

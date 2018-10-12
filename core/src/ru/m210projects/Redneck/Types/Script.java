@@ -23,6 +23,7 @@ public class Script {
 	public int nMaps[] = new int[nMaxEpisodes];
 	
 	public char[][] fta_quotes = new char[NUMOFFIRSTTIMEACTIVE][64];
+	public char[][] key_quotes;
 	public String music_fn[][] = new String[5][11];
 	public String env_music_fn[] = new String[5];
 	public short[] soundps = new short[NUM_SOUNDS],soundpe = new short[NUM_SOUNDS],soundvo = new short[NUM_SOUNDS];
