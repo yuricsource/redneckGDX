@@ -391,9 +391,10 @@ public class Config extends BConfig {
 
 	public  int gInterpolation = 1;
 
-	public  int gStatSize = 65536;
-	public  int gCrossSize = 65536;
+	public  int gStatSize = 8192;
+	public  int gCrossSize = 8192;
 	public int gShowStat = 1;
+	public boolean gColoredKeys = false;
 
 	public int showMapInfo = 1;
 	public IniFile RRcfg;
@@ -614,6 +615,10 @@ public class Config extends BConfig {
 				if(port != -1)
 					mPort = port;
 
+				int coloredk = RRcfg.GetKeyInt("Colored_keys");
+				if(coloredk != -1)
+					gColoredKeys = coloredk != 0;
+
 				// NOTE this assumes true when not set explicitly (which is the case in default config)
 				gPlayVideos = RRcfg.GetKeyInt("PlayVideos") != 0;
 			}
@@ -772,6 +777,7 @@ public class Config extends BConfig {
 			saveString(fil,  "Player_name", pName);	
 			saveString(fil,  "IP_Address", mAddress);	
 			saveInteger(fil, "Port", mPort);
+			saveBoolean(fil, "Colored_keys", gColoredKeys);
 			saveBoolean(fil, "PlayVideos", gPlayVideos);
 
 			Bclose(fil);

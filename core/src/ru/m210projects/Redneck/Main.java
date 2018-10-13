@@ -27,9 +27,9 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Screen.setup3dscreen;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.currMusic;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 
 import static ru.m210projects.Redneck.Redneck.*;
-import static ru.m210projects.Redneck.Gameutils.*;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -51,24 +51,21 @@ public class Main extends ApplicationAdapter {
 	 * v0.753
 	 * Autoload folder can load resources as cusspack
 	 * Addons support
-	 * Joystick fix + smooth feature by aybe0
 	 * Torches fix
 	 * Cow "use" fix
+	 * Apply anisotropy fix
+	 * Alcohol / gut meter in minihud
+	 * Colored keys option
 	 * 
 	 * TODO:
-	 * anykey не работает после заставки в конце игры
-	 * e2m1 no bubba
-	 * не сохраняется анизотропная фильтрация
-	 * get crc32 from map and script
-	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
-	 * инфа об юзерэпизоде в меню загрузок
-	 * cheat @mario
-	 * добавить kills и alchogol
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
+	 * 
 	 * cd audio from cue
 	 * cutscenes MVE
+	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
+	 * get crc32 from map and script
 	 */
 
 	public static final String appname = "RedneckGDX";
@@ -102,8 +99,8 @@ public class Main extends ApplicationAdapter {
 
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
-
-			Animlib.isEnabled = cfg.gPlayVideos;
+			engine.setanisotropy(cfg, cfg.anisotropy);
+			engine.setwidescreen(cfg, cfg.widescreen != 0);
 
 			gm = MODE_LOGO;
 			initanm("rr_intro.anm",5, -1);

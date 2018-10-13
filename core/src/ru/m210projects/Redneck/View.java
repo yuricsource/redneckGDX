@@ -136,7 +136,7 @@ public class View {
 	    	cf = pp.pals_time;
 	    }
 
-	    if (dotint) 
+	    if (dotint && !gShowMenu) 
 		    palto(cr,cg,cb,cf|128);
 
 	    i = pp.cursectnum;
@@ -538,12 +538,21 @@ public class View {
 	        	engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,AMMOBOX,0,21,26|256,0,0,xdim-1,ydim-1);
 		        engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,9216,0,21,10+16+256,0,0,xdim-1,ydim-1);
 		        
-		        if ( p.gotkey[3] != 0 )
-		    		engine.rotatesprite(x+5<<16,182<<16, 0x8000, 0, 1656, 0, 7, 10+16+256, 0, 0, xdim - 1, ydim - 1);
-		    	if ( p.gotkey[2] != 0  )
-		    		engine.rotatesprite(x+18<<16,182<<16, 0x8000, 0, 1656, 0, 2, 10+16+256, 0, 0, xdim - 1, ydim - 1);
-		    	if ( p.gotkey[1] != 0  )
-		    		engine.rotatesprite(x+11<<16,189<<16, 0x8000, 0, 1656, 0, 1, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
+		        if ( p.gotkey[3] != 0 ) {
+		        	int pal = 23;
+		        	if(cfg.gColoredKeys) pal = 7;
+		    		engine.rotatesprite(x+5<<16,182<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1);
+		        }
+		    	if ( p.gotkey[2] != 0  ) {
+		    		int pal = 21;
+		        	if(cfg.gColoredKeys) pal = 2;
+		    		engine.rotatesprite(x+18<<16,182<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1);
+		    	}
+		    	if ( p.gotkey[1] != 0  ) {
+		    		int pal = 0;
+		        	if(cfg.gColoredKeys) pal = 1;
+		    		engine.rotatesprite(x+11<<16,189<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
+		    	}
 		        x += tilesizx[9216] / 2 + 2;
 	        }
 	      
@@ -580,6 +589,17 @@ public class View {
 	            }
 	            invennum(x+27, 194, i, 0, 8 | 256);
 	        }
+	        
+	        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, 9236, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
+	        p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
+			if(p.alcohol_amount >= 100)
+			{
+				p.alcohol_amount = 100;
+				p.alcohol_meter = 400;
+			}  
+			engine.rotatesprite(251 << 16, 187 << 16, 0x8000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+			engine.rotatesprite(293 << 16, 187 << 16, 0x8000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+
 	        return;
 	    }
 
@@ -617,12 +637,21 @@ public class View {
 	    else
 	    {
 	    	int x = 134;
-	    	if ( p.gotkey[3] != 0 )
-	    		engine.rotatesprite(x+5<<16,180<<16, 0x8000, 0, 1656, 0, 7, 10+16, 0, 0, xdim - 1, ydim - 1);
-	    	if ( p.gotkey[2] != 0  )
-	    		engine.rotatesprite(x+18<<16,180<<16, 0x8000, 0, 1656, 0, 2, 10+16, 0, 0, xdim - 1, ydim - 1);
-	    	if ( p.gotkey[1] != 0  )
-	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, 1, 10+16, 0, 0, xdim - 1, ydim - 1); 
+	    	if ( p.gotkey[3] != 0 ) {
+	    		int pal = 23;
+	        	if(cfg.gColoredKeys) pal = 7;
+	    		engine.rotatesprite(x+5<<16,180<<16, 0x8000, 0, 1656, 0, pal, 10+16, 0, 0, xdim - 1, ydim - 1);
+	    	}
+	    	if ( p.gotkey[2] != 0  ) {
+	    		int pal = 21;
+	        	if(cfg.gColoredKeys) pal = 2;
+	    		engine.rotatesprite(x+18<<16,180<<16, 0x8000, 0, 1656, 0, pal, 10+16, 0, 0, xdim - 1, ydim - 1);
+	    	}
+	    	if ( p.gotkey[1] != 0  ) {
+	    		int pal = 0;
+	        	if(cfg.gColoredKeys) pal = 1;
+	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16, 0, 0, xdim - 1, ydim - 1); 
+	    	}
 	    }
 	   
         if(sprite[p.i].pal == 1 && p.last_extra < 2)
@@ -965,20 +994,23 @@ public class View {
 	        switch(t.picnum)
 	        {
 	        	case DOORKEY:
-	        		switch(t.lotag)
+	        		if(cfg.gColoredKeys)
 	        		{
-		        		case 100: //got1
-		        			t.pal = 1;
-		        			break;
-		        		case 101: //got2
-		        			t.pal = 2;
-		        			break;
-		        		case 102: //got3
-		        			t.pal = 7;
-		        			break;
-		        		default:
-		        			t.pal = 6;
-		        			break;
+		        		switch(t.lotag)
+		        		{
+			        		case 100: //got1
+			        			t.pal = 1;
+			        			break;
+			        		case 101: //got2
+			        			t.pal = 2;
+			        			break;
+			        		case 102: //got3
+			        			t.pal = 7;
+			        			break;
+			        		default:
+			        			t.pal = 6;
+			        			break;
+		        		}
 	        		}
 	        		t.shade = -128;
 	        		break;

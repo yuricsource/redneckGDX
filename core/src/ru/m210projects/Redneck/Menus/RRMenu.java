@@ -513,7 +513,13 @@ public class RRMenu {
 			}
 		};
 
-		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills);
+		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills) {
+			@Override
+			public void open(MENU pMenu) {
+				if(this.text.size() > 1)
+					l_nFocus = 1;
+			}
+		};
 		mAddItem(mMenus[nMenuId], mSlot, true);
 	}
 	
@@ -525,13 +531,20 @@ public class RRMenu {
 			@Override
 			public void draw() {
 				int ty = y;
+				if (lsInf.addonfile != null && !lsInf.addonfile.isEmpty()) {
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x+1, ty+1, -128, 4, 0, 0);
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x, ty, -128, 12, 0, 0);
+					ty -= 10;
+				}
 				if (lsInf.date != null && !lsInf.date.isEmpty()) {
-
+					mDrawText(textStyle, toCharArray(lsInf.date), x+1, ty+1, -128, 4, 0, 0);
 					mDrawText(textStyle, toCharArray(lsInf.date), x, ty, -128, 12, 0, 0);
 					ty -= 10;
 				}
-				if (lsInf.info != null)
+				if (lsInf.info != null) {
+					mDrawText(textStyle, toCharArray(lsInf.info), x+1, ty+1, -128, 4, 0, 0);
 					mDrawText(textStyle, toCharArray(lsInf.info), x, ty, -128, 12, 0, 0);
+				}
 			}
 		};
 
@@ -619,8 +632,12 @@ public class RRMenu {
 			@Override
 			public void draw() {
 				int ty = y;
+				if (lsInf.addonfile != null && !lsInf.addonfile.isEmpty()) {
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x+1, ty+1, -128, 4, 0, 0);
+					mDrawText(textStyle, toCharArray(lsInf.addonfile), x, ty, -128, 12, 0, 0);
+					ty -= 10;
+				}
 				if (lsInf.date != null && !lsInf.date.isEmpty()) {
-
 					mDrawText(textStyle, toCharArray(lsInf.date), x+1, ty+1, -128, 4, 0, 0);
 					mDrawText(textStyle, toCharArray(lsInf.date), x, ty, -128, 12, 0, 0);
 					ty -= 10;
@@ -1175,7 +1192,7 @@ public class RRMenu {
 		};
 		mAddItem(mMenus[nMenuId], mJoyName, false);
 
-		int pos = 40;
+		int pos = 45;
 		MenuSwitch mEnable = new MenuSwitch("Enable joystick:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
@@ -1388,7 +1405,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSlider sCrossSize = new MenuSlider("Crosshair size:", 1, false, 47, pos += 12, 240, cfg.gCrossSize, 16384,
+		MenuSlider sCrossSize = new MenuSlider("Crosshair size:", 1, false, 47, pos += 12, 240, cfg.gCrossSize, 8192,
 				65536, 8192, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
@@ -1416,7 +1433,7 @@ public class RRMenu {
 			}
 		};
 
-		MenuSlider sStatSize = new MenuSlider("Statistics size:", 1, false, 47, pos += 12, 240, cfg.gStatSize, 16384,
+		MenuSlider sStatSize = new MenuSlider("Statistics size:", 1, false, 47, pos += 12, 240, cfg.gStatSize, 8192,
 				65536, 8192, new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
@@ -1479,6 +1496,15 @@ public class RRMenu {
 				if(numplayers > 1) getnames();
 			}
 		}, null, null);
+		
+		MenuSwitch sColoredKeys = new MenuSwitch("Colored keys:", 1, 46, pos += 12, 240, cfg.gColoredKeys,
+			new MENUPROC() {
+				@Override
+				public void run(MenuItem pItem) {
+					MenuSwitch sw = (MenuSwitch) pItem;
+					cfg.gColoredKeys = sw.value;
+				}
+			}, null, null);
 
 		MenuSwitch sStartup = new MenuSwitch("Startup window:", 1, 46, pos += 12, 240, cfg.startup, new MENUPROC() {
 			@Override
@@ -1537,6 +1563,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], sSlopeTilt, true);
 		mAddItem(mMenus[nMenuId], sAutoAim, false);
+		mAddItem(mMenus[nMenuId], sColoredKeys, false);
 		mAddItem(mMenus[nMenuId], sStartup, false);
 		mAddItem(mMenus[nMenuId], sCheckVersion, false);
 		mAddItem(mMenus[nMenuId], mPlayingDemo, false);

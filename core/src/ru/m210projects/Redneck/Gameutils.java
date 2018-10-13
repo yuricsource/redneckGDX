@@ -21,22 +21,10 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Spawn.*;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-
 import static ru.m210projects.Redneck.Interpolation.viewBackupWallLoc;
-import static ru.m210projects.Build.Engine.MAXTILES;
 import static ru.m210projects.Build.Engine.MAXWALLS;
 import static ru.m210projects.Build.Engine.neartag;
-import static ru.m210projects.Build.Engine.numtiles;
-import static ru.m210projects.Build.Engine.picanm;
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Engine.wall;
-import static ru.m210projects.Build.Engine.waloff;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 
@@ -205,68 +193,5 @@ public class Gameutils {
 		buildString(buf, 0, text, num);
 		
 		return buf;
-	}
-	
-	public static final int[][] replace = {
-		{ 3363, 9217 }, 
-		{ 3364, 9218 }, 
-		{ 3415, 9219 }, 
-		{ 3416, 9220 }, 
-		{ 3417, 9221 }, 
-		{ 3418, 9222 }, 
-		{ 3453, 9223 },
-		{ 3454, 9224 },
-		{ 3455, 9225 },
-		{ 3456, 9226 },
-		{ 3457, 9227 },
-		{ 3458, 9228 },
-	};
-
-	public static void LoadUserRes()
-	{
-		FileHandle fil = Gdx.files.internal("RedneckGDX.ART");
-		if(fil != null)
-		{
-			ByteBuffer bb = ByteBuffer.wrap(fil.readBytes());
-	    	bb.order( ByteOrder.LITTLE_ENDIAN);
-
-			int artversion = bb.getInt();
-			if (artversion != 1)
-				return;
-			
-			numtiles = bb.getInt();
-			int localtilestart = bb.getInt();
-			int localtileend = bb.getInt();
-			if(localtilestart >= MAXTILES || localtileend >= MAXTILES)
-				return;
-			
-			for (int i = localtilestart; i <= localtileend; i++) 
-				tilesizx[i] = bb.getShort();
-			for (int i = localtilestart; i <= localtileend; i++) 
-				tilesizy[i] = bb.getShort();
-			for (int i = localtilestart; i <= localtileend; i++)
-				picanm[i] = bb.getInt();
-			
-			for (int tilenume = localtilestart; tilenume <= localtileend; tilenume++) {
-				if(bb.position() == bb.capacity())
-					break;
-				int dasiz = tilesizx[tilenume] * tilesizy[tilenume];
-				waloff[tilenume] = new byte[dasiz];
-				bb.get(waloff[tilenume]);
-			}
-			bb.clear();
-			bb = null;
-			
-			for(int i = 0; i < replace.length; i++)
-			{
-				int tilenume = replace[i][0];
-				int newtile = replace[i][1];
-				waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
-				System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
-				tilesizx[tilenume] = tilesizx[newtile];
-				tilesizy[tilenume] = tilesizy[newtile];
-				picanm[tilenume] = picanm[newtile];
-			}
-		}
 	}
 }

@@ -25,6 +25,7 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Redneck.Sounds.*;
+import static ru.m210projects.Redneck.Main.*;
 
 import ru.m210projects.Redneck.Types.AnimFile;
 
@@ -33,7 +34,6 @@ public class Animlib {
 	public static int lastanimhack;
 	public static int frame;
 	public static int anmnum;
-	public static boolean isEnabled;
 
 	private static long anmtime;
 	private static long LastMS;
@@ -47,7 +47,7 @@ public class Animlib {
 	
 	public static boolean initanm(String fn, int t, int num)
 	{
-		if(!isEnabled)
+		if(!cfg.gPlayVideos)
 			return false;
 
 		if(anmfil != null) return false;
