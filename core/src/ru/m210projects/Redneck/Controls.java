@@ -71,14 +71,14 @@ public class Controls {
 		oldPosY = Gdx.input.getY();
 	}
 	
-	public static boolean ctrlPadStatusOnce(int buttonCode)
+	public static boolean ctrlPadStatusOnce(int deviceIndex, int buttonCode)
 	{
-		return gpmanager.buttonStatusOnce(cfg.gJoyDevice, buttonCode);
+		return gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
 	}
 	
-	public static boolean ctrlPadStatus(int buttonCode)
+	public static boolean ctrlPadStatus(int deviceIndex, int buttonCode)
 	{
-		return gpmanager.buttonStatus(cfg.gJoyDevice, buttonCode);
+		return gpmanager.buttonStatus(deviceIndex, buttonCode);
 	}
 	
 	public static boolean[] maxisstatus = new boolean[keynames.length];
@@ -111,13 +111,13 @@ public class Controls {
 					|| input.keyStatusOnce(key2)
 					|| input.keyStatusOnce(keyM)
 					|| ctrlAxisStatusOnce(keyName)
-					|| cfg.useJoystick && keyName > Turn_Right && ctrlPadStatusOnce(keyG);
+					|| cfg.useJoystick && keyName > Turn_Right && ctrlPadStatusOnce(cfg.gJoyDevice, keyG);
 		} else {
 			return input.keyStatus(key1)
 					|| input.keyStatus(key2)
 					|| input.keyStatus(keyM)
 					|| ctrlAxisStatus(keyName)
-					|| cfg.useJoystick && keyName > Turn_Right && ctrlPadStatus(keyG);
+					|| cfg.useJoystick && keyName > Turn_Right && ctrlPadStatus(cfg.gJoyDevice, keyG);
 		}
 	}
 	
