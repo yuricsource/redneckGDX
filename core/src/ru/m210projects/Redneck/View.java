@@ -597,8 +597,8 @@ public class View {
 				p.alcohol_amount = 100;
 				p.alcohol_meter = 400;
 			}  
-			engine.rotatesprite(251 << 16, 187 << 16, 0x8000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
-			engine.rotatesprite(293 << 16, 187 << 16, 0x8000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+			engine.rotatesprite(251 << 16, 189 << 16, 0x9000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+			engine.rotatesprite(293 << 16, 189 << 16, 0x9000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
 
 	        return;
 	    }

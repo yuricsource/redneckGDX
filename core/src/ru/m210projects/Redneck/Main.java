@@ -61,6 +61,7 @@ public class Main extends ApplicationAdapter {
 	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
+	 * когда поднимаешь цветной ключ, все равно пишет skeleton key. мелочь, но можно поправить.
 	 * не разбиваются статуи на e2m7
 	 * check ufo skills
 	 * keys multiplayer bug
