@@ -66,6 +66,13 @@ public class Main extends ApplicationAdapter {
 	 * cutscenes MVE
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * get crc32 from map and script
+	 * 
+	 * DUKEGDX TODO: 
+	 * Interface menu disable palfade
+	 * initspecialtextures
+	 * rdskills не работает
+	 * skill menu смещение кнопок для мыши
+	 * join game пункты не выбираются мышкой
 	 */
 
 	public static final String appname = "RedneckGDX";

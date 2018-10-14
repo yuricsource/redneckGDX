@@ -151,12 +151,17 @@ public class Cheats {
 						int levnume = opt[1] - 1;
 						ud.m_volume_number = ud.volume_number = volnume;
                         ud.m_level_number = ud.level_number = levnume;
-					}
+					} else return false;
+					gm = MODE_RESTART; 
+	                Console.show();
+					break;
 				case 7: //rdskill
-					if(opt.length >= 1)
+					if(opt.length == 1)
 					{
-						int skill = opt[0] - 1;
-						ud.m_player_skill = ud.player_skill = skill;
+						int skill = opt[0];
+						if(skill < 1 || skill > 5)
+							return false;
+						ud.m_player_skill = ud.player_skill = skill-1;
 
 		                if(numplayers > 1 && myconnectindex == connecthead)
 		                {

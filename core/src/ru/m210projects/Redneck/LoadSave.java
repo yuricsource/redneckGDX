@@ -196,6 +196,13 @@ public class LoadSave {
 	
 	public static int savegame(String savename, String filename)
 	{
+		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+		{
+			FTA(53, ps[myconnectindex]);
+			return -1;
+		}
+		
+		
 		File file = Bcheck(FileUserdir+filename, "R");
 		if(file != null)
 			file.delete();
@@ -532,6 +539,11 @@ public class LoadSave {
 	public static void quickload()
 	{
 		if(numplayers > 1 || mFakeMultiplayer) return;
+		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+		{
+			FTA(53, ps[myconnectindex]);
+			return;
+		}
 		final String loadname = SaveManager.getLast();
 		if(loadname != null)
 		{
@@ -544,7 +556,9 @@ public class LoadSave {
 						gm = oFlags;
 						if (gm == MODE_GAME) {
 							if (!kGameCrash) {
-								addmessage("Incompatible version of saved game found!");
+								if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+									FTA(53, ps[myconnectindex]);
+								else addmessage("Incompatible version of saved game found!");
 								ready2send = true;
 							}
 						} 
@@ -712,9 +726,7 @@ public class LoadSave {
 		//gEndFirstEpisode = bb.gEndFirstEpisode;
 		//gEndGame = bb.gEndGame;
 
-		tilesizy[0] = 0;
-	    tilesizx[0] = 0;
-	    waloff[0] = null;
+		InitSpecialTextures();
 	    
 	    BowlReset();
 		plantProcess = bb.plantProcess;
@@ -756,6 +768,7 @@ public class LoadSave {
 	
 	public static void LoadGDXBlock(SafeLoader bb)
 	{
+		ud.warp_on = bb.warp_on;
 		if(bb.warp_on == 1)
 			checkEpisodeResources(bb.addon);
 		else resetEpisodeResources();
@@ -897,6 +910,12 @@ public class LoadSave {
 	
 	public static boolean loadgame(String filename)
 	{
+		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+		{
+			FTA(53, ps[myconnectindex]);
+			return false;
+		}
+		
 		int fil = Bopen(FileUserdir + filename, "R");
 		if(fil != -1) {
 			byte[] data = new byte[Bfilelength(fil)];

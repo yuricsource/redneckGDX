@@ -197,6 +197,19 @@ public class MenuTextField extends MenuItem {
 
 	@Override
 	public boolean mouseAction(int mx, int my) {
+		if(text != null)
+		{
+			mGetAlign(textStyle, text);
+			if(mx > x && mx < x + alignx)
+				if(my > y && my < y + aligny)
+					return true;
+			
+			mGetAlign(textStyle, typingBuf);
+			if(mx > x + width - alignx && mx < x + width - 1)
+				if(my > y && my < y + aligny)
+					return true;
+		}
+
 		return false;
 	}
 

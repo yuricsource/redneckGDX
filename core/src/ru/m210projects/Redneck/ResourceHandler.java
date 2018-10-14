@@ -8,6 +8,7 @@ import static ru.m210projects.Build.FileHandle.Compat.getFilename;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
@@ -148,9 +149,7 @@ public class ResourceHandler {
 		
 		LoadUserRes();
 		
-		tilesizy[0] = 0;
-	    tilesizx[0] = 0;
-	    waloff[0] = null;
+		InitSpecialTextures();
 	    
 	    BowlReset();
 	    
@@ -301,5 +300,16 @@ public class ResourceHandler {
 		else {
 			GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}
+	}
+	
+	public static void InitSpecialTextures()
+	{
+		tilesizx[GRID] = tilesizy[GRID] = 0;
+	    waloff[GRID] = null;
+		tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
+		
+		tilesizy[13] = 0; //ROR tile
+	    tilesizx[13] = 0;
+	    waloff[13] = null;
 	}
 }

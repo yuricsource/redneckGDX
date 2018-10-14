@@ -425,6 +425,7 @@ public class Redneck {
 	
 	public static void GameLoop()
 	{
+		System.err.println(ud.player_skill);
 		if((gm&MODE_END) == 0) 
 		{
 			if(kGameCrash)
@@ -992,6 +993,10 @@ public class Redneck {
 //	    	        0,pHitInfo,CLIPMASK0);
 //	    	if(pHitInfo.hitsprite != -1)
 //	    	System.err.println(pHitInfo.hitsprite + " " + sprite[pHitInfo.hitsprite].picnum);
+//	    	
+//	    	if(pHitInfo.hitwall != -1)
+//	    		System.err.println(pHitInfo.hitwall + " " + wall[pHitInfo.hitwall].picnum + " " + wall[pHitInfo.hitwall].overpicnum);
+//	    	
 //	    }
 
 	    if( ud.pause_on == 0 )

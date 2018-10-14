@@ -507,13 +507,13 @@ public class RRMenu {
         		if ( ud.warp_on == 2) 
         			Console.Println("Start user map - " + boardfilename);
                 
-				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
+				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
 				enterlevel(MODE_GAME);
 				mClose();
 			}
 		};
 
-		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills) {
+		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 46, 320, 1, 5, null, newGameProc, nMaxSkills) {
 			@Override
 			public void open(MENU pMenu) {
 				if(this.text.size() > 1)
@@ -621,7 +621,9 @@ public class RRMenu {
 								if (!kGameCrash) 
 									ready2send = true;
 							} 
-							addmessage("Incompatible version of saved game found!");
+							if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+								FTA(53, ps[myconnectindex]);
+							else addmessage("Incompatible version of saved game found!");
 						}
 					}
 				});
