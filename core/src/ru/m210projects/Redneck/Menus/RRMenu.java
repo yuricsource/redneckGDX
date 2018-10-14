@@ -687,15 +687,15 @@ public class RRMenu {
 					case 5:
 					case 6:
 					case 7:
-						for (int kb = 0; kb < gpmanager.getButtonCount(0); kb++) {
-							if (gpmanager.buttonPressed(kb))
+						for (int kb = 0; kb < gpmanager.getButtonCount(cfg.gJoyDevice); kb++) {
+							if (gpmanager.buttonPressed(cfg.gJoyDevice, kb))
 								cfg.setButton(item.l_nFocus, kb);
 						}
 						item.l_set = 0;
 						break;
 					default:
-						for (int kb = 0; kb < gpmanager.getButtonCount(0); kb++) {
-							if (gpmanager.getButton(kb)) {
+						for (int kb = 0; kb < gpmanager.getButtonCount(cfg.gJoyDevice); kb++) {
+							if (gpmanager.getButton(cfg.gJoyDevice, kb)) {
 								cfg.setButton(item.l_nFocus, kb);
 								item.l_set = 0;
 							}
