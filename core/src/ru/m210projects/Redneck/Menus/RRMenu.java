@@ -1184,7 +1184,7 @@ public class RRMenu {
 			public void run(MenuItem pItem) {
 				MenuSwitch sw = (MenuSwitch) pItem;
 				sw.value &= gpmanager.getControllers() > 0; // force disabled as needed
-				cfg.useJoystick = sw.value;
+				cfg.useJoystick = sw.value && cfg.gJoyDevice > -1;
 			}
 		}, "Yes", "No");
 

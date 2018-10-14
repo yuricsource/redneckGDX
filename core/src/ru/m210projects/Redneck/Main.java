@@ -98,8 +98,14 @@ public class Main extends ApplicationAdapter {
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 
 			if (gpmanager.getControllers() <= 0) {
-				cfg.gJoyDevice = -1;
 				cfg.useJoystick = false;
+				cfg.gJoyDevice = -1;
+			}
+
+			if (cfg.useJoystick == false || cfg.gJoyDevice == -1)
+			{
+				cfg.useJoystick = false;
+				cfg.gJoyDevice = -1;
 			}
 
 			updateColorCorrection();
