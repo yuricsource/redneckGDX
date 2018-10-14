@@ -56,6 +56,7 @@ public class Main extends ApplicationAdapter {
 	 * Apply anisotropy fix
 	 * Alcohol / gut meter in minihud
 	 * Colored keys option
+	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
 	 * keys multiplayer bug

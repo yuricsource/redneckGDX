@@ -425,7 +425,6 @@ public class Redneck {
 	
 	public static void GameLoop()
 	{
-		System.err.println(ud.player_skill);
 		if((gm&MODE_END) == 0) 
 		{
 			if(kGameCrash)
