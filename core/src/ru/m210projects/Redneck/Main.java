@@ -97,6 +97,11 @@ public class Main extends ApplicationAdapter {
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 
+			if (gpmanager.getControllers() <= 0) {
+				cfg.gJoyDevice = -1;
+				cfg.useJoystick = false;
+			}
+
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 			engine.setanisotropy(cfg, cfg.anisotropy);
