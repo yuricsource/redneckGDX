@@ -16,12 +16,14 @@
 
 package ru.m210projects.Redneck;
 
+import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Redneck.Animlib.initanm;
 import static ru.m210projects.Redneck.Redneck.appdispose;
 import static ru.m210projects.Redneck.Globals.MODE_LOGO;
 import static ru.m210projects.Redneck.Globals.dassert;
 import static ru.m210projects.Redneck.Globals.exceptionHandler;
 import static ru.m210projects.Redneck.Globals.gm;
+import static ru.m210projects.Redneck.Globals.lockclock;
 import static ru.m210projects.Redneck.Globals.stackTraceToString;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Screen.setup3dscreen;
@@ -59,6 +61,8 @@ public class Main extends ApplicationAdapter {
 	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
+	 * не разбиваются статуи на e2m7
+	 * check ufo skills
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
@@ -156,6 +160,7 @@ public class Main extends ApplicationAdapter {
 	public void resume() {
 		if(ud.multimode < 2 && ud.recstat == 0) {
 			ud.pause_on = 0;
+			lockclock = totalclock;
 			if(cfg.MusicToggle && currMusic != null) 
 				currMusic.resume();
 		}

@@ -744,11 +744,12 @@ public class Redneck {
 						    }
 	                    	
 	                    	if(scenestatus == 0 && !anmInited())
-	                    		scenestatus = 2;
+	                    		scenestatus = 1;
 	                    	
 	                    	getInput().resetKeyStatus();
 							gpmanager.resetButtonStatus();
-	                    	gm |= MODE_CUTSCENE;
+	                    	
+                    		gm |= MODE_CUTSCENE;
 	                    	gCutsClock = totalclock - 199;
 		                    return;
 	                    }
@@ -764,6 +765,11 @@ public class Redneck {
 					if (dobonus(false)) {
 						getInput().resetKeyStatus();
 						gpmanager.resetButtonStatus();
+						
+//						if ( ud.volume_number == 1 && ud.level_number >= currentGame.episodes[ud.volume_number].nMaps ) {
+//							backtomenu();
+//							return;
+//						}
 
 		                ready2send = false;
 			            if(numplayers > 1) 
