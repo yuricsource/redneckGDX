@@ -134,6 +134,7 @@ public class Config extends BConfig {
 	public  int gJoyLookSpeed = 1048576;
 	public  int gJoyDeadZone = 8192;
 	public  boolean gJoyInvert = false;
+	public  int gJoyDevice = -1;
 	
 	public String pName = "LEONARD";
 	public String mAddress = "localhost";
@@ -570,6 +571,8 @@ public class Config extends BConfig {
 				if(value != -1) gJoyInvert = value == 1;
 				value = RRcfg.GetKeyInt("JoyDeadZone");
 				if(value != -1) gJoyDeadZone = value;
+				value = RRcfg.GetKeyInt("JoyDevice");
+				if (value != -1) gJoyDevice = value;
 			}
 			
 			if(RRcfg.set("Options")) {
@@ -754,6 +757,7 @@ public class Config extends BConfig {
 			saveInteger(fil, "JoyLookSpeed", gJoyLookSpeed);
 			saveBoolean(fil, "JoyInvertLook", gJoyInvert);
 			saveInteger(fil, "JoyDeadZone", gJoyDeadZone);
+			saveInteger(fil, "JoyDevice", gJoyDevice);
 			saveString(fil, ";\r\n;\r\n");
 		
 			saveString(fil, "[Options]\r\n");	

@@ -470,8 +470,8 @@ public class Redneck {
 					gCutsClock = totalclock;
 
 				if(scenestatus == 0)
-					skip = (ctrlGetInputKey(Menu_open, true) || ctrlPadStatusOnce(cfg.gpadkeys[Open]));
-				else skip = (ctrlGetInputKey(Menu_open, true) || ctrlPadStatusOnce(cfg.gpadkeys[Open]) || scenestatus == 2);
+					skip = (ctrlGetInputKey(Menu_open, true) || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Open]));
+				else skip = (ctrlGetInputKey(Menu_open, true) || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Open]) || scenestatus == 2);
 				int playing = playanm();
 
 				int shade = mulscale(64, sintable[(20 * totalclock) & kAngleMask], 16);

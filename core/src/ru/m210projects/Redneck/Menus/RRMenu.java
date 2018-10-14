@@ -687,15 +687,15 @@ public class RRMenu {
 					case 5:
 					case 6:
 					case 7:
-						for (int kb = 0; kb < gpmanager.getButtonCount(0); kb++) {
-							if (gpmanager.buttonPressed(kb))
+						for (int kb = 0; kb < gpmanager.getButtonCount(cfg.gJoyDevice); kb++) {
+							if (gpmanager.buttonPressed(cfg.gJoyDevice, kb))
 								cfg.setButton(item.l_nFocus, kb);
 						}
 						item.l_set = 0;
 						break;
 					default:
-						for (int kb = 0; kb < gpmanager.getButtonCount(0); kb++) {
-							if (gpmanager.getButton(kb)) {
+						for (int kb = 0; kb < gpmanager.getButtonCount(cfg.gJoyDevice); kb++) {
+							if (gpmanager.getButton(cfg.gJoyDevice, kb)) {
 								cfg.setButton(item.l_nFocus, kb);
 								item.l_set = 0;
 							}
@@ -1177,32 +1177,58 @@ public class RRMenu {
 		MenuTitle mTitle = new MenuTitle("Joystick Setup", 2, 160, 19, MENUBAR);
 		mAddItem(mMenus[nMenuId], mTitle, false);
 
-		MenuTitle mJoyName = new MenuTitle("No joystics detected", 1, 160, 40, -1) {
-			@Override
-			public void open(MENU pMenu) {
-				int size = gpmanager.getControllers();
-				if (size > 0) {
-					if (size == 1)
-						text = gpmanager.getControllerName(0).toCharArray();
-					else
-						text = (size + " controllers detected").toCharArray();
-				} else
-					text = "No joystics detected".toCharArray();
-			}
-		};
-		mAddItem(mMenus[nMenuId], mJoyName, false);
+		int pos = 25;
 
-		int pos = 45;
-		MenuSwitch mEnable = new MenuSwitch("Enable joystick:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
+		MenuSwitch mEnable = new MenuSwitch("Enabled:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuSwitch sw = (MenuSwitch) pItem;
-				cfg.useJoystick = sw.value;
+				sw.value &= gpmanager.getControllers() > 0; // force disabled as needed
+				cfg.useJoystick = sw.value && cfg.gJoyDevice > -1;
 			}
 		}, "Yes", "No");
 
+		MenuConteiner mJoyDevices = new MenuConteiner("Device:", 0, 46, pos += 15, 230, null, 0,
+				new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuConteiner item = (MenuConteiner) pItem;
+						int controllers = gpmanager.getControllers();
+						cfg.gJoyDevice = controllers > 0 ? item.num : -1;
+						cfg.useJoystick = cfg.gJoyDevice > -1;
+					}
+				}) {
+			@Override
+			public void open(MENU pMenu) {
+				int controllers = gpmanager.getControllers();
+				if (this.list == null) {
+					if (controllers > 0) {
+						this.list = new char[controllers][];
+						for (int i = 0; i < controllers; i++) {
+							this.list[i] = gpmanager.getControllerName(i).toCharArray();
+						}
+					} else {
+						this.list = new char[][]{"No joystick devices found".toCharArray()};
+					}
+				}
+
+				// handles unplugged device(s) between runs
+				int min = 0;
+				int max = Math.max(0, controllers - 1);
+				int val = cfg.gJoyDevice;
+				this.num = val < min ? min : (val > max ? max : val);
+			}
+
+			@Override
+			public void draw() {
+				SndDriverDraw(this); // NOTE this draws the menu header with the right font !
+			}
+		};
+
 		MenuButton mJoyKey = new MenuButton("Configure buttons", 1, 46, pos += 15, 230, 1, 0, mMenus[JOYKEYSET], -1,
 				null, 0);
+
+		pos += 5;
 
 		final char[][] StickName = { "Stick1_Y".toCharArray(), "Stick1_X".toCharArray(), "Stick2_Y".toCharArray(),
 				"Stick2_X".toCharArray(), };
@@ -1301,6 +1327,7 @@ public class RRMenu {
 		}, "Yes", "No");
 
 		mAddItem(mMenus[nMenuId], mEnable, true);
+		mAddItem(mMenus[nMenuId], mJoyDevices, false);
 		mAddItem(mMenus[nMenuId], mJoyKey, false);
 		mAddItem(mMenus[nMenuId], mJoyTurn, false);
 		mAddItem(mMenus[nMenuId], mJoyLook, false);
