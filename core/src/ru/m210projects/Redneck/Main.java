@@ -84,6 +84,15 @@ public class Main extends ApplicationAdapter {
 	public Main(BConfig cfg, Message message)
 	{
 		Main.cfg = (Config) cfg;
+
+		gpmanager = new GPManager();
+		gpmanager.setDeadZone(this.cfg.gJoyDeadZone / 65536f);
+
+		if (gpmanager.getControllers() <= 0) {
+			this.cfg.gJoyDevice = -1;
+			this.cfg.useJoystick = false;
+		}
+
 		InitRR(message);
 	}
 
@@ -94,13 +103,6 @@ public class Main extends ApplicationAdapter {
 			setup3dscreen(cfg.ScreenWidth, cfg.ScreenHeight);
 
 			LoadUserRes();
-			gpmanager = new GPManager();
-			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
-
-			if (gpmanager.getControllers() <= 0) {
-				cfg.gJoyDevice = -1;
-				cfg.useJoystick = false;
-			}
 
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
