@@ -23,6 +23,7 @@ import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Redneck.Controls.*;
 import static ru.m210projects.Redneck.Redneck.gShowMenu;
+
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Network.getpackets;
 import static ru.m210projects.Redneck.Network.kPacketEmpty;
@@ -63,9 +64,21 @@ public class RREngine extends Engine {
 		if (timerfreq == 0)
 			return;
 
-		int n = (int) ((getticks() * timerticspersec / timerfreq) - timerlastsample);  
+		long n = (getticks() * timerticspersec / timerfreq) - timerlastsample;  
 		if (n > 0) {
 			totalclock += n;
+			
+//			if(gm == MODE_DEMO) {
+//				if(Gdx.input.isKeyPressed(Keys.W)) {
+//					if(!key) {
+//						totalclock += 4;
+////						if(totalclock < 3540) totalclock = 3540;
+//						if(Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))
+//							key = true;
+//					}
+//				} else key = false;
+//			}
+				
 			timerlastsample += n;
 		}
 	}

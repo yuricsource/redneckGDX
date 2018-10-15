@@ -641,9 +641,9 @@ public class Controls {
 	    		turnheldtime += tics;
 	    		if ( p.NotOnWater == 0)
 	    			p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
-	    		if ( turnheldtime >= 15 && p.CarSpeed > 0 )
+	    		if ( turnheldtime >= 15 && p.CarSpeed != 0 )
 	            {
-	    			if ( p.NotOnWater == 0)
+	    			if ( p.NotOnWater != 0)
 	    			{
 	    				if ( bike_turn != 0 )
 	    					angvel -= 6;
@@ -654,8 +654,8 @@ public class Controls {
 		                else angvel -= 10; 
 	    			}
 	            }
-	    		else if ( p.CarSpeed != 0 ) {
-	    			if ( p.NotOnWater == 0)
+	    		else if ( turnheldtime < 15 && p.CarSpeed != 0 ) {
+	    			if ( p.NotOnWater != 0)
 	    			{
 	    				if ( bike_turn != 0 )
 	    					angvel -= 2;
@@ -672,9 +672,9 @@ public class Controls {
 	    		turnheldtime += tics;
 	    		if ( p.NotOnWater == 0)
 	    			p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
-	    		if ( turnheldtime >= 15 && p.CarSpeed > 0 )
+	    		if ( turnheldtime >= 15 && p.CarSpeed != 0 )
 	            {
-	    			if ( p.NotOnWater == 0)
+	    			if ( p.NotOnWater != 0)
 	    			{
 	    				if ( bike_turn != 0 )
 	    					angvel += 6;
@@ -685,8 +685,8 @@ public class Controls {
 		                else angvel += 10; 
 	    			}
 	            }
-	    		else if ( p.CarSpeed != 0 ) {
-	    			if ( p.NotOnWater == 0)
+	    		else if ( turnheldtime < 15 && p.CarSpeed != 0 ) {
+	    			if ( p.NotOnWater != 0)
 	    			{
 	    				if ( bike_turn != 0 )
 	    					angvel += 2;

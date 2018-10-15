@@ -491,11 +491,76 @@ public class View {
 		engine.rotatesprite(x, 12451840, 0x8000, 0, pic, 0, 0, 10+16, 0, 0, xdim - 1, ydim - 1);
 	}
 	
+	public static void debuginfo(int x, int y)
+	{
+		buildString(buffer, 0, "totalclock= ", totalclock);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+
+		buildString(buffer, 0, "global_random= ", global_random);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "randomseed= ", engine.getrand());
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "posx= ", ps[0].posx);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "posy= ", ps[0].posy);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "posz= ", ps[0].posz);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "ang= ", Float.toString(ps[0].ang));
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "horiz= ", Float.toString(ps[0].horiz));
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "xvel= ", ps[0].posxv);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "yvel= ", ps[0].posyv);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "ud.reccnt= ", ud.reccnt);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+
+		buildString(buffer, 0, "CarSpeed= ", ps[0].CarSpeed);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "VBumpTarget= ", ps[0].VBumpTarget);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "VBumpNow= ", ps[0].VBumpNow);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "CarVar1= ", ps[0].CarVar1);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "CarVar2= ", ps[0].CarVar2);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "CarVar3= ", ps[0].CarVar3);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "CarVar4= ", ps[0].CarVar4);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "CarVar5= ", ps[0].CarVar5);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+		
+		buildString(buffer, 0, "CarVar6= ", ps[0].CarVar6);
+		engine.printext256(x,y,31,-1,buffer,0); y += 10;
+	}
+	
 	public static void coolgaugetext(int snum)
 	{
 	    int i, o, ss;
 
 	    PlayerStruct p = ps[snum];
+	    
+//	    debuginfo(20, 40);
 
 	    if (p.invdisptime > 0) 
 	    	displayinventory(p);
@@ -826,46 +891,46 @@ public class View {
 	                }
 	        	}
 	        }
-
-	          if ( (snum == myconnectindex) && (numplayers > 1) )
-              {
-                    cposx = omyx+mulscale((myx-omyx),smoothratio,16);
-                    cposy = omyy+mulscale((myy-omyy),smoothratio,16);
-                    cposz = omyz+mulscale((myz-omyz),smoothratio,16);
-                    cang = omyang + (BClampAngle(myang+1024-omyang)-1024) * smoothratio / 65536.0f;
-                    choriz = omyhoriz+omyhorizoff+(((myhoriz+myhorizoff-omyhoriz-omyhorizoff) * smoothratio) / 65536.0f);
-                    sect = mycursectnum;
-              }
-              else
-              {
-                    cposx = p.oposx+mulscale((p.posx-p.oposx),smoothratio,16);
-                    cposy = p.oposy+mulscale((p.posy-p.oposy),smoothratio,16);
-                    cposz = p.oposz+mulscale((p.posz-p.oposz),smoothratio,16);
-                    cang = p.oang + (BClampAngle(p.ang+1024-p.oang)-1024) * smoothratio / 65536.0f;
-                    choriz = (p.ohoriz+p.ohorizoff+((p.horiz+p.horizoff-p.ohoriz-p.ohorizoff) * smoothratio) / 65536.0f);
-              }
-              cang += p.look_ang;
-   
-              if (p.newowner >= 0)
-              {
-                    cang = (short) (p.ang+p.look_ang);
-                    choriz = p.horiz+p.horizoff;
-                    cposx = p.posx;
-                    cposy = p.posy;
-                    cposz = p.posz;
-                    sect = sprite[p.newowner].sectnum;
-                    smoothratio = 65536;
-              }
-              else if( p.over_shoulder_on == 0 )
-            	  cposz += p.opyoff+mulscale((p.pyoff-p.opyoff),smoothratio, 16);
-              else {
-            	  view(p,cposx,cposy,cposz,sect,cang,choriz); 
-            	  
-            	  cposx = viewout.ox;
-            	  cposy = viewout.oy;
-            	  cposz = viewout.oz;
-            	  sect = viewout.os;
-              }
+	        
+	        if ( (snum == myconnectindex) && (numplayers > 1) )
+	        {
+                cposx = omyx+mulscale((myx-omyx),smoothratio,16);
+                cposy = omyy+mulscale((myy-omyy),smoothratio,16);
+                cposz = omyz+mulscale((myz-omyz),smoothratio,16);
+                cang = omyang + (BClampAngle(myang+1024-omyang)-1024) * smoothratio / 65536.0f;
+                choriz = omyhoriz+omyhorizoff+(((myhoriz+myhorizoff-omyhoriz-omyhorizoff) * smoothratio) / 65536.0f);
+                sect = mycursectnum;
+	        }
+	        else
+	        {
+	        	cposx = p.oposx+mulscale((p.posx-p.oposx),smoothratio,16);
+                cposy = p.oposy+mulscale((p.posy-p.oposy),smoothratio,16);
+                cposz = p.oposz+mulscale((p.posz-p.oposz),smoothratio,16);
+                cang = p.oang + (BClampAngle(p.ang+1024-p.oang)-1024) * smoothratio / 65536.0f;
+                choriz = (p.ohoriz+p.ohorizoff+((p.horiz+p.horizoff-p.ohoriz-p.ohorizoff) * smoothratio) / 65536.0f);
+	        }
+	        cang += p.look_ang;
+          
+	        if (p.newowner >= 0)
+	        {
+                cang = (short) (p.ang+p.look_ang);
+                choriz = p.horiz+p.horizoff;
+                cposx = p.posx;
+                cposy = p.posy;
+                cposz = p.posz;
+                sect = sprite[p.newowner].sectnum;
+                smoothratio = 65536;
+	        }
+	        else if( p.over_shoulder_on == 0 )
+	        	cposz += p.opyoff+mulscale((p.pyoff-p.opyoff),smoothratio, 16);
+	        else {
+	        	view(p,cposx,cposy,cposz,sect,cang,choriz); 
+        	  
+	        	cposx = viewout.ox;
+	        	cposy = viewout.oy;
+        	  	cposz = viewout.oz;
+        	  	sect = viewout.os;
+         	}
 
 	        cz = hittype[p.i].ceilingz;
 	        fz = hittype[p.i].floorz;
@@ -940,15 +1005,6 @@ public class View {
 	    }
 
 	    restoreinterpolations();
-
-	    if ( p.fogtype == 0 ) {
-		    if (totalclock < lastvisinc)
-		    {
-		        if (klabs(p.visibility-currentGame.getCON().const_visibility) > 8)
-		            p.visibility += (currentGame.getCON().const_visibility-p.visibility)>>2;
-		    }
-		    else p.visibility = currentGame.getCON().const_visibility;
-	    }
 	}
 
 	public static String lastmessage;
@@ -1220,7 +1276,7 @@ public class View {
                     t.pal = sector[sect].floorpal;
                 break;  
 
-            case 1781:
+            case CHIKENCROSSBOW:
             	k = engine.getangle(s.x-x,s.y-y);
                 k = (short) (((s.ang+3072+128-k)&2047)/170);
                 if(k>6)
@@ -1230,7 +1286,7 @@ public class View {
                 }
                 else t.cstat &= ~4;
 
-                t.picnum = (short) (1781 + k);
+                t.picnum = (short) (CHIKENCROSSBOW + k);
                 break;
             case 3464:
             	t.picnum = (short) (((totalclock >> 4) & 3) + 3464);
@@ -1764,10 +1820,10 @@ public class View {
 	        	 case 1409:
 	        	 case EXPLOSION2:
 	        	 case 1442:
-	        	 case 1774:
+	        	 case CROSSBOW:
 	        	 case 2095:
 	        	 case 3380:
-	        	 case 3400:
+	        	 case CIRCLESAW:
 	        	 case FIRELASER:
 	        	 case 3471:
 	        	 case 3475:

@@ -693,11 +693,11 @@ public class Premap {
 	    }
 	    else
 	    {
-	    	 UFO_SpawnCount = (ud.m_player_skill << 2) + 1;
+	    	 UFO_SpawnCount = (ud.player_skill << 2) + 1;
 	    	 if ( UFO_SpawnCount > 32 )
 	    		 UFO_SpawnCount = 32;
 	    	 UFO_SpawnTime = 0;
-	    	 UFO_SpawnHulk = ud.m_player_skill + 1;
+	    	 UFO_SpawnHulk = ud.player_skill + 1;
 	    }
 	}
 	

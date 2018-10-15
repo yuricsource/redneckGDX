@@ -61,9 +61,8 @@ public class Main extends ApplicationAdapter {
 	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
-	 * когда поднимаешь цветной ключ, все равно пишет skeleton key. мелочь, но можно поправить.
+	 * при приседании скорость в порте не меняется суда по x/yvel
 	 * не разбиваются статуи на e2m7
-	 * check ufo skills
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
@@ -72,13 +71,6 @@ public class Main extends ApplicationAdapter {
 	 * cutscenes MVE
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 * get crc32 from map and script
-	 * 
-	 * DUKEGDX TODO: 
-	 * Interface menu disable palfade
-	 * initspecialtextures
-	 * rdskills не работает
-	 * skill menu смещение кнопок для мыши
-	 * join game пункты не выбираются мышкой
 	 */
 
 	public static final String appname = "RedneckGDX";

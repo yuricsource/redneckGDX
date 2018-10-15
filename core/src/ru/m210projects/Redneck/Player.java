@@ -504,6 +504,18 @@ public class Player {
 	    	}
 	    }
 	    
+	    if ( p.fogtype == 0 ) {
+		    if (totalclock < lastvisinc)
+		    {
+		        if (klabs(p.visibility-currentGame.getCON().const_visibility) > 8)
+		            p.visibility += (currentGame.getCON().const_visibility-p.visibility)>>2;
+		    }
+		    else p.visibility = currentGame.getCON().const_visibility;
+	    }
+	    
+	    if(p.curr_weapon == CHICKENBOW_WEAPON) //GDX 15.10.2018
+	    	p.chiken_pic = (byte) (engine.krand() & 15);
+	    
 	    if(p.invdisptime > 0)
 	        p.invdisptime--;
 
@@ -2451,9 +2463,9 @@ public class Player {
 	            {
 	        		int dang = (int) klabs((short)p.ang - engine.getangle(wall[wall[nwall].point2].x - wall[nwall].x, wall[wall[nwall].point2].y - wall[nwall].y));
 	        		if ( (engine.krand() & 1) == 1 )
-	        			p.ang = ((short)p.ang - (p.CarSpeed >> 1)) & kAngleMask;
-	        		else p.ang = ((short)p.ang + (p.CarSpeed >> 1)) & kAngleMask;
-	                
+	        			p.ang = ((short)p.ang - (p.CarSpeed >> 2)) & kAngleMask;
+	        		else p.ang = ((short)p.ang + (p.CarSpeed >> 2)) & kAngleMask;
+	        		
 	                if ( dang >= 441 && dang <= 581 )
 	                {
 	                	p.CarSpeed = (short) (((p.CarSpeed >> 1) * (p.CarSpeed >> 2)) >> 2);
@@ -2462,7 +2474,7 @@ public class Player {
 	                }
 	                else if ( dang >= 311 && dang <= 711 )
 	                {
-			        	p.CarSpeed -= ((p.CarSpeed >> 1) + (p.CarSpeed >> 2)) >> 2;        
+			        	p.CarSpeed -= ((p.CarSpeed >> 1) + (p.CarSpeed >> 2)) >> 3;        
 		    			if ( psectlotag == 1 && Sound[179].num == 0 )
 		    				spritesound(179, p.i);
 	                }
@@ -2492,6 +2504,7 @@ public class Player {
 	        		}
 	        	}
 	        }
+	        
 	        if ((j&kHitTypeMask) == kHitSprite)
 	        {
 	        	int nspr = j&kHitIndexMask;

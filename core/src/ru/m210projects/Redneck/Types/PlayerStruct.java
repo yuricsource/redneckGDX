@@ -28,7 +28,7 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1831;
+	public static final int sizeof = 1832;
 	
 	public int zoom,exitx,exity,loogiex[] = new int[64],loogiey[] = new int[64],numloogs,loogcnt;
 	public int posx, posy, posz, ohorizoff, invdisptime;
@@ -121,6 +121,7 @@ public class PlayerStruct {
 	public boolean isSea;
 	public int field_601; //isMoto?
 	public int chiken_phase;
+	public byte chiken_pic;
 	public short field_607; //not used
 	public short MamaEnd;
 	public int fogtype;
@@ -314,6 +315,7 @@ public class PlayerStruct {
 		this.isSea = src.isSea;
 		this.field_601 = src.field_601;
 		this.chiken_phase = src.chiken_phase;
+		this.chiken_pic = src.chiken_pic;
 		this.field_607 = src.field_607;
 		this.MamaEnd = src.MamaEnd;
 		this.fogtype = src.fogtype;
@@ -532,6 +534,7 @@ public class PlayerStruct {
 		buf[ptr++] = isSea?(byte)1:0;
 		LittleEndian.putInt(buf, ptr, field_601); ptr+=4;
 		LittleEndian.putInt(buf, ptr, chiken_phase); ptr+=4;
+		buf[ptr++] = chiken_pic;
 		LittleEndian.putShort(buf, ptr, field_607); ptr+=2;
 		LittleEndian.putShort(buf, ptr, MamaEnd); ptr+=2;
 		LittleEndian.putInt(buf, ptr, fogtype); ptr+=4;
@@ -750,6 +753,7 @@ public class PlayerStruct {
 		isSea = bb.get() == 1;
 		field_601 = bb.getInt();
 		chiken_phase = bb.getInt();
+		chiken_pic = bb.get();
 		field_607 = bb.getShort();
 		MamaEnd = bb.getShort();
 		fogtype = bb.getInt();
