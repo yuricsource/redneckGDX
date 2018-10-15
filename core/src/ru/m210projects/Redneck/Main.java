@@ -61,6 +61,10 @@ public class Main extends ApplicationAdapter {
 	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
+	 * e2m6 RA сломаны вагоны
+	 * ROR e1m7 RA
+	 * кнопка последнего оружия не переключает на грабли
+	 * slope на воде e2m1 RA
 	 * при приседании скорость в порте не меняется суда по x/yvel
 	 * не разбиваются статуи на e2m7
 	 * keys multiplayer bug
