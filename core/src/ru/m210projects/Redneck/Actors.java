@@ -1143,7 +1143,7 @@ public class Actors {
 				if (s.lotag >= 1000 && s.lotag < 2000) {
 					x = ldist(sprite[ps[screenpeek].i], s);
 					if (x < ht && hittype[i].temp_data[0] == 0) {
-						engine.getAudio().getSound().setReverb(true, s.lotag - 1000);
+						engine.getAudio().getSound().setReverb(true, (s.lotag - 1000) / 255f);
 						hittype[i].temp_data[0] = 1;
 					}
 					if (x >= ht && hittype[i].temp_data[0] == 1) {
@@ -6347,9 +6347,9 @@ public class Actors {
 				break;
 
 			case 29:
+//				viewBackupSectorLoc(s.sectnum, sc);
 				s.hitag += 64;
-				l = mulscale((int) s.yvel, sintable[s.hitag & 2047], 12);
-				setinterpolation(sc, FLOORZ);
+				l = mulscale(s.yvel, sintable[s.hitag & 2047], 12);
 				sc.floorz = s.z + l;
 				break;
 
@@ -6615,6 +6615,7 @@ public class Actors {
 			WALL wal = wall[sc.wallptr + 2];
 			if (wal.nextsector == -1)
 				continue;
+
 			engine.alignflorslope(s.sectnum, wal.x, wal.y,
 					sector[wal.nextsector].floorz);
 		}

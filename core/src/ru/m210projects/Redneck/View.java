@@ -40,8 +40,6 @@ import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
-import static ru.m210projects.Redneck.Premap.rorsector;
-import static ru.m210projects.Redneck.Premap.rortype;
 import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Player.*;
@@ -1973,9 +1971,115 @@ public class View {
 	    }
 	}
 	
+	private static int[] tempsectorz = new int[MAXSECTORS];
+	private static short[] tempsectorpicnum = new short[MAXSECTORS];
+	
+	private static void SE40_Old(int spnum,int x,int y,int z,float a,float h,int smoothratio)
+	{
+		int i=0,j=0,k=0;
+		int floor1=0,floor2=0,fofmode=0;
+		long offx,offy;
+
+		if(sprite[spnum].ang!=512) return;
+
+		i = 13;    //Effect TILE
+		if ((gotpic[i>>3]&(1<<(i&7))) == 0) return;
+		gotpic[i>>3] &= ~(1<<(i&7));
+
+		floor1=spnum;
+
+		if(sprite[spnum].lotag==152) fofmode=150;
+		if(sprite[spnum].lotag==153) fofmode=151;
+		//if(sprite[spnum].lotag==154) fofmode=150;
+		//if(sprite[spnum].lotag==155) fofmode=151;
+
+		for( j = headspritestat[15]; j >= 0;  j = nextspritestat[j])
+		{
+			if(sprite[j].picnum==1 &&
+					sprite[j].lotag==fofmode &&
+					sprite[j].hitag==sprite[floor1].hitag) 	
+			{ floor1=j; fofmode=sprite[j].lotag; break;}
+		}
+
+		if(fofmode==150) k=151; else k=150;
+
+		for( j = headspritestat[15]; j >= 0;  j = nextspritestat[j])
+		{
+			if(sprite[j].picnum==1 &&
+					sprite[j].lotag==k &&
+					sprite[j].hitag==sprite[floor1].hitag)
+			{floor2=j; break;}
+		}
+
+		for( j = headspritestat[15]; j >= 0;  j = nextspritestat[j])  // raise ceiling or floor
+		{
+			if(sprite[j].picnum==1 &&
+					sprite[j].lotag==k+2 &&
+					sprite[j].hitag==sprite[floor1].hitag)
+			{
+				if(k==150)
+				{
+					tempsectorz[sprite[j].sectnum]=sector[sprite[j].sectnum].floorz;
+					sector[sprite[j].sectnum].floorz+=(((z-sector[sprite[j].sectnum].floorz)/32768)+1)*32768;
+					tempsectorpicnum[sprite[j].sectnum]=sector[sprite[j].sectnum].floorpicnum;
+					sector[sprite[j].sectnum].floorpicnum=13;
+				}
+				if(k==151)
+				{
+					tempsectorz[sprite[j].sectnum]=sector[sprite[j].sectnum].ceilingz;
+					sector[sprite[j].sectnum].ceilingz+=(((z-sector[sprite[j].sectnum].ceilingz)/32768)-1)*32768;
+					tempsectorpicnum[sprite[j].sectnum]=sector[sprite[j].sectnum].ceilingpicnum;
+					sector[sprite[j].sectnum].ceilingpicnum=13;
+				}
+			}
+		}
+
+		i=floor1;
+		offx=x-sprite[i].x;
+		offy=y-sprite[i].y;
+		i=floor2;
+		engine.drawrooms(offx+sprite[i].x,offy+sprite[i].y,z,a,h,sprite[i].sectnum);
+		animatesprites(x,y,z,(short)a,smoothratio);
+		engine.drawmasks();
+
+		for( j = headspritestat[15]; j >= 0;  j = nextspritestat[j])  // restore ceiling or floor
+		{
+			if(sprite[j].picnum==1 &&
+					sprite[j].lotag==k+2 &&
+					sprite[j].hitag==sprite[floor1].hitag)
+			{
+				if(k==150)
+				{
+					sector[sprite[j].sectnum].floorz=tempsectorz[sprite[j].sectnum];
+					sector[sprite[j].sectnum].floorpicnum=tempsectorpicnum[sprite[j].sectnum];
+				}
+				if(k==151)
+				{
+					sector[sprite[j].sectnum].ceilingz=tempsectorz[sprite[j].sectnum];
+					sector[sprite[j].sectnum].ceilingpicnum=tempsectorpicnum[sprite[j].sectnum];
+				}
+			}// end if
+		}// end for
+	} // end SE40
+	
 	public static byte[] oldgotsector = new byte[MAXSECTORS>>3];
 	public static void SE40_Draw(int spnum,int x,int y,int z,float a,float h,int smoothratio)
 	{
+	    int i = headspritestat[15];
+	    while(i >= 0)
+	    {
+	        switch(sprite[i].lotag)
+	        {
+	            case 152:
+	            case 153:
+	                if(ps[screenpeek].cursectnum == sprite[i].sectnum)
+	                    SE40_Old(i,x,y,z,a,h,smoothratio);
+	                break;
+	        }
+	        i = nextspritestat[i];
+	    }
+		
+		/*
 		int rtype=0;
 		boolean drawror = false;
 		for(int i = 0; i < 16; i++)
@@ -2001,15 +2105,22 @@ public class View {
 		
 		for( int i = headspritestat[15]; i >= 0;  i = nextspritestat[i])
 		{
-			if(i != spnum && sprite[i].picnum==1
-					&& sprite[i].hitag==sprite[spnum].hitag) 
+			if(i != spnum && sprite[i].picnum==1 && sprite[i].hitag==sprite[spnum].hitag) 
 			{ 
-				if(rtype == 1) nUpper = i;
-				if(rtype == 2) nLower = i;
-				break;
+				if(rtype == 1 && sprite[i].lotag == 150) {
+					nUpper = i;
+					break;
+				}
+				if(rtype == 2 && sprite[i].lotag == 151) {
+					nLower = i;
+					break;
+				}
 			}
 		}
-
+		
+		if(nUpper == -1 || nLower == -1)
+			return;
+		
 		int rsect = -1, rx = 0, ry = 0, rz = 0;
 		if(rtype == 1) {
 			rsect = sprite[nUpper].sectnum;
@@ -2031,6 +2142,7 @@ public class View {
 		engine.drawmasks();
 		
 		System.arraycopy(oldgotsector, 0, gotsector, 0, gotsector.length);
+		*/
 	} 
 	
 	public static void addmessage(String message) {

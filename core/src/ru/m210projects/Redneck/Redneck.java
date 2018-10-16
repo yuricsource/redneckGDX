@@ -1264,7 +1264,16 @@ public class Redneck {
 	        {
 	            if(  ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) )
 	            {
-	                if(j == 10 || j == 11)
+	            	if(j == 12) //last used weapon
+	            	{
+	            		j = p.curr_weapon;
+	            		if(p.last_used_weapon == 0 || p.last_used_weapon == 15)
+	            			j = p.last_used_weapon;
+	            		else if( p.gotweapon[p.last_used_weapon] && p.ammo_amount[p.last_used_weapon] > 0 )
+                            j = p.last_used_weapon;
+	            	}
+	            	
+	                if(j == 10 || j == 11) //next prev weapon
 	                {
 	                    k = p.curr_weapon;
 	                    switch ( k )

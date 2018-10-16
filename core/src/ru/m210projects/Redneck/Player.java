@@ -2003,6 +2003,7 @@ public class Player {
 			                if( (p.posz+p.poszv) >= (fz-(i<<8)) ) // hit the ground
 			                    if(sector[p.cursectnum].lotag != 1)
 			                    {
+			                    	p.CarOnGround = true;
 			                        if( p.falling_counter > 62 ) quickkill(p);
 		
 			                        else if( p.falling_counter > 9 )

@@ -197,11 +197,12 @@ public class Controls {
 	    for(int i = 0; i < 10; i++)
 			if(ctrlGetInputKey(i + Weapon_1, false))
 				loc.bits |= (i + 1)<<8;
-	    
 	    if(ctrlGetInputKey(Previous_Weapon, true)) 
 	    	loc.bits |= (11)<<8;
 	    if(ctrlGetInputKey(Next_Weapon, true)) 
 	    	loc.bits |= (12)<<8;
+	    if(ctrlGetInputKey(Last_Weapon_Switch, true)) 
+	    	loc.bits |= (13)<<8;
 	    
 	    loc.bits |=   ctrlGetInputKey(Moonshine, false)? 1 << 12 : 0;
 	    loc.bits |=   ctrlGetInputKey(Look_Up, false)? 1 << 13 : 0;
@@ -214,7 +215,6 @@ public class Controls {
 	    loc.bits |=   getInput().keyStatus(KEY_PAUSE)? 1 << 21 : 0;
 	    loc.bits |=   ctrlGetInputKey(Quick_pee, false)? 1 << 22 : 0;
 	    loc.bits |=   cfg.gMouseAim? 1 << 23 : 0;
-	    
 	    loc.bits |=   ctrlGetInputKey(Beer, false)? 1 << 24 : 0;
 	    loc.bits |=   ctrlGetInputKey(Cowpie, false)? 1 << 25 : 0;
 	    loc.bits |=   gamequit << 26;
@@ -223,9 +223,7 @@ public class Controls {
 	    loc.bits |=   ctrlGetInputKey(Open, false)? 1 << 29 : 0;
 	    loc.bits |=   ctrlGetInputKey(Inventory_Use, false)? 1 << 30 : 0;
 	    loc.bits |=   getInput().keyStatus(Keys.ESCAPE)? 1 << 31 : 0;
-	    
-	    if(ctrlGetInputKey(Last_Weapon_Switch, true))
-	    	loc.bits |= (p.last_used_weapon + 1)<<8;
+
 	    if((loc.bits&2) != 0) p.crouch_toggle = 0;
 	    if(ctrlGetInputKey(Crouch_toggle, true))
 	    	p.crouch_toggle ^= 1;

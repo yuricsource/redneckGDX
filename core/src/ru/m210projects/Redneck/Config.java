@@ -163,7 +163,7 @@ public class Config extends BConfig {
 		"AutoRun",
 		"Open",
 		"Weapon_Fire",
-		"Last_Weapon_Switch",
+		"Last_Used_Weapon",
 		"Aim_Up",
 		"Aim_Down",
 		"Aim_Center",
