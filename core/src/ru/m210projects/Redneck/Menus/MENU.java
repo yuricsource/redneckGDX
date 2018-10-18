@@ -88,6 +88,7 @@ public class MENU {
 		
 		if(pMenu != null) {
 			int opt = 0;
+<<<<<<< HEAD
 			if(ctrlKeyStatusOnce(Keys.UP) || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Move_Forward]))
 				opt = 2;
 			if(ctrlKeyStatusOnce(Keys.DOWN) || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Move_Backward]))
@@ -97,6 +98,17 @@ public class MENU {
 			if(ctrlKeyStatusOnce(Keys.RIGHT) || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Turn_Right]))
 				opt = 5;
 			if(ctrlKeyStatusOnce(Keys.ENTER) || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Open]))
+=======
+			if(ctrlKeyStatusOnce(Keys.UP) || cfg.useJoystick && ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Move_Forward]))
+				opt = 2;
+			if(ctrlKeyStatusOnce(Keys.DOWN) || cfg.useJoystick && ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Move_Backward]))
+				opt = 3;
+			if(ctrlKeyStatusOnce(Keys.LEFT) || cfg.useJoystick && ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Turn_Left]))
+				opt = 4;
+			if(ctrlKeyStatusOnce(Keys.RIGHT) || cfg.useJoystick && ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Turn_Right]))
+				opt = 5;
+			if(ctrlKeyStatusOnce(Keys.ENTER) || cfg.useJoystick && ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Open]))
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 				opt = 6;
 			if(ctrlGetInputKey(Menu_open, true)) 
 				opt = 7;

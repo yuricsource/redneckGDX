@@ -1180,6 +1180,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], mTitle, false);
 
 		int pos = 25;
+<<<<<<< HEAD
 
 		MenuSwitch mEnable = new MenuSwitch("Enabled:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
 			@Override
@@ -1230,6 +1231,52 @@ public class RRMenu {
 				int max = Math.max(0, controllers - 1);
 				int val = cfg.gJoyDevice;
 				this.num = val < min ? min : (val > max ? max : val);
+=======
+
+		MenuSwitch mEnable = new MenuSwitch("Enabled:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
+			@Override
+			public void run(MenuItem pItem) {
+				MenuSwitch sw = (MenuSwitch) pItem;
+				sw.value &= gpmanager.getControllers() > 0; // force disabled as needed
+				cfg.useJoystick = sw.value && cfg.gJoyDevice > -1;
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
+			}
+
+			@Override
+			public void draw() {
+				SndDriverDraw(this); // NOTE this draws the menu header with the right font !
+			}
+		};
+
+		MenuConteiner mJoyDevices = new MenuConteiner("Device:", 0, 46, pos += 15, 230, null, 0,
+				new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuConteiner item = (MenuConteiner) pItem;
+						int controllers = gpmanager.getControllers();
+						cfg.gJoyDevice = controllers > 0 ? item.num : -1;
+						cfg.useJoystick = cfg.gJoyDevice > -1;
+					}
+				}) {
+			@Override
+			public void open(MENU pMenu) {
+				int controllers = gpmanager.getControllers();
+				if (this.list == null) {
+					if (controllers > 0) {
+						this.list = new char[controllers][];
+						for (int i = 0; i < controllers; i++) {
+							this.list[i] = gpmanager.getControllerName(i).toCharArray();
+						}
+					} else {
+						this.list = new char[][]{"No joystick devices found".toCharArray()};
+					}
+				}
+
+				// handles unplugged device(s) between runs
+				int min = 0;
+				int max = Math.max(0, controllers - 1);
+				int val = cfg.gJoyDevice;
+				this.num = val < min ? min : (val > max ? max : val);
 			}
 
 			@Override
@@ -1245,6 +1292,8 @@ public class RRMenu {
 				mCheckEnableItem(this, gpmanager.getControllers() > 0);
 			}
 		};
+
+		pos += 5;
 
 		pos += 5;
 

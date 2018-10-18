@@ -73,19 +73,28 @@ public class Controls {
 	
 	public static boolean ctrlPadStatusOnce(int deviceIndex, int buttonCode)
 	{
+<<<<<<< HEAD
 		if(cfg.useJoystick && gpmanager.getControllers() > 0)
 			return gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
 		
 		return false;
+=======
+		return gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 	}
 	
 	public static boolean ctrlPadStatus(int deviceIndex, int buttonCode)
 	{
+<<<<<<< HEAD
 		if(cfg.useJoystick && gpmanager.getControllers() > 0)
 			return gpmanager.buttonStatus(deviceIndex, buttonCode);
 		
 		return false;
 	}	
+=======
+		return gpmanager.buttonStatus(deviceIndex, buttonCode);
+	}
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 	
 	public static boolean[] maxisstatus = new boolean[keynames.length];
 	public static boolean ctrlAxisStatusOnce(int keyId)
@@ -117,13 +126,21 @@ public class Controls {
 					|| input.keyStatusOnce(key2)
 					|| input.keyStatusOnce(keyM)
 					|| ctrlAxisStatusOnce(keyName)
+<<<<<<< HEAD
 					|| keyName > Turn_Right && ctrlPadStatusOnce(cfg.gJoyDevice, keyG);
+=======
+					|| cfg.useJoystick && keyName > Turn_Right && ctrlPadStatusOnce(cfg.gJoyDevice, keyG);
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 		} else {
 			return input.keyStatus(key1)
 					|| input.keyStatus(key2)
 					|| input.keyStatus(keyM)
 					|| ctrlAxisStatus(keyName)
+<<<<<<< HEAD
 					|| keyName > Turn_Right && ctrlPadStatus(cfg.gJoyDevice, keyG);
+=======
+					|| cfg.useJoystick && keyName > Turn_Right && ctrlPadStatus(cfg.gJoyDevice, keyG);
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 		}
 	}
 	
@@ -333,6 +350,7 @@ public class Controls {
         } else 
         	vel =  (short) BClipRange(vel - (mousy * cfg.gMouseMoveSpeed / 65536f), -4 * keymove, 4 * keymove);
 	    
+<<<<<<< HEAD
 	    if(cfg.useJoystick && gpmanager.getControllers() > 0) {
 			Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 			float lookx = stick1.x;
@@ -358,6 +376,35 @@ public class Controls {
 			}
 			if(plrx != 0) {
 				svel = (short) BClipRange(svel - (80 * plrx), -4 * keymove, 4 * keymove);
+=======
+	    if(cfg.useJoystick) {
+			Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
+			if(stick1 != null) {
+				float lookx = stick1.x;
+				float looky = stick1.y;
+				if(cfg.gJoyInvert) looky *= -1;
+				
+				if(looky != 0) {
+					float k = 1.0f;
+					horiz = BClipRange(horiz - k * looky * cfg.gJoyLookSpeed / 65536f, -(ydim>>1), 100+(ydim>>1));
+				}
+				
+				if(lookx != 0) {
+					float k = 64;
+					angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
+				}
+	
+				Vector2 stick2 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyStrafeAxis, cfg.gJoyMoveAxis);
+				float plrx = stick2.x;
+				float plry = stick2.y;
+	
+				if(plry != 0) {
+					vel = (short) BClipRange(vel - (80 * plry), -4 * keymove, 4 * keymove);
+				}
+				if(plrx != 0) {
+					svel = (short) BClipRange(svel - (80 * plrx), -4 * keymove, 4 * keymove);
+				}
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 			}
         }
 
@@ -464,9 +511,15 @@ public class Controls {
 	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
 	    int bike_turn = 0; 
+<<<<<<< HEAD
 	    if(cfg.useJoystick && gpmanager.getControllers() > 0) { 
 	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 	    	bike_turn = (int) stick1.x;
+=======
+	    if(cfg.useJoystick) { 
+	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
+	    	if(stick1 != null) bike_turn = (int) stick1.x;
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 	    }
 	    if ( bike_turn > 0 ) left = true;
 	    if ( bike_turn < 0 ) right = true;
@@ -639,9 +692,15 @@ public class Controls {
 	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
 	    int bike_turn = 0; 
+<<<<<<< HEAD
 	    if(cfg.useJoystick && gpmanager.getControllers() > 0) { 
 	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 	    	bike_turn = (int) stick1.x;
+=======
+	    if(cfg.useJoystick) { 
+	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
+	    	if(stick1 != null) bike_turn = (int) stick1.x;
+>>>>>>> e208f73c04347269ce90277ccd127fd7f27b9312
 	    }
 	    if ( bike_turn > 0 ) left = true;
 	    if ( bike_turn < 0 ) right = true;
