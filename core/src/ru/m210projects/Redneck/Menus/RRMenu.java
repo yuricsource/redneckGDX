@@ -1181,34 +1181,12 @@ public class RRMenu {
 
 		int pos = 25;
 
-		MenuSwitch mEnable = new MenuSwitch("Enabled:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
-			@Override
-			public void run(MenuItem pItem) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				sw.value &= gpmanager.getControllers() > 0; // force disabled as needed
-				cfg.useJoystick = sw.value && cfg.gJoyDevice > -1;
-			}
-		}, "Yes", "No") {
-			@Override
-			public void open(MENU pMenu) {
-				if(gpmanager.getControllers() > 0)
-					this.value = cfg.useJoystick;
-				else {
-					this.value = false;
-					mCheckEnableItem(this, false);
-					this.flags = 3; //enable navigation, because first item of menu
-				}
-			}
-		};
-
 		MenuConteiner mJoyDevices = new MenuConteiner("Device:", 0, 46, pos += 15, 230, null, 0,
 				new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuConteiner item = (MenuConteiner) pItem;
-						int controllers = gpmanager.getControllers();
-						cfg.gJoyDevice = controllers > 0 ? item.num : -1;
-						cfg.useJoystick = cfg.gJoyDevice > -1;
+						cfg.gJoyDevice = item.num;
 					}
 				}) {
 			@Override
@@ -1344,8 +1322,7 @@ public class RRMenu {
 			}
 		}, "Yes", "No");
 
-		mAddItem(mMenus[nMenuId], mEnable, true);
-		mAddItem(mMenus[nMenuId], mJoyDevices, false);
+		mAddItem(mMenus[nMenuId], mJoyDevices, true);
 		mAddItem(mMenus[nMenuId], mJoyKey, false);
 		mAddItem(mMenus[nMenuId], mJoyTurn, false);
 		mAddItem(mMenus[nMenuId], mJoyLook, false);
