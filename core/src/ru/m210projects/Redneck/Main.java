@@ -50,7 +50,7 @@ import ru.m210projects.Redneck.Types.RREngine;
 public class Main extends ApplicationAdapter {
 	
 	/*
-	 * v0.753
+	 * v0.760
 	 * Autoload folder can load resources as cusspack
 	 * Addons support
 	 * Torches fix
@@ -61,9 +61,6 @@ public class Main extends ApplicationAdapter {
 	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
-	 * slope на воде e2m1 RA
-	 * при приседании скорость в порте не меняется суда по x/yvel
-	 * не разбиваются статуи на e2m7
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
@@ -75,11 +72,11 @@ public class Main extends ApplicationAdapter {
 	 */
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.753";
+	public static final String sversion = "v0.760";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();
-	public static boolean release = false;
+	public static boolean release = true;
 	
 	public static RREngine engine;
 	public static Config cfg;
@@ -113,7 +110,6 @@ public class Main extends ApplicationAdapter {
 
 			MemLog.log("create");
 			System.gc();
-
 		} catch (Exception e) {
 			dassert(exceptionHandler(e) + " in create(): "
 				+ (e.getMessage() == null ? e.toString() : e.getMessage())

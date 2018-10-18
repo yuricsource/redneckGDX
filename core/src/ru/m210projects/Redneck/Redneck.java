@@ -171,7 +171,8 @@ public class Redneck {
 	public static void InitRR(Message message)
 	{
 		try {
-			initgroupfile("Redneck.grp");
+			if(initgroupfile("Redneck.grp") == -1)
+				throw new Exception("Resource initialization error!");
 
 			BAudio audio = new BAudio(fxdrivers[cfg.snddrv], mxdrivers[cfg.middrv]);
 			engine = new RREngine(message, audio, true);

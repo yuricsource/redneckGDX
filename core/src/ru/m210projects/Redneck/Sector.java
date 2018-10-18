@@ -2636,12 +2636,12 @@ public class Sector {
 	        case 2158: 
 	        case 2160: 
 	        case 2175: 
-	        	sprite[i].picnum++;
-	            spritesound(19,i);
-	            lotsofglass2(i, -1, 10);
 	        case 2137: 
 	        case 2151: 
 	        case 2152: 
+	        	sprite[i].picnum++;
+	            spritesound(19,i);
+	            lotsofglass2(i, -1, 10);
 	        	for(j=0;j<6;j++)
 	        	{
 	        		EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sector[sprite[i].sectnum].floorz-(8<<8),SCRAP6+(engine.krand()&15),-8,48,48,

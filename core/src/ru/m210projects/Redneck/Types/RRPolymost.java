@@ -428,6 +428,9 @@ public class RRPolymost extends Polymost {
 				if (k < 0)
 					continue;
 
+				if(wal.nextsector < 0)
+					continue;
+				
 				if (sector[wal.nextsector].ceilingz == z1)
 					if (sector[wal.nextsector].floorz == z2)
 						if (((wal.cstat | wall[wal.nextwall].cstat) & (16 + 32)) == 0)

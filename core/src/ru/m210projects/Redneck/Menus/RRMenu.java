@@ -2933,7 +2933,13 @@ public class RRMenu {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuTextField item = (MenuTextField) pItem;
-						cfg.mPort = Integer.parseInt(item.typed);
+						if(item.typed.length() < 8) {
+							cfg.mPort = Integer.parseInt(item.typed);
+						}
+						else {
+							System.arraycopy(item.otypingBuf, 0, item.typingBuf, 0, 16);
+							item.inputlen = item.oinputlen;
+						}
 					}
 				});
 
@@ -3024,7 +3030,13 @@ public class RRMenu {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuTextField item = (MenuTextField) pItem;
-						cfg.mPort = Integer.parseInt(item.typed);
+						if(item.typed.length() < 8) {
+							cfg.mPort = Integer.parseInt(item.typed);
+						}
+						else {
+							System.arraycopy(item.otypingBuf, 0, item.typingBuf, 0, 16);
+							item.inputlen = item.oinputlen;
+						}
 					}
 				});
 
@@ -3162,7 +3174,8 @@ public class RRMenu {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuConteiner item = (MenuConteiner) pItem;
-				if(item.num > mGameInfo.nEpisodes) item.num = mGameInfo.nEpisodes;
+				if(item.num >= mGameInfo.nEpisodes - 1) 
+					item.num = mGameInfo.nEpisodes - 1;
 				ud.m_volume_number = item.num;
 				mLevelsUpdate.run(mMenuLevel);
 			}

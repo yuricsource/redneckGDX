@@ -637,7 +637,7 @@ public class Player {
 	    else if(p.snorkle_amount > 0 && p.scuba_on != 0)
 	    {
 	        p.snorkle_amount--;
-	        if(p.snorkle_amount == 1)
+	        if(p.snorkle_amount == 0)
 	        {
 	            p.scuba_on = 0;
 	            checkavailinven(p);

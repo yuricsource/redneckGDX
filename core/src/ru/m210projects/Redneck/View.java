@@ -52,6 +52,7 @@ import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Menus.MENU.*;
 import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Weapons.*;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -653,7 +654,7 @@ public class View {
 	            invennum(x+27, 194, i, 0, 8 | 256);
 	        }
 	        
-	        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, 9236, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
+	        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, GUTSMETTER, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
 	        p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
 			if(p.alcohol_amount >= 100)
 			{
@@ -688,8 +689,8 @@ public class View {
         }
         
         if (ud.multimode > 1 && ud.coop != 1) {
-        	if(waloff[9237] != null)
-        		engine.rotatesprite(133<<16,(168) << 16,32768,0,9237,0,0,10+16,0,0,xdim-1,ydim-1);
+        	if(waloff[KILLSSIGN] != null)
+        		engine.rotatesprite(133<<16,(168) << 16,32768,0,KILLSSIGN,0,0,10+16,0,0,xdim-1,ydim-1);
         	else engine.rotatesprite(142<<16,(169) << 16,65536,0,KILLSICON,0,0,10+16,0,0,xdim-1,ydim-1);
         }
 	    

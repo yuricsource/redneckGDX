@@ -25,6 +25,7 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Screen.*;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Config.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
@@ -210,7 +211,7 @@ public class MENU {
 		if(mCount > 1) {
 			//Back button
 			int zoom = scale(16384, ydim, 200);
-			int size = mulscale(tilesizx[9235], zoom, 16);
+			int size = mulscale(tilesizx[BACKBUTTON], zoom, 16);
 			int bx = 0;
 			int by = ydim - size;
 			if(mx >= bx && mx < bx + size)
@@ -256,7 +257,7 @@ public class MENU {
 		if(cfg.menuMouse && mCount > 1) {
 			//Back button
 			int shade = 4 + mulscale(16, sintable[(20 * totalclock) & kAngleMask], 16);
-			engine.rotatesprite(0, (ydim-mulscale(tilesizy[9235], zoom, 16))<<16, zoom, 0, 9235, shade, 0, 8|16, 0, 0, mulscale(zoom, tilesizx[9235]-1, 16), ydim-1);
+			engine.rotatesprite(0, (ydim-mulscale(tilesizy[BACKBUTTON], zoom, 16))<<16, zoom, 0, BACKBUTTON, shade, 0, 8|16, 0, 0, mulscale(zoom, tilesizx[BACKBUTTON]-1, 16), ydim-1);
 		}
 
 		cfg.gMouseCursor = ClipRange(cfg.gMouseCursor, 0, mCursorTile.length - 1);
