@@ -236,7 +236,7 @@ public class MenuSlotList extends MenuItem
 			if(opt != 7) {
 				if(gpmanager != null)
 					gpmanager.handler();
-				if(getInput().putMessage(16, true, false, false) == 1 || ctrlPadStatusOnce(cfg.gpadkeys[Open]))
+				if(getInput().putMessage(16, true, false, false) == 1 || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Open]))
 				{
 					typed = new String(getInput().getMessageBuffer(), 0, getInput().getMessageLength());
 					typing = false;

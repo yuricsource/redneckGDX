@@ -149,7 +149,7 @@ public class MenuTextField extends MenuItem {
 			if(opt != 7) {
 				if(gpmanager != null)
 					gpmanager.handler();
-				if(getInput().putMessage(inputCallback, true) == 1 || ctrlPadStatusOnce(cfg.gpadkeys[Open]))
+				if(getInput().putMessage(inputCallback, true) == 1 || ctrlPadStatusOnce(cfg.gJoyDevice, cfg.gpadkeys[Open]))
 				{
 					typed = new String(typingBuf, 0, inputlen);
 					typing = false;
