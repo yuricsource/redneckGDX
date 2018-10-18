@@ -73,19 +73,13 @@ public class Controls {
 	
 	public static boolean ctrlPadStatusOnce(int deviceIndex, int buttonCode)
 	{
-		if(cfg.useJoystick && gpmanager.getControllers() > 0)
-			return gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
-		
-		return false;
+		return gpmanager.isValidDevice(deviceIndex) && gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
 	}
 	
 	public static boolean ctrlPadStatus(int deviceIndex, int buttonCode)
 	{
-		if(cfg.useJoystick && gpmanager.getControllers() > 0)
-			return gpmanager.buttonStatus(deviceIndex, buttonCode);
-		
-		return false;
-	}	
+		return gpmanager.isValidDevice(deviceIndex) && gpmanager.buttonStatus(deviceIndex, buttonCode);
+	}
 	
 	public static boolean[] maxisstatus = new boolean[keynames.length];
 	public static boolean ctrlAxisStatusOnce(int keyId)
@@ -333,7 +327,7 @@ public class Controls {
         } else 
         	vel =  (short) BClipRange(vel - (mousy * cfg.gMouseMoveSpeed / 65536f), -4 * keymove, 4 * keymove);
 	    
-	    if(cfg.useJoystick && gpmanager.getControllers() > 0) {
+	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
 			Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 			float lookx = stick1.x;
 			float looky = stick1.y;
@@ -464,7 +458,7 @@ public class Controls {
 	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
 	    int bike_turn = 0; 
-	    if(cfg.useJoystick && gpmanager.getControllers() > 0) { 
+	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
 	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 	    	bike_turn = (int) stick1.x;
 	    }
@@ -639,7 +633,7 @@ public class Controls {
 	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
 	    int bike_turn = 0; 
-	    if(cfg.useJoystick && gpmanager.getControllers() > 0) { 
+	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
 	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 	    	bike_turn = (int) stick1.x;
 	    }
