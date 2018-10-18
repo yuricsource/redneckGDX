@@ -121,7 +121,7 @@ public class MenuList extends MenuItem
 			    	while(text.get(l_nFocus) == null)
 			    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
 					if(mGetFocusedItem(m_pMenu, this)) {
-						int yoff = 0;
+						int yoff = 13;
 					    int scale = 4096;
 				    	int yoffset = -4;
 						if(textStyle == 1) { yoffset = -6; }
@@ -135,7 +135,10 @@ public class MenuList extends MenuItem
 				}
 			    
 			    if(text.get(i) != null) {
-				    mDrawText(textStyle, text.get(i), px, py, shade, pal, 0, 0);
+			    	int yoff = 0;
+				    if(textStyle == 2) yoff = 13;
+
+				    mDrawText(textStyle, text.get(i), px, py + yoff, shade, pal, 0, 0);
 					py += aligny + nItemHeight;
 			    }
 			}

@@ -1909,7 +1909,7 @@ public class Weapons {
 		            	else {
 		            		if(p.chiken_phase != 0)
 		            			myospal(posx - (p.look_ang>>1), posy - 3, 36700, 3489, gs, o, pal);
-		            		else if((engine.krand() & 15) == 5)
+		            		else if(p.chiken_pic == 5)
 		            		{
 		            			myospal(posx - (p.look_ang>>1), posy - 3, 36700, 3489, gs, o, pal);
 		            			p.chiken_phase = 6;

@@ -171,7 +171,8 @@ public class Redneck {
 	public static void InitRR(Message message)
 	{
 		try {
-			initgroupfile("Redneck.grp");
+			if(initgroupfile("Redneck.grp") == -1)
+				throw new Exception("Resource initialization error!");
 
 			BAudio audio = new BAudio(fxdrivers[cfg.snddrv], mxdrivers[cfg.middrv]);
 			engine = new RREngine(message, audio, true);
@@ -744,11 +745,12 @@ public class Redneck {
 						    }
 	                    	
 	                    	if(scenestatus == 0 && !anmInited())
-	                    		scenestatus = 2;
+	                    		scenestatus = 1;
 	                    	
 	                    	getInput().resetKeyStatus();
 							gpmanager.resetButtonStatus();
-	                    	gm |= MODE_CUTSCENE;
+	                    	
+                    		gm |= MODE_CUTSCENE;
 	                    	gCutsClock = totalclock - 199;
 		                    return;
 	                    }
@@ -764,6 +766,11 @@ public class Redneck {
 					if (dobonus(false)) {
 						getInput().resetKeyStatus();
 						gpmanager.resetButtonStatus();
+						
+//						if ( ud.volume_number == 1 && ud.level_number >= currentGame.episodes[ud.volume_number].nMaps ) {
+//							backtomenu();
+//							return;
+//						}
 
 		                ready2send = false;
 			            if(numplayers > 1) 
@@ -992,6 +999,10 @@ public class Redneck {
 //	    	        0,pHitInfo,CLIPMASK0);
 //	    	if(pHitInfo.hitsprite != -1)
 //	    	System.err.println(pHitInfo.hitsprite + " " + sprite[pHitInfo.hitsprite].picnum);
+//	    	
+//	    	if(pHitInfo.hitwall != -1)
+//	    		System.err.println(pHitInfo.hitwall + " " + wall[pHitInfo.hitwall].picnum + " " + wall[pHitInfo.hitwall].overpicnum);
+//	    	
 //	    }
 
 	    if( ud.pause_on == 0 )
@@ -1254,7 +1265,16 @@ public class Redneck {
 	        {
 	            if(  ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) )
 	            {
-	                if(j == 10 || j == 11)
+	            	if(j == 12) //last used weapon
+	            	{
+	            		j = p.curr_weapon;
+	            		if(p.last_used_weapon == 0 || p.last_used_weapon == 15)
+	            			j = p.last_used_weapon;
+	            		else if( p.gotweapon[p.last_used_weapon] && p.ammo_amount[p.last_used_weapon] > 0 )
+                            j = p.last_used_weapon;
+	            	}
+	            	
+	                if(j == 10 || j == 11) //next prev weapon
 	                {
 	                    k = p.curr_weapon;
 	                    switch ( k )

@@ -507,13 +507,13 @@ public class RRMenu {
         		if ( ud.warp_on == 2) 
         			Console.Println("Start user map - " + boardfilename);
                 
-				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
+				newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
 				enterlevel(MODE_GAME);
 				mClose();
 			}
 		};
 
-		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 59, 320, 1, 5, null, newGameProc, nMaxSkills) {
+		MenuList mSlot = new MenuList(mSkilllist, 2, 0, 46, 320, 1, 5, null, newGameProc, nMaxSkills) {
 			@Override
 			public void open(MENU pMenu) {
 				if(this.text.size() > 1)
@@ -621,7 +621,9 @@ public class RRMenu {
 								if (!kGameCrash) 
 									ready2send = true;
 							} 
-							addmessage("Incompatible version of saved game found!");
+							if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+								FTA(53, ps[myconnectindex]);
+							else addmessage("Incompatible version of saved game found!");
 						}
 					}
 				});
@@ -2958,7 +2960,13 @@ public class RRMenu {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuTextField item = (MenuTextField) pItem;
-						cfg.mPort = Integer.parseInt(item.typed);
+						if(item.typed.length() < 8) {
+							cfg.mPort = Integer.parseInt(item.typed);
+						}
+						else {
+							System.arraycopy(item.otypingBuf, 0, item.typingBuf, 0, 16);
+							item.inputlen = item.oinputlen;
+						}
 					}
 				});
 
@@ -3049,7 +3057,13 @@ public class RRMenu {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuTextField item = (MenuTextField) pItem;
-						cfg.mPort = Integer.parseInt(item.typed);
+						if(item.typed.length() < 8) {
+							cfg.mPort = Integer.parseInt(item.typed);
+						}
+						else {
+							System.arraycopy(item.otypingBuf, 0, item.typingBuf, 0, 16);
+							item.inputlen = item.oinputlen;
+						}
 					}
 				});
 
@@ -3187,7 +3201,8 @@ public class RRMenu {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuConteiner item = (MenuConteiner) pItem;
-				if(item.num > mGameInfo.nEpisodes) item.num = mGameInfo.nEpisodes;
+				if(item.num >= mGameInfo.nEpisodes - 1) 
+					item.num = mGameInfo.nEpisodes - 1;
 				ud.m_volume_number = item.num;
 				mLevelsUpdate.run(mMenuLevel);
 			}

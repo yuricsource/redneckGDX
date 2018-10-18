@@ -136,7 +136,11 @@ public class RROSDFunc extends DEFOSDFUNC {
 		
 //		System.err.println("/*" + cheatnum++ + "*/" + "\"" + cheat + "\", // " + message);
 
-		if (cheat.startsWith(cheatCode[7]) || cheat.startsWith(cheatCode[10])) {
+		boolean IsSkillCheat = cheat.startsWith(cheatCode[7]);
+		boolean IsSkipMapCheat = cheat.startsWith(cheatCode[10]);
+
+		if (IsSkillCheat || IsSkipMapCheat) {
+			boolean bad = false;
 			i = 0;
 			while (i < message.length() && message.charAt(i) != 0
 					&& message.charAt(i) != ' ')
@@ -148,7 +152,8 @@ public class RROSDFunc extends DEFOSDFUNC {
 					&& message.charAt(i) != ' ')
 				i++;
 
-			if (i <= message.length()) {
+			if (i <= message.length()) 
+			{
 				String nEpisode = message.substring(startpos, i);
 				nEpisode = nEpisode.replaceAll("[^0-9]", "");
 				if (!nEpisode.isEmpty()) {
@@ -169,16 +174,20 @@ public class RROSDFunc extends DEFOSDFUNC {
 								lvl = Integer.parseInt(nLevel);
 								wrap2 = true;
 							}
-						} else {
-							Console.Println("rdmeadow [episode] [level]");
-							return false;
-						}
+						} else if(IsSkipMapCheat) bad = true;
 					} catch (Exception e) {
 					}
-				} else {
+				} else bad = true;
+			} else bad = true;
+
+			
+			if(bad)
+			{
+				if(IsSkipMapCheat) 
 					Console.Println("rdmeadow [episode] [level]");
-					return false;
-				}
+				else if(IsSkillCheat)
+					Console.Println("rdskill [skill]");
+				return true;
 			}
 		}
 

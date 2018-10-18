@@ -34,7 +34,7 @@ import ru.m210projects.Build.desktop.Launcher.LaunchCallback;
 import ru.m210projects.Build.desktop.audio.ALSoundDrv;
 import ru.m210projects.Build.desktop.audio.GdxAL;
 import ru.m210projects.Build.desktop.audio.LwjglAL;
-import ru.m210projects.Build.desktop.audio.midi.DavidMusicModule;
+import ru.m210projects.Build.desktop.audio.midi.MidiMusicModule;
 import ru.m210projects.Build.desktop.extension.DeskApplication;
 import ru.m210projects.Build.desktop.extension.DeskApplicationConfiguration;
 import ru.m210projects.Redneck.Config;
@@ -90,7 +90,6 @@ public class DesktopLauncher {
 		Console.Println("Running on " + Main.OS + " (version " + osver + ")");
 		Console.Println("\t with JRE version: " + jrever + "\r\n");
 
-		
 		for(int i = 16; i <= 256; i *= 2) 
 			lwjglConfig.addIcon("icons/RR" + i + ".png", FileType.Internal);
 		
@@ -118,7 +117,7 @@ public class DesktopLauncher {
 		if(midiDevice != -1) {
 			Main.mxdrivers = new Music[] {
 				new DummyMusic(),
-				new DavidMusicModule(midiDevice),
+				new MidiMusicModule(midiDevice, null),
 			};
 			if(cfg.middrv > Main.mxdrivers.length)
 				cfg.middrv = 0;

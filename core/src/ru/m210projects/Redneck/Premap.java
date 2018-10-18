@@ -42,6 +42,7 @@ import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.*;
+import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Actors.*;
@@ -692,11 +693,11 @@ public class Premap {
 	    }
 	    else
 	    {
-	    	 UFO_SpawnCount = (ud.m_player_skill << 2) + 1;
+	    	 UFO_SpawnCount = (ud.player_skill << 2) + 1;
 	    	 if ( UFO_SpawnCount > 32 )
 	    		 UFO_SpawnCount = 32;
 	    	 UFO_SpawnTime = 0;
-	    	 UFO_SpawnHulk = ud.m_player_skill + 1;
+	    	 UFO_SpawnHulk = ud.player_skill + 1;
 	    }
 	}
 	
@@ -1410,13 +1411,7 @@ public class Premap {
 	    	visibility = ps[screenpeek].visibility;
 	    }
 	    
-	    tilesizy[0] = 0;
-	    tilesizx[0] = 0;
-	    waloff[0] = null;
-	    
-	    tilesizy[13] = 0; //ROR tile
-	    tilesizx[13] = 0;
-	    waloff[13] = null;
+	    InitSpecialTextures();
 	    
 	    gNameShowTime = 500;
 	}
@@ -1452,6 +1447,8 @@ public class Premap {
 	    
 	    ud.level_number =   ln;
 	    ud.volume_number =  vn;
+	    if(currentGame.getCON().type != RRRA) 
+	    	sk++;
 	    ud.player_skill =   sk;
 	    ud.secretlevel =    0;
 	    ud.from_bonus = 0;

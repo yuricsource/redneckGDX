@@ -8,6 +8,7 @@ import static ru.m210projects.Build.FileHandle.Compat.getFilename;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
@@ -31,6 +32,10 @@ import ru.m210projects.Redneck.Types.GameInfo;
 
 public class ResourceHandler {
 	
+	public static final int BACKBUTTON = 9237;
+	public static final int GUTSMETTER = 9238;
+	public static final int KILLSSIGN = 9239;
+	
 	public static int[] deftiletovox = new int[MAXTILES];
 	
 	private static int usergroup;
@@ -38,32 +43,40 @@ public class ResourceHandler {
 
 	public static final int[][] replace = {
 		{ 3363, 9217, 0x7dbfeb81 }, 
-		{ 3364, 9218, 0xa5597825 }, 
-		{ 3415, 9219, 0x8e7e5403 }, 
-		{ 3416, 9220, 0x85e8efed }, 
-		{ 3417, 9221, 0xc8593b46 }, 
-		{ 3418, 9222, 0x33e84b95 }, 
-		{ 3453, 9223, 0x6b3fe05b },
-		{ 3454, 9224, 0x94fd4ae7 },
-		{ 3455, 9225, 0xdac92bd0 },
-		{ 3456, 9226, 0xe24aad2f },
-		{ 3457, 9227, 0x951da8a7 },
-		{ 3458, 9228, 0x1f712375 },
+		{ 3364, 9218, 0x2cc3f6c9 }, 
+		{ 3415, 9219, 0xc1230767 }, 
+		{ 3416, 9220, 0xacaaa49c }, 
+		{ 3417, 9221, 0x237f9b83 }, 
+		{ 3418, 9222, 0x7508a5b9 }, 
+		{ 3453, 9223, 0x40870de8 },
+		{ 3454, 9224, 0x5d46d512 },
+		{ 3455, 9225, 0xdc2832ef },
+		{ 3456, 9226, 0x92ee2add },
+		{ 3457, 9227, 0x6ff18f18 },
+		{ 3458, 9228, 0xd4a5ae9a },
 		
-		{ 7170, 9238, 0x6ae0ef58 }, //RA
-		{ 7171, 9239, 0xca7aade1 },
-		{ 7172, 9240, 0x2ffabf2f },
-		{ 7173, 9241, 0x1752cc40 },
-		{ 7174, 9242, 0x68d8cb91 },
-		{ 7175, 9243, 0xc340bd18 },
-		{ 7176, 9244, 0x81906353 },
-		{ 7177, 9245, 0x80f6302b },
-		{ 7178, 9246, 0xc2fa1ec },
-		{ 7179, 9247, 0xc7158fae },
-		{ 7180, 9248, 0xb0579843 },
-		{ 7181, 9249, 0xa8ce255b },
-		{ 7182, 9250, 0xe303385 },
-		{ 7183, 9251, 0x461043d },
+		{ 3483, 9231, 0x5f540506 }, //RA
+		{ 3484, 9229, 0x5d46d512 },
+		{ 3485, 9230, 0xdc2832ef },
+		{ 3486, 9232, 0xdad4bf27 },
+		{ 3487, 9233, 0xb4072cdd },
+		{ 3488, 9234, 0x74adda9e },
+		{ 3511, 9235, 0x7ecf8467 },
+		{ 3515, 9236, 0x5c078007 },
+		{ 7170, 9240, 0x3ec225f2 }, 
+		{ 7171, 9241, 0xadd86032 },
+		{ 7172, 9242, 0x48a62a19 },
+		{ 7173, 9243, 0x9e6d81ef },
+		{ 7174, 9244, 0x7533bf87 },
+		{ 7175, 9245, 0x4839e578 },
+		{ 7176, 9246, 0xc3361622 },
+		{ 7177, 9247, 0xf2023e92 },
+		{ 7178, 9248, 0x69ccdc8 },
+		{ 7179, 9249, 0x4f858cef },
+		{ 7180, 9250, 0xe2e2dcd7 },
+		{ 7181, 9251, 0x70991197 },
+		{ 7182, 9252, 0x507a5475 },
+		{ 7183, 9253, 0xa91a2178 },
 	};
 
 	public static void LoadUserRes()
@@ -100,17 +113,19 @@ public class ResourceHandler {
 			}
 			bb.clear();
 			bb = null;
-			
+
 			CRC32 tilecrc32 = new CRC32();
 			for(int i = 0; i < replace.length; i++)
 			{
 				int tilenume = replace[i][0];
 				int newtile = replace[i][1];
 				long crc32 = replace[i][2] & 0xFFFFFFFFL;
+				
 				if(waloff[tilenume] == null)
 					if(engine.loadtile(tilenume) == null)
 						continue; //nothing replace
 				
+				tilecrc32.reset();
 				tilecrc32.update(waloff[tilenume]);
 				if(tilecrc32.getValue() != crc32) //RA protect
 					continue;
@@ -148,9 +163,7 @@ public class ResourceHandler {
 		
 		LoadUserRes();
 		
-		tilesizy[0] = 0;
-	    tilesizx[0] = 0;
-	    waloff[0] = null;
+		InitSpecialTextures();
 	    
 	    BowlReset();
 	    
@@ -301,5 +314,16 @@ public class ResourceHandler {
 		else {
 			GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}
+	}
+	
+	public static void InitSpecialTextures()
+	{
+		tilesizx[GRID] = tilesizy[GRID] = 0;
+	    waloff[GRID] = null;
+		tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
+		
+		tilesizy[13] = 0; //ROR tile
+	    tilesizx[13] = 0;
+	    waloff[13] = null;
 	}
 }

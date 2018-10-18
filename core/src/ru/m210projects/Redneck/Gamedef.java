@@ -3065,9 +3065,11 @@ public class Gamedef {
 	            
 	            if(ud.multimode < 2)
 	            {
-	                if( lastload != null && ud.recstat != 2 )
-	                	mOpen(mMenus[LOADGAME], -1);
-	                else gm = MODE_RESTART;
+	            	if((currentGame.getCON().type != RRRA && ud.player_skill >= 5) || lastload == null || ud.recstat == 2)
+	            		gm = MODE_RESTART;
+	            	else 
+		               mOpen(mMenus[LOADGAME], -1);
+	            	
 	                killit_flag = 2;
 	            }
 	            else
