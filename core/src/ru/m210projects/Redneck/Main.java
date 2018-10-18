@@ -100,17 +100,6 @@ public class Main extends ApplicationAdapter {
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 
-			if (gpmanager.getControllers() <= 0) {
-				cfg.useJoystick = false;
-				cfg.gJoyDevice = -1;
-			}
-
-			if (cfg.useJoystick == false || cfg.gJoyDevice == -1)
-			{
-				cfg.useJoystick = false;
-				cfg.gJoyDevice = -1;
-			}
-
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 			engine.setanisotropy(cfg, cfg.anisotropy);
