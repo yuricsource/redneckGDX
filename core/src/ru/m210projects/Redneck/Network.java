@@ -32,6 +32,7 @@ import static ru.m210projects.Redneck.Types.Demo.*;
 import static ru.m210projects.Redneck.Types.RTS.*;
 import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Audio.BAudio.SOUNDDRV;
+import static ru.m210projects.Build.Net.Mmulti.canSend;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.getpacket;
@@ -103,6 +104,12 @@ public class Network {
 	{
 		if (numplayers < 2) return true;
 
+		for(int i=connecthead;i>=0;i=connectpoint2[i])
+		{
+			if (i != myconnectindex) 
+				while(!canSend(i));
+		}
+		
 		packbuf[0] = kPacketSlaveProfile;
 		sendtoall(packbuf,1);
 		playerreadyflag[myconnectindex]++;
@@ -441,6 +448,7 @@ public class Network {
 							connecthead = connectpoint2[connecthead];
 							sound(GENERIC_AMBIENCE17);
 							NetDisconnect(myconnectindex);
+							return 1;
 						}
 						else 
 							for ( j = connecthead; j >= 0; j = connectpoint2[j] )
@@ -452,8 +460,10 @@ public class Network {
 								}
 							}
 
-						numplayers--;
-						ud.multimode--;
+						if(numplayers > 1) {
+							numplayers--;
+							ud.multimode = numplayers;
+						}
 
 						if(gm == MODE_GAME) {
 							quickkill(ps[other]);

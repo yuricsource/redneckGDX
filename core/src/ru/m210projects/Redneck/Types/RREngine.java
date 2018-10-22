@@ -236,9 +236,10 @@ public class RREngine extends Engine {
 	        {
 	            packbuf[0] = kPacketEmpty;
 	            for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
-	               {
-				   sendpacket(i,packbuf,1);
-				   }
+	            {
+	            	while(!canSend(i)); //GDX 22.10.2018
+	            	sendpacket(i,packbuf,1);
+				}
 	            return;
 	        }
 
