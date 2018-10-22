@@ -391,10 +391,15 @@ public class MenuSlotList extends MenuItem
 	
 	@Override
 	public void close(MENU pMenu) {
+		deleteQuestion = false;
+		typing = false;
 	}
 
 	@Override
 	public boolean mouseAction(int mx, int my) {
+		if(deleteQuestion || typing)
+			return false;
+		
 		if(!Gdx.input.isTouched()) 
 			scrollTouch= false;
 		
