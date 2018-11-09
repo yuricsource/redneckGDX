@@ -49,7 +49,7 @@ public class RREngine extends Engine {
 			throws Exception {
 		super(message, audio, releasedEngine);
 		compatibleMode = true;
-		SETSPRITEZ = 1;
+//		SETSPRITEZ = 1;
 	}
 	
 	public void inittimer(int tickspersecond) {

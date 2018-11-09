@@ -226,7 +226,8 @@ public class View {
                     	buildString(buffer, 0, currentGame.episodes[ud.volume_number].Title);
 	                    minitext(5,a,buffer,65536, 0,0,8+16+256);
 	                    Arrays.fill(buffer, (char)0);
-                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
+	                    if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
+	                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
 	                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
 	                    
 	                    if ( cfg.gShowStat == 2 ) {
@@ -1748,25 +1749,28 @@ public class View {
 	                if( (s.z-daz) < (8<<8) )
 	                    if( ps[screenpeek].posz < daz )
 	                {
-	                    if( tsprite[spritesortcnt] == null )
-	                    	 tsprite[spritesortcnt] = new SPRITE();
-	                    	
-	                    tsprite[spritesortcnt].set(t);
-	                    tsprite[spritesortcnt].statnum = 99;
+                    	if(tsprite[spritesortcnt] == null)
+	                    	tsprite[spritesortcnt] = new SPRITE();
+	                    SPRITE tspr = tsprite[spritesortcnt];
+	                    tspr.set(t);
+	                    int camangle = engine.getangle(x - tspr.x, y - tspr.y);
+	                    tspr.x -= mulscale(sintable[(camangle + 512)& 2047], 10, 16);
+	                    tspr.y += mulscale(sintable[(camangle + 1024) & 2047], 10, 16);  
+	                    tspr.statnum = 99;
 
-	                    tsprite[spritesortcnt].yrepeat = (short) ( t.yrepeat>>3 );
+	                    tspr.yrepeat = (short) ( t.yrepeat>>3 );
 	                    if(t.yrepeat < 4) t.yrepeat = 4;
 
-	                    tsprite[spritesortcnt].shade = 127;
-	                    tsprite[spritesortcnt].cstat |= 2;
+	                    tspr.shade = 127;
+	                    tspr.cstat |= 2;
 
-	                    tsprite[spritesortcnt].z = daz;
-	                    xrep = tsprite[spritesortcnt].xrepeat;
-	                    tsprite[spritesortcnt].xrepeat = (short) xrep;
-	                    tsprite[spritesortcnt].pal = 4;
+	                    tspr.z = daz;
+	                    xrep = tspr.xrepeat;
+	                    tspr.xrepeat = (short) xrep;
+	                    tspr.pal = 4;
 
-	                    yrep = tsprite[spritesortcnt].yrepeat;
-	                    tsprite[spritesortcnt].yrepeat = (short) yrep;
+	                    yrep = tspr.yrepeat;
+	                    tspr.yrepeat = (short) yrep;
 	                    spritesortcnt++;
 	                }
 	            }

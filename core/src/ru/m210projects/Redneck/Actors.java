@@ -1403,8 +1403,8 @@ public class Actors {
 								s.picnum--;
 							else {
 								if (s.owner == -2) {
-									spritesound(390, ps[p].i);
 									p = findplayer(s);
+									spritesound(390, ps[p].i);
 									x = player_dist;
 									if (ps[p].on_crane == i)
 										ps[p].on_crane = -1;

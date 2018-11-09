@@ -309,8 +309,10 @@ public class ResourceHandler {
 		if(addon.getCON() == null) 
 			addon.setCON(loaduserdef(addon.ConName));
 		
-		if(error == 0)
+		if(error == 0) {
 			currentGame = addon;
+			LoadUserRes();
+		}
 		else {
 			GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}

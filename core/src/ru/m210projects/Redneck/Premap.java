@@ -458,7 +458,8 @@ public class Premap {
 		    {
 	        	if (waloff[i] == null) {
 	        		engine.loadtile(i);
-	        		engine.invalidatetile(i, 0, 1<<4);
+	        		if(engine.getrender() != null)
+	    				engine.getrender().precache(i, 0, 0);
 	        	}
 		        j++;
 		        if((j&7) == 0) getpackets();
@@ -1835,19 +1836,31 @@ public class Premap {
 	    Gdx.app.postRunnable(new Runnable() {
 			public void run() {
 				if(kGameCrash) return;
-			    if( isUsermap )
+				if( isUsermap )
 			    {
-			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 ) {
-			            GameCrash("Map " + boardfilename + " not found!");
-			            return;
-			        }
+					int out = engine.loadboard( boardfilename,posx, posy, posz, ang, sect );
+					switch(out)
+					{
+					case -1:
+						GameCrash("Map " + boardfilename + " not found!");
+						return;
+					case -2:
+						GameCrash(boardfilename + ": Invalid map version!");
+						return;
+					}
 			    }
 			    else {
 			    	String map = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].path;
-			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1) {
-			    		GameCrash("Map " + map + " not found!");
-			    		return;
-			    	}
+			    	int out = engine.loadboard(map,posx, posy, posz, ang, sect );
+					switch(out)
+					{
+					case -1:
+						GameCrash("Map " + map + " not found!");
+						return;
+					case -2:
+						GameCrash(map + ": Invalid map version!");
+						return;
+					}
 			    }
 			    
 			    ps[0].posx = posx[0];
@@ -1960,6 +1973,8 @@ public class Premap {
 			     resetmys();
 			     clearfifo();
 			     clearfrags();
+			     
+			     engine.getrender().preload();
 			    
 			     resettimevars();  // Here we go
 

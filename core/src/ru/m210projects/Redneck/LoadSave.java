@@ -904,6 +904,7 @@ public class LoadSave {
 		clearfifo();
 		
 		resettimevars();
+		engine.getrender().preload();
 		
 		gm = MODE_GAME;
 	}

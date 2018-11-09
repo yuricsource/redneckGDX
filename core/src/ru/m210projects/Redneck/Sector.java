@@ -155,7 +155,7 @@ public class Sector {
 
 	            if(hittype[i].temp_data[0] == 0)
 	            {
-	                if( (currentGame.getCON().soundm[sprite[i].lotag]&16) == 0)
+	                if( sprite[i].lotag < NUM_SOUNDS && (currentGame.getCON().soundm[sprite[i].lotag]&16) == 0)
 	                {
 	                    if(sprite[i].lotag != 0)
 	                    {
@@ -793,6 +793,8 @@ public class Sector {
 	                i = nextspritesect[i];
 	            }
 
+	            if(i == -1) return;
+	            
 	            if(sprite[ii].sectnum == sn)
 	            {
 	                if( activatewarpelevators(i,-1) )
@@ -1074,7 +1076,7 @@ public class Sector {
 	                j = nextspritesect[j];
 	            }
 
-	            j = sprite[j].hitag;
+	            if(j != -1) j = sprite[j].hitag;
 
 	            l = headspritestat[3];
 	            while(l >= 0)
