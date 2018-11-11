@@ -61,6 +61,13 @@ public class Main extends ApplicationAdapter {
 	 * RR skill5 without load/save (original game feature)
 	 * 
 	 * TODO:
+	 * actor.java interpolation 
+	 * 							sprite[p].ang += (l*q);
+ 	                            sprite[p].ang &= 2047;
+ 	   ReplaceUserTiles()
+ 	   public static final int kMaxTiles = MAXTILES - USERTILES;
+	   public static final int kUserTiles = kMaxTiles;
+	   public static void stopsound(int num, int i)
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop

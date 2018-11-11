@@ -1186,7 +1186,7 @@ public class RRMenu {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuConteiner item = (MenuConteiner) pItem;
-						cfg.gJoyDevice = item.num;
+						cfg.gJoyDevice = item.num-1;
 					}
 				}) {
 			@Override
@@ -1194,9 +1194,10 @@ public class RRMenu {
 				int controllers = gpmanager.getControllers();
 				if (this.list == null) {
 					if (controllers > 0) {
-						this.list = new char[controllers][];
+						this.list = new char[controllers+1][];
+						this.list[0] = "Disabled".toCharArray();
 						for (int i = 0; i < controllers; i++) {
-							this.list[i] = gpmanager.getControllerName(i).toCharArray();
+							this.list[i+1] = gpmanager.getControllerName(i).toCharArray();
 						}
 					} else {
 						this.list = new char[][]{"No joystick devices found".toCharArray()};
@@ -1205,22 +1206,26 @@ public class RRMenu {
 
 				// handles unplugged device(s) between runs
 				int min = 0;
-				int max = Math.max(0, controllers - 1);
-				int val = cfg.gJoyDevice;
+				int max = Math.max(0, controllers);
+				int val = cfg.gJoyDevice + 1;
+				
 				this.num = val < min ? min : (val > max ? max : val);
 			}
 
 			@Override
 			public void draw() {
 				SndDriverDraw(this); // NOTE this draws the menu header with the right font !
+				mCheckEnableItem(this, gpmanager.getControllers() > 0);
+				if(this.flags == 1) this.flags = 3;
 			}
 		};
 
 		MenuButton mJoyKey = new MenuButton("Configure buttons", 1, 46, pos += 15, 230, 1, 0, mMenus[JOYKEYSET], -1,
 				null, 0) {
 			@Override
-			public void open(MENU pMenu) {
-				mCheckEnableItem(this, gpmanager.getControllers() > 0);
+			public void draw() {
+				super.draw();
+				mCheckEnableItem(this, cfg.gJoyDevice != -1 && gpmanager.getControllers() > 0);
 			}
 		};
 

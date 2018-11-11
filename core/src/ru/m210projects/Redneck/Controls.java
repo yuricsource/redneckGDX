@@ -339,7 +339,7 @@ public class Controls {
 			}
 			
 			if(lookx != 0) {
-				float k = 64;
+				float k = 1.0f;
 				angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
 			}
 

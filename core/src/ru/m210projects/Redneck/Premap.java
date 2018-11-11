@@ -459,7 +459,7 @@ public class Premap {
 	        	if (waloff[i] == null) {
 	        		engine.loadtile(i);
 	        		if(engine.getrender() != null)
-	    				engine.getrender().precache(i, 0, 0);
+	    				engine.getrender().precache(i, 0, 0); //XXX
 	        	}
 		        j++;
 		        if((j&7) == 0) getpackets();
