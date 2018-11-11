@@ -125,7 +125,6 @@ public class Config extends BConfig {
 
 	public  boolean gAutoAim	= true;
 
-	public  boolean useJoystick = true;
 	public  int gJoyMoveAxis = 0; //Stick1Y
 	public  int gJoyStrafeAxis = 1; //Stick1X
 	public  int gJoyLookAxis = 2; //Stick2Y
@@ -553,8 +552,6 @@ public class Config extends BConfig {
 				if(value != -1) gMouseCursor = value;
 				value = RRcfg.GetKeyInt("MouseCursorSize");
 				if(value != -1) gMouseCursorSize = value;
-				value = RRcfg.GetKeyInt("UseJoystick");
-				if(value != -1) useJoystick = value == 1;
 				value = RRcfg.GetKeyInt("JoyTurnAxis");
 				if(value != -1) gJoyTurnAxis = value;
 				value = RRcfg.GetKeyInt("JoyMoveAxis");
@@ -748,7 +745,6 @@ public class Config extends BConfig {
 			saveInteger(fil, "MouseStrafeSpeed", gMouseStrafeSpeed);
 			saveInteger(fil, "MouseCursor", gMouseCursor);
 			saveInteger(fil, "MouseCursorSize", gMouseCursorSize);
-			saveBoolean(fil, "UseJoystick", useJoystick);
 			saveInteger(fil, "JoyTurnAxis", gJoyTurnAxis);
 			saveInteger(fil, "JoyMoveAxis", gJoyMoveAxis);
 			saveInteger(fil, "JoyStrafeAxis", gJoyStrafeAxis);

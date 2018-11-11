@@ -100,6 +100,14 @@ public class Main extends ApplicationAdapter {
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 
+			// if user unplugged a device between two runs, reset to default device
+			// it could have been done in the menu but user might not even browse to it ...
+			// this also automatically fix the weird UX that would have occurred on menu otherwise
+			// as a bonus, if user unplugs device 1 but leaves device 2 in,
+			// it becomes default which is kind of nice since he doesn't have to go to menu again !
+			if (!Main.gpmanager.isValidDevice(cfg.gJoyDevice))
+				cfg.gJoyDevice = 0;
+
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 			engine.setanisotropy(cfg, cfg.anisotropy);
