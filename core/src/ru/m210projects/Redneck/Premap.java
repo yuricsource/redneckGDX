@@ -40,6 +40,7 @@ import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLX;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLY;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.ResourceHandler.*;
@@ -530,8 +531,6 @@ public class Premap {
 	    p.quick_kick       = 0;
 	    p.subweapon        = 0;
 	    p.last_full_weapon = 0;
-	    p.ftq              = 0;
-	    p.fta              = 0;
 	    p.tipincs          = 0;
 	    p.buttonpalette    = 0;
 	    p.actorsqu         =-1;
@@ -656,6 +655,7 @@ public class Premap {
 	    	p.OnMotorcycle = false;
 	    	p.gotweapon[MOTO_WEAPON] = false;
 	    	p.curr_weapon = RATE_WEAPON;
+	    	p.kickback_pic = 0;
 	    	checkavailweapon(p);
 	    }
 	    
@@ -676,6 +676,7 @@ public class Premap {
 	    	p.OnBoat = false;
 	    	p.gotweapon[BOAT_WEAPON] = false;
 	    	p.curr_weapon = RATE_WEAPON;
+	    	p.kickback_pic = 0;
 	    	checkavailweapon(p);
 	    }
 	    p.NotOnWater = 0;
@@ -700,6 +701,16 @@ public class Premap {
 	    	 UFO_SpawnTime = 0;
 	    	 UFO_SpawnHulk = ud.player_skill + 1;
 	    }
+	    
+	    p.numloogs = 0;  //GDX 31.10.2018
+		p.truefz = 0; 
+		p.truecz = 0;
+		p.randomflamex = 0;
+		p.access_incs = 0;
+		p.access_wallnum = 0;
+		p.interface_toggle_flag = 0;
+		p.scream_voice = null;
+		p.crouch_toggle = 0;
 	}
 	
 	public static void resetweapons(int snum)
@@ -711,7 +722,9 @@ public class Premap {
 	        p.gotweapon[weapon] = false;
 	    for ( weapon = PISTOL_WEAPON; weapon < MAX_WEAPONSRA; weapon++ )
 	        p.ammo_amount[weapon] = 0;
-
+	    
+	    Arrays.fill(p.weaprecs, (short) 0);
+	    
 	    p.weapon_pos = 6;
 	    p.kickback_pic = 5;
 	    p.curr_weapon = PISTOL_WEAPON;
@@ -819,7 +832,6 @@ public class Premap {
 	    p.last_pissed_time = 0;
 
 	    p.one_parallax_sectnum = -1;
-	    p.visibility = currentGame.getCON().const_visibility;
 
 	    screenpeek              = myconnectindex;
 	    numanimwalls            = 0;
@@ -855,6 +867,8 @@ public class Premap {
 
 	    p.timebeforeexit   = 0;
 	    p.customexitsound  = 0;
+	    
+	    Arrays.fill(p.pals, (short)0);
 	    
 	    p.field_280 = 0;
 	    p.field_284 = 0;
@@ -977,6 +991,7 @@ public class Premap {
 	    else mamaspawn_count = 5;
 
 	    resetprestat(0,g);
+	    gVisibility = currentGame.getCON().const_visibility;
 	    
 	    numlightnineffects = 0;
 	    numtorcheffects = 0;
@@ -1409,7 +1424,7 @@ public class Premap {
 	    if ( haveLigthning == 0 )
 	    { 
 //XXX	    	engine.setbrightness((ud.brightness >> 2) & 0xFF, palette);
-	    	visibility = ps[screenpeek].visibility;
+	    	visibility = gVisibility;
 	    }
 	    
 	    InitSpecialTextures();
@@ -1456,7 +1471,7 @@ public class Premap {
 	    parallaxyscale = 0;
 
 	    ud.last_level = -1;
-	    p.zoom            = 768;
+	    lastload = null;
 
 	    if(ud.m_coop != 1)
 	    {
@@ -1471,9 +1486,11 @@ public class Premap {
 
 	        p.last_weapon = -1;
 	    }
-
+	    p.last_used_weapon = 0;
+	    
 	    display_mirror =        0;
-
+	    zoom = 768;
+	    
 	    if(ud.multimode > 1 )
 	    {
 	        if(numplayers < 2)
@@ -1519,8 +1536,12 @@ public class Premap {
 	    for(i=1;i<MAXPLAYERS;i++) 
 	    	ps[i].copy(ps[0]);
 
-	    if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++)
+	    if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++) {
 	    	info[i].restore(ps[i]);
+	    	if(ps[i].curr_weapon == PISTOL_WEAPON)
+	    		ps[i].kickback_pic  = 22;
+		    else ps[i].kickback_pic = 0;
+	    }
 
 	    numplayersprites = 0;
 
@@ -1750,8 +1771,6 @@ public class Premap {
 	    mymaxlag = otherminlag = 0;
 
 	    movefifoplc = movefifosendplc = fakemovefifoplc = 0;
-	    avgfvel = avgsvel = avgbits = 0;
-	    avghorz = avgavel = 0;
 	    otherminlag = mymaxlag = 0;
 	    
 	    loc.clear();
@@ -1968,7 +1987,12 @@ public class Premap {
 			     engine.clearview(0);
 
 			     Arrays.fill(playerquitflag, 1);
-			     ps[myconnectindex].over_shoulder_on = 0;
+			     ftq = 0;
+			     fta = 0;
+			     Arrays.fill(loogiex, 0);
+			     Arrays.fill(loogiey, 0);
+	
+			     over_shoulder_on = 0;
 		
 			     resetmys();
 			     clearfifo();

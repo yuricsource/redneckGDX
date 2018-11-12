@@ -131,11 +131,11 @@ public class Cheats {
                     FTA(100, ps[myconnectindex]);		
 					break;
 				case 12: // rdview
-					if( ps[myconnectindex].over_shoulder_on != 0 )
-                        ps[myconnectindex].over_shoulder_on = 0;
+					if( over_shoulder_on != 0 )
+                        over_shoulder_on = 0;
                     else
                     {
-                        ps[myconnectindex].over_shoulder_on = 1;
+                        over_shoulder_on = 1;
                         cameradist = 0;
                         cameraclock = totalclock;
                     }
@@ -161,7 +161,7 @@ public class Cheats {
 						int skill = opt[0];
 						if(skill < 1 || skill > 5)
 							return false;
-						ud.m_player_skill = ud.player_skill = skill-1;
+						ud.m_player_skill = ud.player_skill = skill-1; //XXX Check in RR
 
 		                if(numplayers > 1 && myconnectindex == connecthead)
 		                {

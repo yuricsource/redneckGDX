@@ -28,14 +28,14 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1832;
+	public static final int sizeof = 1306;
 	
-	public int zoom,exitx,exity,loogiex[] = new int[64],loogiey[] = new int[64],numloogs,loogcnt;
+	public int exitx,exity,numloogs,loogcnt;
 	public int posx, posy, posz, ohorizoff, invdisptime;
 	public float horiz, ohoriz, ang, oang, angvel;
 	public int bobposx,bobposy,oposx,oposy,oposz,pyoff,opyoff;
 	public int posxv,posyv,poszv,last_pissed_time,truefz,truecz;
-	public int player_par,visibility;
+	public int player_par;
 	public int bobcounter,weapon_sway;
 	public int pals_time,randomflamex,crack_time;
 
@@ -48,10 +48,10 @@ public class PlayerStruct {
 	public short curr_weapon, last_weapon, tipincs, horizoff, wantweaponfire;
 	public short beer_amount,newowner,hurt_delay,hbomb_hold_delay;
 	public short jumping_counter,airleft,knee_incs,access_incs;
-	public short fta,ftq,access_wallnum,access_spritenum;
+	public short access_wallnum,access_spritenum;
 	public short kickback_pic,weapon_ang,whishkey_amount;
 	public short somethingonplayer,on_crane,i,one_parallax_sectnum;
-	public short over_shoulder_on,random_club_frame,fist_incs;
+	public short random_club_frame,fist_incs;
 	public short one_eighty_count,cheat_phase;
 	public short dummyplayersprite,extra_extra8,quick_kick;
 	public short yeehaa_amount,actorsqu,timebeforeexit,customexitsound;
@@ -143,11 +143,8 @@ public class PlayerStruct {
 
 	public void copy(PlayerStruct src)
 	{
-		this.zoom = src.zoom;
 		this.exitx = src.exitx;
 		this.exity = src.exity;
-		System.arraycopy(src.loogiex, 0, this.loogiex, 0, 64);
-		System.arraycopy(src.loogiey, 0, this.loogiey, 0, 64);
 		this.numloogs = src.numloogs;
 		this.loogcnt = src.loogcnt;
 		this.posx = src.posx;
@@ -171,7 +168,6 @@ public class PlayerStruct {
 		this.truefz = src.truefz;
 		this.truecz = src.truecz;
 		this.player_par = src.player_par;
-		this.visibility = src.visibility;
 		this.bobcounter = src.bobcounter;
 		this.weapon_sway = src.weapon_sway;
 		this.pals_time = src.pals_time;
@@ -202,8 +198,6 @@ public class PlayerStruct {
 		this.airleft = src.airleft;
 		this.knee_incs = src.knee_incs;
 		this.access_incs = src.access_incs;
-		this.fta = src.fta;
-		this.ftq = src.ftq;
 		this.access_wallnum = src.access_wallnum;
 		this.access_spritenum = src.access_spritenum;
 		this.kickback_pic = src.kickback_pic;
@@ -213,7 +207,6 @@ public class PlayerStruct {
 		this.on_crane = src.on_crane;
 		this.i = src.i;
 		this.one_parallax_sectnum = src.one_parallax_sectnum;
-		this.over_shoulder_on = src.over_shoulder_on;
 		this.random_club_frame = src.random_club_frame;
 		this.fist_incs = src.fist_incs;
 		this.one_eighty_count = src.one_eighty_count;
@@ -338,16 +331,9 @@ public class PlayerStruct {
 	private byte[] buf = new byte[sizeof];
 	public byte[] getBytes() {
 		int ptr = 0;
-		LittleEndian.putInt(buf, ptr, zoom); ptr+=4;
 		LittleEndian.putInt(buf, ptr, exitx); ptr+=4;
 		LittleEndian.putInt(buf, ptr, exity); ptr+=4;
-		
-		for(int i = 0; i < 64; i++)
-		{
-			LittleEndian.putInt(buf, ptr, loogiex[i]); ptr+=4;
-			LittleEndian.putInt(buf, ptr, loogiey[i]); ptr+=4;
-		}
-		
+
 		LittleEndian.putInt(buf, ptr, numloogs); ptr+=4;
 		LittleEndian.putInt(buf, ptr, loogcnt); ptr+=4;
 		LittleEndian.putInt(buf, ptr, posx); ptr+=4;
@@ -371,7 +357,6 @@ public class PlayerStruct {
 		LittleEndian.putInt(buf, ptr, truefz); ptr+=4;
 		LittleEndian.putInt(buf, ptr, truecz); ptr+=4;
 		LittleEndian.putInt(buf, ptr, player_par); ptr+=4;
-		LittleEndian.putInt(buf, ptr, visibility); ptr+=4;
 		LittleEndian.putInt(buf, ptr, bobcounter); ptr+=4;
 		LittleEndian.putInt(buf, ptr, weapon_sway); ptr+=4;
 		LittleEndian.putInt(buf, ptr, pals_time); ptr+=4;
@@ -405,9 +390,7 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, jumping_counter); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, airleft); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, knee_incs); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, access_incs); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, fta); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, ftq); ptr+=2;	
+		LittleEndian.putShort(buf, ptr, access_incs); ptr+=2;		
 		LittleEndian.putShort(buf, ptr, access_wallnum); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, access_spritenum); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, kickback_pic); ptr+=2;		
@@ -417,7 +400,6 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, on_crane); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, i); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, one_parallax_sectnum); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, over_shoulder_on); ptr+=2;
 		LittleEndian.putShort(buf, ptr, random_club_frame); ptr+=2;
 		LittleEndian.putShort(buf, ptr, fist_incs); ptr+=2;
 		LittleEndian.putShort(buf, ptr, one_eighty_count); ptr+=2;
@@ -559,16 +541,8 @@ public class PlayerStruct {
 	
 	public void set(ByteBuffer bb)
 	{
-		zoom = bb.getInt();
 		exitx = bb.getInt();
 		exity = bb.getInt();
-
-		for(int i = 0; i < 64; i++)
-		{
-			loogiex[i] = bb.getInt();
-			loogiey[i] = bb.getInt();
-		}
-		
 		numloogs = bb.getInt();
 		loogcnt = bb.getInt();
 		posx = bb.getInt();
@@ -592,7 +566,6 @@ public class PlayerStruct {
 		truefz = bb.getInt();
 		truecz = bb.getInt();
 		player_par = bb.getInt();
-		visibility = bb.getInt();
 		bobcounter = bb.getInt();
 		weapon_sway = bb.getInt();
 		pals_time = bb.getInt();
@@ -626,9 +599,7 @@ public class PlayerStruct {
 		jumping_counter = bb.getShort();	
 		airleft = bb.getShort();	
 		knee_incs = bb.getShort();	
-		access_incs = bb.getShort();	
-		fta = bb.getShort();	
-		ftq = bb.getShort();	
+		access_incs = bb.getShort();		
 		access_wallnum = bb.getShort();	
 		access_spritenum = bb.getShort();	
 		kickback_pic = bb.getShort();	
@@ -638,7 +609,6 @@ public class PlayerStruct {
 		on_crane = bb.getShort();	
 		i = bb.getShort();	
 		one_parallax_sectnum = bb.getShort();	
-		over_shoulder_on = bb.getShort();
 		random_club_frame = bb.getShort();
 		fist_incs = bb.getShort();
 		one_eighty_count = bb.getShort();

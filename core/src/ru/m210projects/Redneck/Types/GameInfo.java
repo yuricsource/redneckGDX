@@ -1,5 +1,6 @@
 package ru.m210projects.Redneck.Types;
 
+import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Strhandler.Bstrcmp;
@@ -245,7 +246,7 @@ public class GameInfo {
             int ptr = textptr;
             while( buf[textptr] != ' ' && buf[textptr] != 0x0a ) { textptr++; i++; }
             
-            String path = new String(buf, ptr, i);
+            String path = bCorrectPath(toLowerCase(new String(buf, ptr, i)));
             
             boolean mapFound = false;
             String mapPath = path;
@@ -347,7 +348,7 @@ public class GameInfo {
 
 	    if( !Character.isDigit(text[textptr]) && text[textptr] != '-')
 	    {
-	    	Console.Println("  * ERROR! Parameter '" + tempbuf[0] + "' is undefined.");
+	    	Console.Println("  * ERROR! Parameter '" + new String(tempbuf, 0, l) + "' is undefined.");
 	        error++;
 	        textptr+=l;
 	        return null;

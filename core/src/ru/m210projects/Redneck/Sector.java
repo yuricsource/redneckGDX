@@ -3226,7 +3226,7 @@ public class Sector {
 		        case 32767:
 		            sector[p.cursectnum].lotag = 0;
 		            FTA(9,p);
-		            p.secret_rooms++;
+		            ps[connecthead].secret_rooms++;
 		            return;
 		        case -1:
 		        	gm = MODE_EOL;
@@ -3267,7 +3267,7 @@ public class Sector {
 
 	    //After this point the the player effects the map with space
 
-	    if(MODE_TYPE || sprite[p.i].extra <= 0) return;
+	    if(sprite[p.i].extra <= 0) return;
 
 	    if( ud.cashman != 0 && (sync[snum].bits&(1<<29)) != 0 )
 	        lotsofmoney(sprite[p.i],2);
@@ -3935,7 +3935,7 @@ public class Sector {
 			{
 				byte_18D0BB = brightness;
 				dword_18D0A0 = 0;
-				visibility = ps[snum].visibility;
+				visibility = gVisibility;
 				
 //				engine.setbrightness(brightness, palette);
 				for(tourcheffect = 0; tourcheffect < numlightnineffects; tourcheffect++)
@@ -3967,7 +3967,7 @@ public class Sector {
 		else
 		{
 			byte_18D0BB = brightness;
-		    visibility = ps[snum].visibility;
+		    visibility = gVisibility;
 		}
 		if ( dword_18D0A4 != 0 )
 		{

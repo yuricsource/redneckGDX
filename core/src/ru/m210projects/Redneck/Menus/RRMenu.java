@@ -3316,6 +3316,7 @@ public class RRMenu {
                 else ud.m_respawn_items = false;
 
                 ud.m_respawn_inventory = true;
+                ud.god = false;
 
                 tempbuf[4] = ud.m_monsters_off?(byte)1:0;
                 tempbuf[5] = ud.m_respawn_monsters?(byte)1:0;

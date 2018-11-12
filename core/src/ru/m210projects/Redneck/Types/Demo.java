@@ -215,6 +215,7 @@ public class Demo {
 
 			engine.nextpage();
 			engine.sampletimer();
+			engine.timerhandler();
 			return;
 		}
 
@@ -229,7 +230,6 @@ public class Demo {
 				domovethings();
 	
 				if (ud.reccnt <= 0) {
-					//backtomenu();
 					demfile = null;
 					return;
 				}

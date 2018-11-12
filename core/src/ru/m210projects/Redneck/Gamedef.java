@@ -2667,7 +2667,7 @@ public class Gamedef {
 	            if(g_sp.detail < 1 || g_sp.detail == 128)
 	            {
 	            	if ( checkaddkills(g_sp) )
-	            		ps[g_p].actors_killed += con.script[insptr];
+	            		ps[connecthead].actors_killed += con.script[insptr];
 	            }
 	            hittype[g_i].actorstayput = -1;
 	            insptr++;
@@ -3102,8 +3102,6 @@ public class Gamedef {
 	                ps[g_p].pals_time = 0;
 	                ps[g_p].footprintcount = 0;
 	                ps[g_p].weapreccnt = 0;
-	                ps[g_p].fta = 0;
-	                ps[g_p].ftq = 0;
 	                ps[g_p].posxv = ps[g_p].posyv = 0;
 	                ps[g_p].rotscrnang = 0;
 
@@ -3121,6 +3119,9 @@ public class Gamedef {
 
 	                resetinventory(g_p);
 	                resetweapons(g_p);
+
+	                fta = 0;
+	                ftq = 0;
 
 	                cameradist = 0;
 	                cameraclock = totalclock;
@@ -3627,7 +3628,7 @@ public class Gamedef {
 	    if(g_sp.sectnum < 0 || g_sp.sectnum >= MAXSECTORS)
 	    {
 	        if(badguy(g_sp))
-	            ps[g_p].actors_killed++;
+	            ps[connecthead].actors_killed++;
 	        engine.deletesprite(g_i);
 	        return;
 	    }

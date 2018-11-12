@@ -46,8 +46,6 @@ import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.LoadSave.gScreenCapture;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Interpolation.dointerpolations;
-import static ru.m210projects.Redneck.Interpolation.restoreinterpolations;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Menus.MENU.*;
 import static ru.m210projects.Redneck.Menus.RRMenu.*;
@@ -88,6 +86,10 @@ public class View {
 	public static int quotebot, quotebotgoal;
 	public static short user_quote_time[] = new short[MAXUSERQUOTES];
 	public static char user_quote[][] = new char[MAXUSERQUOTES][80];
+	
+	public static short fta,ftq, zoom, over_shoulder_on;
+	public static int loogiex[] = new int[64],loogiey[] = new int[64];
+
 	
 	public static int cameradist = 0, cameraclock = 0;
 	public static int gNameShowTime;
@@ -164,87 +166,83 @@ public class View {
 	        if( ud.overhead_on != 2 && pp.newowner < 0)
 	        {
                 displayweapon(screenpeek);
-                if(pp.over_shoulder_on == 0 )
+                if(over_shoulder_on == 0 )
                     displaymasks(screenpeek);
 	        }
 
 	        if( ud.overhead_on > 0 )
 	        {
-	                smoothratio = min(max(smoothratio,0),65536);
-	                dointerpolations(smoothratio);
-	                if( !ud.scrollmode )
-	                {
-	                     if(pp.newowner == -1)
-	                     {
-	                         if (screenpeek == myconnectindex && numplayers > 1)
-	                         {
-	                             cposx = omyx+mulscale((myx-omyx),smoothratio, 16);
-	                             cposy = omyy+mulscale((myy-omyy),smoothratio, 16);
-	                             cang = omyang+((((BClampAngle(myang+1024-omyang))-1024) * smoothratio) / 65536.0f);
-	                         }
-	                         else
-	                         {
-	                              cposx = pp.oposx+mulscale((pp.posx-pp.oposx),smoothratio, 16);
-	                              cposy = pp.oposy+mulscale((pp.posy-pp.oposy),smoothratio, 16);
-	                              cang = pp.oang + (BClampAngle(pp.ang+1024-pp.oang)-1024) * smoothratio / 65536.0f;
-	                         }
-	                    }
-	                    else
-	                    {
-	                        cposx = pp.oposx;
-	                        cposy = pp.oposy;
-	                        cang = pp.oang;
-	                    }
-	                }
-	                else
-	                {
+                if( !ud.scrollmode )
+                {
+                     if(pp.newowner == -1)
+                     {
+                         if (screenpeek == myconnectindex && numplayers > 1)
+                         {
+                             cposx = omyx+mulscale((myx-omyx),smoothratio, 16);
+                             cposy = omyy+mulscale((myy-omyy),smoothratio, 16);
+                             cang = omyang+((((BClampAngle(myang+1024-omyang))-1024) * smoothratio) / 65536.0f);
+                         }
+                         else
+                         {
+                              cposx = pp.oposx+mulscale((pp.posx-pp.oposx),smoothratio, 16);
+                              cposy = pp.oposy+mulscale((pp.posy-pp.oposy),smoothratio, 16);
+                              cang = pp.oang + (BClampAngle(pp.ang+1024-pp.oang)-1024) * smoothratio / 65536.0f;
+                         }
+                    }
+                    else
+                    {
+                        cposx = pp.oposx;
+                        cposy = pp.oposy;
+                        cang = pp.oang;
+                    }
+                }
+                else
+                {
 
-	                     ud.fola += ud.folavel / 8f;
-	                     ud.folx += (ud.folfvel*sintable[(512+2048-ud.fola)&2047])>>14;
-	                     ud.foly += (ud.folfvel*sintable[(512+1024-512-ud.fola)&2047])>>14;
+                     ud.fola += ud.folavel / 8f;
+                     ud.folx += (ud.folfvel*sintable[(512+2048-ud.fola)&2047])>>14;
+                     ud.foly += (ud.folfvel*sintable[(512+1024-512-ud.fola)&2047])>>14;
 
-	                     cposx = ud.folx;
-	                     cposy = ud.foly;
-	                     cang = ud.fola;
-	                }
+                     cposx = ud.folx;
+                     cposy = ud.foly;
+                     cang = ud.fola;
+                }
 
-	                if(ud.overhead_on == 2)
-	                {
-	                    engine.clearview(0);
-	                    engine.drawmapview(cposx,cposy,pp.zoom, (short)cang);
-	                }
-	                engine.drawoverheadmap( cposx,cposy,pp.zoom, (short)cang);
+                if(ud.overhead_on == 2)
+                {
+                    engine.clearview(0);
+                    engine.drawmapview(cposx,cposy,zoom, (short)cang);
+                }
+                engine.drawoverheadmap( cposx,cposy,zoom, (short)cang);
 
-	                restoreinterpolations();
+                if(ud.overhead_on == 2)
+                {
+                    if(ud.screen_size > 0) a = 145;
+                    else a = 182;
 
-	                if(ud.overhead_on == 2)
-	                {
-	                    if(ud.screen_size > 0) a = 145;
-	                    else a = 182;
+                	Arrays.fill(buffer, (char)0);
+                	buildString(buffer, 0, currentGame.episodes[ud.volume_number].Title);
+                    minitext(5,a,buffer,65536, 0,0,8+16+256);
+                    Arrays.fill(buffer, (char)0);
+                    if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
+                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
+                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
+                    
+                    if ( cfg.gShowStat == 2 ) {
+                    	int k = 0;
+                    	if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
+                    	{
+	               	         j = 0; k = 8;
+	               	         for(i=connecthead;i>=0;i=connectpoint2[i])
+	               	             if (i > j) j = i;
 
-                    	Arrays.fill(buffer, (char)0);
-                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].Title);
-	                    minitext(5,a,buffer,65536, 0,0,8+16+256);
-	                    Arrays.fill(buffer, (char)0);
-	                    if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
-	                    	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
-	                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
-	                    
-	                    if ( cfg.gShowStat == 2 ) {
-	                    	int k = 0;
-	                    	if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
-	                    	{
-		               	         j = 0; k = 8;
-		               	         for(i=connecthead;i>=0;i=connectpoint2[i])
-		               	             if (i > j) j = i;
-	
-		               	         if (j >= 4 && j <= 8) k += 8;
-		               	         else if (j > 8 && j <= 12) k += 16;
-		               	         else if (j > 12) k += 24;
-	                    	}
-	            	    	viewDrawStats(5, 5+k, cfg.gStatSize);
-	                    }
-	                }
+	               	         if (j >= 4 && j <= 8) k += 8;
+	               	         else if (j > 8 && j <= 12) k += 16;
+	               	         else if (j > 12) k += 24;
+                    	}
+            	    	viewDrawStats(5, 5+k, cfg.gStatSize);
+                    }
+                }
 	        }
 	    }
 
@@ -367,7 +365,7 @@ public class View {
 	         j -= 10;
 	     }
 
-	     if (ps[screenpeek].fta <= 1) return;
+	     if (fta <= 1) return;
 
 	     if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
 	     {
@@ -381,7 +379,7 @@ public class View {
 	     }
 	     else k = 0;
 
-	     if (ps[screenpeek].ftq == 115 || ps[screenpeek].ftq == 116)
+	     if (ftq == 115 || ftq == 116)
 	     {
 	         k = quotebot;
 	         for(i=0;i<MAXUSERQUOTES;i++)
@@ -392,13 +390,13 @@ public class View {
 	         k -= 4;
 	     }
 
-	     j = ps[screenpeek].fta;
+	     j = fta;
 	     if (j > 4)
-	          gametext(320>>1,k,currentGame.getCON().fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16);
+	          gametext(320>>1,k,currentGame.getCON().fta_quotes[ftq],65536,0,0,8+16);
 	     else
-	         if (j > 2) gametext(320>>1,k,currentGame.getCON().fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16+1);
+	         if (j > 2) gametext(320>>1,k,currentGame.getCON().fta_quotes[ftq],65536,0,0,8+16+1);
 	     else
-	         gametext(320>>1,k,currentGame.getCON().fta_quotes[ps[screenpeek].ftq],65536,0,0,8+16+1+32);
+	         gametext(320>>1,k,currentGame.getCON().fta_quotes[ftq],65536,0,0,8+16+1+32);
 	}
 	
 	public static void displayfragbar(int yoffset, boolean showpalette)
@@ -780,19 +778,14 @@ public class View {
 	    
 	    if( (!gShowMenu && ud.overhead_on == 2) || isOpened(mMenus[HELP]) || p.cursectnum == -1)
 	    	return;
-
-	    smoothratio = min(max(smoothratio,0),65536);
+	    
 	    if ( p.fogtype != 0)
-	        p.visibility = currentGame.getCON().const_visibility;
-	    visibility = p.visibility;
-
-	    if(ud.pause_on != 0 || ps[snum].on_crane > -1) smoothratio = 65536;
+	    	gVisibility = currentGame.getCON().const_visibility;
+	    visibility = gVisibility;
 
 	    sect = p.cursectnum;
 	    if(sect < 0 || sect >= MAXSECTORS) return;
 
-	    dointerpolations(smoothratio);
-//	    animatecamsprite();
 	    if(ud.camerasprite >= 0)
 	    {
 	        SPRITE s = sprite[ud.camerasprite];
@@ -921,7 +914,7 @@ public class View {
                 sect = sprite[p.newowner].sectnum;
                 smoothratio = 65536;
 	        }
-	        else if( p.over_shoulder_on == 0 )
+	        else if( over_shoulder_on == 0 )
 	        	cposz += p.opyoff+mulscale((p.pyoff-p.opyoff),smoothratio, 16);
 	        else {
 	        	view(p,cposx,cposy,cposz,sect,cang,choriz); 
@@ -1003,35 +996,31 @@ public class View {
 	        
 	        displaygeom3d(sect, cposx, cposy, cposz, choriz, cang, sect, smoothratio);
 	    }
-
-	    restoreinterpolations();
 	}
 
 	public static String lastmessage;
 	public static void FTA(int q, PlayerStruct p )
 	{
-	    if( ud.fta_on == 1)
+		if( ud.fta_on == 1 && p == ps[screenpeek])
 	    {
-	        if( p.fta > 0 && q != 115 && q != 116 )
-	            if( p.ftq == 115 || p.ftq == 116 ) return;
+	        if( fta > 0 && q != 115 && q != 116 )
+	            if( ftq == 115 || ftq == 116 ) return;
 	        
-	        p.fta = 100;
+	        fta = 100;
 
-	        if( p.ftq != q || q == 26 )
+	        if( ftq != q || q == 26 )
 	        {
-	            p.ftq = (short) q;
+	            ftq = (short) q;
 	        }
 	        
 	        int len = 0;
-	        while(len < currentGame.getCON().fta_quotes[p.ftq].length && currentGame.getCON().fta_quotes[p.ftq][++len] != 0);
+	        while(len < currentGame.getCON().fta_quotes[ftq].length && currentGame.getCON().fta_quotes[ftq][++len] != 0);
 
-	        if (p == ps[screenpeek]) {
-	        	String message = new String(currentGame.getCON().fta_quotes[p.ftq], 0, len);
-	        	if(!message.equals(lastmessage)) {
-		        	Console.Println(message);
-		        	lastmessage = message;
-	        	}
-	        }
+        	String message = new String(currentGame.getCON().fta_quotes[ftq], 0, len);
+        	if(!message.equals(lastmessage)) {
+	        	Console.Println(message);
+	        	lastmessage = message;
+        	}
 	    }
 	}
 
@@ -1190,7 +1179,7 @@ public class View {
 	        case BURNING:
                 if( sprite[s.owner].statnum == 10 )
                 {
-                    if( display_mirror == 0 && sprite[s.owner].yvel == screenpeek && ps[sprite[s.owner].yvel].over_shoulder_on == 0 )
+                    if( display_mirror == 0 && sprite[s.owner].yvel == screenpeek && over_shoulder_on == 0 )
                         t.xrepeat = 0;
                     else
                     {
@@ -1431,10 +1420,10 @@ public class View {
 
                 if(t.pal == 1) t.z -= (18<<8);
 
-                if(ps[p].over_shoulder_on > 0 && ps[p].newowner < 0 )
+                if(over_shoulder_on > 0 && ps[p].newowner < 0 )
                 {
                     t.cstat |= 2;
-                    if ( screenpeek == myconnectindex && numplayers >= 2 )
+                    if ( ps[myconnectindex] == ps[p] && numplayers >= 2 )
                     {
                         t.x = omyx+mulscale((int)(myx-omyx),smoothratio, 16);
                         t.y = omyy+mulscale((int)(myy-omyy),smoothratio, 16);
@@ -1517,8 +1506,8 @@ public class View {
                 {
                     l = s.z-hittype[ps[p].i].floorz+(3<<8);
                     if( l > 1024 && s.yrepeat > 32 && s.extra > 0 )
-                        s.yoffset = (short) (l/(s.yrepeat<<2));
-                    else s.yoffset=0;
+                    	t.yoffset = (short) (l/(t.yrepeat<<2)); //GDX 24.10.2018 multiplayer unsync
+                    else t.yoffset=0;
                 }
 
                 if(ps[p].newowner > -1)
@@ -1529,7 +1518,7 @@ public class View {
                 }
 
                 if(ud.camerasprite == -1 && ps[p].newowner == -1)
-                    if(s.owner >= 0 && display_mirror == 0 && ps[p].over_shoulder_on == 0 )
+                    if(s.owner >= 0 && display_mirror == 0 && over_shoulder_on == 0 )
                         if( ud.multimode < 2 || ( ud.multimode > 1 && p == screenpeek ) )
                 {
                     t.owner = -1;
@@ -1833,7 +1822,7 @@ public class View {
 	        	 case 5595:
 	        		 if(t.picnum == EXPLOSION2)
 	        		 {
-	        			 ps[screenpeek].visibility = -127;
+	        			 gVisibility = -127;
 	        			 lastvisinc = totalclock+32;
 	        			 t.pal = 0;
 	        		 } 
@@ -2173,8 +2162,8 @@ public class View {
 		
 		gametext(statx, staty, buffer, zoom, 0, 2, 24 | 256);
 	
-		int offs = Bitoa(ps[0].actors_killed, buffer);
-		offs = buildString(buffer, offs, " /   ", ps[0].max_actors_killed);
+		int offs = Bitoa(ps[connecthead].actors_killed, buffer);
+		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_actors_killed);
 		gametext(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, 24 | 256);
 		
 		statx = x;
@@ -2183,8 +2172,8 @@ public class View {
 		buildString(buffer, 0, "secrets:    ");
 		gametext(statx, staty, buffer, zoom, 0, 2, 24 | 256);
 		mGetAlign(1, buffer);
-		offs = Bitoa(ps[myconnectindex].secret_rooms, buffer);
-		offs = buildString(buffer, offs, " /   ", ps[0].max_secret_rooms);
+		offs = Bitoa(ps[connecthead].secret_rooms, buffer);
+		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_secret_rooms);
 		gametext(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, 24 | 256);
 		
 		statx = x;

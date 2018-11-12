@@ -17,15 +17,10 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.totalclock;
+import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Redneck.Animlib.initanm;
 import static ru.m210projects.Redneck.Redneck.appdispose;
-import static ru.m210projects.Redneck.Globals.MODE_LOGO;
-import static ru.m210projects.Redneck.Globals.dassert;
-import static ru.m210projects.Redneck.Globals.exceptionHandler;
-import static ru.m210projects.Redneck.Globals.gm;
-import static ru.m210projects.Redneck.Globals.lockclock;
-import static ru.m210projects.Redneck.Globals.stackTraceToString;
-import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.setup3dscreen;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.currMusic;
@@ -50,24 +45,11 @@ import ru.m210projects.Redneck.Types.RREngine;
 public class Main extends ApplicationAdapter {
 	
 	/*
-	 * v0.760
-	 * Autoload folder can load resources as cusspack
-	 * Addons support
-	 * Torches fix
-	 * Cow "use" fix
-	 * Apply anisotropy fix
-	 * Alcohol / gut meter in minihud
-	 * Colored keys option
-	 * RR skill5 without load/save (original game feature)
+	 * v0.761
+	 * 
 	 * 
 	 * TODO:
-	 * actor.java interpolation 
-	 * 							sprite[p].ang += (l*q);
- 	                            sprite[p].ang &= 2047;
- 	   ReplaceUserTiles()
- 	   public static final int kMaxTiles = MAXTILES - USERTILES;
-	   public static final int kUserTiles = kMaxTiles;
-	   public static void stopsound(int num, int i)
+	 * multiplayer alchohol unsync wiskey
 	 * keys multiplayer bug
 	 * drop dynamite insteadof crowbar
 	 * max_kills multiplayer coop
@@ -79,11 +61,11 @@ public class Main extends ApplicationAdapter {
 	 */
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.760";
+	public static final String sversion = "v0.761";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();
-	public static boolean release = true;
+	public static boolean release = false;
 	
 	public static RREngine engine;
 	public static Config cfg;
@@ -151,7 +133,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void pause() {
-		if(ud.multimode < 2 && ud.recstat == 0) {
+		if(ud.multimode < 2 && numplayers < 2 && ud.recstat == 0) {
 			ud.pause_on = 1;
 			if(currMusic != null)
         		currMusic.pause();
@@ -163,9 +145,9 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void resume() {
-		if(ud.multimode < 2 && ud.recstat == 0) {
+		if(ud.multimode < 2 && numplayers < 2 && ud.recstat == 0) {
 			ud.pause_on = 0;
-			lockclock = totalclock;
+			ototalclock = totalclock;
 			if(cfg.MusicToggle && currMusic != null) 
 				currMusic.resume();
 		}

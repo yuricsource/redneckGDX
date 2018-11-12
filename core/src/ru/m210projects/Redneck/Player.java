@@ -98,7 +98,7 @@ public class Player {
 		        p.ammo_amount[MOTO_WEAPON] = sprite[i].owner;
 		        engine.deletesprite(i);
 			}
-			p.over_shoulder_on = 0;
+			over_shoulder_on = 0;
 			p.OnMotorcycle = true;
 			p.last_full_weapon = p.curr_weapon;
 			p.curr_weapon = MOTO_WEAPON;
@@ -116,13 +116,13 @@ public class Player {
 		if(p.OnMotorcycle)
 		{
 			if ( Sound[188].num > 0 )
-				stopsound(Sound[188].num);
+				stopsound(Sound[188].num, p.i);
 			if ( Sound[187].num > 0 )
-				stopsound(Sound[187].num);
+				stopsound(Sound[187].num, p.i);
 			if ( Sound[186].num > 0 )
-				stopsound(Sound[186].num);
+				stopsound(Sound[186].num, p.i);
 			if ( Sound[214].num > 0 )
-				stopsound(Sound[214].num);
+				stopsound(Sound[214].num, p.i);
 			if ( Sound[42].num == 0 )
 				spritesound(42, p.i);
 			    
@@ -162,7 +162,7 @@ public class Player {
 		        p.ammo_amount[BOAT_WEAPON] = sprite[i].owner;
 		        engine.deletesprite(i);
 			}
-			p.over_shoulder_on = 0;
+			over_shoulder_on = 0;
 			p.OnBoat = true;
 			p.last_full_weapon = p.curr_weapon;
 			p.curr_weapon = BOAT_WEAPON;
@@ -504,15 +504,6 @@ public class Player {
 	    	}
 	    }
 	    
-	    if ( p.fogtype == 0 ) {
-		    if (totalclock < lastvisinc)
-		    {
-		        if (klabs(p.visibility-currentGame.getCON().const_visibility) > 8)
-		            p.visibility += (currentGame.getCON().const_visibility-p.visibility)>>2;
-		    }
-		    else p.visibility = currentGame.getCON().const_visibility;
-	    }
-	    
 	    if(p.curr_weapon == CHICKENBOW_WEAPON) //GDX 15.10.2018
 	    	p.chiken_pic = (byte) (engine.krand() & 15);
 	    
@@ -766,7 +757,7 @@ public class Player {
 	    	        else
 	    	        {
 	    	        	if ( Sound[187].num > 0 )
-	    	        		stopsound(Sound[187].num);
+	    	        		stopsound(Sound[187].num, pi);
 	    	        	spritesound(214, pi);
 	    	        }
 	    		}
@@ -776,13 +767,13 @@ public class Player {
 	    		var2 = 0;
 	    		if ( Sound[214].num > 0 )
 	    		{
-	    			stopsound(Sound[214].num);
+	    			stopsound(Sound[214].num, pi);
 	    	        if ( Sound[189].num == 0 )
 	    	        	spritesound(189, pi);
 	    		}
 	    		if ( Sound[188].num > 0 )
 	    		{
-	    			stopsound(Sound[188].num);
+	    			stopsound(Sound[188].num, pi);
 	    			if ( Sound[189].num == 0 )
 	    				spritesound(189, pi);
 	    		}
@@ -1034,7 +1025,7 @@ public class Player {
 		        else
 		        {
 		        	if ( Sound[87].num > 0 )
-		        		stopsound(Sound[87].num);
+		        		stopsound(Sound[87].num, pi);
 		        	spritesound(89, pi);
 		        }
 	    	}
@@ -1043,13 +1034,13 @@ public class Player {
 		        var2 = false;
 		        if ( Sound[89].num > 0 )
 		        {
-		        	stopsound(Sound[89].num);
+		        	stopsound(Sound[89].num, pi);
 		        	if ( Sound[90].num == 0 )
 		        		spritesound(90, pi);
 		        }
 		        if ( Sound[88].num > 0 )
 		        {
-		        	stopsound(Sound[88].num);
+		        	stopsound(Sound[88].num, pi);
 		        	if ( Sound[90].num == 0 )
 		        		spritesound(90, pi);
 		        }
@@ -1496,15 +1487,6 @@ public class Player {
 	    if(p.pals_time > 0) 
 	        p.pals_time--;
 
-	    if(p.fta > 0)
-	    {
-	        p.fta--;
-	        if(p.fta == 0)
-	        {
-	            p.ftq = 0;
-	        }
-	    }
-
 	    if( s.extra <= 0 )
 	    {
 	        if(p.dead_flag == 0)
@@ -1528,7 +1510,7 @@ public class Player {
 	            p.jetpack_on = 0;
 	            p.holoduke_on = -1;
 
-	            stopsound(DUKE_JETPACK_IDLE);
+	            stopsound(DUKE_JETPACK_IDLE, pi);
 	            if(p.scream_voice != null)
 	            {
 	            	p.scream_voice.dispose();
@@ -1746,7 +1728,7 @@ public class Player {
 			    if ( psectlotag == 17 || psectlotag == 18)
 			    {
 			    	if ( getanimationgoal(sector[p.cursectnum], FLOORZ) < 0 )
-			      		stopsound(432);
+			      		stopsound(432, pi);
 			    	else if ( Sound[432].num == 0 )
 			    		spritesound(432, pi);
 			    }
@@ -1980,7 +1962,7 @@ public class Player {
 			                    p.poszv -= (p.CarSpeed >> 4) * currentGame.getCON().gc;
 			                    p.CarOnGround = false;
 			                    if ( Sound[188].num > 0 )
-			                      stopsound(Sound[188].num);
+			                      stopsound(Sound[188].num, pi);
 			                    spritesound(189, pi);
 			                  }
 			                  else
@@ -2041,7 +2023,7 @@ public class Player {
 			                            else if ( p.OnMotorcycle )
 			                            {
 			                            	if ( Sound[190].num > 0 )
-			                            		stopsound(Sound[190].num);
+			                            		stopsound(Sound[190].num, pi);
 			                            	spritesound(191, pi);
 			                            	p.TurbCount = 12;
 			                            }

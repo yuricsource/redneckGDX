@@ -72,16 +72,7 @@ import static ru.m210projects.Redneck.Menus.MENU.mMenuHistory;
 import static ru.m210projects.Redneck.Menus.MENU.mMenus;
 import static ru.m210projects.Redneck.Menus.MENU.mOpen;
 import static ru.m210projects.Redneck.Names.LOADSCREEN;
-import static ru.m210projects.Redneck.Network.ConnectStep;
-import static ru.m210projects.Redneck.Network.NetDisconnect;
-import static ru.m210projects.Redneck.Network.checksync;
-import static ru.m210projects.Redneck.Network.gNetConnect;
-import static ru.m210projects.Redneck.Network.gNetCreate;
-import static ru.m210projects.Redneck.Network.gNetDisconnect;
-import static ru.m210projects.Redneck.Network.gNetFlags;
-import static ru.m210projects.Redneck.Network.getnames;
-import static ru.m210projects.Redneck.Network.getpackets;
-import static ru.m210projects.Redneck.Network.netStartWaiting;
+import static ru.m210projects.Redneck.Network.*;
 import static ru.m210projects.Redneck.Premap.enterlevel;
 import static ru.m210projects.Redneck.Screen.alignx;
 import static ru.m210projects.Redneck.Screen.bonuscnt;
@@ -130,8 +121,10 @@ import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
 import ru.m210projects.Build.Types.BGraphics;
+import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.MemLog;
 import ru.m210projects.Build.Types.Message;
+import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Types.Sample;
 import ru.m210projects.Redneck.Types.SoundOwner;
@@ -186,7 +179,7 @@ public class Redneck {
 			if(engine.loadpics("tiles000.art") == 0)
 				dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
 
-			tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
+			InitSpecialTextures();
 			
 			for(int i=0;i<MAXPLAYERS;i++) 
 				playerreadyflag[i] = 0;
@@ -404,40 +397,16 @@ public class Redneck {
 					}
 				}));
 	}
-	
-	public static boolean moveloop()
-	{
-	    int i;
-	    if (numplayers > 1)
-	        while (fakemovefifoplc < movefifoend[myconnectindex]) fakedomovethings();
 
-	    getpackets();
-
-	    if (numplayers < 2) bufferjitter = 0;
-	    while (movefifoend[myconnectindex]-movefifoplc > bufferjitter)
-	    {
-	        for(i=connecthead;i>=0;i=connectpoint2[i])
-	            if (movefifoplc == movefifoend[i]) break;
-	        if (i >= 0) break;
-	        if( domovethings() ) return true;
-	    }
-	    return false;
-	}
-	
 	public static void GameLoop()
 	{
 		if((gm&MODE_END) == 0) 
 		{
+			engine.timerhandler();
 			if(kGameCrash)
 			{
 				backtomenu();
 				kGameCrash = false;
-			}
-			
-			if(gm != MODE_GAME || gShowMenu || Console.IsShown()) {
-				engine.handleevents();
-				if(gpmanager != null)
-					gpmanager.handler();
 			}
 			
 			if( ctrlGetInputKey(Screenshot, true)  )
@@ -457,6 +426,12 @@ public class Redneck {
 				if(gm == MODE_MENU || gm == MODE_DEMO)
 					mOpen(mMenus[MAIN], -1);
 				else mOpen(mMenus[GAME], -1);
+			}
+			
+			if(gm != MODE_GAME || gShowMenu || Console.IsShown()) {
+				engine.handleevents();
+				if(gpmanager != null)
+					gpmanager.handler();
 			}
 			
 			if(gShowMenu && gm != MODE_MENU && gm != MODE_WAIT && gm != MODE_LOADING) 
@@ -625,7 +600,7 @@ public class Redneck {
 					if (!anmInited() || playanm() == 0 || getInput().getKey(ANYKEY) != 0) // end video
 					{
 						closeanm();
-						if (demofiles.size() != 0 && cfg.gDemoSeq != 0)
+						if (demofiles.size() != 0 && cfg.gDemoSeq != 0 && numplayers < 2)
 			        		gm = MODE_DEMO;
 			        	else gm = MODE_MENU;
 
@@ -657,32 +632,44 @@ public class Redneck {
 					}
 				    
 					break;
-				case MODE_GAME:
+				case MODE_GAME: //XXX
+					int i;
 					nonsharedkeys();
+					if (numplayers > 1) {
+						getpackets();
+						while (fakemovefifoplc < movefifoend[myconnectindex] && ud.pause_on == 0) 
+							fakedomovethings();
+					} else bufferjitter = 0;
 
-					if( ud.recstat == 2 || ud.multimode > 1 || ( !gShowMenu && !Console.IsShown() ) )
-						moveloop();
+					while (movefifoend[myconnectindex]-movefifoplc > bufferjitter)
+					{
+						for(i=connecthead;i>=0;i=connectpoint2[i])
+							if (movefifoplc == movefifoend[i]) break;
+						if (i >= 0) break;
+						domovethings();
+					}
+					
+					int ovscr = screensize;
+					if (gScreenCapture) 
+						vscrn(0);
 
 					int smoothratio = 65536;
-					if( (ud.multimode < 2 && !gShowMenu && !Console.IsShown() ) || ud.multimode > 1 || ud.recstat == 2) {
+					if( ud.pause_on == 0 && ((ud.multimode < 2 && !gShowMenu && !Console.IsShown() ) || ud.multimode > 1 || ud.recstat == 2)) {
 						smoothratio = engine.getsmoothratio();
 			            if (smoothratio < 0 || smoothratio > 0x10000) {
 			            	smoothratio = BClipRange(smoothratio, 0, 0x10000);
 			    		}
 					}
 
-					int ovscr = screensize;
-					if (gScreenCapture) 
-						vscrn(0);
-
+					dointerpolations(smoothratio);
+					
 					displayrooms(screenpeek,smoothratio);
 					displayrest(smoothratio);
 					
-					checksync();
+					restoreinterpolations();
 
-					while ((ud.multimode > 1 || !gShowMenu && !Console.IsShown()) && ready2send && totalclock >= ototalclock+TICSPERFRAME) 
-						engine.faketimerhandler();
-
+					BCheckSync();
+					
 					if (gScreenCapture) {
 						saveBuffer = engine.screencapture(160, 100);
 						vscrn(ovscr);
@@ -848,75 +835,9 @@ public class Redneck {
 			Gdx.app.exit();
 	}
 
-	public static boolean domovethings()
+	public static void domovethings()
 	{	
-	    for(int i=connecthead;i>=0;i=connectpoint2[i])
-	        if( (sync[i].bits&(1<<17)) != 0)
-	    {
-	        multiflag = 2;
-	        multiwhat = (byte) ((sync[i].bits>>18)&1);
-	        multipos = (byte) ((sync[i].bits>>19)&15);
-	        multiwho = (byte) i;
-
-	        if( multiwhat != 0 )
-	        {
-//	            saveplayer( multipos );
-//	            multiflag = 0;
-//
-//	            if(multiwho != myconnectindex)
-//	            {
-//	                strcpy(&fta_quotes[122],&ud.user_name[multiwho][0]);
-//	                strcat(&fta_quotes[122]," SAVED A MULTIPLAYER GAME");
-//	                FTA(122,&ps[myconnectindex]);
-//	            }
-//	            else
-//	            {
-//	                strcpy(&fta_quotes[122],"MULTIPLAYER GAME SAVED");
-//	                FTA(122,&ps[myconnectindex]);
-//	            }
-	            break;
-	        }
-	        else
-	        {
-//	            j = loadplayer( multipos );
-//
-//	            multiflag = 0;
-//
-//	            if(j == 0)
-//	            {
-//	                if(multiwho != myconnectindex)
-//	                {
-//	                    strcpy(&fta_quotes[122],&ud.user_name[multiwho][0]);
-//	                    strcat(&fta_quotes[122]," LOADED A MULTIPLAYER GAME");
-//	                    FTA(122,&ps[myconnectindex]);
-//	                }
-//	                else
-//	                {
-//	                    strcpy(&fta_quotes[122],"MULTIPLAYER GAME LOADED");
-//	                    FTA(122,&ps[myconnectindex]);
-//	                }
-//	                return true;
-//	            }
-	        }
-	    }
-
 	    ud.camerasprite = -1;
-	    lockclock += TICSPERFRAME;
-
-	    if(earthquaketime > 0) earthquaketime--;
-	    if(rtsplaying > 0) rtsplaying--;
-
-	    for(int i=0;i < MAXUSERQUOTES;i++)
-	         if (user_quote_time[i] != 0)
-	         {
-	             user_quote_time[i]--;
-	         }
-	     
-	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 2))
-	         quotebot += ksgn(quotebotgoal-quotebot);
-	     else
-	         quotebot = quotebotgoal;
-
 	    everyothertime++;
 
 	    for(int i=connecthead;i>=0;i=connectpoint2[i]) 
@@ -927,8 +848,8 @@ public class Redneck {
 	    
 	    int j = -1;
 	    for(int i=connecthead;i>=0;i=connectpoint2[i])
-	     {
-	          if (gm == MODE_DEMO || (sync[i].bits&(1<<26)) == 0) { j = i; continue; }
+	    {
+	    	if (gm == MODE_DEMO || (sync[i].bits&(1<<26)) == 0) { j = i; continue; }
 
 	          closedemowrite();
 
@@ -961,67 +882,79 @@ public class Redneck {
 	        	  backtomenu();
 	        	  Console.Print( " \nThe 'MASTER/First player' just quit the game.  All\nplayers are returned from the game.");
 	          } 
-	      }
-
-	      if ((numplayers >= 2) && ((movefifoplc&7) == 7))
-	      {
-	            int ch = engine.getrand()&255;
-	            for(int i=connecthead;i>=0;i=connectpoint2[i])
-	                 ch += ((ps[i].posx+ps[i].posy+ps[i].posz+(int)(ps[i].ang+ps[i].horiz))&255);
-	            syncval[myconnectindex][syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)] = (byte) ch;
-	            syncvalhead[myconnectindex]++;
-	      }
-
-	    if(ud.recstat == 1) record();
-
-	    if( ud.pause_on == 0 )
-	    {
-	        global_random = (short) engine.krand();
-	        movedummyplayers();//ST 13
 	    }
 
+	    if ((numplayers >= 2) && ((movefifoplc&7) == 7)) //build sync variables
+	    {
+	    	int ch = engine.getrand();
+	    	int p = 0, s = 0; 
+	    	for(int i=connecthead;i>=0;i=connectpoint2[i]) {
+	    		p ^= Checksum(ps[i].getBytes(), PlayerStruct.sizeof);
+	    		s ^= Checksum(sprite[ps[i].i].getBytes(), SPRITE.sizeof);
+	    	}
+	    	
+	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 0, ch);
+	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 4, p);
+	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 8, s);
+	    	syncvalhead[myconnectindex]++;
+	    }
+
+	    lockclock += TICSPERFRAME;
+	    if( ud.pause_on != 0 || ud.recstat != 2 && ud.multimode < 2 && (gShowMenu || Console.IsShown())) 
+	    	return;
+	      
+	    if(ud.recstat == 1) record();
+	    
+	    if(earthquaketime > 0) earthquaketime--;
+	    if(rtsplaying > 0) rtsplaying--;
+
+	    for(int i=0;i < MAXUSERQUOTES;i++)
+	    	if (user_quote_time[i] != 0)
+	    		user_quote_time[i]--;
+	     
+	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 2))
+	    	quotebot += ksgn(quotebotgoal-quotebot);
+	    else quotebot = quotebotgoal;
+	    
+	    if(fta > 0)
+	    {
+	        fta--;
+	        if(fta == 0) ftq = 0;
+	    }
+	    
+	    if ( ps[screenpeek].fogtype == 0 ) {
+		    if (totalclock < lastvisinc)
+		    {
+		        if (klabs(gVisibility-currentGame.getCON().const_visibility) > 8)
+		        	gVisibility += (currentGame.getCON().const_visibility-gVisibility)>>2;
+		    }
+		    else gVisibility = currentGame.getCON().const_visibility;
+	    }
+
+	    global_random = (short) engine.krand();
+	    movedummyplayers();//ST 13
+	    
 	    for(int i=connecthead;i>=0;i=connectpoint2[i])
 	    {
 	        cheatkeys(i);
-
-	        if( ud.pause_on == 0 )
-	        {
-	            processinput(i);
-	            checksectors(i);
-	        }
+	        processinput(i);
+	        checksectors(i);
 	    }
-	    
-//	    if(Gdx.input.isKeyPressed(Keys.E))
-//	    {
-//	    	engine.hitscan(ps[0].posx,ps[0].posy,ps[0].posz,ps[0].cursectnum,
-//	    	        sintable[((short)ps[0].ang+512)&2047],
-//	    	        sintable[(short)ps[0].ang&2047],
-//	    	        0,pHitInfo,CLIPMASK0);
-//	    	if(pHitInfo.hitsprite != -1)
-//	    	System.err.println(pHitInfo.hitsprite + " " + sprite[pHitInfo.hitsprite].picnum);
-//	    	
-//	    	if(pHitInfo.hitwall != -1)
-//	    		System.err.println(pHitInfo.hitwall + " " + wall[pHitInfo.hitwall].picnum + " " + wall[pHitInfo.hitwall].overpicnum);
-//	    	
-//	    }
 
-	    if( ud.pause_on == 0 )
-	    {
-	        movefta();//ST 2
-	        moveweapons();          //ST 5 (must be last)
-	        movetransports();       //ST 9
+        movefta();//ST 2
+        moveweapons();          //ST 5 (must be last)
+        movetransports();       //ST 9
 
-	        moveplayers();          //ST 10
-	        movefallers();          //ST 12
+        moveplayers();          //ST 10
+        movefallers();          //ST 12
 
-	        moveexplosions();       //ST 4
+        moveexplosions();       //ST 4
 
-	        moveactors();           //ST 1
-	        moveeffectors();        //ST 3
-	        movestandables();       //ST 6
-	        doanimations();
-	        movefx();               //ST 11
-	    }
+        moveactors();           //ST 1
+        moveeffectors();        //ST 3
+        movestandables();       //ST 6
+        doanimations();
+        movefx();               //ST 11
 	    
 	    if ( numtorcheffects != 0)
 	    	torchesprocess();
@@ -1034,8 +967,6 @@ public class Redneck {
 	        movecyclers();
 	        pan3dsound();
 	    }
-
-	    return false;
 	}
 	
 	public static void fakedomovethingscorrect()
@@ -2127,6 +2058,48 @@ public class Redneck {
 	        sprite[p.i].cstat = backcstat;
 	}
 	
+	public static void input()
+	{
+		if(numplayers > 1)
+			getpackets();
+
+		for(int i=connecthead;i>=0;i=connectpoint2[i])
+			if (i != myconnectindex)
+				if (movefifoend[i] < movefifoend[myconnectindex]-200) return;
+
+		if ( ps[myconnectindex].OnMotorcycle )
+			motoinput(myconnectindex);
+		else if ( ps[myconnectindex].OnBoat ) {
+			boatinput(myconnectindex);
+		} else getinput(myconnectindex);
+
+		if ((movefifoend[myconnectindex]&(movesperpacket-1)) != 0)
+		{
+			inputfifo[movefifoend[myconnectindex]&(MOVEFIFOSIZ-1)][myconnectindex].
+				copy(inputfifo[(movefifoend[myconnectindex]-1)&(MOVEFIFOSIZ-1)][myconnectindex]);
+			movefifoend[myconnectindex]++;
+			return;
+		}
+
+		inputfifo[movefifoend[myconnectindex]&(MOVEFIFOSIZ-1)][myconnectindex].copy(loc);
+		movefifoend[myconnectindex]++;
+
+		if (numplayers < 2)
+		{
+			if (ud.multimode > 1)
+				for(int i=connecthead;i>=0;i=connectpoint2[i])
+					if(i != myconnectindex)
+					{
+						if(ud.playerai != 0)
+							computergetinput(i,inputfifo[movefifoend[i]&(MOVEFIFOSIZ-1)][i]);
+						movefifoend[i]++;
+					}
+			return;
+		}
+
+		netinput();
+	}
+
 	public static void backtomenu()
 	{
 		ready2send = false;

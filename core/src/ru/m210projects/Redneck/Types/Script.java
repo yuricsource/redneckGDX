@@ -7,7 +7,7 @@ import static ru.m210projects.Redneck.Globals.*;
 
 public class Script {
 
-	public int type;
+	public int type = RR;
 	
 	public int actorscrptr[] = new int[MAXTILES];
 	public short actortype[] = new short[MAXTILES];

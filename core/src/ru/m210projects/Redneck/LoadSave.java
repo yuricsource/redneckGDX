@@ -804,11 +804,11 @@ public class LoadSave {
 		AnimationLoad(loader);
 		GameInfoLoad(loader);
 			
-		if(ps[myconnectindex].over_shoulder_on != 0)
+		if(over_shoulder_on != 0)
 		{
 	         cameradist = 0;
 	         cameraclock = 0;
-	         ps[myconnectindex].over_shoulder_on = 1;
+	         over_shoulder_on = 1;
 		}
 
 		screenpeek = myconnectindex;
@@ -821,6 +821,13 @@ public class LoadSave {
 		clearsoundlocks();
 		cacheit();
 		docacheit();
+
+		userMusic = null;
+		if(boardfilename != null) {
+			FileEntry file = cache.checkFile(boardfilename);
+			if(file != null) 
+				sndCheckMusic(file);
+		}
 
 		musicvolume = ud.volume_number;
     	musiclevel = ud.level_number;
@@ -890,7 +897,7 @@ public class LoadSave {
 			}
 		}
 		
-		ps[myconnectindex].fta = 0;
+		fta = 0;
 
 		everyothertime = 0;
 

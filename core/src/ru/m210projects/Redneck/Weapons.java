@@ -69,8 +69,7 @@ import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.Sounds.spritesound;
 import static ru.m210projects.Redneck.Sounds.xyzsound;
 import static ru.m210projects.Redneck.Spawn.*;
-import static ru.m210projects.Redneck.View.FTA;
-import static ru.m210projects.Redneck.View.lastvisinc;
+import static ru.m210projects.Redneck.View.*;
 
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Redneck.Types.PlayerStruct;
@@ -1406,8 +1405,12 @@ public class Weapons {
 									ps[p].numloogs = j;
 									ps[p].loogcnt = 24 * 4;
 									for (x = 0; x < j; x++) {
-										ps[p].loogiex[x] = engine.krand()% xdim;
-										ps[p].loogiey[x] = engine.krand()% ydim;
+										int lx = engine.krand()%xdim;
+                                    	int ly = engine.krand()%ydim;
+                                    	if(p == screenpeek) {
+                                    		loogiex[x] = lx;
+                                    		loogiey[x] = ly;
+                                    	}
 									}
 								}
 							}
@@ -1611,7 +1614,7 @@ public class Weapons {
 
 	    PlayerStruct p = ps[snum];
 	    short kb = p.kickback_pic;
-
+	
 	    o = 0;
 	    looking_arc = (int) (klabs(p.look_ang)/9);
 
@@ -1665,7 +1668,7 @@ public class Weapons {
 	    }
 	    else if(p.OnMotorcycle) 
 	    {
-	    	if(p.over_shoulder_on != 0)
+	    	if(over_shoulder_on != 0)
 	    		return;
 	    	int pic = 7170;
 	    	if(numplayers == 1)
@@ -1731,7 +1734,7 @@ public class Weapons {
 	    } 
 	    else if(p.OnBoat)
 	    {
-	    	if(p.over_shoulder_on != 0)
+	    	if(over_shoulder_on != 0)
 	    		return;
 	    	int pic = 7175;
 	    	if(p.TiltStatus <= 0)
@@ -1821,7 +1824,9 @@ public class Weapons {
                 	myospal(((rake_x[crowbar_frames[kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1) + 20, 
                     		looking_arc+210-(244 - rake_y[crowbar_frames[kb]]) - gun_pos - 80, 32768, 3510+crowbar_frames[kb],gs,o,pal);
                 else
-                	myospal(((crowbar_x[crowbar_frames[kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1), 
+                	myospal(((crowbar_x[
+                	                    crowbar_frames[
+                	                                   kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1), 
                 			looking_arc+200-(244 - crowbar_y[crowbar_frames[kb]]) - gun_pos, 32768, 3340+crowbar_frames[kb],gs,o,pal);
 	            break;
 
@@ -2421,7 +2426,8 @@ public class Weapons {
 		                    spritesound(PISTOL_FIRE,pi);
 
 		                    lastvisinc = totalclock+32;
-		                    p.visibility = 0;
+		                    if(snum == screenpeek)
+		                    	gVisibility = 0;
 		                    p.field_290 = 0x2000;
 		                    sub_64EF0(snum);
 		                    
@@ -2493,7 +2499,8 @@ public class Weapons {
 		                    p.field_290 = 0x2000;
 		                    sub_64EF0(snum);
 		                    lastvisinc = totalclock+32;
-		                    p.visibility = 0;
+		                    if(snum == screenpeek)
+		                    	gVisibility = 0;
 		                }
 		                
 		                if ( p.kickback_pic == 7 )
@@ -2593,7 +2600,8 @@ public class Weapons {
 		                        spritesound(CHAINGUN_FIRE,pi);
 		                        shoot(pi,RIFLE);
 		                        lastvisinc = totalclock+32;
-		                        p.visibility = 0;
+		                        if(snum == screenpeek)
+			                    	gVisibility = 0;
 		                        p.field_290 = 0x2000;
 			                	sub_64EF0(snum);
 			                	if ( psectlotag != 857 )
@@ -2654,7 +2662,8 @@ public class Weapons {
 		            	(p.kickback_pic)++;
 		            	if( (p.kickback_pic) == 2 || (p.kickback_pic) == 4 )
 		            	{
-		            		p.visibility = 0;
+		            		if(snum == screenpeek)
+		                    	gVisibility = 0;
 		            		lastvisinc = totalclock+32;
 		            		spritesound(CHAINGUN_FIRE,pi);
 		            		shoot(pi,SHOTSPARK1);
@@ -2686,7 +2695,8 @@ public class Weapons {
 		            	else if ( p.kickback_pic == 9 )
 		            	{
 		            		p.ammo_amount[ALIENBLASTER_WEAPON]--;
-		            		p.visibility = 0;
+		            		if(snum == screenpeek)
+		                    	gVisibility = 0;
 		            		lastvisinc = totalclock+32;
 		            		checkavailweapon(p);
 		            	}
@@ -2810,7 +2820,8 @@ public class Weapons {
 		            		}
 		                    
 		                    lastvisinc = totalclock + 32;
-		                    p.visibility = 0;
+		                    if(snum == screenpeek)
+		                    	gVisibility = 0;
 		                    
 		                    p.field_290 = 0x8000;
 		                    sub_64EF0(snum);
@@ -2828,7 +2839,8 @@ public class Weapons {
 		            	(p.kickback_pic)++;
 		            	if( (p.kickback_pic) == 2 || (p.kickback_pic) == 4 )
 		            	{
-		            		p.visibility = 0;
+		            		if(snum == screenpeek)
+		                    	gVisibility = 0;
 		            		lastvisinc = totalclock+32;
 		            		spritesound(CHAINGUN_FIRE,pi);
 		            		shoot(pi,RIFLE);

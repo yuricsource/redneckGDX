@@ -24,6 +24,11 @@
 
 package ru.m210projects.Redneck;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static ru.m210projects.Build.Engine.*;
+import static ru.m210projects.Build.Pragmas.klabs;
+import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Menus.MENU.mClose;
 import static ru.m210projects.Redneck.Main.engine;
@@ -43,7 +48,6 @@ import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Build.Net.Mmulti.otherpacket;
 import static ru.m210projects.Build.Net.Mmulti.sendpacket;
-import static ru.m210projects.Build.Net.Mmulti.syncstate;
 import static ru.m210projects.Build.Net.Mmulti.uninitmultiplayer;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
@@ -60,7 +64,6 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Build.Strhandler.buildString;
-
 import java.io.File;
 import java.util.Arrays;
 
@@ -149,6 +152,7 @@ public class Network {
 	{
 		 int i,l;
 		 ud.user_name[myconnectindex] = cfg.pName;
+		 ps[myconnectindex].name = cfg.pName;
 
 		 byte[] buf = new byte[256];
 	     if(numplayers > 1)
@@ -234,15 +238,26 @@ public class Network {
 		                    movefifoend[i]++;
 		                }
 
+//		                while (j != packbufleng)
+//		                {
+//		                    for(i=connecthead;i>=0;i=connectpoint2[i])
+//		                        if(i != myconnectindex)
+//		                    {	
+//		                        syncval[i][syncvalhead[i]&(MOVEFIFOSIZ-1)] = packbuf[j];
+//		                        syncvalhead[i]++;
+//		                    }
+//		                    j++;
+//		                }
+		                
 		                while (j != packbufleng)
 		                {
 		                    for(i=connecthead;i>=0;i=connectpoint2[i])
 		                        if(i != myconnectindex)
 		                    {	
-		                        syncval[i][syncvalhead[i]&(MOVEFIFOSIZ-1)] = packbuf[j];
-		                        syncvalhead[i]++;
+		                        GetPacket(packbuf, j, syncval[other], CheckBytes * (syncvalhead[other] &(MOVEFIFOSIZ-1)), CheckBytes);
+			                	syncvalhead[other]++;
 		                    }
-		                    j++;
+		                    j += CheckBytes;
 		                }
 
 		                for(i=connecthead;i>=0;i=connectpoint2[i])
@@ -273,11 +288,11 @@ public class Network {
 		                if ((k&64) != 0) { nsyn[other].bits = ((nsyn[other].bits&0x00ffffff)|(packbuf[j++]&0xFF)<<24); }
 		                if ((k&128) != 0) {nsyn[other].horz = LittleEndian.getFloat(packbuf, j); j += 4; /*packbuf[j++];*/ }
 		                movefifoend[other]++;
-		                while (j != packbufleng)
-		                {
-		                    syncval[other][syncvalhead[other]&(MOVEFIFOSIZ-1)] = packbuf[j++];
-		                    syncvalhead[other]++;
-		                }
+		                while ( j != packbufleng )
+						{
+							j = GetPacket(packbuf, j, syncval[other], CheckBytes * (syncvalhead[other] &(MOVEFIFOSIZ-1)), CheckBytes);
+							syncvalhead[other]++;
+						}
 
 		                for(i=1;i<movesperpacket;i++)
 		                {
@@ -383,6 +398,7 @@ public class Network {
 						for (i=3;packbuf[i] != 0;i++, len++);
 						
 						ud.user_name[other] = new String(packbuf, 3, len);
+						ps[other].name = ud.user_name[other];
 						i++;
 	
 						j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
@@ -432,7 +448,7 @@ public class Network {
 
 						other = LittleEndian.getInt(packbuf, 1);
 						
-//						waitforeverybody(1000);
+						waitforeverybody(1000);
 						
 						closedemowrite();
 
@@ -476,8 +492,8 @@ public class Network {
 
 						adduserquote(buf);
 						
-//						if(!waitforeverybody(0))
-//							return -1;
+						if(!waitforeverybody(0))
+							return -1;
 				          
 						break;
 		                
@@ -500,7 +516,124 @@ public class Network {
 		
 		return 1;
 	}
+
+	public static long Checksum( byte[] p, int length )
+	{
+		int ptr = 0;
+		length >>= 2;
+		long sum = 0;
+		while ( (--length) != -1 ) {
+			sum += LittleEndian.getInt(p, ptr);
+			ptr += 4;
+		}
+
+		return sum;
+	}
 	
+	public static int PutPacket(byte[] p, int ptr, Object v, int vptr, int size)
+	{
+		if(ptr + size > p.length)
+			dassert("ptr + size < packbuf.length");
+		if(v instanceof byte[])
+		{
+			byte[] array = (byte[]) v;
+			System.arraycopy(array, vptr, p, ptr, size); //memcpy(p, v, size);
+			return ptr += size;
+		} 
+		else if(v instanceof int[])
+		{
+			int[] array = (int[]) v;
+			for(int i = 0; i < size / 4; i++) {
+				LittleEndian.putInt(p, ptr, array[vptr + i]);
+				ptr += 4;
+			}
+		} 
+
+		return -1;
+	}
+	
+	public static int GetPacket(byte[] p, int pptr, byte[] v, int vptr, int size)
+	{
+		if(pptr + size >= p.length)
+			dassert("ptr + size < packbuf.length");
+		System.arraycopy(p, pptr, v, vptr, size); //memcpy(v, p, size);
+		return pptr += size;
+	}
+	
+	public static void BCheckSync()
+	{
+		int nPlayer;
+
+		if ( numplayers == 1 )
+			return;
+
+		if((syncstat) != 0) {
+			buildString(recbuf, 0, "Out Of Sync - Please restart game");
+			engine.printext256(4,114,31,0,recbuf,0);
+			
+			if((syncstat&1) == 1)
+			{
+				buildString(recbuf, 0, "Random seeds");
+				engine.printext256(32,122,31,0,recbuf,0);
+			}
+			
+			if ((syncstat&2) == 2)
+			{
+				buildString(recbuf, 0, "Player struct");
+				engine.printext256(32,130,31,0,recbuf,0);
+			}
+			
+			if ((syncstat&4) == 4) {
+				buildString(recbuf, 0, "Sprite struct");
+				engine.printext256(32,138,31,0,recbuf,0);
+			}
+		}
+		
+		while ( true )
+		{
+			for ( nPlayer = connecthead; nPlayer >= 0; nPlayer = connectpoint2[nPlayer] )
+			{
+				if ( syncvalhead[nPlayer] <= syncvaltottail )
+					return;
+			}
+
+			int msch = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 0);
+			int msp = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
+			int mss = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 8);
+
+			syncstat = 0;
+			for ( nPlayer = connectpoint2[connecthead]; nPlayer >= 0; nPlayer = connectpoint2[nPlayer] )
+			{
+				int slch = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 0);
+				int slp = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
+				int sls = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 8);
+
+				if(slch != msch)
+				{
+//					Console.Println("Out of sync randomseeds " + slch + " != " + msch, OSDTEXT_RED);
+					syncstat |= 1;
+				}
+				
+				if(slp != msp)
+				{
+					
+//					Console.Println("Out of sync player " + syncvaltottail + " " + slp + " != " + msp, OSDTEXT_RED);
+//					Console.Println("Out of sync player[" + nPlayer + "] struct checksum error: \r\n", OSDTEXT_RED);
+					syncstat |= 2;
+				}
+				
+				if(sls != mss)
+				{
+//					Console.Println("Out of sync sprite " + syncvaltottail + " " + sls + " != " + mss, OSDTEXT_RED);
+//					Console.Println("Out of sync player[" + nPlayer + "] sprite checksum error: \r\n", OSDTEXT_RED);
+					syncstat |= 4;
+				}
+			}
+			syncvaltottail++;
+		}
+	}
+	
+	/*
 	public static void checksync()
 	{
 		int i;
@@ -537,6 +670,7 @@ public class Network {
 			engine.printext256(4,138,31,0,recbuf,0);
 		}
 	}
+	*/
 	
 	public static void ResetNetwork()
 	{
@@ -663,5 +797,178 @@ public class Network {
 
 			sendmessagecommand = -1;
         }
+	}
+	
+	public static void netinput()
+	{
+		Input[] osyn, nsyn;
+		
+		int i;
+	    for(i=connecthead;i>=0;i=connectpoint2[i])
+	        if (i != myconnectindex)
+	        {
+	            int k = (movefifoend[myconnectindex]-1)-movefifoend[i];
+	            myminlag[i] = min(myminlag[i],k);
+	            mymaxlag = max(mymaxlag,k);
+	        }
+
+	    if (((movefifoend[myconnectindex]-1)&(TIMERUPDATESIZ-1)) == 0)
+	    {
+	        i = mymaxlag-bufferjitter; mymaxlag = 0;
+	        if (i > 0) bufferjitter += ((3+i)>>2);
+	        else if (i < 0) bufferjitter -= ((1-i)>>2);
+	    }
+	    
+	    if (myconnectindex != connecthead)   //Slave
+	    {
+	            //Fix timers and buffer/jitter value
+	        if (((movefifoend[myconnectindex]-1)&(TIMERUPDATESIZ-1)) == 0)
+	        {
+	            i = myminlag[connecthead]-otherminlag;
+	            if (klabs(i) > 8) i >>= 1;
+	            else if (klabs(i) > 2) i = ksgn(i);
+	            else i = 0;
+
+	            totalclock -= TICSPERFRAME*i;
+	            otherminlag += i;
+
+	            for(i=connecthead;i>=0;i=connectpoint2[i])
+	                myminlag[i] = 0x7fffffff;
+	        }
+
+	        packbuf[0] = kPacketSlaveFrame; packbuf[1] = 0; int j = 2;
+
+	        osyn = inputfifo[(movefifoend[myconnectindex]-2)&(MOVEFIFOSIZ-1)];
+	        nsyn = inputfifo[(movefifoend[myconnectindex]-1)&(MOVEFIFOSIZ-1)];
+
+	        if (nsyn[myconnectindex].fvel != osyn[myconnectindex].fvel)
+	        {
+	            packbuf[j++] = (byte) nsyn[myconnectindex].fvel;
+	            packbuf[j++] = (byte)(nsyn[myconnectindex].fvel>>8);
+	            packbuf[1] |= 1;
+	        }
+	        if (nsyn[myconnectindex].svel != osyn[myconnectindex].svel)
+	        {
+	            packbuf[j++] = (byte) nsyn[myconnectindex].svel;
+	            packbuf[j++] = (byte)(nsyn[myconnectindex].svel>>8);
+	            packbuf[1] |= 2;
+	        }
+	        if (nsyn[myconnectindex].avel != osyn[myconnectindex].avel)
+	        {
+	        	LittleEndian.putFloat(packbuf, j, nsyn[myconnectindex].avel);
+	        	j += 4;
+	            packbuf[1] |= 4;
+	        }
+	        if (((nsyn[myconnectindex].bits^osyn[myconnectindex].bits)&0x000000ff) != 0) { packbuf[j++] = (byte) (nsyn[myconnectindex].bits&255); packbuf[1] |= 8; }
+	        if (((nsyn[myconnectindex].bits^osyn[myconnectindex].bits)&0x0000ff00) != 0) { packbuf[j++] = (byte) ((nsyn[myconnectindex].bits>>8)&255); packbuf[1] |= 16; }
+	        if (((nsyn[myconnectindex].bits^osyn[myconnectindex].bits)&0x00ff0000) != 0) { packbuf[j++] = (byte) ((nsyn[myconnectindex].bits>>16)&255); packbuf[1] |= 32; }
+	        if (((nsyn[myconnectindex].bits^osyn[myconnectindex].bits)&0xff000000) != 0) { packbuf[j++] = (byte) ((nsyn[myconnectindex].bits>>24)&255); packbuf[1] |= 64; }
+	        if (nsyn[myconnectindex].horz != osyn[myconnectindex].horz)
+	        {
+	            LittleEndian.putFloat(packbuf, j, nsyn[myconnectindex].horz);
+	        	j += 4;
+	            packbuf[1] |= 128;
+	        }
+
+	        while (syncvalhead[myconnectindex] != syncvaltail)
+			{
+				j = PutPacket(packbuf, j, syncval[myconnectindex], CheckBytes * (syncvaltail & (MOVEFIFOSIZ-1)), CheckBytes);
+				syncvaltail++;
+			}
+
+	        sendpacket(connecthead,packbuf,j);
+	        return;
+	    }
+
+			  //This allows packet resends
+	    for(i=connecthead;i>=0;i=connectpoint2[i])
+	        if (movefifoend[i] <= movefifosendplc)
+	        {
+	            packbuf[0] = kPacketEmpty;
+	            for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+	            {
+	            	while(!canSend(i)); //GDX 22.10.2018
+	            	sendpacket(i,packbuf,1);
+				}
+	            return;
+	        }
+
+	    while (true)  //Master 
+	    {
+	        for(i=connecthead;i>=0;i=connectpoint2[i])
+	            if (playerquitflag[i] != 0 && (movefifoend[i] <= movefifosendplc)) return;
+
+	        osyn = inputfifo[(movefifosendplc-1)&(MOVEFIFOSIZ-1)];
+	        nsyn = inputfifo[(movefifosendplc  )&(MOVEFIFOSIZ-1)];
+	        
+	            //MASTER -> SLAVE packet
+	        packbuf[0] = kPacketMasterFrame; int j = 1;
+
+	            //Fix timers and buffer/jitter value
+	        if ((movefifosendplc&(TIMERUPDATESIZ-1)) == 0)
+	        {
+	            for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+	                if (playerquitflag[i] != 0)
+	                packbuf[j++] = (byte) min(max(myminlag[i],-128),127);
+
+	            for(i=connecthead;i>=0;i=connectpoint2[i])
+	                myminlag[i] = 0x7fffffff;
+	        }
+
+	        int k = j;
+	        for(i=connecthead;i>=0;i=connectpoint2[i])
+	           j += playerquitflag[i];
+	        for(i=connecthead;i>=0;i=connectpoint2[i])
+	        {
+	            if (playerquitflag[i] == 0) continue;
+
+	            packbuf[k] = 0;
+	            if (nsyn[i].fvel != osyn[i].fvel)
+	            {
+	                packbuf[j++] = (byte)nsyn[i].fvel;
+	                packbuf[j++] = (byte)(nsyn[i].fvel>>8);
+	                packbuf[k] |= 1;
+	            }
+	            if (nsyn[i].svel != osyn[i].svel)
+	            {
+	                packbuf[j++] = (byte)nsyn[i].svel;
+	                packbuf[j++] = (byte)(nsyn[i].svel>>8);
+	                packbuf[k] |= 2;
+	            }
+	            if (nsyn[i].avel != osyn[i].avel)
+	            {
+	                LittleEndian.putFloat(packbuf, j, nsyn[i].avel);
+		        	j += 4;
+	                packbuf[k] |= 4;
+	            }
+	            if (((nsyn[i].bits^osyn[i].bits)&0x000000ff) != 0) { packbuf[j++] = (byte) (nsyn[i].bits&255); packbuf[k] |= 8; }
+	            if (((nsyn[i].bits^osyn[i].bits)&0x0000ff00) != 0) { packbuf[j++] = (byte) ((nsyn[i].bits>>8)&255); packbuf[k] |= 16; }
+	            if (((nsyn[i].bits^osyn[i].bits)&0x00ff0000) != 0) { packbuf[j++] = (byte) ((nsyn[i].bits>>16)&255); packbuf[k] |= 32; }
+	            if (((nsyn[i].bits^osyn[i].bits)&0xff000000) != 0) { packbuf[j++] = (byte) ((nsyn[i].bits>>24)&255); packbuf[k] |= 64; }
+	            if (nsyn[i].horz != osyn[i].horz)
+	            {
+	                LittleEndian.putFloat(packbuf, j, nsyn[i].horz);
+		        	j += 4;
+	                packbuf[k] |= 128;
+	            }
+	            k++;
+	        }
+
+	        while (syncvalhead[myconnectindex] != syncvaltail)
+			{
+				j = PutPacket(packbuf, j, syncval[myconnectindex], CheckBytes * (syncvaltail & (MOVEFIFOSIZ-1)), CheckBytes);
+				syncvaltail++;
+			}
+
+	        for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+	            if (playerquitflag[i] != 0)
+	            {
+	                 sendpacket(i,packbuf,j);
+	                 if ((nsyn[i].bits&(1<<26)) != 0)
+	                    playerquitflag[i] = 0;
+	            }
+
+	        movefifosendplc += movesperpacket;
+	    }
 	}
 }

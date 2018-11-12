@@ -882,29 +882,29 @@ public class Controls {
 		
 		if ( ctrlGetInputKey(See_Chase_View, true) )
 		{
-			if( ps[myconnectindex].over_shoulder_on != 0 )
-                ps[myconnectindex].over_shoulder_on = 0;
+			if( over_shoulder_on != 0 )
+                over_shoulder_on = 0;
             else
             {
-                ps[myconnectindex].over_shoulder_on = 1;
+                over_shoulder_on = 1;
                 cameradist = 0;
                 cameraclock = totalclock;
             }
-            FTA(109+ps[myconnectindex].over_shoulder_on,ps[myconnectindex]);
+            FTA(109+over_shoulder_on,ps[myconnectindex]);
 		}
 		
 		if( ud.overhead_on != 0)
 		{
             int j = totalclock-nonsharedtimer; nonsharedtimer += j;
             if ( ctrlGetInputKey(Enlarge_Screen, false) )
-                ps[myconnectindex].zoom += mulscale(j,Math.max(ps[myconnectindex].zoom,256), 6);
+                zoom += mulscale(j,Math.max(zoom,256), 6);
             if ( ctrlGetInputKey(Shrink_Screen, false) )
-                ps[myconnectindex].zoom -= mulscale(j,Math.max(ps[myconnectindex].zoom,256), 6);
+                zoom -= mulscale(j,Math.max(zoom,256), 6);
 
-            if( (ps[myconnectindex].zoom > 2048) )
-                ps[myconnectindex].zoom = 2048;
-            if( (ps[myconnectindex].zoom < 48) )
-                ps[myconnectindex].zoom = 48;
+            if( (zoom > 2048) )
+                zoom = 2048;
+            if( (zoom < 48) )
+                zoom = 48;
             
             if( ctrlGetInputKey(Map_Follow_Mode, true) ) {
 	   	    	 ud.scrollmode = !ud.scrollmode;
@@ -956,7 +956,7 @@ public class Controls {
 		if( ctrlGetInputKey(AutoRun, true)  )
 	    {
 	        ud.auto_run ^= 1;
-	        FTA(85+ud.auto_run, ps[myconnectindex]);
+	        FTA(85+ud.auto_run, ps[screenpeek]);
 	    }
 		
 		if( ctrlGetInputKey(Toggle_Crosshair, true)  )
@@ -986,7 +986,7 @@ public class Controls {
 
 		if (ctrlGetInputKey(ToggleMessages, true)) {
 			ud.fta_on ^= 1;
-			if(ud.fta_on != 0) FTA(23,ps[myconnectindex]);
+			if(ud.fta_on != 0) FTA(23,ps[screenpeek]);
 			else
 			{
 				ud.fta_on = 1;

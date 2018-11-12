@@ -25,6 +25,7 @@ import static ru.m210projects.Build.Engine.tilesizx;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
+import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.Screen.*;
 
 import java.util.List;
@@ -118,8 +119,11 @@ public class MenuList extends MenuItem
 			    }
 			    
 			    if ( i == l_nFocus ) {
-			    	while(text.get(l_nFocus) == null)
-			    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
+			    	while(text.get(l_nFocus) == null) {
+			    		l_nFocus = (l_nFocus + 1);// & (text.size() - 1);
+			    		if(l_nFocus >= text.size()) l_nFocus = 0;
+			    	}
+
 					if(mGetFocusedItem(m_pMenu, this)) {
 						int yoff = 13;
 					    int scale = 4096;
@@ -185,8 +189,11 @@ public class MenuList extends MenuItem
 					l_nMin = text.size() - nListItems;
 					if(l_nMin < 0) l_nMin = 0;
 				}
-				while(text.get(l_nFocus) == null)
-		    		l_nFocus = (l_nFocus - 1) & (text.size() - 1);
+				while(text.get(l_nFocus) == null) {
+		    		l_nFocus = (l_nFocus - 1);
+		    		if( l_nFocus < 0) l_nFocus = text.size() - 1;
+				}
+				sound(335);
 				return 0;
 			case 3:
 				l_nFocus++;
@@ -196,8 +203,11 @@ public class MenuList extends MenuItem
 					l_nFocus = 0;
 					l_nMin = 0;
 				}
-				while(text.get(l_nFocus) == null)
-		    		l_nFocus = (l_nFocus + 1) & (text.size() - 1);
+				while(text.get(l_nFocus) == null) {
+		    		l_nFocus = (l_nFocus + 1);
+		    		if(l_nFocus >= text.size()) l_nFocus = 0;
+				}
+				sound(335);
 				return 0;
 			case 4: //left
 				mNavUp(pMenu);
