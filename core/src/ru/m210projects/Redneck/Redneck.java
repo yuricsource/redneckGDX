@@ -326,6 +326,27 @@ public class Redneck {
 					}
 		}));
 		
+		Console.RegisterCvar(new OSDCOMMAND("net_player",
+				"net_player", new OSDCVARFUNC() {
+					@Override
+					public void execute() {
+						if (Console.osd_argc != 2) {
+							Console.Println("net_player: num");
+							return;
+						}
+						try {
+						String num = osd_argv[1];
+						int pnum = Integer.parseInt(num);
+						Console.Println("Player: ");
+						Console.Println(ps[pnum].toString());
+						Console.Println("Sprite: ");
+						Console.Println(sprite[ps[pnum].i].toString());
+						
+						sendtoall(new byte[] { kPacketPlayer, (byte) pnum }, 2);
+						} catch (Exception e) { }
+					}
+		}));
+		
 		Console.RegisterCvar(new OSDCOMMAND("initgroupfile",
 				"initgroupfile", new OSDCVARFUNC() {
 					@Override

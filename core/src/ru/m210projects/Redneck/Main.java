@@ -46,14 +46,11 @@ public class Main extends ApplicationAdapter {
 	
 	/*
 	 * v0.761
-	 * 
+	 * Weapon drop fix after dead
 	 * 
 	 * TODO:
-	 * multiplayer alchohol unsync wiskey
-	 * keys multiplayer bug
-	 * drop dynamite insteadof crowbar
-	 * max_kills multiplayer coop
-	 * 
+	 * check RA secret place E1M1
+	 * multiplayer interpolation
 	 * cd audio from cue
 	 * cutscenes MVE
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт

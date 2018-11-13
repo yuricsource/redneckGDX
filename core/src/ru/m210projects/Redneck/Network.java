@@ -64,6 +64,7 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Build.Strhandler.buildString;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -95,7 +96,8 @@ public class Network {
 	
 	public static final byte 	kPacketContentCheck = 8;
 	public static final byte	kPacketDisconnect	= 9;
-
+	public static final byte	kPacketPlayer		= 11;
+	
 	public static final byte 	kPacketEmpty 			= (byte) 127;
 	public static final byte 	kPacketSlaveProfile		= (byte) 250;
 	public static final byte 	kPacketLogout			= (byte) 255;
@@ -197,6 +199,15 @@ public class Network {
 			other = otherpacket;
 			switch(packbuf[0])
 			{
+				case kPacketPlayer:
+					
+					int num = packbuf[1];
+					Console.Println("Player: ");
+					Console.Println(ps[num].toString());
+					Console.Println("Sprite: ");
+					Console.Println(sprite[ps[num].i].toString());
+					
+					break;
 				 case kPacketMasterFrame:  //[0] (receive master sync buffer)
 		                j = 1;
 

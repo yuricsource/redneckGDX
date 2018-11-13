@@ -114,6 +114,7 @@ public class MenuTextField extends MenuItem {
 			boolean focused = mGetFocusedItem(m_pMenu, this);
 			if ( focused ) 
 				shade = 8 - (totalclock & 0x3F);
+			else typing = false;
 
 		    int pal = this.pal;
 		    if(pal == 0 && textStyle < 2) pal = 10;

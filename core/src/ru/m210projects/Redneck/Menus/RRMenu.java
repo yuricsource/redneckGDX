@@ -3265,6 +3265,8 @@ public class RRMenu {
 						this.list[1 + i] = mGameInfo.skillnames[i].toCharArray();
 				}
 				num = ud.m_player_skill;
+				if(currentGame.getCON().type != RRRA) 
+					num++;
 			}
 		};
 		

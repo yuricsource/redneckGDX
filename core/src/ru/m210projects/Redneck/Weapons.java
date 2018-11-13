@@ -78,8 +78,21 @@ public class Weapons {
 	
 	public static int myaimmode = 0, myaimstat = 0, omyaimstat = 0;
 	
-	public static final short weapon_sprites[] = { 3340, FIRSTGUNSPRITE, SHOTGUNSPRITE,
-			22, 23, 26, 25, 29, 27, 3437, 1409, 26 };
+	public static final short weapon_sprites[] = { 
+			3340, 
+			FIRSTGUNSPRITE, 
+			SHOTGUNSPRITE,
+			22, 
+			26, 
+			23, 
+			25, 
+			29, 
+			27,
+			24,
+			1409,
+			25,
+			3437
+	};
 
 	public static final short aimstats[] = {10,13,1,2};
 	public static int aim(SPRITE s, int aang)
@@ -271,31 +284,30 @@ public class Weapons {
 
 	    if(cw != 0)
 	    {
-	        if((engine.krand()&1) != 0)
+//	        if((engine.krand()&1) != 0)
 	            spawn(p.i,weapon_sprites[cw]);
-	        else switch(cw)
-	        {
-	            case DYNAMITE_WEAPON:
-	            case CROSSBOW_WEAPON:
-	                spawn(p.i,EXPLOSION2);
-	                break;
-	        }
+//	        else switch(cw)
+//	        {
+//	            case DYNAMITE_WEAPON:
+//	            case CROSSBOW_WEAPON:
+//	                spawn(p.i,EXPLOSION2);
+//	                break;
+//	        }
 	        
-	        int v5 = -1;
-	        for(int i = 0; i < 5; i++)
-	        {
-	        	if ( p.gotkey[i] != 0 )
-	            {
-	            	int sp = spawn(p.i, DOORKEY);
-	            	switch(v5)
-	            	{
-	            		case 0: sprite[sp].lotag = 100; break;
-	            		case 1: sprite[sp].lotag = 101; break;
-	            		case 2: sprite[sp].lotag = 102; break;
-	            		case 3: sprite[sp].lotag = 103; break;
-	            	}
-	            }
-	        }
+//	        for(int i = 0; i < 5; i++)
+//	        {
+//	        	if ( p.gotkey[i] != 0 )
+//	            {
+//	            	int sp = spawn(p.i, DOORKEY);
+//	            	switch(i)
+//	            	{
+//	            		case 0: sprite[sp].lotag = 100; break;
+//	            		case 1: sprite[sp].lotag = 101; break;
+//	            		case 2: sprite[sp].lotag = 102; break;
+//	            		case 3: sprite[sp].lotag = 103; break;
+//	            	}
+//	            }
+//	        }
 	    }
 	}
 	

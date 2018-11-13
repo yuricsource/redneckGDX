@@ -457,6 +457,13 @@ public class Player {
 	        }
 	    }
 	    
+	    p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
+		if(p.alcohol_amount >= 100)
+		{
+			p.alcohol_amount = 100;
+			p.alcohol_meter = 400;
+		} 
+	    
 	    p.gut_count--;
 	    if(p.gut_count <= 0)
 	    {

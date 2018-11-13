@@ -433,13 +433,7 @@ public class View {
 	public static void displaymeters(int snum)
 	{
 		PlayerStruct p = ps[snum];
-
-		p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
-		if(p.alcohol_amount >= 100)
-		{
-			p.alcohol_amount = 100;
-			p.alcohol_meter = 400;
-		}  
+ 
 		engine.rotatesprite(16842752, 11862016, 0x8000, p.alcohol_meter, 62, 0, 0, 10, 0, 0, xdim - 1, ydim - 1);
 		engine.rotatesprite(19202048, 11862016, 0x8000, p.gut_meter, 62, 0, 0, 10, 0, 0, xdim - 1, ydim - 1);
 		

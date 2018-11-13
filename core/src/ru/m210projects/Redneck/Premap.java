@@ -650,6 +650,7 @@ public class Premap {
 	    
 	    //RA
 	    p.chiken_phase = 0;
+	    p.chiken_pic = 0;
 	    if ( p.OnMotorcycle )
 	    {
 	    	p.OnMotorcycle = false;
@@ -968,14 +969,14 @@ public class Premap {
 	    Arrays.fill(ambienthitag, (short)-1);
 	    
 	    //RA
-	    ps[screenpeek].fogtype = 0;
+	    ps[0].fogtype = 0;
 	    applyfog(0);
-	    ps[screenpeek].isSea = false;
-	    ps[screenpeek].isSwamp = false;
-	    ps[screenpeek].field_601 = 0;
-	    ps[screenpeek].SlotWin = 0;
-	    ps[screenpeek].field_607 = 0;
-	    ps[screenpeek].MamaEnd = 0;
+	    ps[0].isSea = false;
+	    ps[0].isSwamp = false;
+	    ps[0].field_601 = 0;
+	    ps[0].SlotWin = 0;
+	    ps[0].field_607 = 0;
+	    ps[0].MamaEnd = 0;
 	    BellSound = 0;
 	    mamaspawn_count = 15;
 	    word_119BE2 = 0;

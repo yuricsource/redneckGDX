@@ -16,6 +16,7 @@
 
 package ru.m210projects.Redneck.Types;
 
+import static ru.m210projects.Redneck.Network.Checksum;
 import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.SoundDefs.DUKE_SCREAM;
 import static ru.m210projects.Redneck.Sounds.spritesound;
@@ -742,5 +743,214 @@ public class PlayerStruct {
 	    drug_intensive = bb.getShort();
 	    drug_timer = bb.getShort();
 	    drug_aspect = bb.getInt();
+	}
+	
+	public String toString()
+	{
+		String out = "exitx " + exitx + " \r\n";
+		out += "exity " + exity + " \r\n";
+		out += "numloogs " + numloogs + " \r\n";
+		out += "loogcnt " + loogcnt + " \r\n";
+		out += "posx " + posx + " \r\n";
+		out += "posy " + posy + " \r\n";
+		out += "posz " + posz + " \r\n";
+		out += "horiz " + horiz + " \r\n";
+		out += "ohoriz " + ohoriz + " \r\n";
+		out += "ohorizoff " + ohorizoff + " \r\n";
+		out += "invdisptime " + invdisptime + " \r\n";
+		out += "bobposx " + bobposx + " \r\n";
+		out += "bobposy " + bobposy + " \r\n";
+		out += "oposx " + oposx + " \r\n";
+		out += "oposy " + oposy + " \r\n";
+		out += "oposz " + oposz + " \r\n";
+		out += "pyoff " + pyoff + " \r\n";
+		out += "opyoff " + opyoff + " \r\n";
+		out += "posxv " + posxv + " \r\n";
+		out += "posyv " + posyv + " \r\n";
+		out += "poszv " + poszv + " \r\n";
+		out += "last_pissed_time " + last_pissed_time + " \r\n";
+		out += "truefz " + truefz + " \r\n";
+		out += "truecz " + truecz + " \r\n";
+		out += "player_par " + player_par + " \r\n";
+		out += "bobcounter " + bobcounter + " \r\n";
+		out += "weapon_sway " + weapon_sway + " \r\n";
+		out += "pals_time " + pals_time + " \r\n";
+		out += "randomflamex " + randomflamex + " \r\n";
+		out += "crack_time " + crack_time + " \r\n";
+		out += "aim_mode " + aim_mode + " \r\n";
+		out += "auto_aim " + auto_aim + " \r\n";
+		out += "ang " + ang + " \r\n";
+		out += "oang " + oang + " \r\n";
+		out += "angvel " + angvel + " \r\n";
+		out += "cursectnum " + cursectnum + " \r\n";
+		out += "look_ang " + look_ang + " \r\n";
+		out += "last_extra " + last_extra + " \r\n";
+		out += "subweapon " + subweapon + " \r\n";
+		out += "wackedbyactor " + wackedbyactor + " \r\n";
+		out += "frag " + frag + " \r\n";
+		out += "fraggedself " + fraggedself + " \r\n";
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
+		{
+			out += "ammo_amount[" + i + "] " + ammo_amount[i] + " \r\n";
+		}
+		out += "curr_weapon " + curr_weapon + " \r\n";
+		out += "last_weapon " + last_weapon + " \r\n";
+		out += "tipincs " + tipincs + " \r\n";
+		out += "horizoff " + horizoff + " \r\n";
+		out += "wantweaponfire " + wantweaponfire + " \r\n";
+		out += "beer_amount " + beer_amount + " \r\n";
+		out += "newowner " + newowner + " \r\n";
+		out += "hurt_delay " + hurt_delay + " \r\n";
+		out += "hbomb_hold_delay " + hbomb_hold_delay + " \r\n";
+		out += "jumping_counter " + jumping_counter + " \r\n";
+		out += "airleft " + airleft + " \r\n";
+		out += "knee_incs " + knee_incs + " \r\n";
+		out += "access_incs " + access_incs + " \r\n";
+		out += "access_wallnum " + access_wallnum + " \r\n";
+		out += "access_spritenum " + access_spritenum + " \r\n";
+		out += "kickback_pic " + kickback_pic + " \r\n";
+		out += "weapon_ang " + weapon_ang + " \r\n";
+		out += "whishkey_amount " + whishkey_amount + " \r\n";
+		out += "somethingonplayer " + somethingonplayer + " \r\n";
+		out += "on_crane " + on_crane + " \r\n";
+		out += "i " + i + " \r\n";
+		out += "one_parallax_sectnum " + one_parallax_sectnum + " \r\n";
+		out += "random_club_frame " + random_club_frame + " \r\n";
+		out += "fist_incs " + fist_incs + " \r\n";
+		out += "one_eighty_count " + one_eighty_count + " \r\n";
+		out += "cheat_phase " + cheat_phase + " \r\n";
+		out += "dummyplayersprite " + dummyplayersprite + " \r\n";
+		out += "extra_extra8 " + extra_extra8 + " \r\n";
+		out += "quick_kick " + quick_kick + " \r\n";
+		out += "yeehaa_amount " + yeehaa_amount + " \r\n";
+		out += "actorsqu " + actorsqu + " \r\n";
+		out += "timebeforeexit " + timebeforeexit + " \r\n";
+		out += "customexitsound " + customexitsound + " \r\n";
+		for(int i = 0; i < 16; i++)
+		{
+			out += "weaprecs[" + i + "] " + weaprecs[i] + " \r\n";
+		}
+		out += "weapreccnt " + weapreccnt + " \r\n";
+		out += "interface_toggle_flag " + interface_toggle_flag + " \r\n";
+		out += "rotscrnang " + rotscrnang + " \r\n";
+		out += "dead_flag " + dead_flag + " \r\n";
+		out += "show_empty_weapon " + show_empty_weapon + " \r\n";
+		out += "snorkle_amount " + snorkle_amount + " \r\n";
+		out += "cowpie_amount " + cowpie_amount + " \r\n";
+		out += "moonshine_amount " + moonshine_amount + " \r\n";
+		out += "shield_amount " + shield_amount + " \r\n";
+		out += "holoduke_on " + holoduke_on + " \r\n";
+		out += "pycount " + pycount + " \r\n";
+		out += "weapon_pos " + weapon_pos + " \r\n";
+		out += "frag_ps " + frag_ps + " \r\n";
+		out += "transporter_hold " + transporter_hold + " \r\n";
+		out += "last_full_weapon " + last_full_weapon + " \r\n";
+		out += "footprintshade " + footprintshade + " \r\n";
+		out += "boot_amount " + boot_amount + " \r\n";
+		out += "scream_voice " + scream_voice + " \r\n";
+
+		out += "on_warping_sector " + on_warping_sector + " \r\n";
+		out += "footprintcount " + footprintcount + " \r\n";
+		out += "hbomb_on " + hbomb_on + " \r\n";
+		out += "jumping_toggle " + jumping_toggle + " \r\n";
+		out += "rapid_fire_hold " + rapid_fire_hold + " \r\n";
+		out += "on_ground " + on_ground + " \r\n";
+		out += "name " + name + " \r\n";
+		out += "inven_icon " + inven_icon + " \r\n";
+		out += "buttonpalette " + buttonpalette + " \r\n";
+		out += "jetpack_on " + jetpack_on + " \r\n";
+		out += "spritebridge " + spritebridge + " \r\n";
+		out += "lastrandomspot " + lastrandomspot + " \r\n";
+		out += "scuba_on " + scuba_on + " \r\n";
+		out += "footprintpal " + footprintpal + " \r\n";
+		out += "heat_on " + heat_on + " \r\n";
+		out += "holster_weapon " + holster_weapon + " \r\n";
+		out += "falling_counter " + falling_counter + " \r\n";
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
+		{
+			out += "gotweapon[" + i + "] " + gotweapon[i] + " \r\n";
+		}
+		out += "refresh_inventory " + refresh_inventory + " \r\n";
+		out += "palette " + Checksum(palette,768) + " \r\n";
+		out += "toggle_key_flag " + toggle_key_flag + " \r\n";
+		out += "knuckle_incs " + knuckle_incs + " \r\n";
+		out += "walking_snd_toggle " + walking_snd_toggle + " \r\n";
+		out += "palookup " + palookup + " \r\n";
+		out += "hard_landing " + hard_landing + " \r\n";
+		out += "max_secret_rooms " + max_secret_rooms + " \r\n";
+		out += "secret_rooms " + secret_rooms + " \r\n";
+		for(int i = 0; i < 3; i++)
+		{
+			out += "pals[" + i + "] " + pals[i] + " \r\n";
+		}
+		out += "max_actors_killed " + max_actors_killed + " \r\n";
+		out += "actors_killed " + actors_killed + " \r\n";
+		out += "return_to_center " + return_to_center + " \r\n";
+				
+		out += "last_used_weapon " + last_used_weapon + " \r\n";
+		out += "crouch_toggle " + crouch_toggle + " \r\n";
+		
+		out += "field_280 " + field_280 + " \r\n";
+		out += "field_284 " + field_284 + " \r\n";
+		out += "field_X " + field_X + " \r\n";
+		out += "field_Y " + field_Y + " \r\n";
+		out += "field_28E " + field_28E + " \r\n";
+		out += "field_290 " + field_290 + " \r\n";
+
+		out += "field_57C " + field_57C + " \r\n";
+		out += "detonate_count " + detonate_count + " \r\n";
+
+		out += "alcohol_meter " + alcohol_meter + " \r\n";
+		out += "gut_meter " + gut_meter + " \r\n";
+		out += "alcohol_amount " + alcohol_amount + " \r\n";
+		out += "gut_amount " + gut_amount + " \r\n";
+		out += "alcohol_count " + alcohol_count + " \r\n";
+		out += "gut_count " + gut_count + " \r\n";
+
+		for(int i = 0; i < 3; i++)
+		{
+			out += "gotkey[" + i + "] " + gotkey[i] + " \r\n";
+		}
+
+		out += "drunk " + drunk + " \r\n";
+		out += "shotgunstatus " + shotgunstatus + " \r\n";
+		out += "shotgun_splitshot " + shotgun_splitshot + " \r\n";
+
+		out += "kickback " + kickback + " \r\n";
+		out += "field_count " + field_count + " \r\n";
+
+		//RA
+		out += "OnBoat " + OnBoat + " \r\n";
+		out += "OnMotorcycle " + OnMotorcycle + " \r\n";
+		out += "CarSpeed " + CarSpeed + " \r\n";
+		out += "CarOnGround " + CarOnGround + " \r\n";
+		out += "SlotWin " + SlotWin + " \r\n";
+		out += "CarVar6 " + CarVar6 + " \r\n";
+		out += "isSwamp " + isSwamp + " \r\n";
+		out += "CarVar1 " + CarVar1 + " \r\n";
+		out += "isSea " + isSea + " \r\n";
+		out += "field_601 " + field_601 + " \r\n";
+		out += "chiken_phase " + chiken_phase + " \r\n";
+		out += "chiken_pic " + chiken_pic + " \r\n";
+		out += "field_607 " + field_607 + " \r\n";
+		out += "MamaEnd " + MamaEnd + " \r\n";
+		out += "fogtype " + fogtype + " \r\n";
+		out += "TiltStatus " + TiltStatus + " \r\n";
+		out += "CarVar2 " + CarVar2 + " \r\n";
+		out += "VBumpTarget " + VBumpTarget + " \r\n";
+		out += "VBumpNow " + VBumpNow + " \r\n";
+		out += "CarVar3 " + CarVar3 + " \r\n";
+		out += "TurbCount " + TurbCount + " \r\n";
+		out += "CarVar5 " + CarVar5 + " \r\n";
+		out += "CarVar4 " + CarVar4 + " \r\n";
+		out += "NotOnWater " + NotOnWater + " \r\n";
+		out += "SeaSick " + SeaSick + " \r\n";
+		out += "DrugMode " + DrugMode + " \r\n";
+		out += "drug_type " + drug_type + " \r\n";
+		out += "drug_intensive " + drug_intensive + " \r\n";
+		out += "drug_timer " + drug_timer + " \r\n";
+		out += "drug_aspect " + drug_aspect + " \r\n";
+
+		return out;
 	}
 }
