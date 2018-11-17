@@ -459,35 +459,16 @@ public class Premap {
 		    {
 	        	if (waloff[i] == null) {
 	        		engine.loadtile(i);
-	        		if(engine.getrender() != null)
-	    				engine.getrender().precache(i, 0, 0); //XXX
+	        		if(engine.getrender() != null) 
+	    				engine.getrender().precache(i, 0, 0);
 	        	}
 		        j++;
 		        if((j&7) == 0) getpackets();
 		    } 
 	    }
+	    engine.getrender().gltexinvalidateall(0);
 
 	    Arrays.fill(gotpic, (byte)0);
-	    
-//	    picnums.clear();
-//	    for(int i = 0; i < numsectors; i++)
-//	    {
-//	    	SECTOR s = sector[i];
-//	    	picnums.add(s.floorpicnum);
-//	    	picnums.add(s.ceilingpicnum);
-//	    	for(int w = s.wallptr; w < s.wallptr + s.wallnum; w++)
-//	    		picnums.add(wall[w].picnum);
-//	    }
-//	    for(int i = 0; i < numsprites; i++)
-//	    	picnums.add(sprite[i].picnum);
-//	    
-//	    for(int i = 0; i < picnums.size(); i++) {
-//	    	Short tile = (Short)picnums.toArray()[i];
-//	    	if(waloff[tile] == null) {
-//		    	engine.loadtile(tile);
-//		    	engine.invalidatetile(tile, 0, 1<<4);
-//	    	}
-//	    }
 	}
 	
 	public static void xyzmirror(int i,int wn)

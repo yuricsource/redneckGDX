@@ -326,26 +326,26 @@ public class Redneck {
 					}
 		}));
 		
-		Console.RegisterCvar(new OSDCOMMAND("net_player",
-				"net_player", new OSDCVARFUNC() {
-					@Override
-					public void execute() {
-						if (Console.osd_argc != 2) {
-							Console.Println("net_player: num");
-							return;
-						}
-						try {
-						String num = osd_argv[1];
-						int pnum = Integer.parseInt(num);
-						Console.Println("Player: ");
-						Console.Println(ps[pnum].toString());
-						Console.Println("Sprite: ");
-						Console.Println(sprite[ps[pnum].i].toString());
-						
-						sendtoall(new byte[] { kPacketPlayer, (byte) pnum }, 2);
-						} catch (Exception e) { }
-					}
-		}));
+//		Console.RegisterCvar(new OSDCOMMAND("net_player",
+//				"net_player", new OSDCVARFUNC() {
+//					@Override
+//					public void execute() {
+//						if (Console.osd_argc != 2) {
+//							Console.Println("net_player: num");
+//							return;
+//						}
+//						try {
+//						String num = osd_argv[1];
+//						int pnum = Integer.parseInt(num);
+//						Console.Println("Player: ");
+//						Console.Println(ps[pnum].toString());
+//						Console.Println("Sprite: ");
+//						Console.Println(sprite[ps[pnum].i].toString());
+//						
+//						sendtoall(new byte[] { kPacketPlayer, (byte) pnum }, 2);
+//						} catch (Exception e) { }
+//					}
+//		}));
 		
 		Console.RegisterCvar(new OSDCOMMAND("initgroupfile",
 				"initgroupfile", new OSDCVARFUNC() {
@@ -689,7 +689,7 @@ public class Redneck {
 					
 					restoreinterpolations();
 
-					BCheckSync();
+					CheckSync();
 					
 					if (gScreenCapture) {
 						saveBuffer = engine.screencapture(160, 100);
@@ -908,15 +908,15 @@ public class Redneck {
 	    if ((numplayers >= 2) && ((movefifoplc&7) == 7)) //build sync variables
 	    {
 	    	int ch = engine.getrand();
-	    	int p = 0, s = 0; 
+	    	int /*p = 0, */s = 0; 
 	    	for(int i=connecthead;i>=0;i=connectpoint2[i]) {
-	    		p ^= Checksum(ps[i].getBytes(), PlayerStruct.sizeof);
+//	    		p ^= Checksum(ps[i].getBytes(), PlayerStruct.sizeof);
 	    		s ^= Checksum(sprite[ps[i].i].getBytes(), SPRITE.sizeof);
 	    	}
 	    	
 	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 0, ch);
-	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 4, p);
-	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 8, s);
+//	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 4, p);
+	    	LittleEndian.putInt(syncval[myconnectindex], CheckBytes * (syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)) + 4, s);
 	    	syncvalhead[myconnectindex]++;
 	    }
 

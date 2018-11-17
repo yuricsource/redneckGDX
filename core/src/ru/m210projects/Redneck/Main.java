@@ -51,6 +51,7 @@ public class Main extends ApplicationAdapter {
 	 * TODO:
 	 * check RA secret place E1M1
 	 * multiplayer interpolation
+	 * multiplayer pause
 	 * cd audio from cue
 	 * cutscenes MVE
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт

@@ -571,7 +571,7 @@ public class Network {
 		return pptr += size;
 	}
 	
-	public static void BCheckSync()
+	public static void CheckSync()
 	{
 		int nPlayer;
 
@@ -609,15 +609,15 @@ public class Network {
 			}
 
 			int msch = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 0);
-			int msp = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
-			int mss = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 8);
+//			int msp = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
+			int mss = LittleEndian.getInt(syncval[connecthead], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
 
 			syncstat = 0;
 			for ( nPlayer = connectpoint2[connecthead]; nPlayer >= 0; nPlayer = connectpoint2[nPlayer] )
 			{
 				int slch = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 0);
-				int slp = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
-				int sls = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 8);
+//				int slp = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
+				int sls = LittleEndian.getInt(syncval[nPlayer], (CheckBytes * (syncvaltottail & (MOVEFIFOSIZ-1))) + 4);
 
 				if(slch != msch)
 				{
@@ -625,13 +625,13 @@ public class Network {
 					syncstat |= 1;
 				}
 				
-				if(slp != msp)
-				{
-					
-//					Console.Println("Out of sync player " + syncvaltottail + " " + slp + " != " + msp, OSDTEXT_RED);
-//					Console.Println("Out of sync player[" + nPlayer + "] struct checksum error: \r\n", OSDTEXT_RED);
-					syncstat |= 2;
-				}
+//				if(slp != msp)
+//				{
+//					
+////					Console.Println("Out of sync player " + syncvaltottail + " " + slp + " != " + msp, OSDTEXT_RED);
+////					Console.Println("Out of sync player[" + nPlayer + "] struct checksum error: \r\n", OSDTEXT_RED);
+//					syncstat |= 2;
+//				}
 				
 				if(sls != mss)
 				{
@@ -643,45 +643,6 @@ public class Network {
 			syncvaltottail++;
 		}
 	}
-	
-	/*
-	public static void checksync()
-	{
-		int i;
-		for(i=connecthead;i>=0;i=connectpoint2[i])
-			if (syncvalhead[i] == syncvaltottail) break;
-		if (i < 0)
-		{
-			syncstat = 0;
-			do
-			{
-				for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
-					if (syncval[i][syncvaltottail&(MOVEFIFOSIZ-1)] !=
-						syncval[connecthead][syncvaltottail&(MOVEFIFOSIZ-1)])
-						syncstat = 1;
-				syncvaltottail++;
-				for(i=connecthead;i>=0;i=connectpoint2[i])
-					if (syncvalhead[i] == syncvaltottail) break;
-			} while (i < 0);
-		}
-		if (connectpoint2[connecthead] < 0) syncstat = 0;
-		
-		if (syncstat != 0)
-		{
-			buildString(recbuf, 0, "Out Of Sync - Please restart game");
-			engine.printext256(4,130,31,0,recbuf,0);
-			buildString(recbuf, 0, "RUN DN3DHELP.EXE for information.");
-			engine.printext256(4,138,31,0,recbuf,0);
-		}
-		if (syncstate != 0)
-		{
-			buildString(recbuf, 0, "Missed Network packet!");
-			engine.printext256(4,160,31,0,recbuf,0);
-			buildString(recbuf, 0, "RUN DN3DHELP.EXE for information.");
-			engine.printext256(4,138,31,0,recbuf,0);
-		}
-	}
-	*/
 	
 	public static void ResetNetwork()
 	{
@@ -897,10 +858,7 @@ public class Network {
 	        {
 	            packbuf[0] = kPacketEmpty;
 	            for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
-	            {
-	            	while(!canSend(i)); //GDX 22.10.2018
 	            	sendpacket(i,packbuf,1);
-				}
 	            return;
 	        }
 
