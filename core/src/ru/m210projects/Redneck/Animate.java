@@ -121,7 +121,7 @@ public class Animate {
 						((WALL)obj).y = Math.max(j-gAnm.vel*TICSPERFRAME, gAnm.goal);
 					break;
 				case FLOORZ:
-					viewBackupSectorLoc(gAnm.id, (SECTOR)obj);
+					viewBackupFloorLoc(gAnm.id, (SECTOR)obj);
 					j = ((SECTOR)obj).floorz;
 					
 					int vel = gAnm.vel*TICSPERFRAME;
@@ -158,7 +158,7 @@ public class Animate {
 
 					break;
 				case CEILZ:
-					viewBackupSectorLoc(gAnm.id, (SECTOR)obj);
+					viewBackupCeilingLoc(gAnm.id, (SECTOR)obj);
 					j = ((SECTOR)obj).ceilingz;
 					if (j < gAnm.goal)
 						((SECTOR)obj).ceilingz = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);

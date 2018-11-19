@@ -26,7 +26,6 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
@@ -242,7 +241,7 @@ public class Spawn {
 	                            hittype[i].actorstayput = sp.sectnum;
 	                       
 	                        if ( checkaddkills(sp) )
-	                        	ps[myconnectindex].max_actors_killed++;
+	                        	ps[connecthead].max_actors_killed++;
 	                        
 	                        sp.clipdist = 80;
 	                        if(j >= 0)
@@ -1073,7 +1072,7 @@ public class Spawn {
                         return i;
                     }
                     if ( checkaddkills(sp) )
-                        ps[myconnectindex].max_actors_killed++;
+                        ps[connecthead].max_actors_killed++;
                     
                     hittype[i].temp_data[5] = 0;
                     if(ud.monsters_off)
@@ -1170,7 +1169,7 @@ public class Spawn {
                         hittype[i].temp_data[3] = sector[sect].ceilingz;
                         hittype[i].temp_data[4] = 1;
                         sector[sect].ceilingz = sp.z;
-                        viewBackupSectorLoc(sect, sector[sect]); //ceilinz
+                        viewBackupCeilingLoc(sect, sector[sect]); //ceilinz
                         break;
                     case 35:
                         sector[sect].ceilingz = sp.z;
@@ -1254,10 +1253,10 @@ public class Spawn {
                         j = engine.nextsectorneighborz(sect,sector[sect].ceilingz,1,1);
                         hittype[i].temp_data[4] = sector[j].floorz;
 
-                        if(numplayers < 2)
-                        	viewBackupSectorLoc(sect, sector[sect]); 
-                        
-
+                        if(numplayers < 2) {
+                        	viewBackupCeilingLoc(sect, sector[sect]);
+                        	viewBackupFloorLoc(sect, sector[sect]);
+                        }
                         break;
 
                     case 24: 
@@ -1357,7 +1356,7 @@ public class Spawn {
                         for(s=startwall;s<endwall;s++)
                             if(wall[s].hitag == 0) wall[s].hitag = 9999;
 
-                        viewBackupSectorLoc(sect, sector[sect]);  //floorz
+                        viewBackupFloorLoc(sect, sector[sect]);  //floorz
 
                         break;
                     case 32: 
@@ -1371,7 +1370,7 @@ public class Spawn {
                         for(s=startwall;s<endwall;s++)
                             if(wall[s].hitag == 0) wall[s].hitag = 9999;
 
-                        viewBackupSectorLoc(sect, sector[sect]);  //ceiling
+                        viewBackupCeilingLoc(sect, sector[sect]);  //ceiling
 
                         break;
 
@@ -1888,7 +1887,7 @@ public class Spawn {
                         sp.cstat |= 257;
 
                         if(sp.picnum != 5501 && checkaddkills(sp))
-                            ps[myconnectindex].max_actors_killed++;
+                            ps[connecthead].max_actors_killed++;
                     }
 
                     if(j >= 0)

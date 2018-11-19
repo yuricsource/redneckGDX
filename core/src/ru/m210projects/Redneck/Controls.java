@@ -73,19 +73,13 @@ public class Controls {
 	
 	public static boolean ctrlPadStatusOnce(int deviceIndex, int buttonCode)
 	{
-		if(cfg.useJoystick && gpmanager.getControllers() > 0)
-			return gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
-		
-		return false;
+		return gpmanager.isValidDevice(deviceIndex) && gpmanager.buttonStatusOnce(deviceIndex, buttonCode);
 	}
 	
 	public static boolean ctrlPadStatus(int deviceIndex, int buttonCode)
 	{
-		if(cfg.useJoystick && gpmanager.getControllers() > 0)
-			return gpmanager.buttonStatus(deviceIndex, buttonCode);
-		
-		return false;
-	}	
+		return gpmanager.isValidDevice(deviceIndex) && gpmanager.buttonStatus(deviceIndex, buttonCode);
+	}
 	
 	public static boolean[] maxisstatus = new boolean[keynames.length];
 	public static boolean ctrlAxisStatusOnce(int keyId)
@@ -333,7 +327,7 @@ public class Controls {
         } else 
         	vel =  (short) BClipRange(vel - (mousy * cfg.gMouseMoveSpeed / 65536f), -4 * keymove, 4 * keymove);
 	    
-	    if(cfg.useJoystick && gpmanager.getControllers() > 0) {
+	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
 			Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 			float lookx = stick1.x;
 			float looky = stick1.y;
@@ -345,7 +339,7 @@ public class Controls {
 			}
 			
 			if(lookx != 0) {
-				float k = 64;
+				float k = 1.0f;
 				angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
 			}
 
@@ -464,7 +458,7 @@ public class Controls {
 	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
 	    int bike_turn = 0; 
-	    if(cfg.useJoystick && gpmanager.getControllers() > 0) { 
+	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
 	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 	    	bike_turn = (int) stick1.x;
 	    }
@@ -639,7 +633,7 @@ public class Controls {
 	    boolean left = ctrlGetInputKey(Turn_Left, false) || ctrlGetInputKey(Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(Turn_Right, false) || ctrlGetInputKey(Strafe_Right, false);
 	    int bike_turn = 0; 
-	    if(cfg.useJoystick && gpmanager.getControllers() > 0) { 
+	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
 	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
 	    	bike_turn = (int) stick1.x;
 	    }
@@ -888,29 +882,29 @@ public class Controls {
 		
 		if ( ctrlGetInputKey(See_Chase_View, true) )
 		{
-			if( ps[myconnectindex].over_shoulder_on != 0 )
-                ps[myconnectindex].over_shoulder_on = 0;
+			if( over_shoulder_on != 0 )
+                over_shoulder_on = 0;
             else
             {
-                ps[myconnectindex].over_shoulder_on = 1;
+                over_shoulder_on = 1;
                 cameradist = 0;
                 cameraclock = totalclock;
             }
-            FTA(109+ps[myconnectindex].over_shoulder_on,ps[myconnectindex]);
+            FTA(109+over_shoulder_on,ps[myconnectindex]);
 		}
 		
 		if( ud.overhead_on != 0)
 		{
             int j = totalclock-nonsharedtimer; nonsharedtimer += j;
             if ( ctrlGetInputKey(Enlarge_Screen, false) )
-                ps[myconnectindex].zoom += mulscale(j,Math.max(ps[myconnectindex].zoom,256), 6);
+                zoom += mulscale(j,Math.max(zoom,256), 6);
             if ( ctrlGetInputKey(Shrink_Screen, false) )
-                ps[myconnectindex].zoom -= mulscale(j,Math.max(ps[myconnectindex].zoom,256), 6);
+                zoom -= mulscale(j,Math.max(zoom,256), 6);
 
-            if( (ps[myconnectindex].zoom > 2048) )
-                ps[myconnectindex].zoom = 2048;
-            if( (ps[myconnectindex].zoom < 48) )
-                ps[myconnectindex].zoom = 48;
+            if( (zoom > 2048) )
+                zoom = 2048;
+            if( (zoom < 48) )
+                zoom = 48;
             
             if( ctrlGetInputKey(Map_Follow_Mode, true) ) {
 	   	    	 ud.scrollmode = !ud.scrollmode;
@@ -962,7 +956,7 @@ public class Controls {
 		if( ctrlGetInputKey(AutoRun, true)  )
 	    {
 	        ud.auto_run ^= 1;
-	        FTA(85+ud.auto_run, ps[myconnectindex]);
+	        FTA(85+ud.auto_run, ps[screenpeek]);
 	    }
 		
 		if( ctrlGetInputKey(Toggle_Crosshair, true)  )
@@ -992,7 +986,7 @@ public class Controls {
 
 		if (ctrlGetInputKey(ToggleMessages, true)) {
 			ud.fta_on ^= 1;
-			if(ud.fta_on != 0) FTA(23,ps[myconnectindex]);
+			if(ud.fta_on != 0) FTA(23,ps[screenpeek]);
 			else
 			{
 				ud.fta_on = 1;

@@ -851,9 +851,9 @@ public class Screen {
                         sound(404);
                     }
                     pos = 148;
-                    Bitoa(ps[myconnectindex].secret_rooms, bonusbuf);
+                    Bitoa(ps[connecthead].secret_rooms, bonusbuf);
                     menutext(251,pos,0,pal,bonusbuf,8+16);
-                    Bitoa(ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms, bonusbuf);
+                    Bitoa(ps[connecthead].max_secret_rooms-ps[connecthead].secret_rooms, bonusbuf);
                     menutext(251,pos+=19,0,pal,bonusbuf,8+16);
                 }
             }

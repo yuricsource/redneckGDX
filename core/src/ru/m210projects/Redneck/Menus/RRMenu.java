@@ -1181,34 +1181,12 @@ public class RRMenu {
 
 		int pos = 25;
 
-		MenuSwitch mEnable = new MenuSwitch("Enabled:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
-			@Override
-			public void run(MenuItem pItem) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				sw.value &= gpmanager.getControllers() > 0; // force disabled as needed
-				cfg.useJoystick = sw.value && cfg.gJoyDevice > -1;
-			}
-		}, "Yes", "No") {
-			@Override
-			public void open(MENU pMenu) {
-				if(gpmanager.getControllers() > 0)
-					this.value = cfg.useJoystick;
-				else {
-					this.value = false;
-					mCheckEnableItem(this, false);
-					this.flags = 3; //enable navigation, because first item of menu
-				}
-			}
-		};
-
 		MenuConteiner mJoyDevices = new MenuConteiner("Device:", 0, 46, pos += 15, 230, null, 0,
 				new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuConteiner item = (MenuConteiner) pItem;
-						int controllers = gpmanager.getControllers();
-						cfg.gJoyDevice = controllers > 0 ? item.num : -1;
-						cfg.useJoystick = cfg.gJoyDevice > -1;
+						cfg.gJoyDevice = item.num-1;
 					}
 				}) {
 			@Override
@@ -1216,9 +1194,10 @@ public class RRMenu {
 				int controllers = gpmanager.getControllers();
 				if (this.list == null) {
 					if (controllers > 0) {
-						this.list = new char[controllers][];
+						this.list = new char[controllers+1][];
+						this.list[0] = "Disabled".toCharArray();
 						for (int i = 0; i < controllers; i++) {
-							this.list[i] = gpmanager.getControllerName(i).toCharArray();
+							this.list[i+1] = gpmanager.getControllerName(i).toCharArray();
 						}
 					} else {
 						this.list = new char[][]{"No joystick devices found".toCharArray()};
@@ -1227,22 +1206,26 @@ public class RRMenu {
 
 				// handles unplugged device(s) between runs
 				int min = 0;
-				int max = Math.max(0, controllers - 1);
-				int val = cfg.gJoyDevice;
+				int max = Math.max(0, controllers);
+				int val = cfg.gJoyDevice + 1;
+				
 				this.num = val < min ? min : (val > max ? max : val);
 			}
 
 			@Override
 			public void draw() {
 				SndDriverDraw(this); // NOTE this draws the menu header with the right font !
+				mCheckEnableItem(this, gpmanager.getControllers() > 0);
+				if(this.flags == 1) this.flags = 3;
 			}
 		};
 
 		MenuButton mJoyKey = new MenuButton("Configure buttons", 1, 46, pos += 15, 230, 1, 0, mMenus[JOYKEYSET], -1,
 				null, 0) {
 			@Override
-			public void open(MENU pMenu) {
-				mCheckEnableItem(this, gpmanager.getControllers() > 0);
+			public void draw() {
+				super.draw();
+				mCheckEnableItem(this, cfg.gJoyDevice != -1 && gpmanager.getControllers() > 0);
 			}
 		};
 
@@ -1344,8 +1327,7 @@ public class RRMenu {
 			}
 		}, "Yes", "No");
 
-		mAddItem(mMenus[nMenuId], mEnable, true);
-		mAddItem(mMenus[nMenuId], mJoyDevices, false);
+		mAddItem(mMenus[nMenuId], mJoyDevices, true);
 		mAddItem(mMenus[nMenuId], mJoyKey, false);
 		mAddItem(mMenus[nMenuId], mJoyTurn, false);
 		mAddItem(mMenus[nMenuId], mJoyLook, false);
@@ -3283,6 +3265,8 @@ public class RRMenu {
 						this.list[1 + i] = mGameInfo.skillnames[i].toCharArray();
 				}
 				num = ud.m_player_skill;
+				if(currentGame.getCON().type != RRRA) 
+					num++;
 			}
 		};
 		
@@ -3334,6 +3318,7 @@ public class RRMenu {
                 else ud.m_respawn_items = false;
 
                 ud.m_respawn_inventory = true;
+                ud.god = false;
 
                 tempbuf[4] = ud.m_monsters_off?(byte)1:0;
                 tempbuf[5] = ud.m_respawn_monsters?(byte)1:0;

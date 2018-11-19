@@ -40,6 +40,7 @@ import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLX;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.WALLY;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.ResourceHandler.*;
@@ -458,34 +459,16 @@ public class Premap {
 		    {
 	        	if (waloff[i] == null) {
 	        		engine.loadtile(i);
-	        		engine.invalidatetile(i, 0, 1<<4);
+	        		if(engine.getrender() != null) 
+	    				engine.getrender().precache(i, 0, 0);
 	        	}
 		        j++;
 		        if((j&7) == 0) getpackets();
 		    } 
 	    }
+	    engine.getrender().gltexinvalidateall(0);
 
 	    Arrays.fill(gotpic, (byte)0);
-	    
-//	    picnums.clear();
-//	    for(int i = 0; i < numsectors; i++)
-//	    {
-//	    	SECTOR s = sector[i];
-//	    	picnums.add(s.floorpicnum);
-//	    	picnums.add(s.ceilingpicnum);
-//	    	for(int w = s.wallptr; w < s.wallptr + s.wallnum; w++)
-//	    		picnums.add(wall[w].picnum);
-//	    }
-//	    for(int i = 0; i < numsprites; i++)
-//	    	picnums.add(sprite[i].picnum);
-//	    
-//	    for(int i = 0; i < picnums.size(); i++) {
-//	    	Short tile = (Short)picnums.toArray()[i];
-//	    	if(waloff[tile] == null) {
-//		    	engine.loadtile(tile);
-//		    	engine.invalidatetile(tile, 0, 1<<4);
-//	    	}
-//	    }
 	}
 	
 	public static void xyzmirror(int i,int wn)
@@ -529,8 +512,6 @@ public class Premap {
 	    p.quick_kick       = 0;
 	    p.subweapon        = 0;
 	    p.last_full_weapon = 0;
-	    p.ftq              = 0;
-	    p.fta              = 0;
 	    p.tipincs          = 0;
 	    p.buttonpalette    = 0;
 	    p.actorsqu         =-1;
@@ -650,11 +631,13 @@ public class Premap {
 	    
 	    //RA
 	    p.chiken_phase = 0;
+	    p.chiken_pic = 0;
 	    if ( p.OnMotorcycle )
 	    {
 	    	p.OnMotorcycle = false;
 	    	p.gotweapon[MOTO_WEAPON] = false;
 	    	p.curr_weapon = RATE_WEAPON;
+	    	p.kickback_pic = 0;
 	    	checkavailweapon(p);
 	    }
 	    
@@ -675,6 +658,7 @@ public class Premap {
 	    	p.OnBoat = false;
 	    	p.gotweapon[BOAT_WEAPON] = false;
 	    	p.curr_weapon = RATE_WEAPON;
+	    	p.kickback_pic = 0;
 	    	checkavailweapon(p);
 	    }
 	    p.NotOnWater = 0;
@@ -699,6 +683,16 @@ public class Premap {
 	    	 UFO_SpawnTime = 0;
 	    	 UFO_SpawnHulk = ud.player_skill + 1;
 	    }
+	    
+	    p.numloogs = 0;  //GDX 31.10.2018
+		p.truefz = 0; 
+		p.truecz = 0;
+		p.randomflamex = 0;
+		p.access_incs = 0;
+		p.access_wallnum = 0;
+		p.interface_toggle_flag = 0;
+		p.scream_voice = null;
+		p.crouch_toggle = 0;
 	}
 	
 	public static void resetweapons(int snum)
@@ -710,7 +704,9 @@ public class Premap {
 	        p.gotweapon[weapon] = false;
 	    for ( weapon = PISTOL_WEAPON; weapon < MAX_WEAPONSRA; weapon++ )
 	        p.ammo_amount[weapon] = 0;
-
+	    
+	    Arrays.fill(p.weaprecs, (short) 0);
+	    
 	    p.weapon_pos = 6;
 	    p.kickback_pic = 5;
 	    p.curr_weapon = PISTOL_WEAPON;
@@ -818,7 +814,6 @@ public class Premap {
 	    p.last_pissed_time = 0;
 
 	    p.one_parallax_sectnum = -1;
-	    p.visibility = currentGame.getCON().const_visibility;
 
 	    screenpeek              = myconnectindex;
 	    numanimwalls            = 0;
@@ -854,6 +849,8 @@ public class Premap {
 
 	    p.timebeforeexit   = 0;
 	    p.customexitsound  = 0;
+	    
+	    Arrays.fill(p.pals, (short)0);
 	    
 	    p.field_280 = 0;
 	    p.field_284 = 0;
@@ -953,14 +950,14 @@ public class Premap {
 	    Arrays.fill(ambienthitag, (short)-1);
 	    
 	    //RA
-	    ps[screenpeek].fogtype = 0;
+	    ps[0].fogtype = 0;
 	    applyfog(0);
-	    ps[screenpeek].isSea = false;
-	    ps[screenpeek].isSwamp = false;
-	    ps[screenpeek].field_601 = 0;
-	    ps[screenpeek].SlotWin = 0;
-	    ps[screenpeek].field_607 = 0;
-	    ps[screenpeek].MamaEnd = 0;
+	    ps[0].isSea = false;
+	    ps[0].isSwamp = false;
+	    ps[0].field_601 = 0;
+	    ps[0].SlotWin = 0;
+	    ps[0].field_607 = 0;
+	    ps[0].MamaEnd = 0;
 	    BellSound = 0;
 	    mamaspawn_count = 15;
 	    word_119BE2 = 0;
@@ -976,6 +973,7 @@ public class Premap {
 	    else mamaspawn_count = 5;
 
 	    resetprestat(0,g);
+	    gVisibility = currentGame.getCON().const_visibility;
 	    
 	    numlightnineffects = 0;
 	    numtorcheffects = 0;
@@ -1408,7 +1406,7 @@ public class Premap {
 	    if ( haveLigthning == 0 )
 	    { 
 //XXX	    	engine.setbrightness((ud.brightness >> 2) & 0xFF, palette);
-	    	visibility = ps[screenpeek].visibility;
+	    	visibility = gVisibility;
 	    }
 	    
 	    InitSpecialTextures();
@@ -1455,7 +1453,7 @@ public class Premap {
 	    parallaxyscale = 0;
 
 	    ud.last_level = -1;
-	    p.zoom            = 768;
+	    lastload = null;
 
 	    if(ud.m_coop != 1)
 	    {
@@ -1470,9 +1468,11 @@ public class Premap {
 
 	        p.last_weapon = -1;
 	    }
-
+	    p.last_used_weapon = 0;
+	    
 	    display_mirror =        0;
-
+	    zoom = 768;
+	    
 	    if(ud.multimode > 1 )
 	    {
 	        if(numplayers < 2)
@@ -1518,8 +1518,12 @@ public class Premap {
 	    for(i=1;i<MAXPLAYERS;i++) 
 	    	ps[i].copy(ps[0]);
 
-	    if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++)
+	    if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++) {
 	    	info[i].restore(ps[i]);
+	    	if(ps[i].curr_weapon == PISTOL_WEAPON)
+	    		ps[i].kickback_pic  = 22;
+		    else ps[i].kickback_pic = 0;
+	    }
 
 	    numplayersprites = 0;
 
@@ -1749,8 +1753,6 @@ public class Premap {
 	    mymaxlag = otherminlag = 0;
 
 	    movefifoplc = movefifosendplc = fakemovefifoplc = 0;
-	    avgfvel = avgsvel = avgbits = 0;
-	    avghorz = avgavel = 0;
 	    otherminlag = mymaxlag = 0;
 	    
 	    loc.clear();
@@ -1835,19 +1837,31 @@ public class Premap {
 	    Gdx.app.postRunnable(new Runnable() {
 			public void run() {
 				if(kGameCrash) return;
-			    if( isUsermap )
+				if( isUsermap )
 			    {
-			        if ( engine.loadboard( boardfilename,posx, posy, posz, ang, sect ) == -1 ) {
-			            GameCrash("Map " + boardfilename + " not found!");
-			            return;
-			        }
+					int out = engine.loadboard( boardfilename,posx, posy, posz, ang, sect );
+					switch(out)
+					{
+					case -1:
+						GameCrash("Map " + boardfilename + " not found!");
+						return;
+					case -2:
+						GameCrash(boardfilename + ": Invalid map version!");
+						return;
+					}
 			    }
 			    else {
 			    	String map = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].path;
-			    	if ( engine.loadboard(map,posx, posy, posz, ang, sect ) == -1) {
-			    		GameCrash("Map " + map + " not found!");
-			    		return;
-			    	}
+			    	int out = engine.loadboard(map,posx, posy, posz, ang, sect );
+					switch(out)
+					{
+					case -1:
+						GameCrash("Map " + map + " not found!");
+						return;
+					case -2:
+						GameCrash(map + ": Invalid map version!");
+						return;
+					}
 			    }
 			    
 			    ps[0].posx = posx[0];
@@ -1955,11 +1969,18 @@ public class Premap {
 			     engine.clearview(0);
 
 			     Arrays.fill(playerquitflag, 1);
-			     ps[myconnectindex].over_shoulder_on = 0;
+			     ftq = 0;
+			     fta = 0;
+			     Arrays.fill(loogiex, 0);
+			     Arrays.fill(loogiey, 0);
+	
+			     over_shoulder_on = 0;
 		
 			     resetmys();
 			     clearfifo();
 			     clearfrags();
+			     
+			     engine.getrender().preload();
 			    
 			     resettimevars();  // Here we go
 

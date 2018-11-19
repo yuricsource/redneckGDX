@@ -18,6 +18,7 @@ package ru.m210projects.Redneck.Types;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static ru.m210projects.Build.Engine.MAXSPRITESONSCREEN;
 import static ru.m210projects.Build.Engine.MAXTILES;
 import static ru.m210projects.Build.Engine.beforedrawrooms;
 import static ru.m210projects.Build.Engine.globalpal;
@@ -154,6 +155,7 @@ public class RRPolymost extends Polymost {
 				for(i=headspritesect[s];i>=0;i=nextspritesect[i])
 					if ((sprite[i].cstat&48) == 32)
 					{
+						if(sortnum >= MAXSPRITESONSCREEN) continue;
 						if ((sprite[i].cstat&(64+8)) == (64+8)) continue;
 						if (tsprite[sortnum] == null)
 							tsprite[sortnum] = new SPRITE();

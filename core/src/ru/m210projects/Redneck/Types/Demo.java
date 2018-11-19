@@ -126,6 +126,7 @@ public class Demo {
 			ud.clipping = ud.scrollmode = false;
 			ud.overhead_on = ud.pause_on = 0;
 	
+			if(currentGame.getCON().type != RRRA) ud.player_skill--;
 			newgame(ud.volume_number,ud.level_number,ud.player_skill);
 	
 			dem.recsync = new Input[ud.reccnt][MAXPLAYERS];
@@ -214,6 +215,7 @@ public class Demo {
 
 			engine.nextpage();
 			engine.sampletimer();
+			engine.timerhandler();
 			return;
 		}
 
@@ -228,7 +230,6 @@ public class Demo {
 				domovethings();
 	
 				if (ud.reccnt <= 0) {
-					//backtomenu();
 					demfile = null;
 					return;
 				}

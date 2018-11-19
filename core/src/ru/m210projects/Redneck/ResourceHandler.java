@@ -12,6 +12,7 @@ import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
+import static ru.m210projects.Build.Render.Types.Hightile.*;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -114,28 +115,7 @@ public class ResourceHandler {
 			bb.clear();
 			bb = null;
 
-			CRC32 tilecrc32 = new CRC32();
-			for(int i = 0; i < replace.length; i++)
-			{
-				int tilenume = replace[i][0];
-				int newtile = replace[i][1];
-				long crc32 = replace[i][2] & 0xFFFFFFFFL;
-				
-				if(waloff[tilenume] == null)
-					if(engine.loadtile(tilenume) == null)
-						continue; //nothing replace
-				
-				tilecrc32.reset();
-				tilecrc32.update(waloff[tilenume]);
-				if(tilecrc32.getValue() != crc32) //RA protect
-					continue;
-				
-				waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
-				System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
-				tilesizx[tilenume] = tilesizx[newtile];
-				tilesizy[tilenume] = tilesizy[newtile];
-				picanm[tilenume] = picanm[newtile];
-			}
+			ReplaceUserTiles();
 		}
 	}
 		
@@ -153,15 +133,15 @@ public class ResourceHandler {
 			return; 
 
 		System.err.println("Reset to default resources");
-		Arrays.fill(tilesizx, 0, MAXTILES, (short)0);
-		Arrays.fill(tilesizy, 0, MAXTILES, (short)0);
-		Arrays.fill(picanm, 0, MAXTILES, 0);
-		Arrays.fill(waloff, 0, MAXTILES, null);
+		Arrays.fill(tilesizx, 0, kMaxTiles, (short)0);
+		Arrays.fill(tilesizy, 0, kMaxTiles, (short)0);
+		Arrays.fill(picanm, 0, kMaxTiles, 0);
+		Arrays.fill(waloff, 0, kMaxTiles, null);
 		
 		if(engine.loadpics("tiles000.art") == 0)
 			dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
 		
-		LoadUserRes();
+		ReplaceUserTiles();
 		
 		InitSpecialTextures();
 	    
@@ -309,8 +289,10 @@ public class ResourceHandler {
 		if(addon.getCON() == null) 
 			addon.setCON(loaduserdef(addon.ConName));
 		
-		if(error == 0)
+		if(error == 0) {
 			currentGame = addon;
+			ReplaceUserTiles();
+		}
 		else {
 			GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}
@@ -326,4 +308,34 @@ public class ResourceHandler {
 	    tilesizx[13] = 0;
 	    waloff[13] = null;
 	}
+	
+	public static void ReplaceUserTiles()
+	{
+		CRC32 tilecrc32 = new CRC32();
+		for(int i = 0; i < replace.length; i++)
+		{
+			int tilenume = replace[i][0];
+			int newtile = replace[i][1];
+			long crc32 = replace[i][2] & 0xFFFFFFFFL;
+			
+			if(hicreplc[tilenume] != null)
+				continue;
+	
+			if(waloff[tilenume] == null)
+				if(engine.loadtile(tilenume) == null)
+					continue; //nothing replace
+			
+			tilecrc32.reset();
+			tilecrc32.update(waloff[tilenume]);
+			if(tilecrc32.getValue() != crc32)
+				continue;
+			
+			waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
+			System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
+			tilesizx[tilenume] = tilesizx[newtile];
+			tilesizy[tilenume] = tilesizy[newtile];
+			picanm[tilenume] = picanm[newtile];
+		}
+	}
+
 }

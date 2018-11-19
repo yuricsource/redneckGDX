@@ -34,6 +34,7 @@ import static ru.m210projects.Build.Strhandler.indexOf;
 import static ru.m210projects.Build.FileHandle.Cache1D.checkgroupfile;
 import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
 import static ru.m210projects.Build.FileHandle.Compat.*;
+import static ru.m210projects.Build.OnSceenDisplay.Console.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -174,7 +175,7 @@ public class MenuFileBrowser extends MenuItem {
 						Console.Println("Found addon: " + con);
 						tmpList.add(con);
 						episodes.put(con, addon);
-					}
+					} else Console.Print(con + " found, but can't be load", OSDTEXT_RED);
 				} else {
 					if(addon.isInited) 
 						tmpList.add(con);
