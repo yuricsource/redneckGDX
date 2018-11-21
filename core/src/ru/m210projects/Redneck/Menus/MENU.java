@@ -201,9 +201,7 @@ public class MENU {
 		
 		int mx = ClipRange(Gdx.input.getX(), 0, xdim);
 		int my = ClipRange(Gdx.input.getY(), 0, ydim);
-		if(cfg.fullscreen != 0) 
-			Gdx.input.setCursorPosition(mx, ydim-my);
-
+	
 		if(!cfg.menuMouse)
 			return 0;
 		

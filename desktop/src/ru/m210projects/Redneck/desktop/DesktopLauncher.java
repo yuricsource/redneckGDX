@@ -128,9 +128,6 @@ public class DesktopLauncher {
 			cfg.middrv = 0;
 		}
 
-		if(cfg.middrv == 0)
-			cfg.midiSynth = "None";
-
 		new BuildApplicationImpl(new Main(cfg, new DesktopMessage(DesktopLauncher.class.getResource("/icons/RR32.png"))), lwjglConfig);
 	}
 }
