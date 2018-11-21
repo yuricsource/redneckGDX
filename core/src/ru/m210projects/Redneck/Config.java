@@ -25,14 +25,13 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
+import ru.m210projects.Build.Architecture.BuildGDX;
 import ru.m210projects.Build.Input.ButtonMap;
 import ru.m210projects.Build.Input.Keymap;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.BConfig;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Redneck.Types.IniFile;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
 import static ru.m210projects.Build.OnSceenDisplay.Console.*;
@@ -870,8 +869,7 @@ public class Config extends BConfig {
 		if(num < 0 || num >= 5) {
 			num = 0;
 			fpslimit = 0;
-			if(Gdx.graphics instanceof BGraphics)
-				((BGraphics)Gdx.graphics).setMaxFramerate(0);
+			BuildGDX.app.setMaxFramerate(0);
 		}
 		
 		return num;

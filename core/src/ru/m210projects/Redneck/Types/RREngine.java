@@ -21,8 +21,8 @@ import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Globals.*;
 
 import ru.m210projects.Build.Engine;
+import ru.m210projects.Build.Architecture.BuildMessage;
 import ru.m210projects.Build.Audio.BAudio;
-import ru.m210projects.Build.Types.Message;
 import ru.m210projects.Redneck.Config;
 
 public class RREngine extends Engine {
@@ -30,7 +30,7 @@ public class RREngine extends Engine {
 	private long timerskipticks;
 	private long timernexttick;
 	
-	public RREngine(Message message, BAudio audio, boolean releasedEngine)
+	public RREngine(BuildMessage message, BAudio audio, boolean releasedEngine)
 			throws Exception {
 		super(message, audio, releasedEngine);
 		compatibleMode = true;

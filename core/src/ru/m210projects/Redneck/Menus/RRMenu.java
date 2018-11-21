@@ -65,12 +65,13 @@ import ru.m210projects.Redneck.Menus.MenuItem;
 import ru.m210projects.Redneck.Menus.MenuSlider;
 import ru.m210projects.Redneck.Menus.MenuTextField;
 import ru.m210projects.Redneck.Menus.MenuTitle;
+import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.GLFrame;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Render.GLInfo;
 import ru.m210projects.Build.Render.VideoMode;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.SaveManager;
 
@@ -343,7 +344,7 @@ public class RRMenu {
 //				engine.setbrightness(ud.brightness>>2, ps[myconnectindex].palette, 2);
 				
 				float gamma = slider.value / 4096.0f;
-				if(((BGraphics)Gdx.graphics).setDisplayConfiguration(1 - gamma, cfg.brightness, cfg.contrast))
+				if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(1 - gamma, cfg.brightness, cfg.contrast))
 					cfg.gamma = (1 - gamma);
 				else 
 					slider.value = (int) ((1 - cfg.gamma) * 4096);
@@ -357,7 +358,7 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						float brightness = slider.value / 4096.0f;
-						if(((BGraphics)Gdx.graphics).setDisplayConfiguration(cfg.gamma, brightness, cfg.contrast))
+						if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, brightness, cfg.contrast))
 							cfg.brightness = brightness;
 						else 
 							slider.value = (int) (cfg.brightness * 4096);
@@ -371,7 +372,7 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						float contrast = slider.value / 4096.0f;
-						if(((BGraphics)Gdx.graphics).setDisplayConfiguration(cfg.gamma, cfg.brightness, contrast))
+						if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, contrast))
 							cfg.contrast = contrast;
 						else 
 							slider.value = (int) (cfg.contrast * 4096);
@@ -389,7 +390,7 @@ public class RRMenu {
 				mGamma.value = (int) ((1 - cfg.gamma) * 4096);
 				mBrightness.value = (int) (cfg.brightness * 4096);
 				mContrast.value = (int) (cfg.contrast * 4096);
-				((BGraphics)Gdx.graphics).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast);
+				((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast);
 			}
 		}, -1);
 		
@@ -1079,13 +1080,22 @@ public class RRMenu {
 
 		int pos = 23;
 
-		MenuSwitch mEnable = new MenuSwitch("Enable mouse:", 1, 22, pos += 12, 280, cfg.useMouse, new MENUPROC() {
+		MenuSwitch mEnable = new MenuSwitch("Mouse in game:", 1, 22, pos += 12, 280, cfg.useMouse, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuSwitch sw = (MenuSwitch) pItem;
 				cfg.useMouse = sw.value;
 			}
 		}, "Yes", "No");
+		
+		MenuSwitch mMenuEnab = new MenuSwitch("Mouse in menu:", 1, 22, pos += 12, 280, cfg.menuMouse,
+				new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuSwitch sw = (MenuSwitch) pItem;
+						cfg.menuMouse = sw.value;
+					}
+				}, "Yes", "No");
 
 		pos += 5;
 		MenuSlider mSens = new MenuSlider("Mouse Sensitivity:", 1, false, 22, pos += 12, 280, cfg.gSensitivity, 0x1000,
@@ -1163,6 +1173,7 @@ public class RRMenu {
 				mMenus[ADVANCEDMOUSESET], -1, null, 0);
 
 		mAddItem(mMenus[nMenuId], mEnable, true);
+		mAddItem(mMenus[nMenuId], mMenuEnab, false);
 		mAddItem(mMenus[nMenuId], mSens, false);
 
 		mAddItem(mMenus[nMenuId], mTurn, false);
@@ -1401,14 +1412,7 @@ public class RRMenu {
 //		num = cfg.gMouseCursor;
 //	}
 //};
-		MenuSwitch mMenuEnab = new MenuSwitch("Mouse in menu:", 1, 47, pos += 12, 240, cfg.menuMouse,
-				new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuSwitch sw = (MenuSwitch) pItem;
-						cfg.menuMouse = sw.value;
-					}
-				}, "Yes", "No");
+		pos += 5;
 		MenuSlider mCurSize = new MenuSlider("Mouse cursor size:", 1, false, 47, pos += 12, 240, cfg.gMouseCursorSize,
 				0x1000, 0x28000, 4096, new MENUPROC() {
 					@Override
@@ -1490,7 +1494,6 @@ public class RRMenu {
 
 		mAddItem(mMenus[nMenuId], messages, true);
 		mAddItem(mMenus[nMenuId], sScreenSize, false);
-		mAddItem(mMenus[nMenuId], mMenuEnab, false);
 //		mAddItem(mMenus[nMenuId], mMenuCursor, false);
 		mAddItem(mMenus[nMenuId], mCurSize, false);
 		mAddItem(mMenus[nMenuId], sCrosshair, false);
@@ -1587,6 +1590,19 @@ public class RRMenu {
 			}
 		};
 
+		MenuSwitch UseVids = new MenuSwitch("Play movie sequences:", 1, 47, pos += 12, 240, cfg.gPlayVideos, new MENUPROC() {
+			@Override
+			public void run(MenuItem pItem) {
+				MenuSwitch sw = (MenuSwitch) pItem;
+				cfg.gPlayVideos = sw.value;
+			}
+		}, null, null) {
+			@Override
+			public void open(MENU pMenu) {
+				value = cfg.gPlayVideos;
+			}
+		};
+		
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], sSlopeTilt, true);
 		mAddItem(mMenus[nMenuId], sAutoAim, false);
@@ -1595,6 +1611,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], sCheckVersion, false);
 		mAddItem(mMenus[nMenuId], mPlayingDemo, false);
 		mAddItem(mMenus[nMenuId], sRecord, false);
+		mAddItem(mMenus[nMenuId], UseVids, false);
 	}
 	
 	private static void mVideoMode(int nMenuId) {
@@ -1859,7 +1876,7 @@ public class RRMenu {
 						}
 						cfg.fpslimit = fps;
 
-						((BGraphics)Gdx.graphics).setMaxFramerate(fps);
+						BuildGDX.app.setMaxFramerate(fps);
 					}
 				}) {
 			@Override
@@ -1874,7 +1891,6 @@ public class RRMenu {
 				}
 				
 				num = cfg.checkFps(cfg.fpslimit);
-				mCheckEnableItem(this, Gdx.graphics instanceof BGraphics);
 			}
 		};
 		
@@ -1928,19 +1944,6 @@ public class RRMenu {
 			}
 		};
 
-		MenuSwitch UseVids = new MenuSwitch("Play movie sequences:", 1, 47, pos += 12, 240, cfg.gPlayVideos, new MENUPROC() {
-			@Override
-			public void run(MenuItem pItem) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				cfg.gPlayVideos = sw.value;
-			}
-		}, null, null) {
-			@Override
-			public void open(MENU pMenu) {
-				value = cfg.gPlayVideos;
-			}
-		};
-
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], mVideoMode, true);
 		mAddItem(mMenus[nMenuId], mColorMode, false);
@@ -1952,7 +1955,6 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], UseVoxels, false);
 		mAddItem(mMenus[nMenuId], UseModels, false);
 		mAddItem(mMenus[nMenuId], Usehrp, false);
-		mAddItem(mMenus[nMenuId], UseVids, false);
 	}
 	
 	public static int snddriver;

@@ -474,7 +474,7 @@ public class Network {
 						if (other == connecthead) {
 							connecthead = connectpoint2[connecthead];
 							sound(GENERIC_AMBIENCE17);
-							NetDisconnect(myconnectindex);
+							gNetDisconnect = true;
 							return 1;
 						}
 						else 

@@ -29,15 +29,16 @@ import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Redneck.*;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 
+import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildMessage;
+import ru.m210projects.Build.Architecture.GLFrame;
+import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Audio.Sound;
 import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.Input.GPManager;
 import ru.m210projects.Build.Types.BConfig;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Build.Types.MemLog;
-import ru.m210projects.Build.Types.Message;
 import ru.m210projects.Redneck.Types.RRPolymost;
 import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
@@ -50,7 +51,6 @@ public class Main extends ApplicationAdapter {
 	 * 
 	 * TODO:
 	 * check RA secret place E1M1
-	 * multiplayer interpolation
 	 * multiplayer pause
 	 * cd audio from cue
 	 * cutscenes MVE
@@ -71,7 +71,7 @@ public class Main extends ApplicationAdapter {
 	public static Music[] mxdrivers;
 	public static GPManager gpmanager;
 
-	public Main(BConfig cfg, Message message)
+	public Main(BConfig cfg, BuildMessage message)
 	{
 		Main.cfg = (Config) cfg;
 		InitRR(message);
@@ -138,7 +138,8 @@ public class Main extends ApplicationAdapter {
             engine.getAudio().getSound().stopAllSounds();
             clearsoundlocks();
 		}
-		((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
+		if (BuildGDX.app.getFrameType() == FrameType.GL)
+			((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
 	}
 
 	@Override
@@ -152,16 +153,14 @@ public class Main extends ApplicationAdapter {
 		updateColorCorrection();
 	}
 	
-	public void updateColorCorrection()
-	{
-		if(Gdx.graphics instanceof BGraphics 
-				&& !((BGraphics)Gdx.graphics).setDisplayConfiguration(
-						cfg.gamma, cfg.brightness, cfg.contrast)) {
-			
-			((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
-			cfg.gamma = 1.0f;
-			cfg.brightness = 0.0f;
-			cfg.contrast = 1.0f;
+	public void updateColorCorrection() {
+		if (BuildGDX.app.getFrameType() == FrameType.GL) {
+			if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast)) {
+				((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
+				cfg.gamma = 1.0f;
+				cfg.brightness = 0.0f;
+				cfg.contrast = 1.0f;
+			}
 		}
 	}
 

@@ -113,6 +113,10 @@ import static ru.m210projects.Redneck.Premap.*;
 import com.badlogic.gdx.Gdx;
 
 import ru.m210projects.Build.Scriptfile;
+import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildMessage;
+import ru.m210projects.Build.Architecture.GLFrame;
+import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Audio.BAudio;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
@@ -120,10 +124,8 @@ import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.MemLog;
-import ru.m210projects.Build.Types.Message;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Types.Sample;
@@ -161,7 +163,7 @@ public class Redneck {
 	    ud.m_player_skill = ud.player_skill = 2;
 	}
 	
-	public static void InitRR(Message message)
+	public static void InitRR(BuildMessage message)
 	{
 		try {
 			if(initgroupfile("Redneck.grp") == -1)
@@ -2169,8 +2171,8 @@ public class Redneck {
 			}
 		
 		saveConfig();
-		if(Gdx.graphics instanceof BGraphics)
-			((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
+		if(BuildGDX.app.getFrameType() == FrameType.GL) 
+			((GLFrame)BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
 		CloseLogFile();
 		System.out.println("disposed");
 	}
