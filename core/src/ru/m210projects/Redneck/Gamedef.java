@@ -2809,6 +2809,11 @@ public class Gamedef {
                                 wall[w].yrepeat = wall[spwall].yrepeat;
                                 wall[w].xpanning = wall[spwall].xpanning;
                                 wall[w].ypanning = wall[spwall].ypanning;
+                                if ( currentGame.getCON().type == RRRA && wall[w].nextwall != -1 )
+                                {
+                                	wall[w].cstat = 0;
+                                	wall[wall[w].nextwall].cstat = 0;
+                                }
                 			}
                 			s = g_sp.sectnum;
                 			sector[s].floorz = sector[sp.sectnum].floorz;

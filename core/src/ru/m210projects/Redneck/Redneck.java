@@ -678,7 +678,10 @@ public class Redneck {
 
 					int smoothratio = 65536;
 					if( ud.pause_on == 0 && ((ud.multimode < 2 && !gShowMenu && !Console.IsShown() ) || ud.multimode > 1 || ud.recstat == 2)) {
-						smoothratio = engine.getsmoothratio();
+						
+						if(ud.multimode < 2) 
+							smoothratio = engine.getsmoothratio();
+						else smoothratio = ((totalclock - ototalclock + TICSPERFRAME) << 16) / TICSPERFRAME;
 			            if (smoothratio < 0 || smoothratio > 0x10000) {
 			            	smoothratio = BClipRange(smoothratio, 0, 0x10000);
 			    		}
@@ -872,39 +875,41 @@ public class Redneck {
 	    int j = -1;
 	    for(int i=connecthead;i>=0;i=connectpoint2[i])
 	    {
+		    cheatkeys(i);
+	    
 	    	if (gm == MODE_DEMO || (sync[i].bits&(1<<26)) == 0) { j = i; continue; }
 
-	          closedemowrite();
+	    	closedemowrite();
 
-	          if (i == myconnectindex) Gdx.app.exit();
-	          if (screenpeek == i)
-	          {
-	                screenpeek = connectpoint2[i];
-	                if (screenpeek < 0) screenpeek = connecthead;
-	          }
+	    	if (i == myconnectindex) Gdx.app.exit();
+	    	if (screenpeek == i)
+	    	{
+	    		screenpeek = connectpoint2[i];
+	    		if (screenpeek < 0) screenpeek = connecthead;
+	    	}
 
-	          if (i == connecthead) connecthead = connectpoint2[connecthead];
-	          else connectpoint2[j] = connectpoint2[i];
+	    	if (i == connecthead) connecthead = connectpoint2[connecthead];
+	    	else connectpoint2[j] = connectpoint2[i];
 
-	          numplayers--;
-	          ud.multimode--;
+	    	numplayers--;
+	    	ud.multimode--;
 
-	          if (numplayers < 2)
-	              sound(GENERIC_AMBIENCE17);
+	    	if (numplayers < 2)
+	    		sound(GENERIC_AMBIENCE17);
 
-	          quickkill(ps[i]);
-	          engine.deletesprite(ps[i].i);
+	    	quickkill(ps[i]);
+	    	engine.deletesprite(ps[i].i);
 
-	          buildString(buf, 0, ud.user_name[i], " is history!");
-	          adduserquote(buf);
+	    	buildString(buf, 0, ud.user_name[i], " is history!");
+	    	adduserquote(buf);
 
-	          vscrn(ud.screen_size);
+	    	vscrn(ud.screen_size);
 
-	          if(j < 0 && networkmode == 0 )
-	          {
-	        	  backtomenu();
-	        	  Console.Print( " \nThe 'MASTER/First player' just quit the game.  All\nplayers are returned from the game.");
-	          } 
+	    	if(j < 0 && networkmode == 0 )
+	    	{
+	    		backtomenu();
+	    		Console.Print( " \nThe 'MASTER/First player' just quit the game.  All\nplayers are returned from the game.");
+	    	} 
 	    }
 
 	    if ((numplayers >= 2) && ((movefifoplc&7) == 7)) //build sync variables
@@ -959,7 +964,6 @@ public class Redneck {
 	    
 	    for(int i=connecthead;i>=0;i=connectpoint2[i])
 	    {
-	        cheatkeys(i);
 	        processinput(i);
 	        checksectors(i);
 	    }
@@ -1029,7 +1033,6 @@ public class Redneck {
 	
 	public static void cheatkeys(int snum)
 	{
-		
 	    int i, k;
 	    short dainv;
 	    int sb_snum, j;
@@ -1193,8 +1196,6 @@ public class Redneck {
 		            p.inven_icon = dainv;
 	            } while(CHECKINV);
 	            
-	            
-
 	            switch(dainv)
 	            {
 	                case 1: FTA(3,p);break;
