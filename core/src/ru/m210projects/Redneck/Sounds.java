@@ -42,8 +42,8 @@ import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Strhandler.buildString;
 
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Audio.BMusic.Highmusic;
 import ru.m210projects.Build.Audio.BMusic.MusicSource;
+import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Types.Sample;
@@ -56,6 +56,7 @@ public class Sounds {
 	public static final int NUM_SOUNDS = 500;
 	public static int backflag,numenvsnds;
 	
+	public static FileEntry userMusic;
 	public static int currTrack = -1;
 	public static MusicSource currMusic;
 	public static String currSong;
@@ -70,6 +71,17 @@ public class Sounds {
 		"track08.ogg",
 		"track09.ogg"
 	};
+	
+	public static FileEntry sndCheckMusic(FileEntry map)
+	{
+		if(map != null) {
+			String musName = map.getName().substring(0, map.getName().indexOf(map.getExtension())-1) + ".ogg";
+			userMusic = map.getParent().checkFile(musName);
+		}
+		
+		return userMusic;
+	}
+
 	
 	public static void checkTrack()
 	{
@@ -142,9 +154,22 @@ public class Sounds {
 		if(cfg.MusicToggle)
 			engine.getAudio().setVolume(MUSICDRV, cfg.musicVolume);
 		else engine.getAudio().setVolume(MUSICDRV, 0);
+		
+		if( cfg.musicType != 0 && userMusic != null)
+		{
+			if(currMusic != null && currMusic.isPlaying() && currSong == userMusic.getPath())
+				return;
+			
+			sndStopMusic();
+			if((currMusic = engine.getAudio().newMusic(DIGITYPE, userMusic.getPath())) != null) {
+				currSong = userMusic.getPath();
+				currMusic.play(true);
+				return;
+			}
+		}
 
-		if ( cfg.musicType == 1) { //music from def file
-			String himus = Highmusic.checkDigitalMusic(name);
+		if ( cfg.musicType == 1 && currentDef != null) { //music from def file
+			String himus = currentDef.audInfo.getDigitalInfo(name);
 			if(himus != null)
 			{
 				if(currMusic != null && currMusic.isPlaying() && currSong == himus)
@@ -485,6 +510,16 @@ public class Sounds {
 		 if(num >= NUM_SOUNDS) return null;
 		 return xyzsound(num,i,sprite[i].x,sprite[i].y,sprite[i].z);
 	}
+	
+	public static void stopsound(int num, int i)
+	{
+		if(Sound[num].num > 0 && (i == -1 || i == SoundOwner[num][Sound[num].num-1].i))
+	    {
+			SoundOwner[num][Sound[num].num-1].voice.dispose();
+			TestCallBack(num);
+	    }
+	}
+
 	
 	public static void stopsound(int num)
 	{

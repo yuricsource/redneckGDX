@@ -19,7 +19,6 @@ package ru.m210projects.Redneck.Menus;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Input.Keymap.*;
 import static ru.m210projects.Build.Pragmas.*;
-
 import static ru.m210projects.Redneck.Gameutils.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
@@ -202,9 +201,7 @@ public class MENU {
 		
 		int mx = ClipRange(Gdx.input.getX(), 0, xdim);
 		int my = ClipRange(Gdx.input.getY(), 0, ydim);
-		if(cfg.fullscreen != 0) 
-			Gdx.input.setCursorPosition(mx, ydim-my);
-
+	
 		if(!cfg.menuMouse)
 			return 0;
 		
@@ -253,8 +250,9 @@ public class MENU {
 
 	public static void mDrawMouse(int x, int y)
 	{
+		if(!cfg.menuMouse) return;
 		int zoom = scale(16384, ydim, 200);
-		if(cfg.menuMouse && mCount > 1) {
+		if(mCount > 1) {
 			//Back button
 			int shade = 4 + mulscale(16, sintable[(20 * totalclock) & kAngleMask], 16);
 			engine.rotatesprite(0, (ydim-mulscale(tilesizy[BACKBUTTON], zoom, 16))<<16, zoom, 0, BACKBUTTON, shade, 0, 8|16, 0, 0, mulscale(zoom, tilesizx[BACKBUTTON]-1, 16), ydim-1);
@@ -312,8 +310,7 @@ public class MENU {
 		gShowMenu = true;
 		vscrn(0);
 
-	    if(cfg.fullscreen == 0)
-	    	Gdx.input.setCursorCatched(false);
+	    Gdx.input.setCursorCatched(false);
 
 	    if(mMenuHistory[0] != null)
 	    	mLoadRes(mMenuHistory[0], 0x8000);

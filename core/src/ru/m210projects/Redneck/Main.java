@@ -17,32 +17,26 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.totalclock;
+import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Redneck.Animlib.initanm;
-import static ru.m210projects.Redneck.Redneck.appdispose;
-import static ru.m210projects.Redneck.Globals.MODE_LOGO;
-import static ru.m210projects.Redneck.Globals.dassert;
-import static ru.m210projects.Redneck.Globals.exceptionHandler;
-import static ru.m210projects.Redneck.Globals.gm;
-import static ru.m210projects.Redneck.Globals.lockclock;
-import static ru.m210projects.Redneck.Globals.stackTraceToString;
-import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Redneck.*;
+import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.setup3dscreen;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.currMusic;
 import static ru.m210projects.Redneck.ResourceHandler.*;
 
-import static ru.m210projects.Redneck.Redneck.*;
-
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 
+import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildMessage;
+import ru.m210projects.Build.Architecture.GLFrame;
+import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Audio.Sound;
 import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.Input.GPManager;
 import ru.m210projects.Build.Types.BConfig;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Build.Types.MemLog;
-import ru.m210projects.Build.Types.Message;
 import ru.m210projects.Redneck.Types.RRPolymost;
 import ru.m210projects.Redneck.Types.Date;
 import ru.m210projects.Redneck.Types.RREngine;
@@ -50,21 +44,26 @@ import ru.m210projects.Redneck.Types.RREngine;
 public class Main extends ApplicationAdapter {
 	
 	/*
-	 * v0.760
-	 * Autoload folder can load resources as cusspack
-	 * Addons support
-	 * Torches fix
-	 * Cow "use" fix
-	 * Apply anisotropy fix
-	 * Alcohol / gut meter in minihud
-	 * Colored keys option
-	 * RR skill5 without load/save (original game feature)
+	 * v0.761
+	 * Weapon drop fix after dead
+	 * RRRA E1L1 destruct wall in secret place fix
+	 * Moving door after load game fix
 	 * 
 	 * TODO:
-	 * keys multiplayer bug
-	 * drop dynamite insteadof crowbar
-	 * max_kills multiplayer coop
-	 * 
+	 * color correction fix
+	 * if (ctrlGetInputKey(Screenshot, true)) String name = "scrxxxx.png";
+	 * hud из новых ресурсов
+	 * savegameslot from WH (new displaytext)
+	 * fps text scale
+	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
+	 * проблема с fakebubba после загрузки сохранения
+	 * as I said once, you cannot pickup a weapon if you already have it
+	 * в грязи глючит мультиплеер камеру
+	 * и еще есть проблема с большой задержкой при нырянии. (на лестницах лаги)
+	 * в мультиплеере конец эпизода без заставки и перехода на след эпизод
+	 * multiplayer usercontent
+	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
+	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 * cd audio from cue
 	 * cutscenes MVE
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
@@ -72,11 +71,11 @@ public class Main extends ApplicationAdapter {
 	 */
 
 	public static final String appname = "RedneckGDX";
-	public static final String sversion = "v0.760";
+	public static final String sversion = "v0.761";
 	public static String OS = System.getProperty("os.name");
 	public static Date date;
 	public static final char[] version = sversion.toCharArray();
-	public static boolean release = true;
+	public static boolean release = false;
 	
 	public static RREngine engine;
 	public static Config cfg;
@@ -84,7 +83,7 @@ public class Main extends ApplicationAdapter {
 	public static Music[] mxdrivers;
 	public static GPManager gpmanager;
 
-	public Main(BConfig cfg, Message message)
+	public Main(BConfig cfg, BuildMessage message)
 	{
 		Main.cfg = (Config) cfg;
 		InitRR(message);
@@ -100,6 +99,14 @@ public class Main extends ApplicationAdapter {
 			gpmanager = new GPManager();
 			gpmanager.setDeadZone(cfg.gJoyDeadZone / 65536f);
 
+			// if user unplugged a device between two runs, reset to default device
+			// it could have been done in the menu but user might not even browse to it ...
+			// this also automatically fix the weird UX that would have occurred on menu otherwise
+			// as a bonus, if user unplugs device 1 but leaves device 2 in,
+			// it becomes default which is kind of nice since he doesn't have to go to menu again !
+			if (!Main.gpmanager.isValidDevice(cfg.gJoyDevice))
+				cfg.gJoyDevice = 0;
+
 			updateColorCorrection();
 			cfg.checkFps(cfg.fpslimit);
 			engine.setanisotropy(cfg, cfg.anisotropy);
@@ -107,6 +114,7 @@ public class Main extends ApplicationAdapter {
 
 			gm = MODE_LOGO;
 			initanm("rr_intro.anm",5, -1);
+			setDefs(baseDef);
 
 			MemLog.log("create");
 			System.gc();
@@ -136,37 +144,36 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void pause() {
-		if(ud.multimode < 2 && ud.recstat == 0) {
+		if(ud.multimode < 2 && numplayers < 2 && ud.recstat == 0) {
 			ud.pause_on = 1;
 			if(currMusic != null)
         		currMusic.pause();
             engine.getAudio().getSound().stopAllSounds();
             clearsoundlocks();
 		}
-		((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
+		if (BuildGDX.app.getFrameType() == FrameType.GL)
+			((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
 	}
 
 	@Override
 	public void resume() {
-		if(ud.multimode < 2 && ud.recstat == 0) {
+		if(ud.multimode < 2 && numplayers < 2 && ud.recstat == 0) {
 			ud.pause_on = 0;
-			lockclock = totalclock;
+			ototalclock = totalclock;
 			if(cfg.MusicToggle && currMusic != null) 
 				currMusic.resume();
 		}
 		updateColorCorrection();
 	}
 	
-	public void updateColorCorrection()
-	{
-		if(Gdx.graphics instanceof BGraphics 
-				&& !((BGraphics)Gdx.graphics).setDisplayConfiguration(
-						cfg.gamma, cfg.brightness, cfg.contrast)) {
-			
-			((BGraphics)Gdx.graphics).setDefaultDisplayConfiguration();
-			cfg.gamma = 1.0f;
-			cfg.brightness = 0.0f;
-			cfg.contrast = 1.0f;
+	public void updateColorCorrection() {
+		if (BuildGDX.app.getFrameType() == FrameType.GL) {
+			if (!((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast)) {
+				((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
+				cfg.gamma = 1.0f;
+				cfg.brightness = 0.0f;
+				cfg.contrast = 1.0f;
+			}
 		}
 	}
 

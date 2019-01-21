@@ -65,12 +65,15 @@ import ru.m210projects.Redneck.Menus.MenuItem;
 import ru.m210projects.Redneck.Menus.MenuSlider;
 import ru.m210projects.Redneck.Menus.MenuTextField;
 import ru.m210projects.Redneck.Menus.MenuTitle;
+import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.GLFrame;
+import ru.m210projects.Build.Audio.Sound;
 import ru.m210projects.Build.Audio.Source;
+import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Render.GLInfo;
 import ru.m210projects.Build.Render.VideoMode;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.SaveManager;
 
@@ -316,6 +319,10 @@ public class RRMenu {
 				cfg.mousekeys[Next_Weapon] = MOUSE_WHELLUP;
 				cfg.mousekeys[Previous_Weapon] = MOUSE_WHELLDN;
 				
+				Console.setCaptureKey(cfg.primarykeys[Show_Console], 0);
+				Console.setCaptureKey(cfg.secondkeys[Show_Console], 1);
+				Console.setCaptureKey(cfg.mousekeys[Show_Console], 2);
+				
 				mMenuBack();
 			}
 		};
@@ -343,7 +350,7 @@ public class RRMenu {
 //				engine.setbrightness(ud.brightness>>2, ps[myconnectindex].palette, 2);
 				
 				float gamma = slider.value / 4096.0f;
-				if(((BGraphics)Gdx.graphics).setDisplayConfiguration(1 - gamma, cfg.brightness, cfg.contrast))
+				if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(1 - gamma, cfg.brightness, cfg.contrast))
 					cfg.gamma = (1 - gamma);
 				else 
 					slider.value = (int) ((1 - cfg.gamma) * 4096);
@@ -357,7 +364,7 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						float brightness = slider.value / 4096.0f;
-						if(((BGraphics)Gdx.graphics).setDisplayConfiguration(cfg.gamma, brightness, cfg.contrast))
+						if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, brightness, cfg.contrast))
 							cfg.brightness = brightness;
 						else 
 							slider.value = (int) (cfg.brightness * 4096);
@@ -371,7 +378,7 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						float contrast = slider.value / 4096.0f;
-						if(((BGraphics)Gdx.graphics).setDisplayConfiguration(cfg.gamma, cfg.brightness, contrast))
+						if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, contrast))
 							cfg.contrast = contrast;
 						else 
 							slider.value = (int) (cfg.contrast * 4096);
@@ -389,7 +396,7 @@ public class RRMenu {
 				mGamma.value = (int) ((1 - cfg.gamma) * 4096);
 				mBrightness.value = (int) (cfg.brightness * 4096);
 				mContrast.value = (int) (cfg.contrast * 4096);
-				((BGraphics)Gdx.graphics).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast);
+				((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast);
 			}
 		}, -1);
 		
@@ -689,6 +696,7 @@ public class RRMenu {
 					case 5:
 					case 6:
 					case 7:
+						if(!gpmanager.isValidDevice(cfg.gJoyDevice)) break;
 						for (int kb = 0; kb < gpmanager.getButtonCount(cfg.gJoyDevice); kb++) {
 							if (gpmanager.buttonPressed(cfg.gJoyDevice, kb))
 								cfg.setButton(item.l_nFocus, kb);
@@ -696,6 +704,7 @@ public class RRMenu {
 						item.l_set = 0;
 						break;
 					default:
+						if(!gpmanager.isValidDevice(cfg.gJoyDevice)) break;
 						for (int kb = 0; kb < gpmanager.getButtonCount(cfg.gJoyDevice); kb++) {
 							if (gpmanager.getButton(cfg.gJoyDevice, kb)) {
 								cfg.setButton(item.l_nFocus, kb);
@@ -758,8 +767,10 @@ public class RRMenu {
 						item.l_set = 0;
 						break;
 					case 7:
+						if (item.l_nFocus == Menu_open)
+							cfg.setKey(item.l_nFocus, Keys.ESCAPE);
+						else sound(EXITMENUSOUND);
 						getInput().resetKeyStatus();
-						sound(EXITMENUSOUND);
 						item.l_set = 0;
 						break;
 					case 8:
@@ -886,6 +897,10 @@ public class RRMenu {
 				cfg.mousekeys[Open] = MOUSE_MBUTTON;
 				cfg.mousekeys[Next_Weapon] = MOUSE_WHELLUP;
 				cfg.mousekeys[Previous_Weapon] = MOUSE_WHELLDN;
+				
+				Console.setCaptureKey(cfg.primarykeys[Show_Console], 0);
+				Console.setCaptureKey(cfg.secondkeys[Show_Console], 1);
+				Console.setCaptureKey(cfg.mousekeys[Show_Console], 2);
 				
 				mMenuBack();
 			}
@@ -1079,13 +1094,22 @@ public class RRMenu {
 
 		int pos = 23;
 
-		MenuSwitch mEnable = new MenuSwitch("Enable mouse:", 1, 22, pos += 12, 280, cfg.useMouse, new MENUPROC() {
+		MenuSwitch mEnable = new MenuSwitch("Mouse in game:", 1, 22, pos += 12, 280, cfg.useMouse, new MENUPROC() {
 			@Override
 			public void run(MenuItem pItem) {
 				MenuSwitch sw = (MenuSwitch) pItem;
 				cfg.useMouse = sw.value;
 			}
 		}, "Yes", "No");
+		
+		MenuSwitch mMenuEnab = new MenuSwitch("Mouse in menu:", 1, 22, pos += 12, 280, cfg.menuMouse,
+				new MENUPROC() {
+					@Override
+					public void run(MenuItem pItem) {
+						MenuSwitch sw = (MenuSwitch) pItem;
+						cfg.menuMouse = sw.value;
+					}
+				}, "Yes", "No");
 
 		pos += 5;
 		MenuSlider mSens = new MenuSlider("Mouse Sensitivity:", 1, false, 22, pos += 12, 280, cfg.gSensitivity, 0x1000,
@@ -1163,6 +1187,7 @@ public class RRMenu {
 				mMenus[ADVANCEDMOUSESET], -1, null, 0);
 
 		mAddItem(mMenus[nMenuId], mEnable, true);
+		mAddItem(mMenus[nMenuId], mMenuEnab, false);
 		mAddItem(mMenus[nMenuId], mSens, false);
 
 		mAddItem(mMenus[nMenuId], mTurn, false);
@@ -1181,34 +1206,12 @@ public class RRMenu {
 
 		int pos = 25;
 
-		MenuSwitch mEnable = new MenuSwitch("Enabled:", 1, 46, pos += 12, 230, cfg.useJoystick, new MENUPROC() {
-			@Override
-			public void run(MenuItem pItem) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				sw.value &= gpmanager.getControllers() > 0; // force disabled as needed
-				cfg.useJoystick = sw.value && cfg.gJoyDevice > -1;
-			}
-		}, "Yes", "No") {
-			@Override
-			public void open(MENU pMenu) {
-				if(gpmanager.getControllers() > 0)
-					this.value = cfg.useJoystick;
-				else {
-					this.value = false;
-					mCheckEnableItem(this, false);
-					this.flags = 3; //enable navigation, because first item of menu
-				}
-			}
-		};
-
 		MenuConteiner mJoyDevices = new MenuConteiner("Device:", 0, 46, pos += 15, 230, null, 0,
 				new MENUPROC() {
 					@Override
 					public void run(MenuItem pItem) {
 						MenuConteiner item = (MenuConteiner) pItem;
-						int controllers = gpmanager.getControllers();
-						cfg.gJoyDevice = controllers > 0 ? item.num : -1;
-						cfg.useJoystick = cfg.gJoyDevice > -1;
+						cfg.gJoyDevice = item.num-1;
 					}
 				}) {
 			@Override
@@ -1216,9 +1219,10 @@ public class RRMenu {
 				int controllers = gpmanager.getControllers();
 				if (this.list == null) {
 					if (controllers > 0) {
-						this.list = new char[controllers][];
+						this.list = new char[controllers+1][];
+						this.list[0] = "Disabled".toCharArray();
 						for (int i = 0; i < controllers; i++) {
-							this.list[i] = gpmanager.getControllerName(i).toCharArray();
+							this.list[i+1] = gpmanager.getControllerName(i).toCharArray();
 						}
 					} else {
 						this.list = new char[][]{"No joystick devices found".toCharArray()};
@@ -1227,22 +1231,26 @@ public class RRMenu {
 
 				// handles unplugged device(s) between runs
 				int min = 0;
-				int max = Math.max(0, controllers - 1);
-				int val = cfg.gJoyDevice;
+				int max = Math.max(0, controllers);
+				int val = cfg.gJoyDevice + 1;
+				
 				this.num = val < min ? min : (val > max ? max : val);
 			}
 
 			@Override
 			public void draw() {
 				SndDriverDraw(this); // NOTE this draws the menu header with the right font !
+				mCheckEnableItem(this, gpmanager.getControllers() > 0);
+				if(this.flags == 1) this.flags = 3;
 			}
 		};
 
 		MenuButton mJoyKey = new MenuButton("Configure buttons", 1, 46, pos += 15, 230, 1, 0, mMenus[JOYKEYSET], -1,
 				null, 0) {
 			@Override
-			public void open(MENU pMenu) {
-				mCheckEnableItem(this, gpmanager.getControllers() > 0);
+			public void draw() {
+				super.draw();
+				mCheckEnableItem(this, gpmanager.isValidDevice(cfg.gJoyDevice) && gpmanager.getControllers() > 0);
 			}
 		};
 
@@ -1344,8 +1352,7 @@ public class RRMenu {
 			}
 		}, "Yes", "No");
 
-		mAddItem(mMenus[nMenuId], mEnable, true);
-		mAddItem(mMenus[nMenuId], mJoyDevices, false);
+		mAddItem(mMenus[nMenuId], mJoyDevices, true);
 		mAddItem(mMenus[nMenuId], mJoyKey, false);
 		mAddItem(mMenus[nMenuId], mJoyTurn, false);
 		mAddItem(mMenus[nMenuId], mJoyLook, false);
@@ -1419,14 +1426,7 @@ public class RRMenu {
 //		num = cfg.gMouseCursor;
 //	}
 //};
-		MenuSwitch mMenuEnab = new MenuSwitch("Mouse in menu:", 1, 47, pos += 12, 240, cfg.menuMouse,
-				new MENUPROC() {
-					@Override
-					public void run(MenuItem pItem) {
-						MenuSwitch sw = (MenuSwitch) pItem;
-						cfg.menuMouse = sw.value;
-					}
-				}, "Yes", "No");
+		pos += 5;
 		MenuSlider mCurSize = new MenuSlider("Mouse cursor size:", 1, false, 47, pos += 12, 240, cfg.gMouseCursorSize,
 				0x1000, 0x28000, 4096, new MENUPROC() {
 					@Override
@@ -1508,7 +1508,6 @@ public class RRMenu {
 
 		mAddItem(mMenus[nMenuId], messages, true);
 		mAddItem(mMenus[nMenuId], sScreenSize, false);
-		mAddItem(mMenus[nMenuId], mMenuEnab, false);
 //		mAddItem(mMenus[nMenuId], mMenuCursor, false);
 		mAddItem(mMenus[nMenuId], mCurSize, false);
 		mAddItem(mMenus[nMenuId], sCrosshair, false);
@@ -1605,6 +1604,19 @@ public class RRMenu {
 			}
 		};
 
+		MenuSwitch UseVids = new MenuSwitch("Play movie sequences:", 1, 47, pos += 12, 240, cfg.gPlayVideos, new MENUPROC() {
+			@Override
+			public void run(MenuItem pItem) {
+				MenuSwitch sw = (MenuSwitch) pItem;
+				cfg.gPlayVideos = sw.value;
+			}
+		}, null, null) {
+			@Override
+			public void open(MENU pMenu) {
+				value = cfg.gPlayVideos;
+			}
+		};
+		
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], sSlopeTilt, true);
 		mAddItem(mMenus[nMenuId], sAutoAim, false);
@@ -1613,6 +1625,7 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], sCheckVersion, false);
 		mAddItem(mMenus[nMenuId], mPlayingDemo, false);
 		mAddItem(mMenus[nMenuId], sRecord, false);
+		mAddItem(mMenus[nMenuId], UseVids, false);
 	}
 	
 	private static void mVideoMode(int nMenuId) {
@@ -1877,7 +1890,7 @@ public class RRMenu {
 						}
 						cfg.fpslimit = fps;
 
-						((BGraphics)Gdx.graphics).setMaxFramerate(fps);
+						BuildGDX.app.setMaxFramerate(fps);
 					}
 				}) {
 			@Override
@@ -1892,7 +1905,6 @@ public class RRMenu {
 				}
 				
 				num = cfg.checkFps(cfg.fpslimit);
-				mCheckEnableItem(this, Gdx.graphics instanceof BGraphics);
 			}
 		};
 		
@@ -1946,19 +1958,6 @@ public class RRMenu {
 			}
 		};
 
-		MenuSwitch UseVids = new MenuSwitch("Play movie sequences:", 1, 47, pos += 12, 240, cfg.gPlayVideos, new MENUPROC() {
-			@Override
-			public void run(MenuItem pItem) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				cfg.gPlayVideos = sw.value;
-			}
-		}, null, null) {
-			@Override
-			public void open(MENU pMenu) {
-				value = cfg.gPlayVideos;
-			}
-		};
-
 		mAddItem(mMenus[nMenuId], mTitle, false);
 		mAddItem(mMenus[nMenuId], mVideoMode, true);
 		mAddItem(mMenus[nMenuId], mColorMode, false);
@@ -1970,7 +1969,6 @@ public class RRMenu {
 		mAddItem(mMenus[nMenuId], UseVoxels, false);
 		mAddItem(mMenus[nMenuId], UseModels, false);
 		mAddItem(mMenus[nMenuId], Usehrp, false);
-		mAddItem(mMenus[nMenuId], UseVids, false);
 	}
 	
 	public static int snddriver;
@@ -2226,6 +2224,7 @@ public class RRMenu {
 				if (snddriver != osnddriver || voices != ovoices || resampler != oresampler) {
 					StopAllSounds();
 					
+					Sound olddrv = engine.getAudio().getSound();
 					if (snddriver != osnddriver)
 						engine.getAudio().setDriver(SOUNDDRV, fxdrivers[snddriver]);
 					if (voices != ovoices)
@@ -2245,17 +2244,22 @@ public class RRMenu {
 						if(cfg.resampler_num < 0 || cfg.resampler_num >= engine.getAudio().getSound().getNumResamplers())
 							cfg.resampler_num = 0;
 						sResampler.num = resampler = oresampler = cfg.resampler_num;
-					} else
+					} else {
 						sSoundDrv.list[sSoundDrv.num] = "initialization failed".toCharArray();
+						engine.getAudio().setDriver(SOUNDDRV, olddrv);
+					}
 				}
 
 				if (middriver != omiddriver) {
+					Music olddrv = engine.getAudio().getMusic();
 					engine.getAudio().setDriver(MUSICDRV, mxdrivers[middriver]);
 					if (midRestart()) {
 						cfg.middrv = omiddriver = middriver;
 						sMusicDrv.list[sMusicDrv.num] = mxdrivers[sMusicDrv.num].getName().toCharArray();
-					} else
+					} else {
 						sMusicDrv.list[sMusicDrv.num] = "initialization failed".toCharArray();
+						engine.getAudio().setDriver(MUSICDRV, olddrv);
+					}
 				}
 
 				if (cdaudio != ocdaudio) {
@@ -3283,6 +3287,8 @@ public class RRMenu {
 						this.list[1 + i] = mGameInfo.skillnames[i].toCharArray();
 				}
 				num = ud.m_player_skill;
+				if(currentGame.getCON().type != RRRA) 
+					num++;
 			}
 		};
 		
@@ -3334,6 +3340,7 @@ public class RRMenu {
                 else ud.m_respawn_items = false;
 
                 ud.m_respawn_inventory = true;
+                ud.god = false;
 
                 tempbuf[4] = ud.m_monsters_off?(byte)1:0;
                 tempbuf[5] = ud.m_respawn_monsters?(byte)1:0;

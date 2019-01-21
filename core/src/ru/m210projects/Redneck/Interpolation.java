@@ -19,9 +19,11 @@ package ru.m210projects.Redneck;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Redneck.Types.INTERPOLATION.*;
+
+import java.util.Arrays;
+
 import static ru.m210projects.Redneck.Main.*;
 import ru.m210projects.Build.Types.SECTOR;
-import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Types.INTERPOLATION;
 import ru.m210projects.Redneck.Types.LOCATION;
@@ -34,9 +36,10 @@ public class Interpolation {
 	public static int InterpolationCount = 0;
 	public static INTERPOLATION[] gInterpolationData = new INTERPOLATION[MAXINTERPOLATIONS];
 
-	public static int gSpriteLoc[] = new int[MAXSPRITES << 3];
 	public static int gWallLoc[] = new int[MAXWALLS << 3];
 	public static int gSectorLoc[] = new int[MAXSECTORS << 3];
+	public static int gFloorLoc[] = new int[MAXSECTORS << 3];
+	public static int gCeilLoc[] = new int[MAXSECTORS << 3];
 	
 	public static void initinterpolations()
 	{
@@ -46,7 +49,7 @@ public class Interpolation {
 			gPrevSpriteLoc[i] = new LOCATION();
 	}
 	
-	public static void setinterpolation(Object obj, int type)
+	private static void setinterpolation(Object obj, int type)
 	{
 		if ( InterpolationCount == MAXINTERPOLATIONS )
 			System.err.println("Too many interpolations");
@@ -76,7 +79,7 @@ public class Interpolation {
 		}
 	}
 	
-	public static void stopinterpolation(Object obj, int type)
+	private static void stopinterpolation(Object obj, int type)
 	{
 		for(int i=InterpolationCount-1;i>=0;i--) {
 			INTERPOLATION gInt = gInterpolationData[i];
@@ -92,12 +95,11 @@ public class Interpolation {
 	{
 		engine.updatesmoothticks();
 		InterpolationCount = 0;
-		for(int i = 0; i < MAXSPRITES << 3; i++)
-			gSpriteLoc[i] = 0;
-		for(int i = 0; i < MAXWALLS << 3; i++)
-			gWallLoc[i] = 0;
-		for(int i = 0; i < MAXSECTORS << 3; i++)
-			gSectorLoc[i] = 0;
+		Arrays.fill(gWallLoc, 0);
+		Arrays.fill(gSectorLoc, 0);
+		Arrays.fill(gFloorLoc, 0);
+		Arrays.fill(gCeilLoc, 0);
+
 	}
 	
 	public static void dointerpolations(int smoothratio)
@@ -185,19 +187,7 @@ public class Interpolation {
 				viewStopWallLoc(wall[j].nextwall, wall[wall[j].nextwall]);
 		}
 	}
-	
-	public static void viewBackupSpriteLoc( int nSprite, SPRITE pSprite )
-	{
-		if((gSpriteLoc[nSprite >> 3] & (1 << (nSprite & 7))) == 0) {
-			LOCATION pLocation = gPrevSpriteLoc[nSprite];
-			pLocation.x = pSprite.x;
-			pLocation.y = pSprite.y;
-			pLocation.z = pSprite.z;
-			pLocation.ang = pSprite.ang;
-			gSpriteLoc[nSprite >> 3] |= 1 << (nSprite & 7);
-		}
-	}
-	
+
 	public static void viewBackupWallLoc( int nWall, WALL pWall )
 	{
 		if((gWallLoc[nWall >> 3] & (1 << (nWall & 7))) == 0) {
@@ -219,8 +209,6 @@ public class Interpolation {
 	public static void viewBackupSectorLoc( int nSector, SECTOR pSector )
 	{
 		if((gSectorLoc[nSector >> 3] & (1 << (nSector & 7))) == 0) {
-			setinterpolation(pSector, FLOORZ);
-			setinterpolation(pSector, CEILZ);
 			setinterpolation(pSector, FLOORH);
 		    gSectorLoc[nSector >> 3] |= 1 << (nSector & 7);
 		}
@@ -229,11 +217,42 @@ public class Interpolation {
 	public static void viewStopSectorLoc( int nSector, SECTOR pSector )
 	{
 		if((gSectorLoc[nSector >> 3] & (1 << (nSector & 7))) != 0) {
-			stopinterpolation(pSector, FLOORZ);
-			stopinterpolation(pSector, CEILZ);
 			stopinterpolation(pSector, FLOORH);
 		    gSectorLoc[nSector >> 3] &= ~(1 << (nSector & 7));
 		}
 	}
 
+	public static boolean viewBackupFloorLoc( int nSector, SECTOR pSector )
+	{
+		if((gFloorLoc[nSector >> 3] & (1 << (nSector & 7))) == 0) {
+			setinterpolation(pSector, FLOORZ);
+			gFloorLoc[nSector >> 3] |= 1 << (nSector & 7);
+			return true;
+		}
+		return false;
+	}
+	
+	public static void viewStopFloorLoc( int nSector, SECTOR pSector )
+	{
+		if((gFloorLoc[nSector >> 3] & (1 << (nSector & 7))) != 0) {
+			stopinterpolation(pSector, FLOORZ);
+			gFloorLoc[nSector >> 3] &= ~(1 << (nSector & 7));
+		}
+	}
+	
+	public static void viewBackupCeilingLoc( int nSector, SECTOR pSector )
+	{
+		if((gCeilLoc[nSector >> 3] & (1 << (nSector & 7))) == 0) {
+			setinterpolation(pSector, CEILZ);
+			gCeilLoc[nSector >> 3] |= 1 << (nSector & 7);
+		}
+	}
+	
+	public static void viewStopCeilingLoc( int nSector, SECTOR pSector )
+	{
+		if((gCeilLoc[nSector >> 3] & (1 << (nSector & 7))) != 0) {
+			stopinterpolation(pSector, CEILZ);
+			gCeilLoc[nSector >> 3] &= ~(1 << (nSector & 7));
+		}
+	}
 }

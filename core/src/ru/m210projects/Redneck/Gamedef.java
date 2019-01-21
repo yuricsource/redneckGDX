@@ -68,9 +68,8 @@ public class Gamedef {
 	
 	public static final int[] params = new int[35];
 	public static String confilename = "GAME.CON";
-	public static int conweigth = 10;
-	private static int GameCON = RR;
-	
+	public static int conweigth = 0;
+
 	// Defines the motion characteristics of an actor;
 	public static final int face_player = 1;
 	public static final int geth = 2;
@@ -549,16 +548,16 @@ public class Gamedef {
 
 	    textptr += l;
 	    if( tempbuf[0] == '{' && tempbuf[1] != 0)
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '{' and '" + tempbuf[1] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '{' and '" + new String(tempbuf, 1, l) + "'.");
 	    else if( tempbuf[0] == '}' && tempbuf[1] != 0)
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '}' and '" + tempbuf[1] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '}' and '" + new String(tempbuf, 1, l) + "'.");
 	    else if( tempbuf[0] == '/' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '//' and '" + tempbuf[2] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '//' and '" + new String(tempbuf, 2, l) + "'.");
 	    else if( tempbuf[0] == '/' && tempbuf[1] == '*' && tempbuf[2] != 0 )
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '/*' and '" + tempbuf[2] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '/*' and '" + new String(tempbuf, 2, l) + "'.");
 	    else if( tempbuf[0] == '*' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '*/' and '" + tempbuf[2] + "'.");
-	    else Console.Println("  * ERROR!(L" + line_number + ") Expecting key word, but found '" + tempbuf[0] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '*/' and '" + new String(tempbuf, 2, l) + "'.");
+	    else Console.Println("  * ERROR!(L" + line_number + ") Expecting key word, but found '" + new String(tempbuf, 0, l) + "'.");
 
 	    error++;
 	    return -1;
@@ -901,10 +900,10 @@ public class Gamedef {
 	            		|| name.equalsIgnoreCase("bubba66.con"))
 	            	conweigth += 1;
 	            
-	            if(conweigth == 3 && GameCON != RRRA )
+	            if(conweigth == 3 && con.type != RRRA )
 	            {
-	            	 GameCON = RR66;
-	            	 conweigth = 0;
+	            	con.type = RR66;
+	            	conweigth = 0;
 	            }
 
 	            temp_line_number = line_number;
@@ -1571,10 +1570,10 @@ public class Gamedef {
 	        		 if (j != 30) continue;
 	        		 
 	        		 if (keyword() != -1) {
-		            	 GameCON = RR;
+	        			 con.type = RR;
 	        			 break;
 	        		 } else {
-	        			 GameCON = RRRA;
+	        			 con.type = RRRA;
 	        		 }
 	        	}
 	        	
@@ -1611,7 +1610,7 @@ public class Gamedef {
 	    		con.spriteqamount = (short)ClipRange(params[j++], 0, 1024);
 	    		con.dildoblase = (char)params[j++];
     			
-    			if(GameCON == RRRA)
+    			if(con.type == RRRA)
     			{
     				con.max_ammo_amount[MOTO_WEAPON] = params[j++];
     				con.max_ammo_amount[BOAT_WEAPON] = params[j++];
@@ -2668,7 +2667,7 @@ public class Gamedef {
 	            if(g_sp.detail < 1 || g_sp.detail == 128)
 	            {
 	            	if ( checkaddkills(g_sp) )
-	            		ps[g_p].actors_killed += con.script[insptr];
+	            		ps[connecthead].actors_killed += con.script[insptr];
 	            }
 	            hittype[g_i].actorstayput = -1;
 	            insptr++;
@@ -2810,6 +2809,11 @@ public class Gamedef {
                                 wall[w].yrepeat = wall[spwall].yrepeat;
                                 wall[w].xpanning = wall[spwall].xpanning;
                                 wall[w].ypanning = wall[spwall].ypanning;
+                                if ( currentGame.getCON().type == RRRA && wall[w].nextwall != -1 )
+                                {
+                                	wall[w].cstat = 0;
+                                	wall[wall[w].nextwall].cstat = 0;
+                                }
                 			}
                 			s = g_sp.sectnum;
                 			sector[s].floorz = sector[sp.sectnum].floorz;
@@ -3103,8 +3107,6 @@ public class Gamedef {
 	                ps[g_p].pals_time = 0;
 	                ps[g_p].footprintcount = 0;
 	                ps[g_p].weapreccnt = 0;
-	                ps[g_p].fta = 0;
-	                ps[g_p].ftq = 0;
 	                ps[g_p].posxv = ps[g_p].posyv = 0;
 	                ps[g_p].rotscrnang = 0;
 
@@ -3122,6 +3124,9 @@ public class Gamedef {
 
 	                resetinventory(g_p);
 	                resetweapons(g_p);
+
+	                fta = 0;
+	                ftq = 0;
 
 	                cameradist = 0;
 	                cameraclock = totalclock;
@@ -3628,7 +3633,7 @@ public class Gamedef {
 	    if(g_sp.sectnum < 0 || g_sp.sectnum >= MAXSECTORS)
 	    {
 	        if(badguy(g_sp))
-	            ps[g_p].actors_killed++;
+	            ps[connecthead].actors_killed++;
 	        engine.deletesprite(g_i);
 	        return;
 	    }
@@ -3708,7 +3713,7 @@ public class Gamedef {
 			con = loadefs(confilename);
 		}
 		
-		switch(GameCON)
+		switch(con.type)
 		{
 			case RR:
 				Console.Println("Looks like Redneck Rampage Edition CON files.");
@@ -3721,7 +3726,6 @@ public class Gamedef {
 				break;
 		}
 
-		con.type = GameCON;
 		defGame.setCON(con);
 		defGame.Title = "Default";
 
@@ -3756,6 +3760,8 @@ public class Gamedef {
         	while( buf[textptr] != 0x0a ) {
         		buf[textptr] = 0;
         		textptr++;
+        		if( textptr >= buf.length )
+                	return buf;
         	}
         }
         
@@ -3823,7 +3829,7 @@ public class Gamedef {
 	    	return null;
 	    }
 	    
-	    switch(GameCON)
+	    switch(con.type)
 		{
 			case RR:
 				Console.Println("Looks like Redneck Rampage Edition CON files.");
@@ -3835,7 +3841,6 @@ public class Gamedef {
 				Console.Println("Looks like Redneck Rampage: Rides Again Edition CON files.");
 				break;
 		}
-	    con.type = GameCON;
 
 	    if((warning|error) != 0)
 	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");

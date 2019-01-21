@@ -63,7 +63,10 @@ public class Globals {
 	
 	public static final int TICRATE = 120;
 	public static final int TICSPERFRAME = (TICRATE/26);
-	public static final int TIMERUPDATESIZ = 32;
+	public static final int TIMERUPDATESIZ = 16;
+			
+	public static final int kMaxTiles = MAXTILES - USERTILES;
+	public static final int kUserTiles = kMaxTiles;
 	
 	public static final int TILE_LOADSHOT = MAXTILES - 2;
 	public static final int TILE_ANIM = MAXTILES - 3;
@@ -136,6 +139,8 @@ public class Globals {
 	public static final int MODE_WAIT  		= 8192;
 	
 	public static boolean MODE_TYPE; //== 16
+	
+	public static int gVisibility;
 	
 	public static String loading_mapname;
 	public static int loading_type;
@@ -221,15 +226,15 @@ public class Globals {
 
 	public static int fricxv,fricyv;
 
-	public static byte syncstat, syncval[][] = new byte[MAXPLAYERS][MOVEFIFOSIZ];
+	
+	public static final int CheckSize = 3;
+	public static final int CheckBytes = Integer.BYTES * CheckSize;
+	public static byte syncstat, syncval[][] = new byte[MAXPLAYERS][CheckBytes * MOVEFIFOSIZ];
 	public static int syncvalhead[] = new int[MAXPLAYERS], syncvaltail, syncvaltottail;
 
 	public static Input sync[] = new Input[MAXPLAYERS], loc;
 	public static Input recsync[][] = new Input[RECSYNCBUFSIZ][MAXPLAYERS];
-	public static int avgfvel, avgsvel, avgbits;
-	public static float avghorz, avgavel;
 	
-
 	public static Input[][] inputfifo = new Input[MOVEFIFOSIZ][MAXPLAYERS];
 	
 	public static int movefifosendplc;
@@ -286,8 +291,7 @@ public class Globals {
 	public static float[] myangbak = new float[MOVEFIFOSIZ];
 
 	// CTW - MODIFICATION
-	// char networkmode = 255, movesperpacket = 1,gamequit = 0,playonten = 0,everyothertime;
-	public static char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
+	public static char networkmode = 0, movesperpacket = 1,gamequit = 0,everyothertime;
 
 	public static int myminlag[] = new int[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
 	public static int totalmemory = 0;

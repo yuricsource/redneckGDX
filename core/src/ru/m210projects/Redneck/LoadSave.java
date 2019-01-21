@@ -804,11 +804,11 @@ public class LoadSave {
 		AnimationLoad(loader);
 		GameInfoLoad(loader);
 			
-		if(ps[myconnectindex].over_shoulder_on != 0)
+		if(over_shoulder_on != 0)
 		{
 	         cameradist = 0;
 	         cameraclock = 0;
-	         ps[myconnectindex].over_shoulder_on = 1;
+	         over_shoulder_on = 1;
 		}
 
 		screenpeek = myconnectindex;
@@ -821,6 +821,13 @@ public class LoadSave {
 		clearsoundlocks();
 		cacheit();
 		docacheit();
+
+		userMusic = null;
+		if(boardfilename != null) {
+			FileEntry file = cache.checkFile(boardfilename);
+			if(file != null) 
+				sndCheckMusic(file);
+		}
 
 		musicvolume = ud.volume_number;
     	musiclevel = ud.level_number;
@@ -876,21 +883,21 @@ public class LoadSave {
 		for(int i = gAnimationCount-1;i>=0;i--)
 		{
 			ANIMATION gAnm = gAnimationData[i];
-			Object obj = gAnm.ptr;
+			Object object = (gAnm.ptr = getobject(gAnm.id, gAnm.type));
 			switch(gAnm.type)
 			{
 	    	 	case WALLX:
 	    	 	case WALLY:
-	    	 		viewBackupWallLoc(gAnm.id, (WALL)obj);
+	    	 		viewBackupWallLoc(gAnm.id, (WALL)object);
 					break;
 	    	 	case FLOORZ:
 	    	 	case CEILZ:
-	    	 		viewBackupSectorLoc(gAnm.id, (SECTOR)obj);
+	    	 		viewBackupSectorLoc(gAnm.id, (SECTOR)object);
 					break;
 			}
 		}
 		
-		ps[myconnectindex].fta = 0;
+		fta = 0;
 
 		everyothertime = 0;
 
@@ -904,6 +911,7 @@ public class LoadSave {
 		clearfifo();
 		
 		resettimevars();
+		engine.getrender().preload();
 		
 		gm = MODE_GAME;
 	}

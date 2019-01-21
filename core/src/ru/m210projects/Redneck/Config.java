@@ -25,14 +25,13 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
+import ru.m210projects.Build.Architecture.BuildGDX;
 import ru.m210projects.Build.Input.ButtonMap;
 import ru.m210projects.Build.Input.Keymap;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.BConfig;
-import ru.m210projects.Build.Types.BGraphics;
 import ru.m210projects.Redneck.Types.IniFile;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
 import static ru.m210projects.Build.OnSceenDisplay.Console.*;
@@ -125,7 +124,6 @@ public class Config extends BConfig {
 
 	public  boolean gAutoAim	= true;
 
-	public  boolean useJoystick = true;
 	public  int gJoyMoveAxis = 0; //Stick1Y
 	public  int gJoyStrafeAxis = 1; //Stick1X
 	public  int gJoyLookAxis = 2; //Stick2Y
@@ -439,6 +437,9 @@ public class Config extends BConfig {
 				String respath = RRcfg.GetKeyString("Path");
 				if(respath != null && !respath.isEmpty())
 					this.path = respath;
+				String bank = RRcfg.GetKeyString("SoundBank");
+				if(bank != null && !bank.isEmpty())
+					this.soundBank = bank;
 				int check = RRcfg.GetKeyInt("CheckNewVersion");
 				if(check != -1)
 					checkVersion = (check == 1);
@@ -459,8 +460,7 @@ public class Config extends BConfig {
 				
 				gVSync = RRcfg.GetKeyInt("VSync") == 1;
 				fpslimit = RRcfg.GetKeyInt("FPSLimit");
-				borderless = RRcfg.GetKeyInt("BorderlessMode") == 1;
-				
+	
 				cfg_texturemode = RRcfg.GetKeyInt("GLFilterMode"); 
 				int anisotr = RRcfg.GetKeyInt("GLAnisotropy");
 				if(anisotr != -1) anisotropy = anisotr;
@@ -553,8 +553,6 @@ public class Config extends BConfig {
 				if(value != -1) gMouseCursor = value;
 				value = RRcfg.GetKeyInt("MouseCursorSize");
 				if(value != -1) gMouseCursorSize = value;
-				value = RRcfg.GetKeyInt("UseJoystick");
-				if(value != -1) useJoystick = value == 1;
 				value = RRcfg.GetKeyInt("JoyTurnAxis");
 				if(value != -1) gJoyTurnAxis = value;
 				value = RRcfg.GetKeyInt("JoyMoveAxis");
@@ -690,6 +688,7 @@ public class Config extends BConfig {
 			saveString(fil, "Path = ");
 				byte[] buf = path.getBytes(); //without this path can be distorted
 				Bwrite(fil, buf, buf.length);
+			saveString(fil, "\r\nSoundBank = " + soundBank);
 			saveString(fil, "\r\n;\r\n;\r\n");
 			saveString(fil, "[ScreenSetup]\r\n");
 			saveInteger(fil, "Fullscreen", fullscreen);
@@ -699,7 +698,7 @@ public class Config extends BConfig {
 			saveInteger(fil, "Crosshair", ud.crosshair);
 			saveBoolean(fil, "VSync", gVSync);
 			saveInteger(fil, "FPSLimit", fpslimit);
-			saveBoolean(fil, "BorderlessMode", borderless);
+		
 			if(Console.IsInited())
 				saveInteger(fil, "GLFilterMode", Console.Geti("r_texturemode"));
 			else saveInteger(fil, "GLFilterMode", cfg_texturemode);
@@ -748,7 +747,6 @@ public class Config extends BConfig {
 			saveInteger(fil, "MouseStrafeSpeed", gMouseStrafeSpeed);
 			saveInteger(fil, "MouseCursor", gMouseCursor);
 			saveInteger(fil, "MouseCursorSize", gMouseCursorSize);
-			saveBoolean(fil, "UseJoystick", useJoystick);
 			saveInteger(fil, "JoyTurnAxis", gJoyTurnAxis);
 			saveInteger(fil, "JoyMoveAxis", gJoyMoveAxis);
 			saveInteger(fil, "JoyStrafeAxis", gJoyStrafeAxis);
@@ -874,8 +872,7 @@ public class Config extends BConfig {
 		if(num < 0 || num >= 5) {
 			num = 0;
 			fpslimit = 0;
-			if(Gdx.graphics instanceof BGraphics)
-				((BGraphics)Gdx.graphics).setMaxFramerate(0);
+			BuildGDX.app.setMaxFramerate(0);
 		}
 		
 		return num;

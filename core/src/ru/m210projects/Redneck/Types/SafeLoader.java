@@ -10,10 +10,6 @@ import static ru.m210projects.Build.Engine.MAXSTATUS;
 import static ru.m210projects.Build.Engine.MAXTILES;
 import static ru.m210projects.Redneck.LoadSave.*;
 import static ru.m210projects.Redneck.ResourceHandler.*;
-import static ru.m210projects.Redneck.Types.ANIMATION.CEILZ;
-import static ru.m210projects.Redneck.Types.ANIMATION.FLOORZ;
-import static ru.m210projects.Redneck.Types.ANIMATION.WALLX;
-import static ru.m210projects.Redneck.Types.ANIMATION.WALLY;
 import static ru.m210projects.Redneck.Gamedef.MAXSCRIPTSIZE;
 import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
 import static ru.m210projects.Redneck.Globals.MAXCYCLERS;
@@ -212,21 +208,9 @@ public class SafeLoader {
 		for(int i = 0; i < MAXANIMATES; i++) {
 			short index = bb.getShort();
 			byte type = bb.get();
-			Object object = null;
-			switch(type)
-			{
-				case WALLX:
-				case WALLY:
-					object = wall[index];
-					break;
-				case FLOORZ:
-				case CEILZ:
-					object = sector[index];
-					break;
-			}
 			gAnimationData[i].id = index;
 			gAnimationData[i].type = type;
-			gAnimationData[i].ptr = object;
+			gAnimationData[i].ptr = null;
 			gAnimationData[i].goal = bb.getInt();
 			gAnimationData[i].vel = bb.getInt();
 			gAnimationData[i].sect = bb.getShort();

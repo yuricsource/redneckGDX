@@ -28,6 +28,7 @@ import ru.m210projects.Build.Audio.BMusic.DummyMusic;
 import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.BConfig;
+import ru.m210projects.Build.desktop.BuildApplicationImpl;
 import ru.m210projects.Build.desktop.DesktopMessage;
 import ru.m210projects.Build.desktop.Launcher.DesktopFrame;
 import ru.m210projects.Build.desktop.Launcher.LaunchCallback;
@@ -35,13 +36,12 @@ import ru.m210projects.Build.desktop.audio.ALSoundDrv;
 import ru.m210projects.Build.desktop.audio.GdxAL;
 import ru.m210projects.Build.desktop.audio.LwjglAL;
 import ru.m210projects.Build.desktop.audio.midi.MidiMusicModule;
-import ru.m210projects.Build.desktop.extension.DeskApplication;
-import ru.m210projects.Build.desktop.extension.DeskApplicationConfiguration;
 import ru.m210projects.Redneck.Config;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Types.Date;
 
 import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 public class DesktopLauncher {
 	public static String[] arg;
@@ -54,7 +54,7 @@ public class DesktopLauncher {
 		try {
 			LaunchCallback callback = new LaunchCallback("rrgdx.ver", Main.release) {
 				@Override
-				public void run(DeskApplicationConfiguration lwjglConfig, int MidiDevice, BConfig cfg) {
+				public void run(LwjglApplicationConfiguration lwjglConfig, int MidiDevice, BConfig cfg) {
 					launchPort(lwjglConfig, MidiDevice, cfg);
 				}
 
@@ -75,7 +75,7 @@ public class DesktopLauncher {
 		} 
 	}
 	
-	public static void launchPort(DeskApplicationConfiguration lwjglConfig, int midiDevice, BConfig cfg)
+	public static void launchPort(LwjglApplicationConfiguration lwjglConfig, int midiDevice, BConfig cfg)
 	{
 		SetLogFile(Main.appname + ".log");
 		Console.Println("BUILD engine by Ken Silverman (http://www.advsys.net/ken)");
@@ -128,9 +128,6 @@ public class DesktopLauncher {
 			cfg.middrv = 0;
 		}
 
-		if(cfg.middrv == 0)
-			cfg.midiSynth = "None";
-
-		new DeskApplication(new Main(cfg, new DesktopMessage(DesktopLauncher.class.getResource("/icons/RR32.png"))), lwjglConfig);
+		new BuildApplicationImpl(new Main(cfg, new DesktopMessage(DesktopLauncher.class.getResource("/icons/RR32.png"))), lwjglConfig);
 	}
 }

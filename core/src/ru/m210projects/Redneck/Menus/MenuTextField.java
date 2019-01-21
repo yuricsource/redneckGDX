@@ -35,7 +35,7 @@ import static ru.m210projects.Build.Strhandler.isdigit;
 
 import com.badlogic.gdx.Input.Keys;
 
-import ru.m210projects.Build.Types.MessageCallback;
+import ru.m210projects.Build.Input.InputCallback;
 
 public class MenuTextField extends MenuItem {
 
@@ -50,7 +50,7 @@ public class MenuTextField extends MenuItem {
 	public int inputlen;
 	public int oinputlen;
 	
-	private MessageCallback inputCallback;
+	private InputCallback inputCallback;
 	private MENUPROC confirmCallback;
 	
 	public MenuTextField(String text, String input, int textStyle, int x, int y, int width, final int charFlag, MENUPROC confirmCallback) {
@@ -64,7 +64,7 @@ public class MenuTextField extends MenuItem {
 		this.width = width;
 		this.typing = false;
 		
-		this.inputCallback = new MessageCallback() {
+		this.inputCallback = new InputCallback() {
 			@Override
 			public int run(int ch) {
 				if (ch == Keys.ESCAPE) 
@@ -114,6 +114,7 @@ public class MenuTextField extends MenuItem {
 			boolean focused = mGetFocusedItem(m_pMenu, this);
 			if ( focused ) 
 				shade = 8 - (totalclock & 0x3F);
+			else typing = false;
 
 		    int pal = this.pal;
 		    if(pal == 0 && textStyle < 2) pal = 10;
