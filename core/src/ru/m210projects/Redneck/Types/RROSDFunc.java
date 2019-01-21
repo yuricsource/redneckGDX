@@ -114,7 +114,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 			engine.allocatepermanenttile(BGTILE, BGTILE_SIZEX,
 					BGTILE_SIZEY);
 
-		if (cfg.fullscreen == 0 && !gShowMenu)
+		if (!gShowMenu)
 			Gdx.input.setCursorCatched(shown == 0);
 		resetMousePos();
 	}

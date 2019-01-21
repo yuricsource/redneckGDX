@@ -66,7 +66,7 @@ public class Controls {
 	public static int oldPosY;
 	public static void resetMousePos()
 	{
-		Gdx.input.setCursorPosition(xdim / 2, 0);
+		Gdx.input.setCursorPosition(xdim / 2, ydim / 2);
 		oldPosX = Gdx.input.getX();
 		oldPosY = Gdx.input.getY();
 	}

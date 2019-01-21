@@ -310,8 +310,7 @@ public class MENU {
 		gShowMenu = true;
 		vscrn(0);
 
-	    if(cfg.fullscreen == 0)
-	    	Gdx.input.setCursorCatched(false);
+	    Gdx.input.setCursorCatched(false);
 
 	    if(mMenuHistory[0] != null)
 	    	mLoadRes(mMenuHistory[0], 0x8000);

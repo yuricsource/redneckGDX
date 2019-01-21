@@ -125,7 +125,7 @@ public class Screen {
 			return;
 		}
 		
-		engine.setbrightness(ud.brightness>>2, pal, set);
+		engine.setbrightness(ud.brightness>>2, pal, set | 2);
 		player.palette = pal;
 		engine.setpalettefade(0,0,0,0);
 	}

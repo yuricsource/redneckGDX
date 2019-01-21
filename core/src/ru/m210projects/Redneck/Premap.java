@@ -454,14 +454,17 @@ public class Premap {
 	public static void docacheit()
 	{
 	    int j = 0;
-	    for(int i=0;i<MAXTILES;i++) {
+	    for(int i=0;i<MAXTILES;i++) 
+	    {
+	    	if(gotpic[i>>3] == 0) { i += 7; continue; }
+	    	
 	        if( (gotpic[i>>3]&(1<<(i&7))) != 0 )
 		    {
 	        	if (waloff[i] == null) {
 	        		engine.loadtile(i);
 	        		if(engine.getrender() != null) 
-	    				engine.getrender().precache(i, 0, 0);
-	        	}
+	    				engine.getrender().precache(i, 0, 1 << 2);
+	        		}
 		        j++;
 		        if((j&7) == 0) getpackets();
 		    } 

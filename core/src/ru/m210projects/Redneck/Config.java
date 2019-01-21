@@ -437,6 +437,9 @@ public class Config extends BConfig {
 				String respath = RRcfg.GetKeyString("Path");
 				if(respath != null && !respath.isEmpty())
 					this.path = respath;
+				String bank = RRcfg.GetKeyString("SoundBank");
+				if(bank != null && !bank.isEmpty())
+					this.soundBank = bank;
 				int check = RRcfg.GetKeyInt("CheckNewVersion");
 				if(check != -1)
 					checkVersion = (check == 1);
@@ -457,8 +460,7 @@ public class Config extends BConfig {
 				
 				gVSync = RRcfg.GetKeyInt("VSync") == 1;
 				fpslimit = RRcfg.GetKeyInt("FPSLimit");
-				borderless = RRcfg.GetKeyInt("BorderlessMode") == 1;
-				
+	
 				cfg_texturemode = RRcfg.GetKeyInt("GLFilterMode"); 
 				int anisotr = RRcfg.GetKeyInt("GLAnisotropy");
 				if(anisotr != -1) anisotropy = anisotr;
@@ -686,6 +688,7 @@ public class Config extends BConfig {
 			saveString(fil, "Path = ");
 				byte[] buf = path.getBytes(); //without this path can be distorted
 				Bwrite(fil, buf, buf.length);
+			saveString(fil, "\r\nSoundBank = " + soundBank);
 			saveString(fil, "\r\n;\r\n;\r\n");
 			saveString(fil, "[ScreenSetup]\r\n");
 			saveInteger(fil, "Fullscreen", fullscreen);
@@ -695,7 +698,7 @@ public class Config extends BConfig {
 			saveInteger(fil, "Crosshair", ud.crosshair);
 			saveBoolean(fil, "VSync", gVSync);
 			saveInteger(fil, "FPSLimit", fpslimit);
-			saveBoolean(fil, "BorderlessMode", borderless);
+		
 			if(Console.IsInited())
 				saveInteger(fil, "GLFilterMode", Console.Geti("r_texturemode"));
 			else saveInteger(fil, "GLFilterMode", cfg_texturemode);

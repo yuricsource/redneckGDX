@@ -9,10 +9,9 @@ import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Redneck.currentGame;
+import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
-import static ru.m210projects.Build.Render.Types.Hightile.*;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -36,9 +35,7 @@ public class ResourceHandler {
 	public static final int BACKBUTTON = 9237;
 	public static final int GUTSMETTER = 9238;
 	public static final int KILLSSIGN = 9239;
-	
-	public static int[] deftiletovox = new int[MAXTILES];
-	
+
 	private static int usergroup;
 	private static boolean usecustomarts;
 
@@ -124,8 +121,7 @@ public class ResourceHandler {
 		kDynamicClear();
 		usergroup = -1;
 		currentGame = defGame;
-		
-		System.arraycopy(deftiletovox, 0, tiletovox, 0, MAXTILES); //reset user voxels
+
 		for(int i = 0; i < NUM_SOUNDS; i++)
 			Sound[i].ptr = null;
 
@@ -318,7 +314,7 @@ public class ResourceHandler {
 			int newtile = replace[i][1];
 			long crc32 = replace[i][2] & 0xFFFFFFFFL;
 			
-			if(hicreplc[tilenume] != null)
+			if(currentDef != null && currentDef.texInfo.isHighTile(tilenume))
 				continue;
 	
 			if(waloff[tilenume] == null)

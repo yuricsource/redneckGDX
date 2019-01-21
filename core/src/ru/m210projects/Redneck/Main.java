@@ -19,14 +19,12 @@ package ru.m210projects.Redneck;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Redneck.Animlib.initanm;
-import static ru.m210projects.Redneck.Redneck.appdispose;
+import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.setup3dscreen;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.currMusic;
 import static ru.m210projects.Redneck.ResourceHandler.*;
-
-import static ru.m210projects.Redneck.Redneck.*;
 
 import com.badlogic.gdx.ApplicationAdapter;
 
@@ -49,8 +47,16 @@ public class Main extends ApplicationAdapter {
 	 * v0.761
 	 * Weapon drop fix after dead
 	 * RRRA E1L1 destruct wall in secret place fix
+	 * Moving door after load game fix
 	 * 
 	 * TODO:
+	 * color correction fix
+	 * if (ctrlGetInputKey(Screenshot, true)) String name = "scrxxxx.png";
+	 * hud из новых ресурсов
+	 * savegameslot from WH (new displaytext)
+	 * fps text scale
+	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
+	 * проблема с fakebubba после загрузки сохранения
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * в грязи глючит мультиплеер камеру
 	 * и еще есть проблема с большой задержкой при нырянии. (на лестницах лаги)
@@ -108,6 +114,7 @@ public class Main extends ApplicationAdapter {
 
 			gm = MODE_LOGO;
 			initanm("rr_intro.anm",5, -1);
+			setDefs(baseDef);
 
 			MemLog.log("create");
 			System.gc();
@@ -161,7 +168,7 @@ public class Main extends ApplicationAdapter {
 	
 	public void updateColorCorrection() {
 		if (BuildGDX.app.getFrameType() == FrameType.GL) {
-			if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast)) {
+			if (!((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast)) {
 				((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
 				cfg.gamma = 1.0f;
 				cfg.brightness = 0.0f;

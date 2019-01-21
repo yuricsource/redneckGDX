@@ -67,7 +67,9 @@ import ru.m210projects.Redneck.Menus.MenuTextField;
 import ru.m210projects.Redneck.Menus.MenuTitle;
 import ru.m210projects.Build.Architecture.BuildGDX;
 import ru.m210projects.Build.Architecture.GLFrame;
+import ru.m210projects.Build.Audio.Sound;
 import ru.m210projects.Build.Audio.Source;
+import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Render.GLInfo;
@@ -316,6 +318,10 @@ public class RRMenu {
 				cfg.mousekeys[Open] = MOUSE_MBUTTON;
 				cfg.mousekeys[Next_Weapon] = MOUSE_WHELLUP;
 				cfg.mousekeys[Previous_Weapon] = MOUSE_WHELLDN;
+				
+				Console.setCaptureKey(cfg.primarykeys[Show_Console], 0);
+				Console.setCaptureKey(cfg.secondkeys[Show_Console], 1);
+				Console.setCaptureKey(cfg.mousekeys[Show_Console], 2);
 				
 				mMenuBack();
 			}
@@ -761,8 +767,10 @@ public class RRMenu {
 						item.l_set = 0;
 						break;
 					case 7:
+						if (item.l_nFocus == Menu_open)
+							cfg.setKey(item.l_nFocus, Keys.ESCAPE);
+						else sound(EXITMENUSOUND);
 						getInput().resetKeyStatus();
-						sound(EXITMENUSOUND);
 						item.l_set = 0;
 						break;
 					case 8:
@@ -889,6 +897,10 @@ public class RRMenu {
 				cfg.mousekeys[Open] = MOUSE_MBUTTON;
 				cfg.mousekeys[Next_Weapon] = MOUSE_WHELLUP;
 				cfg.mousekeys[Previous_Weapon] = MOUSE_WHELLDN;
+				
+				Console.setCaptureKey(cfg.primarykeys[Show_Console], 0);
+				Console.setCaptureKey(cfg.secondkeys[Show_Console], 1);
+				Console.setCaptureKey(cfg.mousekeys[Show_Console], 2);
 				
 				mMenuBack();
 			}
@@ -1238,7 +1250,7 @@ public class RRMenu {
 			@Override
 			public void draw() {
 				super.draw();
-				mCheckEnableItem(this, cfg.gJoyDevice != -1 && gpmanager.getControllers() > 0);
+				mCheckEnableItem(this, gpmanager.isValidDevice(cfg.gJoyDevice) && gpmanager.getControllers() > 0);
 			}
 		};
 
@@ -2212,6 +2224,7 @@ public class RRMenu {
 				if (snddriver != osnddriver || voices != ovoices || resampler != oresampler) {
 					StopAllSounds();
 					
+					Sound olddrv = engine.getAudio().getSound();
 					if (snddriver != osnddriver)
 						engine.getAudio().setDriver(SOUNDDRV, fxdrivers[snddriver]);
 					if (voices != ovoices)
@@ -2231,17 +2244,22 @@ public class RRMenu {
 						if(cfg.resampler_num < 0 || cfg.resampler_num >= engine.getAudio().getSound().getNumResamplers())
 							cfg.resampler_num = 0;
 						sResampler.num = resampler = oresampler = cfg.resampler_num;
-					} else
+					} else {
 						sSoundDrv.list[sSoundDrv.num] = "initialization failed".toCharArray();
+						engine.getAudio().setDriver(SOUNDDRV, olddrv);
+					}
 				}
 
 				if (middriver != omiddriver) {
+					Music olddrv = engine.getAudio().getMusic();
 					engine.getAudio().setDriver(MUSICDRV, mxdrivers[middriver]);
 					if (midRestart()) {
 						cfg.middrv = omiddriver = middriver;
 						sMusicDrv.list[sMusicDrv.num] = mxdrivers[sMusicDrv.num].getName().toCharArray();
-					} else
+					} else {
 						sMusicDrv.list[sMusicDrv.num] = "initialization failed".toCharArray();
+						engine.getAudio().setDriver(MUSICDRV, olddrv);
+					}
 				}
 
 				if (cdaudio != ocdaudio) {

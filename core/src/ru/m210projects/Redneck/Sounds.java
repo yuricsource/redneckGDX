@@ -42,7 +42,6 @@ import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Strhandler.buildString;
 
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Audio.BMusic.Highmusic;
 import ru.m210projects.Build.Audio.BMusic.MusicSource;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.Loader.WAVLoader;
@@ -169,8 +168,8 @@ public class Sounds {
 			}
 		}
 
-		if ( cfg.musicType == 1) { //music from def file
-			String himus = Highmusic.checkDigitalMusic(name);
+		if ( cfg.musicType == 1 && currentDef != null) { //music from def file
+			String himus = currentDef.audInfo.getDigitalInfo(name);
 			if(himus != null)
 			{
 				if(currMusic != null && currMusic.isPlaying() && currSong == himus)

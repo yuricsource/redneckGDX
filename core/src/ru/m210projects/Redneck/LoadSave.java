@@ -883,16 +883,16 @@ public class LoadSave {
 		for(int i = gAnimationCount-1;i>=0;i--)
 		{
 			ANIMATION gAnm = gAnimationData[i];
-			Object obj = gAnm.ptr;
+			Object object = (gAnm.ptr = getobject(gAnm.id, gAnm.type));
 			switch(gAnm.type)
 			{
 	    	 	case WALLX:
 	    	 	case WALLY:
-	    	 		viewBackupWallLoc(gAnm.id, (WALL)obj);
+	    	 		viewBackupWallLoc(gAnm.id, (WALL)object);
 					break;
 	    	 	case FLOORZ:
 	    	 	case CEILZ:
-	    	 		viewBackupSectorLoc(gAnm.id, (SECTOR)obj);
+	    	 		viewBackupSectorLoc(gAnm.id, (SECTOR)object);
 					break;
 			}
 		}

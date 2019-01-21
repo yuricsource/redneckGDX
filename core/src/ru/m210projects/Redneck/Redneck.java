@@ -17,8 +17,6 @@
 package ru.m210projects.Redneck;
 
 import static java.lang.Math.*;
-import static ru.m210projects.Build.Defs.defsparser;
-import static ru.m210projects.Build.Defs.loaddefinitionsfile;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.FileHandle.Compat.FilePath;
@@ -112,7 +110,6 @@ import static ru.m210projects.Redneck.Premap.*;
 
 import com.badlogic.gdx.Gdx;
 
-import ru.m210projects.Build.Scriptfile;
 import ru.m210projects.Build.Architecture.BuildGDX;
 import ru.m210projects.Build.Architecture.BuildMessage;
 import ru.m210projects.Build.Architecture.GLFrame;
@@ -124,6 +121,7 @@ import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
+import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.MemLog;
 import ru.m210projects.Build.Types.SPRITE;
@@ -140,6 +138,9 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 
 public class Redneck {
 
+	public static final DefScript baseDef = new DefScript(false);
+	public static DefScript currentDef;
+	
 	public static int playerswhenstarted;
 	public static float gLoadingTicks = 0;
 	public static String boardfilename;
@@ -256,13 +257,7 @@ public class Redneck {
 								String resname = res.filename.substring(0, res.filename.lastIndexOf('.'));
 								if(resname.equals(filename) && res.fileformat.equals("def")) {
 									byte[] buf = res.getBytes();
-						    		int flen = buf.length;
-						    		byte[] tx = Arrays.copyOf(buf, flen + 2);
-						    		String scripttxt = new String(tx);
-						    		Scriptfile script = Scriptfile.scriptfile_fromstring(scripttxt);
-						    		if (script == null) return;
-						    		script.filename = res.filename;
-						    		defsparser(script);
+									baseDef.loadScript(res.filename, buf);
 						    		defgroup = true;
 						    		break;
 								}
@@ -271,20 +266,26 @@ public class Redneck {
 							if(!defgroup)
 							{
 								setgroupflags(group, true, false);
-								prepareusergroup(group, false);
+								try {
+									prepareusergroup(group, false);
+								} 
+								catch (Exception e)
+								{
+									GameMessage("Error in \"" + file.getName() + "\" \r\n" + e.getMessage(), false);
+									continue;
+								}
 								InitGroupResources(kList(group));
 							}
 						}
 
 						if (file.getExtension().equals("def")) 
-							loaddefinitionsfile(file.getPath(), file.getParent().getRelativePath());
+							baseDef.loadScript(file);
 					}
 				}
 			}
-			
-			loaddefinitionsfile("rrgdx.def");
-			System.arraycopy(tiletovox, 0, deftiletovox, 0, MAXTILES); //save default tiletovox for reset to default when user episode reset
-
+			FileEntry mainDef = null;
+			if((mainDef = cache.checkFile("rrgdx.def")) != null)
+				baseDef.loadScript(mainDef);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -852,7 +853,7 @@ public class Redneck {
 				mDrawMenu();
 			
 			if (cfg.gShowFPS)
-				engine.printfps();
+				engine.printfps(cfg.gFpsScale);
 
 			engine.sampletimer();
 			engine.nextpage();
@@ -2176,5 +2177,11 @@ public class Redneck {
 			((GLFrame)BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
 		CloseLogFile();
 		System.out.println("disposed");
+	}
+	
+	public static void setDefs(DefScript script)
+	{
+		currentDef = script;
+		engine.setDefs(script);
 	}
 }
