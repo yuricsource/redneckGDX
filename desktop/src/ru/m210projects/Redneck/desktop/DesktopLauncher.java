@@ -21,17 +21,17 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.SetLogFile;
 
 import org.lwjgl.LWJGLException;
 
-import ru.m210projects.Build.Audio.ALAudio;
+import ru.m210projects.Build.Audio.DummyMusic;
 import ru.m210projects.Build.Audio.DummySound;
+import ru.m210projects.Build.Audio.Music;
 import ru.m210projects.Build.Audio.Sound;
-import ru.m210projects.Build.Audio.BMusic.DummyMusic;
-import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.BConfig;
 import ru.m210projects.Build.desktop.BuildApplicationImpl;
 import ru.m210projects.Build.desktop.DesktopMessage;
 import ru.m210projects.Build.desktop.Launcher.DesktopFrame;
 import ru.m210projects.Build.desktop.Launcher.LaunchCallback;
+import ru.m210projects.Build.desktop.audio.ALAudio;
 import ru.m210projects.Build.desktop.audio.ALSoundDrv;
 import ru.m210projects.Build.desktop.audio.GdxAL;
 import ru.m210projects.Build.desktop.audio.LwjglAL;

@@ -321,7 +321,7 @@ public class Network {
 						if(notFound) {
 							Console.Println("Player" + other + " - " + ud.user_name[other] + ": user content not found!", OSDTEXT_RED);
 							sound(EXITMENUSOUND);
-							Console.show();
+							Console.toggle();
 						}
 
 						int pathlen = LittleEndian.getInt(packbuf, ptr); ptr += 4;
@@ -354,7 +354,7 @@ public class Network {
 							else SendContent("<main>", true);
 							
 							Console.Println("Player" + other + " - " + ud.user_name[other] + " tried to set user content. User content not found: " + path, OSDTEXT_RED);
-							Console.show();
+							Console.toggle();
 						}
 						return -1;
 						

@@ -36,6 +36,7 @@ import static ru.m210projects.Build.FileHandle.Compat.FileUserdir;
 import static ru.m210projects.Build.Gameutils.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +62,7 @@ public class MenuSlotList extends MenuItem
 	public List<SaveInfo> text;
 	public MENUPROC updateCallback;
 	public MENUPROC confirmCallback;
-	
+	public List<SaveInfo> displayed;
 	
 	public final boolean saveList;
 	public boolean typing;
@@ -85,36 +86,36 @@ public class MenuSlotList extends MenuItem
 		this.updateCallback = updateCallback;
 		this.confirmCallback = confirmCallback;
 		this.saveList = saveList;
+		this.displayed = new ArrayList<SaveInfo>();
 	}
 	
 	public String FileName()
 	{
 		int ptr = l_nFocus;
 		if(saveList) ptr--;
-		if(ptr == -1 || text.size() == 0)
+		if(ptr == -1 || displayed.size() == 0)
 			return "Empty slot";
-		return text.get(ptr).filename;
+		return displayed.get(ptr).filename;
 	}
 	
 	public String SaveName()
 	{
 		int ptr = l_nFocus;
 		if(saveList) ptr--;
-		if(ptr == -1 || text.size() == 0)
+		if(ptr == -1 || displayed.size() == 0)
 			return "Empty slot";
-		return text.get(ptr).name;
+		return displayed.get(ptr).name;
 	}
 	
 	@Override
 	public void draw() {
 		mGetAlign(textStyle, null);
-		int pal, len = text.size();
+		int pal, len = displayed.size();
 		
 		engine.rotatesprite((x - 10) << 16, (y - 3) << 16, 65536, 0, LOADSCREEN, 128, 0, 10 + 16 + 1, 0, 0, coordsConvertXScaled(x+90, 0), coordsConvertYScaled(y+97));
 		
-		if(text.size() > 0) {
+		if(displayed.size() > 0) {
 			int px = x, py = y;
-
 			if(saveList) len += 1;
 
 			for(int i = l_nMin; i >= 0 && i < l_nMin + nListItems && i < len; i++) {	
@@ -126,10 +127,10 @@ public class MenuSlotList extends MenuItem
 				if(i == 0 && saveList)
 				{
 					rtext = toCharArray("New savegame");
-				} else rtext = toCharArray(text.get(ptr).name);
+				} else rtext = toCharArray(displayed.get(ptr).name);
 				
-				if(ptr >= 0 && (text.get(ptr).filename.equals("autosave.sav") 
-						|| text.get(ptr).filename.startsWith("quicksav")))
+				if(ptr >= 0 && (displayed.get(ptr).filename.equals("autosave.sav") 
+						|| displayed.get(ptr).filename.startsWith("quicksav")))
 					pal = 2;
 				else pal = 12;
 				
@@ -204,9 +205,10 @@ public class MenuSlotList extends MenuItem
 		{
 			if(getInput().getKey(Keys.Y) != 0 || opt == 6) {
 				SaveManager.delete(FileName());
+				updateList();
 			    getInput().setKey(Keys.Y, 0);
-			    if(l_nFocus >= text.size()) {
-			    	int len = text.size();
+			    if(l_nFocus >= displayed.size()) {
+			    	int len = displayed.size();
 			    	if(saveList) len += 1;
 			    	l_nFocus = len - 1;
 			    	l_nMin = len - nListItems;
@@ -226,7 +228,7 @@ public class MenuSlotList extends MenuItem
 		}
 		
 		int focus = l_nFocus; 
-		int len = text.size();
+		int len = displayed.size();
 		if(saveList) {
 			len += 1;
 			focus -= 1;
@@ -251,7 +253,7 @@ public class MenuSlotList extends MenuItem
 			switch(opt)
 			{
 				case 10:
-					if((!saveList && text.size() > 0) || l_nFocus != 0)
+					if((!saveList && displayed.size() > 0) || l_nFocus != 0)
 						deleteQuestion = true;
 					return 0;
 				case 16:
@@ -319,7 +321,7 @@ public class MenuSlotList extends MenuItem
 					if(l_nFocus != -1 && len > 0) {
 						if(saveList) {
 							if(l_nFocus == 0) getInput().initMessageInput(null); 
-							else getInput().initMessageInput(text.get(focus).name);
+							else getInput().initMessageInput(displayed.get(focus).name);
 				        	typing = true;
 				        	sound(PISTOL_BODYHIT);
 							
@@ -372,6 +374,21 @@ public class MenuSlotList extends MenuItem
 		}
 		return 0;
 	}
+
+	public void updateList()
+	{
+		displayed.clear();
+		displayed.addAll(text);
+		if(saveList) {
+			Iterator<SaveInfo> i = displayed.iterator();
+			while (i.hasNext()) { 
+				SaveInfo s = i.next();
+				if(s.filename.equals("autosave.sav") 
+						|| s.filename.startsWith("quicksav"))
+					i.remove();
+			}
+		}
+	}
 	
 	@Override
 	public void open(MENU pMenu) {
@@ -384,6 +401,8 @@ public class MenuSlotList extends MenuItem
 			if(!file.exists())
 				i.remove();
 		}
+		
+		updateList();
 		
 		if(updateCallback != null)
 			updateCallback.run(this);
@@ -412,10 +431,10 @@ public class MenuSlotList extends MenuItem
 			return true;
 		}
 		
-		if(!scrollTouch && text.size() > 0) {
+		if(!scrollTouch && displayed.size() > 0) {
 			mGetAlign(textStyle, null);
 			int px = x, py = y;
-			int len = text.size();
+			int len = displayed.size();
 			if(saveList) len += 1;
 			
 			int ol_nFocus = l_nFocus;

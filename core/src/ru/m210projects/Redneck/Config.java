@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
-import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Input.ButtonMap;
 import ru.m210projects.Build.Input.Keymap;
 import ru.m210projects.Build.OnSceenDisplay.Console;
@@ -872,7 +872,7 @@ public class Config extends BConfig {
 		if(num < 0 || num >= 5) {
 			num = 0;
 			fpslimit = 0;
-			BuildGDX.app.setMaxFramerate(0);
+			BuildGdx.app.setMaxFramerate(0);
 		}
 		
 		return num;

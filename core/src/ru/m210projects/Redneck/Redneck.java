@@ -110,7 +110,7 @@ import static ru.m210projects.Redneck.Premap.*;
 
 import com.badlogic.gdx.Gdx;
 
-import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildMessage;
 import ru.m210projects.Build.Architecture.GLFrame;
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
@@ -2169,12 +2169,12 @@ public class Redneck {
 
 		for(int i = 0; fxdrivers != null && i < fxdrivers.length; i++)
 			if(i != cfg.snddrv && fxdrivers[i].getName().contains("OpenAL")) {
-				fxdrivers[i].destroy(); //OpenAL dispose if DummySound choosed
+				fxdrivers[i].dispose(); //OpenAL dispose if DummySound choosed
 			}
 		
 		saveConfig();
-		if(BuildGDX.app.getFrameType() == FrameType.GL) 
-			((GLFrame)BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
+		if(BuildGdx.app.getFrameType() == FrameType.GL) 
+			((GLFrame)BuildGdx.app.getFrame()).setDefaultDisplayConfiguration();
 		CloseLogFile();
 		System.out.println("disposed");
 	}

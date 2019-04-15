@@ -28,12 +28,12 @@ import static ru.m210projects.Redneck.ResourceHandler.*;
 
 import com.badlogic.gdx.ApplicationAdapter;
 
-import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildMessage;
 import ru.m210projects.Build.Architecture.GLFrame;
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
+import ru.m210projects.Build.Audio.Music;
 import ru.m210projects.Build.Audio.Sound;
-import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.Input.GPManager;
 import ru.m210projects.Build.Types.BConfig;
 import ru.m210projects.Build.Types.MemLog;
@@ -151,8 +151,8 @@ public class Main extends ApplicationAdapter {
             engine.getAudio().getSound().stopAllSounds();
             clearsoundlocks();
 		}
-		if (BuildGDX.app.getFrameType() == FrameType.GL)
-			((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
+		if (BuildGdx.app.getFrameType() == FrameType.GL)
+			((GLFrame) BuildGdx.app.getFrame()).setDefaultDisplayConfiguration();
 	}
 
 	@Override
@@ -167,9 +167,9 @@ public class Main extends ApplicationAdapter {
 	}
 	
 	public void updateColorCorrection() {
-		if (BuildGDX.app.getFrameType() == FrameType.GL) {
-			if (!((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast)) {
-				((GLFrame) BuildGDX.app.getFrame()).setDefaultDisplayConfiguration();
+		if (BuildGdx.app.getFrameType() == FrameType.GL) {
+			if (!((GLFrame) BuildGdx.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast)) {
+				((GLFrame) BuildGdx.app.getFrame()).setDefaultDisplayConfiguration();
 				cfg.gamma = 1.0f;
 				cfg.brightness = 0.0f;
 				cfg.contrast = 1.0f;

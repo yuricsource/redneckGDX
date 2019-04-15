@@ -30,9 +30,11 @@ import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Input.KeyInput.*;
+import static ru.m210projects.Build.Input.Keymap.KEY_NUMDECIMAL;
 import static ru.m210projects.Build.Strhandler.isalpha;
 import static ru.m210projects.Build.Strhandler.isdigit;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
 import ru.m210projects.Build.Input.InputCallback;
@@ -42,6 +44,7 @@ public class MenuTextField extends MenuItem {
 	public static final int LETTERS = 1;
 	public static final int NUMBERS = 2;
 	public static final int SYMBOLS = 4;
+	public static final int POINT = 8;
 	
 	public char[] typingBuf = new char[16];
 	public char[] otypingBuf = new char[16];
@@ -80,21 +83,19 @@ public class MenuTextField extends MenuItem {
 				if (ch == Keys.ENTER) 
 					return 1;
 				
-				if (inputlen < 15 && ch < 128) {
-	                ch=gdxscantoasc[ch];
-	                if (ch != 0) {
-	                	boolean canType;
-	                	if( (isalpha((char)ch) && (charFlag & LETTERS) != 0) 
-	                			|| (isdigit((char)ch) && (charFlag & NUMBERS) != 0) 
-	                			|| (!isdigit((char)ch) && !isalpha((char)ch) && (charFlag & SYMBOLS) != 0) )
-	                		canType = true;
-	                	else canType = false;
+				if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && ch == Keys.V)
+				{
+					String content = Gdx.app.getClipboard().getContents();
+					for(int i = 0; i < content.length(); i++)
+						type(content.charAt(i), charFlag);
+					return 0;
+				}
 
-	                	if (canType) 
-	                		typingBuf[inputlen++]=(char)ch;
-	                	
-	                }
-	        	}
+				if(ch == KEY_NUMDECIMAL) ch = Keys.PERIOD;
+				if(ch >= Keys.NUMPAD_0 && ch <= Keys.NUMPAD_9)
+					ch = ch - Keys.NUMPAD_0 + Keys.NUM_0;
+				
+				type(getChar(ch), charFlag);
 				return 0;
 			}
 		};
@@ -102,6 +103,28 @@ public class MenuTextField extends MenuItem {
 		inputlen = input.length();
 		System.arraycopy(input.toCharArray(), 0, typingBuf, 0, inputlen);
 		this.confirmCallback = confirmCallback;
+	}
+	
+	private void type(char ch, int charFlag) {
+		if (inputlen < 15 && ch != 0) {
+        	boolean canType;
+        	if( (isalpha((char)ch) && (charFlag & LETTERS) != 0) 
+        			|| (isdigit((char)ch) && (charFlag & NUMBERS) != 0) 
+        			|| (!isdigit((char)ch) && !isalpha((char)ch)
+        					&& ((charFlag & SYMBOLS) != 0 || (charFlag & POINT) != 0 && ch == '.') ))
+        		canType = true;
+        	else canType = false;
+
+        	if (canType) 
+        		typingBuf[inputlen++]=(char)ch;
+    	}
+	}
+	
+	private char getChar(int ch)
+	{
+		if (ch < 128) 
+			return gdxscantoasc[ch];
+		return 0;
 	}
 	
 	@Override

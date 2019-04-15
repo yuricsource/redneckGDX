@@ -24,10 +24,6 @@ import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Gameutils.*;
-import static ru.m210projects.Build.Audio.BAudio.DIGITYPE;
-import static ru.m210projects.Build.Audio.BAudio.MIDITYPE;
-import static ru.m210projects.Build.Audio.BAudio.MUSICDRV;
-import static ru.m210projects.Build.Audio.BAudio.SOUNDDRV;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
 import static ru.m210projects.Build.FileHandle.Cache1D.kFileLength;
@@ -41,8 +37,12 @@ import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Strhandler.buildString;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.Audio.BuildAudio.Driver;
+import ru.m210projects.Build.Audio.BuildAudio.MusicType;
+import ru.m210projects.Build.Audio.MusicSource;
+import ru.m210projects.Build.Audio.Sound.SystemType;
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Audio.BMusic.MusicSource;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
@@ -129,8 +129,8 @@ public class Sounds {
 	{
 		sndStopMusic();
 		
-		if(!engine.getAudio().getMusic().init()) {
-			Console.Println(engine.getAudio().getName(MUSICDRV) + " initialization failed", OSDTEXT_RED);
+		if(!BuildGdx.audio.getMusic().init()) {
+			Console.Println(BuildGdx.audio.getName(Driver.Music) + " initialization failed", OSDTEXT_RED);
 			return false;
 		}
 		
@@ -152,8 +152,8 @@ public class Sounds {
 	public static void sndPlayMusic(String name)
 	{
 		if(cfg.MusicToggle)
-			engine.getAudio().setVolume(MUSICDRV, cfg.musicVolume);
-		else engine.getAudio().setVolume(MUSICDRV, 0);
+			BuildGdx.audio.setVolume(Driver.Music, cfg.musicVolume);
+		else BuildGdx.audio.setVolume(Driver.Music, 0);
 		
 		if( cfg.musicType != 0 && userMusic != null)
 		{
@@ -161,7 +161,7 @@ public class Sounds {
 				return;
 			
 			sndStopMusic();
-			if((currMusic = engine.getAudio().newMusic(DIGITYPE, userMusic.getPath())) != null) {
+			if((currMusic = BuildGdx.audio.newMusic(MusicType.Digital, userMusic.getPath())) != null) {
 				currSong = userMusic.getPath();
 				currMusic.play(true);
 				return;
@@ -176,7 +176,7 @@ public class Sounds {
 					return;
 				
 				sndStopMusic();
-				if((currMusic = engine.getAudio().newMusic(DIGITYPE, himus)) != null) {
+				if((currMusic = BuildGdx.audio.newMusic(MusicType.Digital, himus)) != null) {
 					currSong = himus;
 					currMusic.play(true);
 					return;
@@ -197,7 +197,7 @@ public class Sounds {
 			return true;
 		
 		sndStopMusic();
-		if(nTrack >= 0 && nTrack < track.length && (currMusic = engine.getAudio().newMusic(DIGITYPE, track[nTrack])) != null) {
+		if(nTrack >= 0 && nTrack < track.length && (currMusic = BuildGdx.audio.newMusic(MusicType.Digital, track[nTrack])) != null) {
 			currTrack = nTrack;
 			currMusic.play(false);
 			return true;
@@ -217,7 +217,7 @@ public class Sounds {
 			return;
 		
 		sndStopMusic();
-		currMusic = engine.getAudio().newMusic(MIDITYPE, pRaw);
+		currMusic = BuildGdx.audio.newMusic(MusicType.Midi, pRaw);
 		if(currMusic != null) {
 			currMusic.play(true);
 			currSong = fn;
@@ -226,19 +226,19 @@ public class Sounds {
 	
 	public static boolean sndRestart(int nvoices, int resampler)
 	{
-		engine.getAudio().getSound().stopAllSounds();	
-		engine.getAudio().getSound().uninit();
+		BuildGdx.audio.getSound().stopAllSounds();	
+		BuildGdx.audio.getSound().uninit();
 		cfg.NumVoices = nvoices;
 		
 		Console.Println("Sound restarting...");
 		
-		if(engine.getAudio().getSound().init(1, nvoices, resampler))
+		if(BuildGdx.audio.getSound().init(SystemType.Stereo, nvoices, resampler))
 		{
-			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);
+			BuildGdx.audio.setVolume(Driver.Sound, cfg.soundVolume);
 		} 
 		else
 		{
-			Console.Println(engine.getAudio().getName(SOUNDDRV) + " initialization failed", OSDTEXT_RED);
+			Console.Println(BuildGdx.audio.getName(Driver.Sound) + " initialization failed", OSDTEXT_RED);
 			return false;
 		}
 
@@ -253,21 +253,21 @@ public class Sounds {
 	    }
 		
 
-		if(engine.getAudio().getSound().init(1, cfg.NumVoices, cfg.resampler_num)) {
-			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);	
+		if(BuildGdx.audio.getSound().init(SystemType.Stereo, cfg.NumVoices, cfg.resampler_num)) {
+			BuildGdx.audio.setVolume(Driver.Sound, cfg.soundVolume);	
 		}
 		else {
-			Console.Println(engine.getAudio().getName(SOUNDDRV) + " initialization failed", OSDTEXT_RED);
+			Console.Println(BuildGdx.audio.getName(Driver.Sound) + " initialization failed", OSDTEXT_RED);
 		}
 	}
 
 	public static void MusicStartup() {
-		if(!engine.getAudio().getMusic().init()) 
-			Console.Println(engine.getAudio().getName(MUSICDRV) + " initialization failed", OSDTEXT_RED);
+		if(!BuildGdx.audio.getMusic().init()) 
+			Console.Println(BuildGdx.audio.getName(Driver.Music) + " initialization failed", OSDTEXT_RED);
 
 		if(cfg.MusicToggle)
-			engine.getAudio().setVolume(MUSICDRV, cfg.musicVolume);	
-		else engine.getAudio().setVolume(MUSICDRV, 0);	
+			BuildGdx.audio.setVolume(Driver.Music, cfg.musicVolume);	
+		else BuildGdx.audio.setVolume(Driver.Music, 0);	
 	}
 
 	public static void MusicUpdate()
@@ -278,7 +278,7 @@ public class Sounds {
 	public static int loadsound(int num) {
 
 	    if(num >= NUM_SOUNDS || !cfg.SoundToggle) return 0;
-	    if (!engine.getAudio().IsInited(SOUNDDRV)) return 0;
+	    if (!BuildGdx.audio.IsInited(Driver.Sound)) return 0;
 
 	    int fp = -1;
 	    if(currentGame.getCON().sounds[num] != null) fp= kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
@@ -310,11 +310,11 @@ public class Sounds {
 	    int pitch;
 
 	    if( num >= NUM_SOUNDS ||
-	        !engine.getAudio().IsInited(SOUNDDRV) ||
+	        !BuildGdx.audio.IsInited(Driver.Sound) ||
 	        ( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) ||
 	        !cfg.SoundToggle ||
 	        Sound[num].num > 3 ||
-	        !engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[num]) ||
+	        !BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[num]) ||
 	        (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26*3) ||
 	        gShowMenu) return null;
 
@@ -409,12 +409,12 @@ public class Sounds {
 	    if( (currentGame.getCON().soundm[num]&1) != 0)
 	    {
 	        if(Sound[num].num > 0) return null;
-        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
+        	voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
         	if(voice != null)
         		voice.setLooping(true, 0, -1);
 	    }
 	    else
-        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
+        	voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
 
 	    if ( voice != null )
 	    {
@@ -431,11 +431,11 @@ public class Sounds {
 	public static Source sound(int num)
 	{
 	    Source voice;
-	    if (!engine.getAudio().IsInited(SOUNDDRV)) return null;
+	    if (!BuildGdx.audio.IsInited(Driver.Sound)) return null;
 	    if(!cfg.SoundToggle) return null;
 	    if(!cfg.VoiceToggle && (currentGame.getCON().soundm[num]&4) != 0 ) return null;
 	    if( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) return null;
-	    if(!engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[num])) return null;
+	    if(!BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[num])) return null;
 
 	    int pitch;
 	    int pitchs = currentGame.getCON().soundps[num];
@@ -462,7 +462,7 @@ public class Sounds {
 	    
 	    if( (currentGame.getCON().soundm[num]&1) != 0)
 	    {
-	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
+	    	voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
         	if(voice != null) {
         		voice.setLooping(true, 0, -1);
         		voice.setGlobal(1);
@@ -472,7 +472,7 @@ public class Sounds {
         	
 	    }
 	    else {
-	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
+	    	voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
         	if ( voice != null )
         	{
         		voice.setGlobal(1);
@@ -534,7 +534,7 @@ public class Sounds {
 	{
 		for(int i = 0; i < NUM_SOUNDS; i++)
 			stopsound(i);
-		engine.getAudio().getSound().stopAllSounds();
+		BuildGdx.audio.getSound().stopAllSounds();
 	}
 	
 	public static void stopenvsound(int num, int i)
@@ -586,7 +586,7 @@ public class Sounds {
 	        ca = sprite[ud.camerasprite].ang;
 	    }
 
-	    engine.getAudio().getSound().setListener(cx, cz >> 4, cy, ca);
+	    BuildGdx.audio.getSound().setListener(cx, cz >> 4, cy, ca);
 	    
 	    for(int j=0;j<NUM_SOUNDS;j++) for(int k=0;k<Sound[j].num;k++)
 	    {

@@ -59,7 +59,7 @@ import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
 
-import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
@@ -1699,7 +1699,7 @@ public class Premap {
 			opalookup[3] = palookup[30];
 			opalookup[4] = palookup[33];
 
-			if(BuildGDX.app.getFrameType() == FrameType.GL) {
+			if(BuildGdx.app.getFrameType() == FrameType.GL) {
 				opalookupfog[0] = palookupfog[0];
 				opalookupfog[1] = palookupfog[8];
 				opalookupfog[2] = palookupfog[23];
@@ -1723,7 +1723,7 @@ public class Premap {
 			palookup[23] = palookup[51];
 			palookup[8] = palookup[54];
 			
-			if(BuildGDX.app.getFrameType() == FrameType.GL) {
+			if(BuildGdx.app.getFrameType() == FrameType.GL) {
 				palookupfog[0] = palookupfog[50];
 				palookupfog[30] = palookupfog[51];
 				palookupfog[33] = palookupfog[51];
@@ -1740,7 +1740,7 @@ public class Premap {
 		    palookup[23] = opalookup[2];
 		    palookup[8] = opalookup[1];
 		    
-		    if(BuildGDX.app.getFrameType() == FrameType.GL) {
+		    if(BuildGdx.app.getFrameType() == FrameType.GL) {
 			    palookupfog[0] = opalookupfog[0];
 			    palookupfog[30] = opalookupfog[3];
 			    palookupfog[33] = opalookupfog[4];

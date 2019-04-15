@@ -65,11 +65,11 @@ import ru.m210projects.Redneck.Menus.MenuItem;
 import ru.m210projects.Redneck.Menus.MenuSlider;
 import ru.m210projects.Redneck.Menus.MenuTextField;
 import ru.m210projects.Redneck.Menus.MenuTitle;
-import ru.m210projects.Build.Architecture.BuildGDX;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.GLFrame;
+import ru.m210projects.Build.Audio.Music;
 import ru.m210projects.Build.Audio.Sound;
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Audio.BMusic.Music;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Render.GLInfo;
@@ -350,7 +350,7 @@ public class RRMenu {
 //				engine.setbrightness(ud.brightness>>2, ps[myconnectindex].palette, 2);
 				
 				float gamma = slider.value / 4096.0f;
-				if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(1 - gamma, cfg.brightness, cfg.contrast))
+				if (((GLFrame) BuildGdx.app.getFrame()).setDisplayConfiguration(1 - gamma, cfg.brightness, cfg.contrast))
 					cfg.gamma = (1 - gamma);
 				else 
 					slider.value = (int) ((1 - cfg.gamma) * 4096);
@@ -364,7 +364,7 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						float brightness = slider.value / 4096.0f;
-						if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, brightness, cfg.contrast))
+						if (((GLFrame) BuildGdx.app.getFrame()).setDisplayConfiguration(cfg.gamma, brightness, cfg.contrast))
 							cfg.brightness = brightness;
 						else 
 							slider.value = (int) (cfg.brightness * 4096);
@@ -378,7 +378,7 @@ public class RRMenu {
 					public void run(MenuItem pItem) {
 						MenuSlider slider = (MenuSlider) pItem;
 						float contrast = slider.value / 4096.0f;
-						if (((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, contrast))
+						if (((GLFrame) BuildGdx.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, contrast))
 							cfg.contrast = contrast;
 						else 
 							slider.value = (int) (cfg.contrast * 4096);
@@ -396,7 +396,7 @@ public class RRMenu {
 				mGamma.value = (int) ((1 - cfg.gamma) * 4096);
 				mBrightness.value = (int) (cfg.brightness * 4096);
 				mContrast.value = (int) (cfg.contrast * 4096);
-				((GLFrame) BuildGDX.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast);
+				((GLFrame) BuildGdx.app.getFrame()).setDisplayConfiguration(cfg.gamma, cfg.brightness, cfg.contrast);
 			}
 		}, -1);
 		
@@ -1890,7 +1890,7 @@ public class RRMenu {
 						}
 						cfg.fpslimit = fps;
 
-						BuildGDX.app.setMaxFramerate(fps);
+						BuildGdx.app.setMaxFramerate(fps);
 					}
 				}) {
 			@Override

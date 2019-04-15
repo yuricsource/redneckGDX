@@ -153,7 +153,7 @@ public class Cheats {
                         ud.m_level_number = ud.level_number = levnume;
 					} else return false;
 					gm = MODE_RESTART; 
-	                Console.show();
+	                Console.toggle();
 					break;
 				case 7: //rdskill
 					if(opt.length == 1)
@@ -181,7 +181,7 @@ public class Cheats {
 		                        sendpacket(i,tempbuf,11);
 		                }
 		                else gm = MODE_RESTART; 
-		                Console.show();
+		                Console.toggle();
 					} else return false;
 					break;
 					
