@@ -44,7 +44,7 @@ public class MenuScreen extends MenuAdapter {
 
 	public void process(float delta) { 
 		if (numplayers > 1)
-			displayfragbar(200 - tilesizy[FRAGBAR], false);
+			displayfragbar(200 - tilesizy[FRAGBAR] / 2, false);
 
 		if (!game.gPaused) 
 			game.pNet.GetPackets();

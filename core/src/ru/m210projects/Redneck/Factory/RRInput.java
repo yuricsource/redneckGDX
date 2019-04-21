@@ -20,8 +20,6 @@ import static ru.m210projects.Build.Engine.getInput;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
-import static ru.m210projects.Build.Gameutils.BClipHigh;
-import static ru.m210projects.Build.Gameutils.BClipLow;
 import static ru.m210projects.Build.Gameutils.BClipRange;
 import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
@@ -53,7 +51,6 @@ import static ru.m210projects.Redneck.Types.RTS.rtsplaying;
 import static ru.m210projects.Redneck.View.FTA;
 import static ru.m210projects.Redneck.View.adduserquote;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 
@@ -240,19 +237,19 @@ public class RRInput extends BuildControls {
 
 	    tics = totalclock-lastcontroltime;
 	    lastcontroltime = totalclock;
-	    
+
 	    PlayerStruct p = ps[myconnectindex];
 	    
 	    svel = vel = 0;
 	    horiz = angvel = 0;
 	    
 	    if ( p.OnMotorcycle ) {
-	    	motoinput(loc, p);
+	    	motoinput(loc, p, tics);
 	    	return;
 	    }
 	    
 	    if(p.OnBoat) {
-	    	boatinput(loc, p);
+	    	boatinput(loc, p, tics);
 	    	return;
 	    }
 
@@ -455,11 +452,8 @@ public class RRInput extends BuildControls {
 	    loc.horz = horiz;
 	}
 	
-	public void motoinput(Input loc, PlayerStruct p)
+	public void motoinput(Input loc, PlayerStruct p, int tics)
 	{
-	    int tics = totalclock-lastcontroltime;
-	    lastcontroltime = totalclock;
-
 	    loc.bits =   ctrlGetInputKey(GameKeys.Weapon_Fire, false)?4:0;
 	    loc.bits |=   ctrlGetInputKey(RRKeys.Moonshine, false)? 1 << 12 : 0;
 	    loc.bits |=   ctrlGetInputKey(RRKeys.Yeehaa, false)? 1 << 15 : 0;
@@ -585,11 +579,8 @@ public class RRInput extends BuildControls {
 //	    resetMousePos();
 	}
 	
-	public void boatinput(Input loc, PlayerStruct p)
+	public void boatinput(Input loc, PlayerStruct p, int tics)
 	{
-	    int tics = totalclock-lastcontroltime;
-	    lastcontroltime = totalclock;
-	    
 	    loc.bits =   ctrlGetInputKey(GameKeys.Weapon_Fire, false)?4:0;
 	    loc.bits |=   ctrlGetInputKey(RRKeys.Moonshine, false)? 1 << 12 : 0;
 	    loc.bits |=   ctrlGetInputKey(RRKeys.Yeehaa, false)? 1 << 15 : 0;
@@ -622,7 +613,7 @@ public class RRInput extends BuildControls {
 	    
 	    if(left) loc.bits |= 16;
 	    if(right) loc.bits |= 64;
-	    
+
 	    if ( p.CarSpeed != 0 )
 	    {
 	    	if ( left || p.CarVar2 < 0 )

@@ -2457,7 +2457,7 @@ public class Actors {
 			        		{
 			        			if ( chance >= 126 )
 			        			{
-			        				if ( (ps[screenpeek].SlotWin & 8) != 0 )
+			        				if ( (ps[connecthead].SlotWin & 8) != 0 )
 			        					sprite[i].picnum = 8165;
 			        				else
 			        				{
@@ -2473,27 +2473,27 @@ public class Actors {
 			        			{
 			        				sprite[i].picnum = 8167;
 			        				spawn(i, 52);
-			        				ps[screenpeek].SlotWin |= 4;
+			        				ps[connecthead].SlotWin |= 4;
 			        				spritesound(52, i);
 			        			}
 			        		}
-			        		else if ( (ps[screenpeek].SlotWin & 2) != 0 )
+			        		else if ( (ps[connecthead].SlotWin & 2) != 0 )
 			        			sprite[i].picnum = 8165;
 			        		else
 			        		{
 			        			sprite[i].picnum = 8168;
 			        			spawn(i, 26);
-			        			ps[screenpeek].SlotWin |= 2;
+			        			ps[connecthead].SlotWin |= 2;
 			        			spritesound(52, i);
 			        		}
 			        	}
-			        	else if ( (ps[screenpeek].SlotWin & 1) != 0 )
+			        	else if ( (ps[connecthead].SlotWin & 1) != 0 )
 			        		sprite[i].picnum = 8165;
 			        	else
 			        	{
 			        		sprite[i].picnum = 8164;
 			        		spawn(i, 41);
-			        		ps[screenpeek].SlotWin |= 1;
+			        		ps[connecthead].SlotWin |= 1;
 			        		spritesound(52, i);
 			        	}
 			        }
@@ -2713,43 +2713,43 @@ public class Actors {
 							{
 								if ( change >= 126 )
 								{
-									if ( (ps[screenpeek].SlotWin & 8) != 0 )
+									if ( (ps[connecthead].SlotWin & 8) != 0 )
 										sprite[i].picnum = 8593;
 									else
 									{
 										sprite[i].picnum = 8592;
 										spawn(i, 5595);
-										ps[screenpeek].SlotWin |= 8;
+										ps[connecthead].SlotWin |= 8;
 										spritesound(342, i);
 									}
 								}
-								else if ( (ps[screenpeek].SlotWin & 4) != 0)
+								else if ( (ps[connecthead].SlotWin & 4) != 0)
 									sprite[i].picnum = 8593;
 								else
 								{
 									sprite[i].picnum = 8591;
 									spawn(i, 52);
-									ps[screenpeek].SlotWin |= 4;
+									ps[connecthead].SlotWin |= 4;
 									spritesound(342, i);
 								}
 							}
-							else if ( (ps[screenpeek].SlotWin & 2) != 0)
+							else if ( (ps[connecthead].SlotWin & 2) != 0)
 								sprite[i].picnum = 8593;
 							else
 							{
 								sprite[i].picnum = 8595;
 								spawn(i, 26);
-								ps[screenpeek].SlotWin |= 2;
+								ps[connecthead].SlotWin |= 2;
 								spritesound(342, i);
 							}
 						}
-						else if ( (ps[screenpeek].SlotWin & 1) != 0)
+						else if ( (ps[connecthead].SlotWin & 1) != 0)
 							sprite[i].picnum = 8593;
 						else
 						{
 							sprite[i].picnum = 8594;
 							spawn(i, 41);
-							ps[screenpeek].SlotWin |= 1;
+							ps[connecthead].SlotWin |= 1;
 							spritesound(342, i);
 						}
 					}
@@ -3724,7 +3724,7 @@ public class Actors {
 						for (l = 0; l < 16; l++)
 							RANDOMSCRAP(s, i);
 						spritesound(LASERTRIP_EXPLODE, i);
-						if ( ps[myconnectindex].isSwamp )
+						if ( ps[connecthead].isSwamp )
 							spawn(i, MINION);
 		                else {
 							switch (s.picnum) {
@@ -3749,7 +3749,7 @@ public class Actors {
 							}
 		                }
 
-						ps[myconnectindex].actors_killed++;
+						ps[connecthead].actors_killed++;
 						engine.deletesprite(i);
 					}
 					continue;

@@ -666,6 +666,8 @@ public class Premap {
 		p.interface_toggle_flag = 0;
 		p.scream_voice = null;
 		p.crouch_toggle = 0;
+		p.exitx = 0;
+	    p.exity = 0;
 	}
 	
 	public static void resetweapons(int snum)

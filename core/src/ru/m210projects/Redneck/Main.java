@@ -81,22 +81,16 @@ public class Main extends BuildGame {
 	 * Moving door after load game fix
 	 * Quick pee don't resurect the player anymore
 	 * 
-	 * Endscreen - 8677 - 8678
+	 * 
 	 * 
 	 * TODO:
-	 * slotwin screenpeek
 	 * прверить прекэш
-	 * в статистике съехало имя 1го плеера
-	 * isSwamp unsync
-	 * в меню перенести табло с игроками вниз
-	 * показывать табло с плеерами в коопе
-	 * 
-	 * 
+	 * Endscreen - 8677 - 8678
+	 * fakebubba loadgame
 	 * hud из новых ресурсов
 	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
 	 * проблема с fakebubba после загрузки сохранения
 	 * as I said once, you cannot pickup a weapon if you already have it
-	 * в грязи глючит мультиплеер камеру
 	 * и еще есть проблема с большой задержкой при нырянии. (на лестницах лаги)
 	 * в мультиплеере конец эпизода без заставки и перехода на след эпизод
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 

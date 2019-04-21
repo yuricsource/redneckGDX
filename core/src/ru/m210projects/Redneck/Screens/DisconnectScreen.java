@@ -91,10 +91,9 @@ public class DisconnectScreen extends StatisticScreen {
 
 		int pos = 90;
 		int t = 0;
-		app.getFont(0).drawText(23, pos, "   NAME                                           KILLS", 0, 0, TextAlign.Left,
-				2, false);
-		
-		if(ud.coop != 1) {
+		app.getFont(0).drawText(23, pos, "   NAME                                           KILLS", 0, 0, TextAlign.Left,2, false);
+		if(ud.coop != 1) 
+		{
 			for (int num = 0; num < playerList.size(); num++) {
 				Bitoa(playerList.get(num) + 1, bonusbuf);
 				app.getFont(0).drawText(92 + (num * 23), pos, bonusbuf, 0, 3, TextAlign.Left, 2, false);
@@ -141,17 +140,19 @@ public class DisconnectScreen extends StatisticScreen {
 			}
 	
 			app.getFont(0).drawText(45, pos + 16 + (8 * 7), "DEATHS", 0, 8, TextAlign.Left, 2, false);
-		} else {
+		} 
+		else {
+			pos += 10;
 			for (int num = 0; num < playerList.size(); num++) {
 				xfragtotal = 0;
 				i = playerList.get(num);
 				Bitoa(i + 1, bonusbuf);
 	
-				app.getFont(0).drawText(30, 90 + t, bonusbuf, 0, 3, TextAlign.Left, 2, false);
-				app.getFont(0).drawText(38, 90 + t, ud.user_name[i], 0, ps[i].palookup, TextAlign.Left, 2, false);
+				app.getFont(0).drawText(30, pos + t, bonusbuf, 0, 3, TextAlign.Left, 2, false);
+				app.getFont(0).drawText(38, pos + t, ud.user_name[i], 0, ps[i].palookup, TextAlign.Left, 2, false);
 				
 				Bitoa(ps[i].frag, bonusbuf);
-				app.getFont(0).drawText(101 + (8 * 23), 90 + t, bonusbuf, 0, 2, TextAlign.Left, 2, false);
+				app.getFont(0).drawText(101 + (8 * 23), pos + t, bonusbuf, 0, 2, TextAlign.Left, 2, false);
 				
 				t += 7;
 			}

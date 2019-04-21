@@ -423,18 +423,18 @@ public class View {
 		int row = (ud.multimode - 1) / 4;
 		if(row >= 0)
 		{
-			int framesx = 2 * xdim / tilesizx[BACKGROUND];
-			int framesy = mulscale(tilesizy[FRAGBAR] / 2 * (row + 1), divscale(ydim, 200, 16), 16);
-
-			int x = 0;
-			for(int i = 0; i <= framesx; i++) {
-		    	engine.rotatesprite(x<<16, 0, 32768, 0, BACKGROUND, 0, 0, 8 | 16 | 256, 0, 0, xdim-1, framesy);
-		    	x += tilesizx[BACKGROUND] / 2;
-		    }
+//			int framesx = 2 * xdim / tilesizx[BACKGROUND];
+//			int framesy = mulscale(tilesizy[FRAGBAR] / 2 * (row + 1), divscale(ydim, 200, 16), 16);
+//
+//			int x = 0;
+//			for(int i = 0; i <= framesx; i++) {
+//		    	engine.rotatesprite(x<<16, 0, 32768, 0, BACKGROUND, 0, 0, 8 | 16 | 256, 0, 0, xdim-1, framesy);
+//		    	x += tilesizx[BACKGROUND] / 2;
+//		    }
 			
 			if(yoffset > 0) yoffset -= 9 * row;
 			for(int r = 0; r <= row; r++) 
-				engine.rotatesprite(0,(r * tilesizy[FRAGBAR]) << 16,34000,0,FRAGBAR,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+				engine.rotatesprite(0,yoffset +(r * tilesizy[FRAGBAR]) << 16,34000,0,FRAGBAR,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
 			for(int i=connecthead;i>=0;i=connectpoint2[i])
 		    {
@@ -585,7 +585,7 @@ public class View {
 
 	    ss = ud.screen_size; if (ss < 1) return;
 
-	    if ( (ud.multimode > 1 || mFakeMultiplayer) && ud.coop != 1 )
+	    if ( ud.multimode > 1 || mFakeMultiplayer )
 	    {
 	    	displayfragbar(0, true);
 	    }

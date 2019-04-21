@@ -2660,8 +2660,10 @@ public class Gamedef {
 	            insptr++;
 	            if(g_sp.detail < 1 || g_sp.detail == 128)
 	            {
-	            	if ( checkaddkills(g_sp) )
+	            	if ( checkaddkills(g_sp) ) {
 	            		ps[connecthead].actors_killed += con.script[insptr];
+	            		if(ud.coop == 1) ps[g_p].frag += con.script[insptr];
+	            	}
 	            }
 	            hittype[g_i].actorstayput = -1;
 	            insptr++;
@@ -3624,8 +3626,10 @@ public class Gamedef {
 
 	    if(g_sp.sectnum < 0 || g_sp.sectnum >= MAXSECTORS)
 	    {
-	        if(badguy(g_sp))
+	        if(badguy(g_sp)) {
 	            ps[connecthead].actors_killed++;
+	            if(ud.coop == 1) ps[g_p].frag++;
+	        }
 	        engine.deletesprite(g_i);
 	        return;
 	    }

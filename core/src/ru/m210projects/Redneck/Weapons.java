@@ -964,7 +964,7 @@ public class Weapons {
 	                	if ( atwith == CHIKENCROSSBOW )
 	                    {
 	                		if ( sprite[j].picnum == 4861 && sprite[j].picnum == 4862 )
-	                			id = ps[screenpeek].i;
+	                			id = ps[myconnectindex].i;
 	                    }
 	                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)+(8<<8);
 	                    zvel = ( (sprite[j].z-sz-dal)*vel ) / ldist(sprite[ps[p].i], sprite[j]);
