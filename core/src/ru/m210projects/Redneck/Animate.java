@@ -16,15 +16,16 @@
 
 package ru.m210projects.Redneck;
 
+import ru.m210projects.Build.Pattern.Tools.Interpolation;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Types.ANIMATION;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sector.*;
-import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.CEILZ;
 import static ru.m210projects.Redneck.Types.ANIMATION.FLOORZ;
 import static ru.m210projects.Redneck.Types.ANIMATION.WALLX;
@@ -100,12 +101,13 @@ public class Animate {
 		int j = 0;
 		for(int i = gAnimationCount - 1; i >= 0; i--)
 		{
+			Interpolation gInt = game.pInt;
 			ANIMATION gAnm = gAnimationData[i];
 			Object obj = gAnm.ptr;
 			switch(gAnm.type)
 			{
 				case WALLX:
-					viewBackupWallLoc(gAnm.id, (WALL)obj);
+					gInt.setwallinterpolate(gAnm.id, (WALL)obj);
 					j = ((WALL)obj).x;
 					if (j < gAnm.goal)
 						((WALL)obj).x = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);
@@ -113,7 +115,7 @@ public class Animate {
 						((WALL)obj).x = Math.max(j-gAnm.vel*TICSPERFRAME, gAnm.goal);
 					break;
 				case WALLY:
-					viewBackupWallLoc(gAnm.id, (WALL)obj);
+					gInt.setwallinterpolate(gAnm.id, (WALL)obj);
 					j = ((WALL)obj).y;
 					if (j < gAnm.goal)
 						((WALL)obj).y = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);
@@ -121,7 +123,7 @@ public class Animate {
 						((WALL)obj).y = Math.max(j-gAnm.vel*TICSPERFRAME, gAnm.goal);
 					break;
 				case FLOORZ:
-					viewBackupFloorLoc(gAnm.id, (SECTOR)obj);
+					gInt.setfloorinterpolate(gAnm.id, (SECTOR)obj);
 					j = ((SECTOR)obj).floorz;
 					
 					int vel = gAnm.vel*TICSPERFRAME;
@@ -140,25 +142,25 @@ public class Animate {
 		            {
 		                ps[p].posz += vel;
 		                ps[p].poszv = 0;
-		                if (p == myconnectindex)
+		                if (p == myconnectindex && numplayers > 1)
 		                {
-		                    myz += vel;
-		                    myzvel = 0;
-		                    myzbak[((movefifoplc-1)&(MOVEFIFOSIZ-1))] = ps[p].posz;
+		                	game.net.predict.z += vel;
+		                	game.net.predict.zvel = 0;
+//		                	game.net.predictFifo[game.net.gPredictTail & kFifoMask].z  = ps[p].posz;
 		                }
 		            }
 
 		            for(int k=headspritesect[dasect];k>=0;k=nextspritesect[k])
 		                if (sprite[k].statnum != 3)
 		                {
-		                    hittype[k].bposz = sprite[k].z;
+		                	game.pInt.setsprinterpolate(k, sprite[k]);
 		                    sprite[k].z += vel;
 		                    hittype[k].floorz = sector[dasect].floorz+vel;
 		                }
 
 					break;
 				case CEILZ:
-					viewBackupCeilingLoc(gAnm.id, (SECTOR)obj);
+					gInt.setceilinterpolate(gAnm.id, (SECTOR)obj);
 					j = ((SECTOR)obj).ceilingz;
 					if (j < gAnm.goal)
 						((SECTOR)obj).ceilingz = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);

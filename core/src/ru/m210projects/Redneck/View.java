@@ -40,15 +40,12 @@ import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
-import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
-import static ru.m210projects.Redneck.Redneck.*;
+import static ru.m210projects.Redneck.LoadSave.lastload;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.HELP;
 import static ru.m210projects.Redneck.Player.*;
-import static ru.m210projects.Redneck.LoadSave.gScreenCapture;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Menus.MENU.*;
-import static ru.m210projects.Redneck.Menus.RRMenu.*;
 import static ru.m210projects.Redneck.Weapons.*;
 import static ru.m210projects.Redneck.ResourceHandler.*;
 
@@ -70,12 +67,19 @@ import static ru.m210projects.Redneck.Sector.ldist;
 import static ru.m210projects.Redneck.Actors.*;
 
 import ru.m210projects.Build.OnSceenDisplay.Console;
+import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
+import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
+import ru.m210projects.Redneck.Menus.InterfaceMenu;
+import ru.m210projects.Redneck.Factory.RRNetwork;
+import ru.m210projects.Redneck.Main.UserFlag;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class View {
+	
+	public static final String deathMessage = "or \"ENTER\" to load last saved game";
 	
 	public static int oyrepeat=-1;
 	private static final char[] buffer = new char[256];
@@ -90,7 +94,6 @@ public class View {
 	public static short fta,ftq, zoom, over_shoulder_on;
 	public static int loogiex[] = new int[64],loogiey[] = new int[64];
 
-	
 	public static int cameradist = 0, cameraclock = 0;
 	public static int gNameShowTime;
 	public static int oviewingrange;
@@ -119,8 +122,8 @@ public class View {
 	    int cr = 0, cg = 0, cb = 0, cf = 0;
 	    boolean dotint = false;
 
-	    if((gScreenCapture || (gShowMenu && !isOpened(mMenus[HUDST]))) && pp.newowner < 0)
-			return;
+//	    if(pp.newowner < 0)
+//			return;
 	    
 	    if( changepalette != 0 )
 	    {
@@ -137,7 +140,7 @@ public class View {
 	    	cf = pp.pals_time;
 	    }
 
-	    if (dotint && !gShowMenu) 
+	    if (dotint && !game.menu.gShowMenu) 
 		    palto(cr,cg,cb,cf|128);
 
 	    i = pp.cursectnum;
@@ -178,9 +181,10 @@ public class View {
                      {
                          if (screenpeek == myconnectindex && numplayers > 1)
                          {
-                             cposx = omyx+mulscale((myx-omyx),smoothratio, 16);
-                             cposy = omyy+mulscale((myy-omyy),smoothratio, 16);
-                             cang = omyang+((((BClampAngle(myang+1024-omyang))-1024) * smoothratio) / 65536.0f);
+                        	 RRNetwork net = game.net;
+                             cposx = net.predictOld.x+mulscale((net.predict.x-net.predictOld.x),smoothratio, 16);
+                             cposy = net.predictOld.y+mulscale((net.predict.y-net.predictOld.y),smoothratio, 16);
+                             cang = net.predictOld.ang + (BClampAngle(net.predict.ang+1024-net.predictOld.ang)-1024) * smoothratio / 65536.0f;
                          }
                          else
                          {
@@ -222,11 +226,11 @@ public class View {
 
                 	Arrays.fill(buffer, (char)0);
                 	buildString(buffer, 0, currentGame.episodes[ud.volume_number].Title);
-                    minitext(5,a,buffer,65536, 0,0,8+16+256);
+                	game.getFont(0).drawText(5,a, buffer, -128, 0, TextAlign.Left, 2+8+16+256, false);
                     Arrays.fill(buffer, (char)0);
                     if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
                     	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
-                    minitext(5,a+6,buffer,65536,0,0,8+16+256);
+                    game.getFont(0).drawText(5,a+6, buffer, -128, 0, TextAlign.Left, 2+8+16+256, false);
                     
                     if ( cfg.gShowStat == 2 ) {
                     	int k = 0;
@@ -245,14 +249,26 @@ public class View {
                 }
 	        }
 	    }
+	    
+	    if(game.menu.gShowMenu && !(game.menu.getCurrentMenu() instanceof InterfaceMenu))
+    		return; 
+	    
+	    if(ps[myconnectindex].newowner == -1 && ud.overhead_on == 0 && ud.crosshair != 0 && ud.camerasprite == -1) {
+	    	engine.rotatesprite((160-(ps[myconnectindex].look_ang>>1))<<16,100<<16,cfg.gCrossSize,0,CROSSHAIR,0,0,2+1,0,0,xdim,ydim);
+	    }
 
 	    coolgaugetext(screenpeek);
 	    operatefta();
+	    
+	    if(currentGame.getCON().type == RRRA || ud.player_skill < 5) {
+		    if( fta > 1 && sprite[ps[myconnectindex].i].extra <= 0 && myconnectindex == screenpeek && ud.multimode < 2 
+		    		&& lastload != null && !lastload.isEmpty() && ud.recstat != 2 ) {
+	        	int k = getftacoord();
+	        	game.getFont(1).drawText(320>>1,k + 10, deathMessage, 0, 0, TextAlign.Center, 2+8+16, false);
+	        }
+	    }
 
-	    if(ps[myconnectindex].newowner == -1 && ud.overhead_on == 0 && ud.crosshair != 0 && ud.camerasprite == -1)
-	        engine.rotatesprite((160-(ps[myconnectindex].look_ang>>1))<<16,100<<16,cfg.gCrossSize,0,CROSSHAIR,0,0,2+1,windowx1,windowy1,windowx2,windowy2);
-
-	    if ( cfg.gShowStat == 1 ) {
+	    if ( ud.screen_size > 0 && cfg.gShowStat == 1 ) {
 //	    	int y = 202;
 //	    	if(ud.screen_size == 2) y = 168;
 //	    	if(ud.screen_size == 1) y = 172;
@@ -273,53 +289,49 @@ public class View {
 	    	viewDrawStats(5, 5+k, cfg.gStatSize);
 	    }
 
-	    if((gm&MODE_GAME) != 0 && totalclock < gNameShowTime)
+	    if(game.isCurrentScreen(gGameScreen) && totalclock < gNameShowTime)
 		{
-			int transp = 0;
+	    	int transp = 0;
 			if(totalclock > gNameShowTime - 20) transp = 1;
 			if(totalclock > gNameShowTime - 10) transp = 33;
 		
-			if(cfg.showMapInfo != 0 && !gShowMenu)
+			if(cfg.showMapInfo != 0 && !game.menu.gShowMenu)
 			{	
-				char[] mapname;
-				if(ud.warp_on != 2 || boardfilename == null) {
-					buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
-					mapname = buffer;
+				if(mUserFlag != UserFlag.UserMap || boardfilename == null) {
+					game.getFont(2).drawText(160,114, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title, -128, 0, TextAlign.Center, 2 | transp, false);
 				}
 				else {
 					Arrays.fill(buffer, (char)0);
 					int index = boardfilename.lastIndexOf(File.separator);
 					boardfilename.getChars(index+1, boardfilename.length(), buffer, 0);
-					mapname = buffer;
+					game.getFont(2).drawText(160,114, buffer, -128, 0, TextAlign.Center, 2 | transp, false);
 				}
-				mGetAlign(2, mapname);
-
-				menutext(160 - alignx / 2, 114, -128, 0, mapname, transp);
 			}
 		}
 	    
 	    if(MODE_TYPE)
 	    	typemode();
 	    
-	    if( ud.pause_on==1 && !gShowMenu )
+	    if( game.gPaused && !game.menu.gShowMenu )
 	    {
-	    	buildString(buffer, 0, "GAME PAUSED");
-	    	mGetAlign(2, buffer);
-	    	menutext(160 - alignx / 2,100,0,0,buffer, 0);
+	    	game.getFont(2).drawText(160, 100, "GAME PAUSED", 0, 0, TextAlign.Center, 2+8+16, false);
 	    }
 	    
 	    if(gPlayerIndex != -1 && gPlayerIndex != myconnectindex)
 	    {
+	    	int len = 0;
 	    	if(ud.user_name[gPlayerIndex] == null || ud.user_name[gPlayerIndex].isEmpty())
-	    		buildString(buf, 0, "Player ", gPlayerIndex+1);
-	    	else buildString(buf, 0, ud.user_name[gPlayerIndex]);
+	    		len = buildString(buf, 0, "Player ", gPlayerIndex+1);
+	    	else len = buildString(buf, 0, ud.user_name[gPlayerIndex]);
+	    	len = buildString(buf, len, " (", ps[gPlayerIndex].last_extra);
+	    	len = buildString(buf, len, "hp)");
         	int shade = 16 - (totalclock & 0x3F);
 
         	int y = scale(windowy1, 200, ydim)+100;
         	if(ud.screen_size <= 3) //XXX
         		y += (tilesizy[BOTTOMSTATUSBAR] + tilesizy[1649]) / 4;
 
-        	gametext(160,y,buf,65536,shade,0,8+16);
+        	game.getFont(1).drawText(160,y, buf, shade, 0, TextAlign.Center, 2+8+16, false);
 	    }
 
 	    if(ud.coords != 0)
@@ -337,10 +349,38 @@ public class View {
 		int len = getInput().getMessageLength() + 1;
 		if(len < buf.length)
 			buf[len] = 0;
-		gametext(320>>1,j,getInput().getMessageBuffer(),65536, 0,0,8+16);
-		
-		mGetAlign(1, buf);
+		int alignx = game.getFont(1).drawText(320>>1,j, getInput().getMessageBuffer(), 0, 0, TextAlign.Center, 2+8+16, false);
 		engine.rotatesprite((((320+alignx+16)>>1))<<16,(j+6)<<16,4096,0,SPINNINGNUKEICON+(((totalclock>>3))&15),0,0,10,0,0,xdim-1,ydim-1);
+	}
+	
+	public static int getftacoord()
+	{
+		int k = 0;
+		
+		 if (ud.screen_size > 0 && ud.multimode > 1)
+	     {
+	         int j = 0; k = 8;
+	         for(int i=connecthead;i>=0;i=connectpoint2[i])
+	             if (i > j) j = i;
+
+	         if (j >= 4 && j <= 8) k += 8;
+	         else if (j > 8 && j <= 12) k += 16;
+	         else if (j > 12) k += 24;
+	     }
+	     else k = 0;
+
+	     if (ftq == 115 || ftq == 116)
+	     {
+	         k = quotebot;
+	         for(int i=0;i<MAXUSERQUOTES;i++)
+	         {
+	             if (user_quote_time[i] <= 0) break;
+	             k -= 8;
+	         }
+	         k -= 4;
+	     }
+	     
+	     return k;
 	}
 	
 	public static void operatefta()
@@ -359,44 +399,23 @@ public class View {
 	     {
 	    	 k = user_quote_time[i]; if (k <= 0) break;
 	         if (k > 4)
-	              gametext(320>>1,j,user_quote[i],65536,0,0,8+16);
-	         else if (k > 2) gametext(320>>1,j,user_quote[i],65536,0,0,8+16+1);
-	             else gametext(320>>1,j,user_quote[i],65536,0,0,8+16+1+32);
+	        	 game.getFont(1).drawText(320>>1,j, user_quote[i], 0, 0, TextAlign.Center, 2+8+16, false);
+	         else if (k > 2) game.getFont(1).drawText(320>>1,j, user_quote[i], 0, 0, TextAlign.Center, 2+8+16+1, false);
+	             else game.getFont(1).drawText(320>>1,j, user_quote[i], 0, 0, TextAlign.Center, 2+8+16+1+32, false);
 	         j -= 10;
 	     }
 
 	     if (fta <= 1) return;
 
-	     if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
-	     {
-	         j = 0; k = 8;
-	         for(i=connecthead;i>=0;i=connectpoint2[i])
-	             if (i > j) j = i;
-
-	         if (j >= 4 && j <= 8) k += 8;
-	         else if (j > 8 && j <= 12) k += 16;
-	         else if (j > 12) k += 24;
-	     }
-	     else k = 0;
-
-	     if (ftq == 115 || ftq == 116)
-	     {
-	         k = quotebot;
-	         for(i=0;i<MAXUSERQUOTES;i++)
-	         {
-	             if (user_quote_time[i] <= 0) break;
-	             k -= 8;
-	         }
-	         k -= 4;
-	     }
+	     k = getftacoord();
 
 	     j = fta;
 	     if (j > 4)
-	          gametext(320>>1,k,currentGame.getCON().fta_quotes[ftq],65536,0,0,8+16);
+	    	 game.getFont(1).drawText(320>>1,k, currentGame.getCON().fta_quotes[ftq], 0, 0, TextAlign.Center, 2+8+16, false);
+	     else if (j > 2) 
+	    	 game.getFont(1).drawText(320>>1,k, currentGame.getCON().fta_quotes[ftq], 0, 0, TextAlign.Center, 2+8+16+1, false);
 	     else
-	         if (j > 2) gametext(320>>1,k,currentGame.getCON().fta_quotes[ftq],65536,0,0,8+16+1);
-	     else
-	         gametext(320>>1,k,currentGame.getCON().fta_quotes[ftq],65536,0,0,8+16+1+32);
+	    	 game.getFont(1).drawText(320>>1,k, currentGame.getCON().fta_quotes[ftq], 0, 0, TextAlign.Center, 2+8+16+1+32, false);
 	}
 	
 	public static void displayfragbar(int yoffset, boolean showpalette)
@@ -423,9 +442,9 @@ public class View {
 					buildString(buffer, 0, "Player ", i+1);
 				else buildString(buffer, 0, ud.user_name[i]);
 				
-		        minitext(26+(73*(i&3)),2+((i&28)<<1),buffer,65536,0,sprite[ps[i].i].pal,8+16);
+				game.getFont(0).drawText(26+(73*(i&3)),yoffset + 2+((i&28)<<1), buffer, 0, showpalette ? sprite[ps[i].i].pal : 0, TextAlign.Left, 10 | 16, false);
 		        buildString(buffer, 0, "", ps[i].frag-ps[i].fraggedself);
-		        minitext(23+50+(73*(i&3)),2+((i&28)<<1),buffer,65536,0,sprite[ps[i].i].pal,8+16);
+		        game.getFont(0).drawText(23+50+(73*(i&3)),yoffset + 2+((i&28)<<1), buffer, 0, showpalette ? sprite[ps[i].i].pal : 0, TextAlign.Left, 10 | 16, false);
 		    }
 		}
 	}
@@ -514,9 +533,6 @@ public class View {
 		
 		buildString(buffer, 0, "yvel= ", ps[0].posyv);
 		engine.printext256(x,y,31,-1,buffer,0); y += 10;
-		
-		buildString(buffer, 0, "ud.reccnt= ", ud.reccnt);
-		engine.printext256(x,y,31,-1,buffer,0); y += 10;
 
 		buildString(buffer, 0, "CarSpeed= ", ps[0].CarSpeed);
 		engine.printext256(x,y,31,-1,buffer,0); y += 10;
@@ -564,7 +580,7 @@ public class View {
         	else buildString(buf, 0, "View from ", ud.user_name[screenpeek]);
         	int shade = 16 - (totalclock & 0x3F);
 
-        	gametext(160, scale(windowy1, 200, ydim) + 10, buf,65536,shade,0,8+16);
+        	game.getFont(1).drawText(160, scale(windowy1, 200, ydim) + 10, buf, shade, 0, TextAlign.Center, 10 | 16, false);
 		}
 
 	    ss = ud.screen_size; if (ss < 1) return;
@@ -612,6 +628,18 @@ public class View {
 		    	}
 		        x += tilesizx[9216] / 2 + 2;
 	        }
+	        
+	        { //my gutmeter
+		        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, GUTSMETTER, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
+		        p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
+				if(p.alcohol_amount >= 100)
+				{
+					p.alcohol_amount = 100;
+					p.alcohol_meter = 400;
+				}  
+				engine.rotatesprite(251 << 16, 189 << 16, 0x9000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+				engine.rotatesprite(293 << 16, 189 << 16, 0x9000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+	        }
 	      
 	        if (p.inven_icon != 0)
 	        {
@@ -620,8 +648,8 @@ public class View {
 	        	buf[1] = 0;
 	            switch(p.inven_icon)
 	            {
-	                case 1: i = 1645; minitext(x+37,190,buf,65536,0,0,8+16+256); break;
-	                case 2: i = 1654; minitext(x+37,190,buf,65536,0,0,8+16+256); break;
+	                case 1: i = 1645; game.getFont(0).drawChar((x+37),190,'%', 0, 6, 2 | 8 | 16 | 256, false); break;
+	                case 2: i = 1654; game.getFont(0).drawChar((x+37),190,'%', 0, 6, 2 | 8 | 16 | 256, false); break;
 	                case 3: i = 1655; break;
 	                case 4: i = 1652; break;
 	                case 5: i = 1646; break;
@@ -631,9 +659,8 @@ public class View {
 	            }
 	            if (i >= 0) engine.rotatesprite((x+6)<<16, (200-21)<<16, 0x8000, 0, i, 0, 0, 26 | 256, 0, 0, xdim - 1, ydim - 1);
 
-	            buildString(buf, 0, "AUTO");
-	            if (p.inven_icon >= 6) minitext(x+22, 180,buf,65536,0, 2,8+16+256);
-
+	            if (p.inven_icon >= 6) 
+	            	game.getFont(0).drawText(x+22,180,"AUTO", 0, 2, TextAlign.Left, 2 | 8 | 16 | 256, false);
 	            switch(p.inven_icon)
 	            {
 	            case 1: i = p.whishkey_amount; break;
@@ -646,16 +673,6 @@ public class View {
 	            }
 	            invennum(x+27, 194, i, 0, 8 | 256);
 	        }
-	        
-	        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, GUTSMETTER, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
-	        p.alcohol_meter = (short) ((8 * p.alcohol_amount + 1647) & 2047);
-			if(p.alcohol_amount >= 100)
-			{
-				p.alcohol_amount = 100;
-				p.alcohol_meter = 400;
-			}  
-			engine.rotatesprite(251 << 16, 189 << 16, 0x9000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
-			engine.rotatesprite(293 << 16, 189 << 16, 0x9000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
 
 	        return;
 	    }
@@ -729,8 +746,8 @@ public class View {
         	buf[1] = 0;
             switch(p.inven_icon)
             {
-                case 1: i = 1645; o = 11665408; minitext(216,190,buf,65536,0, 6,8+16); break;
-                case 2: i = 1654; o = 11665408;  minitext(216,190,buf,65536,0, 6,8+16); break;
+                case 1: i = 1645; o = 11665408; game.getFont(0).drawChar(216,190, '%', 0, 6, 2 | 8 | 16, false); break;
+                case 2: i = 1654; o = 11665408;  game.getFont(0).drawChar(216,190, '%', 0, 6, 2 | 8 | 16, false); break;
                 case 3: i = 1655; break;
                 case 4: i = 1652; break;
                 case 5: i = 1646; break;
@@ -738,9 +755,8 @@ public class View {
                 case 7: i = BOOT_ICON; o = 11665408; break;
             }
             engine.rotatesprite(11993088,o,32768,0,i,0,0,10+16,0,0,xdim-1,ydim-1);
-         
-            buildString(buf, 0, "AUTO");
-            if (p.inven_icon >= 6) minitext(201, 180,buf,65536,0, 2,8+16);
+            if (p.inven_icon >= 6) 
+            	game.getFont(0).drawText(201,180,  "AUTO", 0, 2, TextAlign.Left, 2 | 8 | 16, false);
 
             switch(p.inven_icon)
             {
@@ -760,9 +776,8 @@ public class View {
 	
 	public static void displayrooms(int snum,int smoothratio)
 	{
-	    int cposx,cposy,cposz,dst,j,fz,cz;
-	    short sect, k;
-	    float cang, choriz;
+	    int dst,j,fz,cz;
+	    short k;
 	    int tposx,tposy,i;
 	    short tang;
 
@@ -770,14 +785,23 @@ public class View {
 
 	    gPlayerIndex = -1;
 	    
-	    if( (!gShowMenu && ud.overhead_on == 2) || isOpened(mMenus[HELP]) || p.cursectnum == -1)
+	    if( (!game.menu.gShowMenu 
+	    		&& ud.overhead_on == 2) 
+	    		|| game.menu.isOpened(game.menu.mMenus[HELP]) 
+	    		|| p.cursectnum == -1)
 	    	return;
 	    
 	    if ( p.fogtype != 0)
 	    	gVisibility = currentGame.getCON().const_visibility;
 	    visibility = gVisibility;
 
-	    sect = p.cursectnum;
+	    int cposx = p.posx;
+	    int cposy = p.posy;
+	    int cposz = p.posz;
+        float cang = p.ang;
+        float choriz = p.horiz + p.horizoff;
+        short sect = p.cursectnum;
+
 	    if(sect < 0 || sect >= MAXSECTORS) return;
 
 	    if(ud.camerasprite >= 0)
@@ -808,16 +832,8 @@ public class View {
 	            engine.setaspect_new();
 	            oviewingrange = viewingrange;
 	        }
-	  
-	        if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
-	        {
-                if (ud.screen_tilting != 0) tang = p.rotscrnang; else tang = 0;
 
-                engine.getrender().settiltang(p.orotscrnang + mulscale(((p.rotscrnang - p.orotscrnang + 1024)&2047)-1024,smoothratio, 16));
-        		p.orotscrnang = p.rotscrnang;	// JBF: save it for next time 	  
-	        } else engine.getrender().settiltang(0);
-
-	        if ( p.DrugMode > 0 && !MODE_TYPE && ud.pause_on == 0)
+	        if ( p.DrugMode > 0 && !MODE_TYPE && !game.gPaused)
 	        {
 	        	if ( p.drug_type != 0)
 	        	{
@@ -881,23 +897,32 @@ public class View {
 	        
 	        if ( (snum == myconnectindex) && (numplayers > 1) )
 	        {
-                cposx = omyx+mulscale((myx-omyx),smoothratio,16);
-                cposy = omyy+mulscale((myy-omyy),smoothratio,16);
-                cposz = omyz+mulscale((myz-omyz),smoothratio,16);
-                cang = omyang + (BClampAngle(myang+1024-omyang)-1024) * smoothratio / 65536.0f;
-                choriz = omyhoriz+omyhorizoff+(((myhoriz+myhorizoff-omyhoriz-omyhorizoff) * smoothratio) / 65536.0f);
-                sect = mycursectnum;
+	        	RRNetwork net = game.net;
+                cposx = net.predictOld.x+mulscale((net.predict.x-net.predictOld.x),smoothratio,16);
+                cposy = net.predictOld.y+mulscale((net.predict.y-net.predictOld.y),smoothratio,16);
+                cposz = net.predictOld.z+mulscale((net.predict.z-net.predictOld.z),smoothratio,16);
+                cang = net.predictOld.ang + (BClampAngle(net.predict.ang+1024-net.predictOld.ang)-1024) * smoothratio / 65536.0f;
+                cang += net.predictOld.lookang + (BClampAngle(net.predict.lookang+1024-net.predictOld.lookang)-1024) * smoothratio / 65536.0f;
+                choriz = net.predictOld.horiz+net.predictOld.horizoff+(((net.predict.horiz+net.predict.horizoff-net.predictOld.horiz-net.predictOld.horizoff) * smoothratio) / 65536.0f);
+                sect = net.predict.sectnum;
+ 
+                if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
+    	        {
+                    tang = p.rotscrnang;
+                    engine.getrender().settiltang(net.predictOld.rotscrnang + mulscale(((net.predict.rotscrnang - net.predictOld.rotscrnang + 1024)&2047)-1024,smoothratio, 16));  
+    	        } else engine.getrender().settiltang(0);
 	        }
 	        else
 	        {
-	        	cposx = p.oposx+mulscale((p.posx-p.oposx),smoothratio,16);
-                cposy = p.oposy+mulscale((p.posy-p.oposy),smoothratio,16);
-                cposz = p.oposz+mulscale((p.posz-p.oposz),smoothratio,16);
-                cang = p.oang + (BClampAngle(p.ang+1024-p.oang)-1024) * smoothratio / 65536.0f;
-                choriz = (p.ohoriz+p.ohorizoff+((p.horiz+p.horizoff-p.ohoriz-p.ohorizoff) * smoothratio) / 65536.0f);
+	        	cposx = p.prevView.x + mulscale((cposx-p.prevView.x),smoothratio,16);
+                cposy = p.prevView.y + mulscale((cposy-p.prevView.y),smoothratio,16);
+                cposz = p.prevView.z + mulscale((cposz-p.prevView.z),smoothratio,16);
+                cang = p.prevView.ang + (BClampAngle(cang+1024-p.prevView.ang)-1024) * smoothratio / 65536.0f;
+                cang += p.prevView.lookang + (BClampAngle(p.look_ang+1024-p.prevView.lookang)-1024) * smoothratio / 65536.0f;
+                choriz = (p.prevView.horiz +p.prevView.horizoff+((choriz-p.prevView.horiz-p.prevView.horizoff) * smoothratio) / 65536.0f);
+
 	        }
-	        cang += p.look_ang;
-          
+	      
 	        if (p.newowner >= 0)
 	        {
                 cang = (short) (p.ang+p.look_ang);
@@ -1156,11 +1181,29 @@ public class View {
 	            s.xrepeat = 24;
 	            s.yrepeat = 17;
 	        }
-	        else if( ( s.statnum == 0 && s.picnum != 1298) || s.statnum == 10 || s.statnum == 6 || s.statnum == 4 || s.statnum == 5 || s.statnum == 1 )
+	        else if( ( s.statnum == 0 && s.picnum != 1298) || s.statnum == 10 || s.statnum == 6 
+	        		|| s.statnum == 4 || s.statnum == 5 || s.statnum == 1 
+	        		|| s.statnum == 116 || s.statnum == 117 || s.statnum == 118 || s.statnum == 121) //GDX 21.04.2019 - RA airplane interpolation
 	        {
-	            t.x -= mulscale(65536-smoothratio,s.x-hittype[i].bposx, 16);
-	            t.y -= mulscale(65536-smoothratio,s.y-hittype[i].bposy, 16);
-	            t.z -= mulscale(65536-smoothratio,s.z-hittype[i].bposz, 16);
+	        	// only interpolate certain moving things
+				ILoc oldLoc = game.pInt.getsprinterpolate(t.owner);
+				if (oldLoc != null) {
+					int ox = oldLoc.x;
+					int oy = oldLoc.y;
+					int oz = oldLoc.z;
+					short nAngle = oldLoc.ang;
+
+					// interpolate sprite position
+					ox += mulscale(t.x - oldLoc.x, smoothratio, 16);
+					oy += mulscale(t.y - oldLoc.y, smoothratio, 16);
+					oz += mulscale(t.z - oldLoc.z, smoothratio, 16);
+					nAngle += mulscale(((t.ang - oldLoc.ang + 1024) & kAngleMask) - 1024, smoothratio, 16);
+
+					t.x = ox;
+					t.y = oy;
+					t.z = oz;
+					t.ang = nAngle;
+				}
 	        }
 
 	        sect = s.sectnum;
@@ -1416,14 +1459,15 @@ public class View {
 
                 if(over_shoulder_on > 0 && ps[p].newowner < 0 )
                 {
-                    t.cstat |= 2;
+                	t.cstat |= 2;
                     if ( ps[myconnectindex] == ps[p] && numplayers >= 2 )
                     {
-                        t.x = omyx+mulscale((int)(myx-omyx),smoothratio, 16);
-                        t.y = omyy+mulscale((int)(myy-omyy),smoothratio, 16);
-                        t.z = omyz+mulscale((int)(myz-omyz),smoothratio, 16)+(40<<8);
-                        t.ang = (short) (omyang+mulscale((int)((BClampAngle(myang+1024-omyang))-1024),smoothratio, 16));
-                        t.sectnum = mycursectnum;
+                    	 RRNetwork net = game.net;
+                        t.x = net.predictOld.x+mulscale((net.predict.x-net.predictOld.x),smoothratio, 16);
+                        t.y = net.predictOld.y+mulscale((net.predict.y-net.predictOld.y),smoothratio, 16);
+                        t.z = net.predictOld.z+mulscale((net.predict.z-net.predictOld.z),smoothratio, 16)+(40<<8);
+                        t.ang = (short) (net.predictOld.ang + (BClampAngle(net.predict.ang+1024-net.predictOld.ang)-1024) * smoothratio / 65536.0f);
+                        t.sectnum = net.predict.sectnum;
                     }
                 }
 
@@ -2146,43 +2190,41 @@ public class View {
 		float viewzoom = (zoom / 65536.0f);
 
 		buildString(buffer, 0, "kills:   ");
-		mGetAlign(1, buffer);
-		
-		//int yoffset = (int) (2 * (aligny + 10) * viewzoom);
-		//y -= yoffset;
-		
+		int alignx = game.getFont(1).getWidth(buffer);
+
 		int statx = x;
 		int staty = y;
 		
-		gametext(statx, staty, buffer, zoom, 0, 2, 24 | 256);
+		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 24 | 256, false);
 	
 		int offs = Bitoa(ps[connecthead].actors_killed, buffer);
 		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_actors_killed);
-		gametext(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, 24 | 256);
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 24 | 256, false);	
 		
 		statx = x;
 		staty = y + (int) (12 * viewzoom);
 		
 		buildString(buffer, 0, "secrets:    ");
-		gametext(statx, staty, buffer, zoom, 0, 2, 24 | 256);
-		mGetAlign(1, buffer);
+		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 24 | 256, false);
+		alignx = game.getFont(1).getWidth(buffer);
 		offs = Bitoa(ps[connecthead].secret_rooms, buffer);
 		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_secret_rooms);
-		gametext(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, 24 | 256);
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 24 | 256, false);	
 		
 		statx = x;
 		staty = y + (int) (22 * viewzoom);
 		
 		buildString(buffer, 0, "time:    ");
-		gametext(statx, staty, buffer, zoom, 0, 2, 24 | 256);
-		mGetAlign(1, buffer);
+		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 24 | 256, false);
+		alignx = game.getFont(1).getWidth(buffer);
 		
 		int minutes = ps[myconnectindex].player_par/(26*60);
 		int sec = (ps[myconnectindex].player_par/26)%60;
 		
 		offs = Bitoa(minutes, buffer, 2);
 		offs = buildString(buffer, offs, " :   ", sec, 2);
-		gametext(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, 24 | 256);
+		
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 24 | 256, false);	
 	}
 	
 	private static PlayerOrig viewout = new PlayerOrig();
@@ -2378,12 +2420,12 @@ public class View {
 	        y = 134;
 	    else y = 178;
 
-	    if(ud.screen_size == 1)
-	    {
-	        if(ud.multimode > 1)
-	            xoff += 56;
-	        else xoff += 65;
-	    }
+//	    if(ud.screen_size == 1) GDX 17.04.2019 - disabled, because has a gutmeter
+//	    {
+//	        if(ud.multimode > 1)
+//	            xoff += 56;
+//	        else xoff += 65;
+//	    }
 
 	    if((p.gotkey[0]|p.gotkey[1]|p.gotkey[2]) != 0)
 	        xoff += tilesizx[9216] / 4;

@@ -1,3 +1,19 @@
+// This file is part of RedneckGDX.
+// Copyright (C) 2017-2019  Alexander Makarov-[M210] (m210-2007@mail.ru)
+//
+// RedneckGDX is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// RedneckGDX is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
+
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
@@ -9,7 +25,6 @@ import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
 
@@ -135,7 +150,7 @@ public class ResourceHandler {
 		Arrays.fill(waloff, 0, kMaxTiles, null);
 		
 		if(engine.loadpics("tiles000.art") == 0)
-			dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
+			game.dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
 		
 		ReplaceUserTiles();
 		
@@ -158,6 +173,8 @@ public class ResourceHandler {
 	
 	public static GameInfo levelGetEpisode(String filepath)
 	{
+		if(filepath == null) return null;
+		
 		String fullname = filepath;
 		String conName = null;
 		int filenameIndex = -1;
@@ -174,8 +191,7 @@ public class ResourceHandler {
 			if(filenameIndex == -1 && (ini = episodes.get(file.getPath())) == null)
 			{
 				if(file.getExtension().equals("con")) {
-					
-					ini = new GameInfo(file.getParent(), file.getName());
+					ini = new GameInfo(file, file.getName());
 					ini.init();
 					if(ini.isInited)
 						episodes.put(file.getPath(), ini);
@@ -259,15 +275,15 @@ public class ResourceHandler {
 	{
 		resetEpisodeResources();
 		
-		FileEntry fil;
-		if((fil = addon.isPackage()) != null)
+		if(addon.isPackage())
 		{
+			FileEntry fil = addon.getFile();
 			try {
 				int gr = initgroupfile(fil.getPath());
 				setgroupflags(gr, true, true);
 				prepareusergroup(gr, true);
 			} catch(Exception e) { 
-				GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
+				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
 				return;
 			}
 		} else
@@ -290,7 +306,7 @@ public class ResourceHandler {
 			ReplaceUserTiles();
 		}
 		else {
-			GameCrash("\nErrors found in " + addon.ConName + " file.");
+			game.GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}
 	}
 	
@@ -314,7 +330,7 @@ public class ResourceHandler {
 			int newtile = replace[i][1];
 			long crc32 = replace[i][2] & 0xFFFFFFFFL;
 			
-			if(currentDef != null && currentDef.texInfo.isHighTile(tilenume))
+			if(game.currentDef != null && game.currentDef.texInfo.isHighTile(tilenume))
 				continue;
 	
 			if(waloff[tilenume] == null)

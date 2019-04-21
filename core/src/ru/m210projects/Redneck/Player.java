@@ -25,21 +25,20 @@
 package ru.m210projects.Redneck;
 
 import static java.lang.Math.*;
+import static ru.m210projects.Redneck.Factory.RRInput.*;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Redneck.Globals.ps;
+import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Gamedef.getincangle;
 import static ru.m210projects.Redneck.Gameutils.sgn;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Premap.*;
-import static ru.m210projects.Redneck.Redneck.currentGame;
-import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
-import static ru.m210projects.Redneck.Types.Demo.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Spawn.*;
-import static ru.m210projects.Redneck.Controls.*;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.*;
 import static ru.m210projects.Redneck.Globals.*;
@@ -56,6 +55,7 @@ import static ru.m210projects.Redneck.Weapons.*;
 
 import java.util.Arrays;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Types.PlayerStruct;
@@ -66,6 +66,20 @@ public class Player {
 			slimepal = new byte[768], titlepal = new byte[768], 
 			drealms = new byte[768], endingpal = new byte[768],
 			drugpal = new byte[768];
+	
+	public static void InitPlayers()
+	{
+		ps[myconnectindex].reset();
+		
+		ps[myconnectindex].palette = palette;
+	    ps[myconnectindex].aim_mode = cfg.gMouseAim ? 1:0;
+	    ps[myconnectindex].auto_aim = cfg.gAutoAim ? 1:0;
+	    
+	    for(int i = 1; i < MAXPLAYERS; i++)
+	    	ps[i].copy(ps[myconnectindex]);
+	    
+	    game.net.getnames();
+	}
 
 	public static void setpal(PlayerStruct p)
 	{
@@ -96,6 +110,7 @@ public class Player {
 		        p.posy = sprite[i].y;
 		        p.ang = sprite[i].ang;
 		        p.ammo_amount[MOTO_WEAPON] = sprite[i].owner;
+		        p.UpdatePlayerLoc();
 		        engine.deletesprite(i);
 			}
 			over_shoulder_on = 0;
@@ -160,6 +175,7 @@ public class Player {
 		        p.posy = sprite[i].y;
 		        p.ang = sprite[i].ang;
 		        p.ammo_amount[BOAT_WEAPON] = sprite[i].owner;
+		        p.UpdatePlayerLoc();
 		        engine.deletesprite(i);
 			}
 			over_shoulder_on = 0;
@@ -726,6 +742,66 @@ public class Player {
 	    
 	    p.ohoriz = p.horiz;
 	    p.ohorizoff = p.horizoff;
+	    
+	    if(p.OnMotorcycle) {
+	    	boolean left = (sb_snum & 16) != 0;
+	    	boolean right = (sb_snum & 64) != 0;
+		    if ( p.CarSpeed != 0 && p.on_ground )
+		    {
+		    	if ( left || p.CarVar2 < 0 )
+		        {
+		    		p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+		        }
+		    	else if ( right || p.CarVar2 > 0 )
+		    	{
+		    		p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+		    	}
+		    	else
+		        {
+		    		if ( p.TiltStatus < 0 ) p.TiltStatus++;
+		    		if ( p.TiltStatus > 0 ) p.TiltStatus--;
+		        }
+		    }
+		    else if ( left )
+		        p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+		    else if ( right )
+		    	p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+		    
+		    if ( p.CarVar1 != 0 )
+		    	p.CarSpeed = 0;
+	    }
+	    
+	    if(p.OnBoat)
+	    {
+	    	boolean left = (sb_snum & 16) != 0;
+	    	boolean right = (sb_snum & 64) != 0;
+	    	if ( p.CarSpeed != 0 )
+		    {
+		    	if ( left || p.CarVar2 < 0 )
+		        {
+		    		if ( p.NotOnWater == 0)
+		    			p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+		        }
+		    	else if ( right || p.CarVar2 > 0 )
+		    	{
+		    		if ( p.NotOnWater == 0)
+		    			p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+		    	}
+		    	else if ( p.NotOnWater == 0)
+		        {
+		    		if ( p.TiltStatus < 0 ) p.TiltStatus++;
+		    		if ( p.TiltStatus > 0 ) p.TiltStatus--;
+		        }
+		    }
+		    else if ( p.NotOnWater == 0) 
+		    {
+		    	if ( left )
+		    		p.TiltStatus = BClipLow(p.TiltStatus-1, -10);
+		    	else if ( right )
+		    		p.TiltStatus = BClipHigh(p.TiltStatus+1, 10);
+		    }
+	    }
+	    
 	    if ( p.OnMotorcycle && s.extra > 0 )
 	    {
 	    	p.oang = p.ang;
@@ -1425,8 +1501,8 @@ public class Player {
 	        p.fist_incs++;
 	        if(p.fist_incs == 27)
 	        {
-	            if(ud.recstat == 1) 
-	            	closedemowrite();
+	        	 if(ud.recstat == 1 && ud.rec != null) 
+		            	ud.rec.close();
 	            sound(PIPEBOMB_EXPLODE);
 	            p.pals[0] = 64;
 	            p.pals[1] = 64;
@@ -1439,14 +1515,12 @@ public class Player {
 	            {
 	                ud.from_bonus = ud.level_number+1;
 	                if(ud.secretlevel > 0 && ud.secretlevel < 9) ud.level_number = ud.secretlevel-1;
-	                ud.m_level_number = ud.level_number;
 	            }
 	            else
 	            {
 	                if(ud.from_bonus != 0)
 	                {
 	                    ud.level_number = ud.from_bonus;
-	                    ud.m_level_number = ud.level_number;
 	                    ud.from_bonus = 0;
 	                }
 	                else
@@ -1454,10 +1528,6 @@ public class Player {
 	                    if(ud.level_number == ud.secretlevel && ud.from_bonus > 0 )
 	                        ud.level_number = ud.from_bonus;
 	                    else ud.level_number++;
-
-//	                    checknextlevel();
-	                    ud.m_level_number = ud.level_number;
-
 	                }
 	            }
 	            
@@ -1473,7 +1543,7 @@ public class Player {
 	        p.timebeforeexit--;
 	        if(p.timebeforeexit == 26*5)
 	        {
-	            engine.getAudio().getSound().stopAllSounds();
+	        	BuildGdx.audio.getSound().stopAllSounds();
 	            clearsoundlocks();
 	            if(p.customexitsound >= 0)
 	            {
@@ -1485,8 +1555,6 @@ public class Player {
 	        {
 	            LeaveMap();
                 ud.level_number++;
-                ud.m_level_number = ud.level_number;
-	            
 	            return;
 	        }
 	    }
@@ -1508,8 +1576,8 @@ public class Player {
 	                s.z -= (16<<8);
 	            }
 
-	            if(ud.recstat == 1 && ud.multimode < 2)
-	                closedemowrite();
+	            if(ud.recstat == 1 && ud.multimode < 2 && ud.rec != null)
+	            	ud.rec.close();
 
 	            if(s.pal != 1)
 	                p.dead_flag = (short) ((512-((engine.krand()&1)<<10)+(engine.krand()&255)-512)&2047);
@@ -1521,7 +1589,6 @@ public class Player {
 	            if(p.scream_voice != null)
 	            {
 	            	p.scream_voice.dispose();
-	            	TestCallBack(DUKE_SCREAM);
 	                p.scream_voice = null;
 	            }
 
@@ -2164,7 +2231,7 @@ public class Player {
 				        float tempang = (sync[snum].avel * 2f);
 				        if( psectlotag == 2 ) p.angvel = ((tempang-(tempang / 8.0f))*sgn(doubvel));
 				        else p.angvel =  (tempang*sgn(doubvel));
-				        
+
 				        p.ang += p.angvel;
 				        p.ang = BClampAngle(p.ang);
 			    	}
@@ -2922,7 +2989,7 @@ public class Player {
 	    damyang = sprite[p.i].ang;
 	    damysect = sprite[p.i].sectnum;
 	    if ((numplayers >= 2) && (snum == myconnectindex))
-	        { x1 = myx; y1 = myy; z1 = myz+PHEIGHT; damyang = myang; damysect = mycursectnum; }
+	    { x1 = game.net.predict.x; y1 = game.net.predict.y; z1 = game.net.predict.z+PHEIGHT; damyang = (short) game.net.predict.ang; damysect = game.net.predict.sectnum; }
 
 	    if ((numframes&7) == 0)
 	    {

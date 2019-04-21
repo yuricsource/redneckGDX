@@ -17,6 +17,9 @@
 
 package ru.m210projects.Redneck.Types;
 
+import static ru.m210projects.Redneck.Globals.RRRA;
+import static ru.m210projects.Redneck.Globals.currentGame;
+
 import java.nio.ByteBuffer;
 
 public class LSInfo {
@@ -33,6 +36,8 @@ public class LSInfo {
 		episode = bb.getInt() + 1;
 		level = bb.getInt() + 1;
 		skill = bb.getInt();
+		if(currentGame.getCON().type == RRRA) 
+			skill++;
 		update();
 	}
 	

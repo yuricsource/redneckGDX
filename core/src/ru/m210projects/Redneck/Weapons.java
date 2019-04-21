@@ -29,6 +29,7 @@ import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Pragmas.scale;
+import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Player.*;
@@ -39,7 +40,6 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Premap.shadeEffect;
-import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Screen.myos;
 import static ru.m210projects.Redneck.Screen.myospal;
 import static ru.m210projects.Redneck.Sector.checkhitceiling;
@@ -1164,9 +1164,7 @@ public class Weapons {
 				continue;
 			}
 
-			hittype[i].bposx = s.x;
-			hittype[i].bposy = s.y;
-			hittype[i].bposz = s.z;
+			game.pInt.setsprinterpolate(i, s);
 
 			switch (s.picnum) {
 			case RADIUSEXPLOSION:

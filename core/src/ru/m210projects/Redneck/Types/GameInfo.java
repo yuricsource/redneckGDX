@@ -1,10 +1,26 @@
+// This file is part of RedneckGDX.
+// Copyright (C) 2017-2019  Alexander Makarov-[M210] (m210-2007@mail.ru)
+//
+// RedneckGDX is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// RedneckGDX is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
+
 package ru.m210projects.Redneck.Types;
 
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
-import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Strhandler.Bstrcmp;
 import static ru.m210projects.Build.Strhandler.indexOf;
+import static ru.m210projects.Build.OnSceenDisplay.Console.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
 
@@ -28,22 +44,24 @@ public class GameInfo {
 	private Script ConScr;
 	public boolean isInited = false;
 	private int nMaps;
-	private FileEntry pack;
+	private FileEntry file;
+	private boolean pack;
 	
-	public GameInfo(DirectoryEntry resDir, String mainCon)
+	public GameInfo(FileEntry file, String mainCon)
 	{
 		this.ConName = mainCon;
 		this.Title = mainCon;
-		this.resDir = resDir;
+		this.resDir = file.getParent();
+		this.file = file;
 		skillnames = new String[nMaxSkills];
 		episodes = new EpisodeInfo[nMaxEpisodes];
 		isInited = false;
 	}
 	
-	public GameInfo(IResource res, FileEntry name, String mainCon)
+	public GameInfo(IResource res, FileEntry file, String mainCon)
 	{
 		this.ConName = mainCon;
-		this.Title = name.getName() + ":" + mainCon;
+		this.Title = file.getName() + ":" + mainCon;
 		skillnames = new String[nMaxSkills];
 		episodes = new EpisodeInfo[nMaxEpisodes];
 
@@ -69,17 +87,28 @@ public class GameInfo {
 			if(nEpisodes != 0 && nMaps != 0) 
 				isInited = true;
 			checkEpisodes();
-			this.pack = name;
+			this.pack = true;
+			this.file = file;
 		} catch(Exception e) { 
 			e.printStackTrace(); 
-			Console.Println("Build addon: " + name.getName() + " failed!", OSDTEXT_RED);
+			Console.Println("Build addon: " + this.Title + " failed!", OSDTEXT_RED);
 			isInited = false; 
 		}
 	}
 	
-	public FileEntry isPackage()
+	public FileEntry getFile()
+	{
+		return file;
+	}
+	
+	public boolean isPackage()
 	{
 		return pack;
+	}
+	
+	public void setPackage(boolean pack)
+	{
+		this.pack = pack;
 	}
 
 	public void setDirectory(DirectoryEntry resDir)
@@ -227,7 +256,6 @@ public class GameInfo {
         return false;
 	}
 	
-	
 	private void findMaps(byte[] buf, IResource res)
 	{
 		int index = -1;
@@ -247,7 +275,6 @@ public class GameInfo {
             while( buf[textptr] != ' ' && buf[textptr] != 0x0a ) { textptr++; i++; }
             
             String path = bCorrectPath(toLowerCase(new String(buf, ptr, i)));
-            
             boolean mapFound = false;
             String mapPath = path;
             if(res == null)

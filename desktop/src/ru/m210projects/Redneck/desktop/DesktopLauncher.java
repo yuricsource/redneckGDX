@@ -16,118 +16,59 @@
 
 package ru.m210projects.Redneck.desktop;
 
+import static ru.m210projects.Build.FileHandle.Compat.FilePath;
+import static ru.m210projects.Build.FileHandle.Compat.FileUserdir;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
-import static ru.m210projects.Build.OnSceenDisplay.Console.SetLogFile;
+import static ru.m210projects.Build.Render.VideoMode.initVideoModes;
+import static ru.m210projects.Build.Render.VideoMode.setFullscreen;
 
-import org.lwjgl.LWJGLException;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import ru.m210projects.Build.Audio.DummyMusic;
-import ru.m210projects.Build.Audio.DummySound;
-import ru.m210projects.Build.Audio.Music;
-import ru.m210projects.Build.Audio.Sound;
+import ru.m210projects.Build.Audio.BuildAudio;
+import ru.m210projects.Build.Audio.BuildAudio.Driver;
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Types.BConfig;
+import ru.m210projects.Build.Pattern.BuildConfig;
 import ru.m210projects.Build.desktop.BuildApplicationImpl;
 import ru.m210projects.Build.desktop.DesktopMessage;
-import ru.m210projects.Build.desktop.Launcher.DesktopFrame;
-import ru.m210projects.Build.desktop.Launcher.LaunchCallback;
-import ru.m210projects.Build.desktop.audio.ALAudio;
 import ru.m210projects.Build.desktop.audio.ALSoundDrv;
 import ru.m210projects.Build.desktop.audio.GdxAL;
 import ru.m210projects.Build.desktop.audio.LwjglAL;
 import ru.m210projects.Build.desktop.audio.midi.MidiMusicModule;
 import ru.m210projects.Redneck.Config;
 import ru.m210projects.Redneck.Main;
-import ru.m210projects.Redneck.Types.Date;
-
-import com.badlogic.gdx.Files.FileType;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 public class DesktopLauncher {
-	public static String[] arg;
-	public static final String[] resources = {
-		"Redneck Rampage",
-		"redneck.grp",
-	};
-	
-	public static void main(String[] arg) {
-		try {
-			LaunchCallback callback = new LaunchCallback("rrgdx.ver", Main.release) {
-				@Override
-				public void run(LwjglApplicationConfiguration lwjglConfig, int MidiDevice, BConfig cfg) {
-					launchPort(lwjglConfig, MidiDevice, cfg);
-				}
+	public static final String appname = "RedneckGDX";
 
-				@Override
-				public BConfig buildConfig(String path, String cfgname) {
-					return new Config(path, cfgname);
-				}
-			};
-			
-			new DesktopFrame(Main.appname, Main.sversion, resources, callback, 
-					DesktopLauncher.class.getResource("/icons/title.png"), 
-					DesktopLauncher.class.getResource("/icons/RR32.png"),
-					DesktopLauncher.class.getResource("/icons/RR64.png"));
-		} 
-		catch (Exception e) {
+	public static void main(final String[] arg) {
+		//Run configurations: "D:\Games\RR\\"
+		FilePath = FileUserdir = arg[0];
+		int midiDevice = 0;
+
+		BuildConfig cfg = new Config(FilePath, appname + ".ini");
+
+		LwjglApplicationConfiguration lwjglConfig = new LwjglApplicationConfiguration();
+		lwjglConfig.fullscreen = setFullscreen(cfg.ScreenWidth, cfg.ScreenHeight, cfg.fullscreen == 1);
+		lwjglConfig.width = (cfg.ScreenWidth);
+		lwjglConfig.height = (cfg.ScreenHeight);
+		lwjglConfig.resizable = false;
+		lwjglConfig.depth = 32; // z-buffer
+
+		lwjglConfig.backgroundFPS = cfg.fpslimit;
+		lwjglConfig.foregroundFPS = cfg.fpslimit;
+		lwjglConfig.vSyncEnabled = cfg.gVSync;
+
+		try {
+			BuildAudio.registerDriver(Driver.Sound, new ALSoundDrv(new LwjglAL(), "OpenAL 1.15.1"));
+			BuildAudio.registerDriver(Driver.Sound, new ALSoundDrv(new GdxAL(), "OpenAL 1.18.1"));
+		} catch (Throwable e) {
 			e.printStackTrace();
-			System.exit(1);
-		} 
-	}
-	
-	public static void launchPort(LwjglApplicationConfiguration lwjglConfig, int midiDevice, BConfig cfg)
-	{
-		SetLogFile(Main.appname + ".log");
-		Console.Println("BUILD engine by Ken Silverman (http://www.advsys.net/ken)");
-		Console.Println(Main.appname + " " + Main.sversion + " by [M210®] (http://m210.duke4.net)");
-
-		Main.date = new Date("MMM dd, yyyy HH:mm:ss");
-		Console.Println("Current date " + Main.date.getLaunchDate());
-		
-		String osver = System.getProperty("os.version");
-		String jrever = System.getProperty("java.version");
-
-		Console.Println("Running on " + Main.OS + " (version " + osver + ")");
-		Console.Println("\t with JRE version: " + jrever + "\r\n");
-
-		for(int i = 16; i <= 256; i *= 2) 
-			lwjglConfig.addIcon("icons/RR" + i + ".png", FileType.Internal);
-		
-		ALAudio al = null;
-		try {
-			//try to load JNA version of OpenAL
-			al = new GdxAL();
-		} catch (Throwable t) {
-			try {
-				//if not success, try to load GDX version of OpenAL
-				al = new LwjglAL();
-			} catch (LWJGLException e) {
-				e.printStackTrace();
-				Console.Println("Unable to initialize OpenAL! - " + e.getLocalizedMessage(), OSDTEXT_RED);
-			}
+			Console.Println("Unable to initialize OpenAL! - " + e.getLocalizedMessage(), OSDTEXT_RED);
 		}
+		BuildAudio.registerDriver(Driver.Music, new MidiMusicModule(midiDevice, null));
 		
-		Main.fxdrivers = new Sound[] {
-			new DummySound(),
-			new ALSoundDrv(al),
-		};
-		if(cfg.snddrv >= Main.fxdrivers.length)
-			cfg.snddrv = 0;
+		initVideoModes(LwjglApplicationConfiguration.getDisplayModes(), LwjglApplicationConfiguration.getDesktopDisplayMode());
 
-		if(midiDevice != -1) {
-			Main.mxdrivers = new Music[] {
-				new DummyMusic(),
-				new MidiMusicModule(midiDevice, null),
-			};
-			if(cfg.middrv > Main.mxdrivers.length)
-				cfg.middrv = 0;
-		} else {
-			Main.mxdrivers = new Music[] {
-				new DummyMusic(),
-			};
-			cfg.middrv = 0;
-		}
-
-		new BuildApplicationImpl(new Main(cfg, new DesktopMessage(DesktopLauncher.class.getResource("/icons/RR32.png"))), lwjglConfig);
+		new BuildApplicationImpl(new Main(cfg, appname, Main.sversion, true), new DesktopMessage(null), lwjglConfig);
 	}
 }

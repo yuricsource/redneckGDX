@@ -1,3 +1,19 @@
+// This file is part of RedneckGDX.
+// Copyright (C) 2017-2019  Alexander Makarov-[M210] (m210-2007@mail.ru)
+//
+// RedneckGDX is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// RedneckGDX is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
+
 package ru.m210projects.Redneck.Types;
 
 import static ru.m210projects.Build.Engine.MAXPSKYTILES;
@@ -13,7 +29,6 @@ import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Gamedef.MAXSCRIPTSIZE;
 import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
 import static ru.m210projects.Redneck.Globals.MAXCYCLERS;
-import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Animate.MAXANIMATES;
 
 import java.nio.ByteBuffer;
@@ -26,6 +41,8 @@ public class SafeLoader {
 
 	public String boardfilename;
 	public GameInfo addon;
+	public String addonFileName;
+	public byte warp_on;
 	
 	public short spriteq[] = new short[1024],spriteqloc,spriteqamount=64;
 	public short numanimwalls;
@@ -127,7 +144,7 @@ public class SafeLoader {
 	public short from_bonus;
 	public short secretlevel;
 	public boolean respawn_monsters,respawn_items,respawn_inventory;
-	public int warp_on,eog;
+	public int eog;
 	public boolean god,scrollmode,clipping;
 	public int auto_run, crosshair;
 	public boolean monsters_off;
@@ -146,6 +163,8 @@ public class SafeLoader {
 	public SECTOR[] sector = new SECTOR[MAXSECTORS];
 	public WALL[] wall = new WALL[MAXWALLS];
 	public SPRITE[] sprite = new SPRITE[MAXSPRITES];
+	
+	private String message;
 	
 	public SafeLoader()
 	{
@@ -177,6 +196,11 @@ public class SafeLoader {
 	
 	public boolean load(ByteBuffer bb)
 	{
+		addon = null;
+		addonFileName = null;
+		message = null;
+		warp_on = 0;
+		
 		try {
 			bb.position(SAVEHEADER - SAVELEVELINFO);
 			
@@ -193,6 +217,17 @@ public class SafeLoader {
 			ConLoad(bb);
 			AnimationLoad(bb);
 			GameInfoLoad(bb);
+			
+			if (warp_on == 1) { // try to find addon
+				addon = levelGetEpisode(addonFileName);
+				if (addon == null) {
+					message = "Can't find user episode file: " + addonFileName;
+					warp_on = 2;
+
+					volume_number = 0;
+					level_number = 7;
+				}
+			}
 			
 			if(bb.position() == bb.capacity())
 				return true;
@@ -414,6 +449,10 @@ public class SafeLoader {
 		}
 	}
 	
+	public String getMessage() {
+		return message;
+	}
+	
 	public void LoadGDXBlock(ByteBuffer bb)
 	{
 		int pos = bb.position();
@@ -421,20 +460,10 @@ public class SafeLoader {
 
 		addon = null;
 		warp_on = bb.get();
-		if(warp_on == 1) //user episode
-		{
+		if (warp_on == 1) {
 			byte[] buf = new byte[144];
 			bb.get(buf);
-			String name = new String(buf).trim();
-			name = toLowerCase(name);
-			addon = levelGetEpisode(name);
-			if(addon == null)
-			{
-				addmessage("Can't find user episode file: " + name);
-				level_number = 3;
-		        volume_number = 2;
-				warp_on = 2;
-			}
+			addonFileName = toLowerCase(new String(buf).trim());
 		}
 
 		bb.position(pos + SAVEGDXDATA);

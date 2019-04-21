@@ -21,15 +21,11 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Spawn.*;
 
-import static ru.m210projects.Redneck.Interpolation.viewBackupWallLoc;
-import static ru.m210projects.Build.Engine.MAXWALLS;
 import static ru.m210projects.Build.Engine.neartag;
-import static ru.m210projects.Build.Engine.wall;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
 
 import ru.m210projects.Build.Types.SPRITE;
-
 
 public class Gameutils {
 
@@ -41,50 +37,6 @@ public class Gameutils {
     	neartagsector = (short) neartag.tagsector;
     	neartaghitdist = neartag.taghitdist;
     	return out;
-	}
-	
-	public static void DragPoint(int pointhighlight, int dax, int day) {
-
-		short cnt, tempshort;
-		viewBackupWallLoc(pointhighlight, wall[pointhighlight]);
-		wall[pointhighlight].x = dax;
-		wall[pointhighlight].y = day;
-
-		cnt = (short) MAXWALLS;
-		tempshort = (short) pointhighlight;    //search points CCW
-		do
-		{
-			if (wall[tempshort].nextwall >= 0)
-			{
-				tempshort = wall[wall[tempshort].nextwall].point2;
-				viewBackupWallLoc(tempshort, wall[tempshort]);
-				wall[tempshort].x = dax;
-				wall[tempshort].y = day;
-			}
-			else
-			{
-				tempshort = (short) pointhighlight;    //search points CW if not searched all the way around
-				do
-				{
-					if (wall[engine.lastwall(tempshort)].nextwall >= 0)
-					{
-						tempshort = wall[engine.lastwall(tempshort)].nextwall;
-						viewBackupWallLoc(tempshort, wall[tempshort]);
-						wall[tempshort].x = dax;
-						wall[tempshort].y = day;
-					}
-					else
-					{
-						break;
-					}
-					cnt--;
-				}
-				while ((tempshort != pointhighlight) && (cnt > 0));
-				break;
-			}
-			cnt--;
-		}
-		while ((tempshort != pointhighlight) && (cnt > 0));
 	}
 	
 	public static int FindDistance2D(int dx, int dy)

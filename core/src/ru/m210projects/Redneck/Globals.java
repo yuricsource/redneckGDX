@@ -17,25 +17,11 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.FileHandle.Compat.FilePath;
-import static ru.m210projects.Build.Input.Keymap.ANYKEY;
-import static ru.m210projects.Build.OnSceenDisplay.Console.CloseLogFile;
-import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
-import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
-import static ru.m210projects.Redneck.Redneck.appdispose;
-import static ru.m210projects.Redneck.Main.cfg;
-import static ru.m210projects.Redneck.Main.engine;
-import static ru.m210projects.Redneck.Types.BugReport.saveToFTP;
-
-import java.util.HashMap;
-
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Premap.setloading;
 import static ru.m210projects.Redneck.Sounds.*;
 
-import com.badlogic.gdx.Gdx;
-
-import ru.m210projects.Build.OnSceenDisplay.Console;
+import java.util.HashMap;
+import ru.m210projects.Redneck.Types.NetInfo;
 import ru.m210projects.Redneck.Types.SoundOwner;
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.Animwalltype;
@@ -51,16 +37,20 @@ public class Globals {
 	public static final int RR66 = 1;
 	public static final int RRRA = 2;
 	
-	public static HashMap<String, GameInfo> episodes = new HashMap<String, GameInfo>();
-	
-	public static GameInfo defGame;
-	public static GameInfo RR66Game;
+	public static String boardfilename;
+	public static boolean mFakeMultiplayer;
+	public static int nFakePlayers;
 	
 	public static final int BYTEVERSIONRR = 108;
 	public static final int GDXBYTEVERSION = 147;
 	
 	public static final int BYTEVERSION = GDXBYTEVERSION;
 	
+	public static HashMap<String, GameInfo> episodes = new HashMap<String, GameInfo>();
+	public static GameInfo defGame;
+	public static GameInfo currentGame;
+	public static NetInfo pNetInfo = new NetInfo();
+
 	public static final int TICRATE = 120;
 	public static final int TICSPERFRAME = (TICRATE/26);
 	public static final int TIMERUPDATESIZ = 16;
@@ -68,7 +58,6 @@ public class Globals {
 	public static final int kMaxTiles = MAXTILES - USERTILES;
 	public static final int kUserTiles = kMaxTiles;
 	
-	public static final int TILE_LOADSHOT = MAXTILES - 2;
 	public static final int TILE_ANIM = MAXTILES - 3;
 	public static final int TILE_VIEWSCR = MAXTILES - 4;
 	
@@ -82,12 +71,9 @@ public class Globals {
 	public static int WindDir;
 	public static int WindTime;
 	public static int mamaspawn_count;
-	public static int word_119BE2;
 	public static int fakebubba_spawn;
 	public static int dword_119C08;
-	
-//	public static int numepisodes, numlevels[] = new int[3];
-	
+
 	public static final int MAX_WEAPONS = 13;
 	public static final int MAX_WEAPONSRA = 17;
 	
@@ -121,23 +107,10 @@ public class Globals {
 	public static final int RESERVEDSLOT10 = 6141;
 	public static final int RESERVEDSLOT11 = 6142;
 	public static final int RESERVEDSLOT12 = 6143;
-	
-	public static int gm;
-	
-	public static final int MODE_MENU       = 1;
-	public static final int MODE_DEMO       = 2;
-	public static final int MODE_GAME       = 4;
-	public static final int MODE_EOL        = 8;
-	public static final int MODE_RESTART    = 32;
-	public static final int MODE_SENDTOWHOM = 64;
-	public static final int MODE_END        = 128;
-	public static final int MODE_LOADING    = 256;
-	public static final int MODE_LOGO    	= 512;
-	public static final int MODE_LOGO2    	= 1024;
-	public static final int MODE_LOGO3    	= 2048;
-	public static final int MODE_CUTSCENE   = 4096;
-	public static final int MODE_WAIT  		= 8192;
-	
+
+	public static int uGameFlags = 0;
+	public static final int MODE_EOL        = 1;
+	public static final int MODE_END        = 2;
 	public static boolean MODE_TYPE; //== 16
 	
 	public static int gVisibility;
@@ -209,10 +182,8 @@ public class Globals {
 	public static short camsprite;
 	public static short mirrorwall[] = new short[64], mirrorsector[] = new short[64], mirrorcnt;
 
-	public static int current_menu;
-
 	public static final int nMaxMaps = 11;
-	public static final int nMaxEpisodes = 4;
+	public static final int nMaxEpisodes = 3;
 	public static final int nMaxSkills = 5;
 	
 	public static int checksume;
@@ -226,33 +197,12 @@ public class Globals {
 
 	public static int fricxv,fricyv;
 
+	public static Input sync[] = new Input[MAXPLAYERS];
 	
-	public static final int CheckSize = 3;
-	public static final int CheckBytes = Integer.BYTES * CheckSize;
-	public static byte syncstat, syncval[][] = new byte[MAXPLAYERS][CheckBytes * MOVEFIFOSIZ];
-	public static int syncvalhead[] = new int[MAXPLAYERS], syncvaltail, syncvaltottail;
-
-	public static Input sync[] = new Input[MAXPLAYERS], loc;
-	public static Input recsync[][] = new Input[RECSYNCBUFSIZ][MAXPLAYERS];
-	
-	public static Input[][] inputfifo = new Input[MOVEFIFOSIZ][MAXPLAYERS];
-	
-	public static int movefifosendplc;
-
 	  //Multiplayer syncing variables
 	public static short screenpeek;
-	public static int movefifoend[] = new int[MAXPLAYERS];
 
-
-	 //Game recording variables
-
-	public static int playerreadyflag[] = new int[MAXPLAYERS], playerquitflag[] = new int[MAXPLAYERS];
-	public static boolean ready2send;
-	public static short vel, svel;
-	public static float angvel;
-	public static float horiz;
-	
-	public static int ototalclock, groupfile;
+	public static int groupfile;
 
 	public static char display_mirror,typebuflen;
 	public static byte[] tempbuf = new byte[2048];
@@ -275,25 +225,10 @@ public class Globals {
 		37,
 	};
 
-	//GLOBAL.C - replace the end "my's" with this
-	public static int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
-	public static short myhorizoff, omyhorizoff;
-	public static short mycursectnum, myjumpingcounter,frags[][] = new short[MAXPLAYERS][MAXPLAYERS];
-	public static float myang, omyang,myhoriz, omyhoriz;
-	
-	public static char myjumpingtoggle, myhardlanding, myreturntocenter;
-	public static boolean myonground;
+	public static short frags[][] = new short[MAXPLAYERS][MAXPLAYERS];
 	public static byte multiwho, multipos, multiwhat, multiflag;
-
-	public static int fakemovefifoplc,movefifoplc;
-	public static int[] myxbak = new int[MOVEFIFOSIZ], myybak = new int[MOVEFIFOSIZ], myzbak = new int[MOVEFIFOSIZ];
-	public static float myhorizbak[] = new float[MOVEFIFOSIZ];
-	public static float[] myangbak = new float[MOVEFIFOSIZ];
-
-	// CTW - MODIFICATION
-	public static char networkmode = 0, movesperpacket = 1,gamequit = 0,everyothertime;
-
-	public static int myminlag[] = new int[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
+	public static char everyothertime, gamequit = 0;
+	
 	public static int totalmemory = 0;
 	public static int startofdynamicinterpolations = 0;
 	
@@ -308,100 +243,4 @@ public class Globals {
 	public static final int kAngle120 = 682;
 	public static final int kAngle180 = 1024;
 	public static final int kAngle360 = 2048;
-	
-	public static String exceptionHandler(Exception e)
-	{
-		if (e instanceof ArithmeticException) 
-			return "ArithmeticException";
-		if (e instanceof ArrayIndexOutOfBoundsException) 
-			return "ArrayIndexOutOfBoundsException";
-		if (e instanceof ArrayStoreException )
-			return "ArrayStoreException";		
-		if (e instanceof ClassCastException )
-			return "ClassCastException";		
-		if (e instanceof IllegalMonitorStateException )
-			return "IllegalMonitorStateException";		
-		if (e instanceof IllegalStateException )
-			return "IllegalStateException";		
-		if (e instanceof IllegalThreadStateException )
-			return "IllegalThreadStateException";		
-		if (e instanceof IndexOutOfBoundsException )
-			return "IndexOutOfBoundsException";	
-		if (e instanceof NegativeArraySizeException )
-			return "NegativeArraySizeException";		
-		if (e instanceof NullPointerException )
-			return "NullPointerException";		
-		if (e instanceof NumberFormatException )
-			return "NumberFormatException";		
-		if (e instanceof SecurityException )
-			return "SecurityException";
-
-		return "Application exception";
-	}
-	
-	public static String stackTraceToString(Throwable e) {
-	    StringBuilder sb = new StringBuilder();
-	    for (StackTraceElement element : e.getStackTrace()) {
-	    	sb.append("\t" + element.toString());
-	        sb.append("\r\n");
-	    }
-	    return sb.toString();
-	}
-
-	public static void dassert(String msg) {
-		if(kGameCrash)
-			return;
-		
-		String message = msg;
-
-		StringBuilder sb = new StringBuilder();
-	    for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-	    	sb.append("\t" + element.toString());
-	        sb.append("\r\n");
-	    }
-	    message += "\r\nFull stack trace: ";
-	    message += sb.toString();
-
-		Console.LogPrint("Dassert: " + message);
-		System.err.println("Dassert: " + message);
-		CloseLogFile();
-		
-		try {
-			if(engine.showMessage("Dassert", message, true))
-				saveToFTP();
-			throw new RuntimeException();
-		} catch (Exception e) {}
-		finally {
-			appdispose();
-			System.exit(0);
-		}
-	}
-	
-	public static void GameCrash(String errorText)
-	{
-		engine.showMessage("Error: ", errorText, false);
-		if(Gdx.graphics != null)
-			cfg.fullscreen = 0;
-		Console.Println("Game error: "+ errorText, OSDTEXT_RED);
-		getInput().setKey(ANYKEY, 0);
-		setloading(null, 0, false);
-		kGameCrash = true;
-	}
-	
-	public static boolean GameMessage(String text, boolean choise)
-	{
-		boolean out = engine.showMessage("Warning: ", text, choise);
-		if(Gdx.graphics != null)
-			cfg.fullscreen = 0;
-		Console.Println("Warning: "+ text, OSDTEXT_YELLOW);
-		
-		return out;
-	}
-	
-	public static void saveConfig()
-	{
-		cfg.anisotropy = glanisotropy;
-		cfg.widescreen = r_usenewaspect;
-		cfg.saveConfig(FilePath);
-	}
 }
