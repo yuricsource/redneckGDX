@@ -1744,7 +1744,7 @@ public class Spawn {
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
                         if(sp.picnum == MINION || sp.picnum == MINION+1)
                         {
-                        	if ( ps[myconnectindex].isSwamp )
+                        	if ( ps[connecthead].isSwamp )
                                 sp.pal = 8;
                         } 	
         				break;

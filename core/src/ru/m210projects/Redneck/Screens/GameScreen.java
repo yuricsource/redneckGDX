@@ -181,6 +181,8 @@ import static ru.m210projects.Redneck.Weapons.moveweapons;
 
 import java.util.Arrays;
 
+import com.badlogic.gdx.Gdx;
+
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
@@ -367,20 +369,19 @@ public class GameScreen extends GameAdapter {
 	    	{
 	    		ud.eog = 0;
 	    		uGameFlags |= MODE_END;
-	    		if(ud.multimode < 2)
-                {
-		    		switch(ud.volume_number)
-				    {
-				   		case 0: gEndScreen.episode1(); break;
-						case 1: gEndScreen.episode2(); break;
-						default: game.show(); break;
-				    }
-	            }
-	            else
-	            {
-	                game.show();
-	                return;
-	            }
+	    		switch(ud.volume_number)
+			    {
+			   		case 0: gEndScreen.episode1(); break;
+					case 1: gEndScreen.episode2(); break;
+					default: 
+						Gdx.app.postRunnable(new Runnable() {
+							@Override
+							public void run() {
+								game.show();
+							}
+						});
+						break;
+			    }
 	    	} else game.changeScreen(gStatisticScreen);
 	    }
 	}
@@ -640,7 +641,7 @@ public class GameScreen extends GameAdapter {
 	    }
 
 	    cacheit();
-	    docacheit();
+	    docacheit(-1);
 
 	    if(ud.recstat != 2)
 	    {

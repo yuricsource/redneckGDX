@@ -1207,8 +1207,7 @@ public class Actors {
 							hittype[i].temp_data[4]--;
 						else
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
-								if (p == myconnectindex
-										&& ps[p].cursectnum == s.sectnum) {
+								if (p == myconnectindex && ps[p].cursectnum == s.sectnum) {
 									j = s.lotag+((global_random & 0xFFFF)%(s.hitag+1));
 									sound(j);
 									hittype[i].temp_data[4] = 26 * 40 + (global_random % (26 * 40));
@@ -2446,7 +2445,7 @@ public class Actors {
 				if ( sprite[i].picnum != 8162 )
 					sprite[i].picnum = 8162;
 				sprite[i].extra--;
-				if ( sprite[i].extra == 0 ) //XXX
+				if ( sprite[i].extra == 0 )
 				{
 					int chance = engine.krand() & 0x7F;
 			        if ( chance >= 96 )
@@ -2463,11 +2462,11 @@ public class Actors {
 			        				{
 			        					sprite[i].picnum = 8166;
 			        					spawn(i, 5595);
-			        					ps[screenpeek].SlotWin |= 8;
+			        					ps[connecthead].SlotWin |= 8;
 			        					spritesound(52, i);
 			        				}
 			        			}
-			        			else if ( (ps[screenpeek].SlotWin & 4) != 0)
+			        			else if ( (ps[connecthead].SlotWin & 4) != 0)
 			        				sprite[i].picnum = 8165;
 			        			else
 			        			{
@@ -2589,13 +2588,13 @@ public class Actors {
 			movesprite(i, 0, 0, sprite[i].extra, CLIPMASK0);
 		}
 		
-		if ( ps[myconnectindex].MamaEnd > 0 && --ps[myconnectindex].MamaEnd == 0 )
+		if ( ps[connecthead].MamaEnd > 0 && --ps[connecthead].MamaEnd == 0 )
 		{
 			LeaveMap();
 		    ud.eog = 1;
 		}
 		
-		if ( ps[myconnectindex].field_607 > 0 )
+		if ( ps[connecthead].field_607 > 0 )
 		{
 			for(j = 0; j < MAXSPRITES; j++)
 			{
@@ -2637,13 +2636,13 @@ public class Actors {
 					case 7206:
 				 	case 7280:
 				 	case 8705:
-				 		if ( ps[myconnectindex].field_607 == 3 )
+				 		if ( ps[connecthead].field_607 == 3 )
 						{
 					        sprite[j].xrepeat <<= 1;
 					        sprite[j].yrepeat <<= 1;
 					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
 						}
-						else if ( ps[myconnectindex].field_607 == 2 )
+						else if ( ps[connecthead].field_607 == 2 )
 						{
 							sprite[j].xrepeat >>= 1;
 					        sprite[j].yrepeat >>= 1;
@@ -2652,7 +2651,7 @@ public class Actors {
 					 break;
 				}
 			}
-			ps[myconnectindex].field_607 = 0;
+			ps[connecthead].field_607 = 0;
 		}
 		
 		for (int i = headspritestat[119]; i >= 0; i = nextspritestat[i]) { //RA
@@ -2696,7 +2695,7 @@ public class Actors {
 			}
 		}
 		
-		for (int i = headspritestat[122]; i >= 0; i = nextspritestat[i]) { //RA XXX
+		for (int i = headspritestat[122]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( sprite[i].extra != 0)
 			{
 				if ( sprite[i].picnum != 8589 )
@@ -2912,7 +2911,8 @@ public class Actors {
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
 	                        ps[p].UpdatePlayerLoc();
 	                        
-							engine.deletesprite((short)j);
+	                        if (ud.multimode < 2)
+	                        	engine.deletesprite((short)j);
 						}
 						j = nextj;
 					}
@@ -2937,6 +2937,7 @@ public class Actors {
 
 			t = hittype[i].temp_data;
 
+			game.pInt.clearspriteinterpolate(i);
 			game.pInt.setsprinterpolate(i, sprite[i]);
 
 			switch (s.picnum) {
@@ -5675,9 +5676,9 @@ public class Actors {
 
 							sc.floorshade = s.shade;
 
-							if (ps[0].one_parallax_sectnum >= 0) {
-								sc.ceilingpicnum = sector[ps[0].one_parallax_sectnum].ceilingpicnum;
-								sc.ceilingshade = sector[ps[0].one_parallax_sectnum].ceilingshade;
+							if (ps[connecthead].one_parallax_sectnum >= 0) {
+								sc.ceilingpicnum = sector[ps[connecthead].one_parallax_sectnum].ceilingpicnum;
+								sc.ceilingshade = sector[ps[connecthead].one_parallax_sectnum].ceilingshade;
 							}
 						}
 					}

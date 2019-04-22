@@ -84,6 +84,9 @@ public class Main extends BuildGame {
 	 * 
 	 * 
 	 * TODO:
+	 * если дисконнектится умершим, в демо камеру будет кривая
+	 * на бочке игрока глючит каемру
+	 * поднять чат повыше
 	 * прверить прекэш
 	 * Endscreen - 8677 - 8678
 	 * fakebubba loadgame

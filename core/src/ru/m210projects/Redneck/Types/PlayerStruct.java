@@ -857,7 +857,7 @@ public class PlayerStruct {
 		this.on_ground = false;
 		this.inven_icon = 0;
 		this.buttonpalette = 0;
-		this.jetpack_on = 0;
+		this.jetpack_on = 0; //XXX
 		this.spritebridge = 0;
 		this.lastrandomspot = 0;
 		this.scuba_on = 0;

@@ -838,7 +838,7 @@ public class LoadSave {
 		Arrays.fill(gotpic, (byte)0);
 		clearsoundlocks();
 		cacheit();
-		docacheit();
+		docacheit(-1);
 
 		userMusic = null;
 		if(boardfilename != null) {

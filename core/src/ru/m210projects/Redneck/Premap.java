@@ -424,7 +424,7 @@ public class Premap {
 	    }
 	}
 	
-	public static void docacheit()
+	public static void docacheit(int method)
 	{
 	    for(int i=0;i<MAXTILES;i++) 
 	    {
@@ -435,11 +435,10 @@ public class Premap {
 	        	if (waloff[i] == null) {
 	        		engine.loadtile(i);
 	        		if(engine.getrender() != null) 
-	    				engine.getrender().precache(i, 0, -1);
+	    				engine.getrender().precache(i, 0, method);
 	        		}
 		    } 
 	    }
-	    engine.getrender().gltexinvalidateall(0);
 
 	    Arrays.fill(gotpic, (byte)0);
 	}
@@ -657,7 +656,8 @@ public class Premap {
 	    	 UFO_SpawnHulk = ud.player_skill + 1;
 	    }
 	    
-	    p.numloogs = 0;  //GDX 31.10.2018
+	    //last_extra check
+	    p.numloogs = 0;  //GDX 31.10.2018 XXX
 		p.truefz = 0; 
 		p.truecz = 0;
 		p.randomflamex = 0;
@@ -668,6 +668,8 @@ public class Premap {
 		p.crouch_toggle = 0;
 		p.exitx = 0;
 	    p.exity = 0;
+	    p.last_used_weapon = 0;
+	    p.ohorizoff = 0;
 	}
 	
 	public static void resetweapons(int snum)

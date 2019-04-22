@@ -479,7 +479,7 @@ public class Sector {
 	{
 	    int i, j, p, t;
 
-	    if ( ps[myconnectindex].isSea )
+	    if ( ps[connecthead].isSea )
 	    {
 	    	for ( i = 0; i < MAXWALLS; ++i )
 	    	{

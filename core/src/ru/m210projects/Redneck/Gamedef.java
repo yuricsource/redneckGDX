@@ -3553,7 +3553,7 @@ public class Gamedef {
 	        	break;
 	        case 141: //mamaend
 	        	insptr++;
-	        	ps[myconnectindex].MamaEnd = 150;
+	        	ps[connecthead].MamaEnd = 150;
 	        	break;
 	        case 142: //newpic
 	        	insptr++;

@@ -742,7 +742,7 @@ public class Player {
 	    
 	    p.ohoriz = p.horiz;
 	    p.ohorizoff = p.horizoff;
-	    
+
 	    if(p.OnMotorcycle) {
 	    	boolean left = (sb_snum & 16) != 0;
 	    	boolean right = (sb_snum & 64) != 0;

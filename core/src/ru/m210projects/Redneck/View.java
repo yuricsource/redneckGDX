@@ -234,15 +234,15 @@ public class View {
                     
                     if ( cfg.gShowStat == 2 ) {
                     	int k = 0;
-                    	if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
+                    	if (ud.screen_size > 0 && ud.multimode > 1)
                     	{
-	               	         j = 0; k = 8;
+	               	         j = 0; k = 20;
 	               	         for(i=connecthead;i>=0;i=connectpoint2[i])
 	               	             if (i > j) j = i;
 
-	               	         if (j >= 4 && j <= 8) k += 8;
-	               	         else if (j > 8 && j <= 12) k += 16;
-	               	         else if (j > 12) k += 24;
+	               	         if (j >= 4 && j <= 8) k += 20;
+	               	         else if (j > 8 && j <= 12) k += 40;
+	               	         else if (j > 12) k += 60;
                     	}
             	    	viewDrawStats(5, 5+k, cfg.gStatSize);
                     }
@@ -276,15 +276,15 @@ public class View {
 //	    	viewDrawStats(10, y, cfg.gStatSize);
 	    	
 	    	int k = 0;
-        	if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
+        	if (ud.screen_size > 0 && ud.multimode > 1)
         	{
-       	         j = 0; k = 8;
+       	         j = 0; k = 20;
        	         for(i=connecthead;i>=0;i=connectpoint2[i])
        	             if (i > j) j = i;
 
-       	         if (j >= 4 && j <= 8) k += 8;
-       	         else if (j > 8 && j <= 12) k += 16;
-       	         else if (j > 12) k += 24;
+       	         if (j >= 4 && j <= 8) k += 20;
+       	         else if (j > 8 && j <= 12) k += 40;
+       	         else if (j > 12) k += 60;
         	}
 	    	viewDrawStats(5, 5+k, cfg.gStatSize);
 	    }
@@ -920,7 +920,6 @@ public class View {
                 cang = p.prevView.ang + (BClampAngle(cang+1024-p.prevView.ang)-1024) * smoothratio / 65536.0f;
                 cang += p.prevView.lookang + (BClampAngle(p.look_ang+1024-p.prevView.lookang)-1024) * smoothratio / 65536.0f;
                 choriz = (p.prevView.horiz +p.prevView.horizoff+((choriz-p.prevView.horiz-p.prevView.horizoff) * smoothratio) / 65536.0f);
-
 	        }
 	      
 	        if (p.newowner >= 0)
