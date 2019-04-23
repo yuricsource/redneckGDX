@@ -273,7 +273,7 @@ public class LoadSave {
 					+ 2 + 64 * 4 + show2dsector.length
 					+ MAXSECTORS + 4 + 22 * MAXJAILDOORS +  4 + 22 * MAXMINECARDS
 					+ 4 + 5 * MAXTORCHES + 4 + 4 * MAXLIGHTNINS + 4 + 6 * MAXAMBIENTS
-					+ 30 * MAXGEOMETRY + 15;
+					+ 30 * MAXGEOMETRY + 15 + 28;
 
 		ByteBuffer bb = ByteBuffer.allocate(bufsize);
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
@@ -383,6 +383,15 @@ public class LoadSave {
 		bb.putShort((short)0); //gEndFirstEpisode
 		bb.putShort((short)0); //gEndGame
 		bb.put((byte) (plantProcess?1:0));
+		
+		bb.putShort(BellTime);
+		bb.putInt(BellSound);
+		bb.putShort(word_119BE0);
+		bb.putInt(WindDir);
+		bb.putInt(WindTime);
+		bb.putInt(mamaspawn_count);
+		bb.putInt(fakebubba_spawn);
+		bb.putInt(dword_119C08);
 
 		Bwrite(fil,bb.array(),bb.capacity());
 	}
@@ -744,6 +753,15 @@ public class LoadSave {
 	    
 	    BowlReset();
 		plantProcess = bb.plantProcess;
+		
+		BellTime = bb.BellTime;
+		BellSound = bb.BellSound;
+		word_119BE0 = bb.word_119BE0;
+		WindDir = bb.WindDir;
+		WindTime = bb.WindTime;
+		mamaspawn_count = bb.mamaspawn_count;
+		fakebubba_spawn = bb.fakebubba_spawn;
+		dword_119C08 = bb.dword_119C08;
 	}
 	
 	public static void MapLoad(SafeLoader bb)
@@ -838,7 +856,6 @@ public class LoadSave {
 		Arrays.fill(gotpic, (byte)0);
 		clearsoundlocks();
 		cacheit();
-		docacheit(-1);
 
 		userMusic = null;
 		if(boardfilename != null) {

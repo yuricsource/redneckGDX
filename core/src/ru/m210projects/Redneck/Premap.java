@@ -219,7 +219,7 @@ public class Premap {
 
 	    if(ud.monsters_off && badguy(sprite[i])) return;
 	    
-	    cacheenemies(i);
+//	    cacheenemies(i);
 	    
 	    int maxc = 1;
 	    switch(sprite[i].picnum)
@@ -288,10 +288,10 @@ public class Premap {
     	tloadtile(CROSSHAIR);
     	tloadtile(FRAGBAR-1);
         
-    	for(i=920;i<924;i++)
-	    	tloadtile(i);
-    	for(i=930;i<939;i++)
-	    	tloadtile(i);
+//    	for(i=920;i<924;i++)
+//	    	tloadtile(i);
+//    	for(i=930;i<939;i++)
+//	    	tloadtile(i);
 	    
     	//FONTS
 	    for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++)
@@ -301,43 +301,43 @@ public class Premap {
 	    for(i=MINIFONT;i<MINIFONT+63;i++)
         	tloadtile(i);
 	    
-	    //WEAPONS
-	    for( i = NEWCROWBAR; i < NEWCROWBAR+8; i++ )
-	    	tloadtile(i);
-	    for( i = NEWPISTOL; i < NEWPISTOL+11; i++ )
-	    	tloadtile(i);
-	    for( i = NEWSHOTGUN; i < NEWSHOTGUN+9 ; i++ )
-	    	tloadtile(i);
-	    for( i = 3370; i < 3373; i++ )
-	    	tloadtile(i);
-	    for( i = RIFLE; i < RIFLE+3 ; i++ )
-	    	tloadtile(i);
-	    for( i = SHELL; i < SHELL+2 ; i++ ) //Dynamite
-	    	tloadtile(i);
-	    for( i = 1752; i < 1757 ; i++ ) //Dynamite
-	    	tloadtile(i);
-	    for( i = NEWDYNAMITE; i < NEWDYNAMITE+7; i++ )
-	    	tloadtile(i);
-	    for( i = CIRCLESTUCK-5; i < CIRCLESTUCK; i++ )
-	    	tloadtile(i);
-	    for( i = BUZSAW; i < BUZSAW+3; i++ )
-	    	tloadtile(i);
-	    for( i = 3415; i < 3419; i++ )
-	    	tloadtile(i);
-	    for( i = 3427; i < 2429; i++ )
-	    	tloadtile(i);
-	    tloadtile(3438);
-	    for( i = 3445; i < 3448; i++ )
-	    	tloadtile(i);
-	    for( i = 3452; i < 3459; i++ )
-	    	tloadtile(i);
-	    
-	    //PICKUPS
-	    for( i = FIRSTGUNSPRITE; i <= ALIENARMGUN; i++ )
-	    	tloadtile(i);
-	    for( i = AMMO; i <= BOOTS+1; i++ )
-	    	tloadtile(i);
-	    tloadtile(TEATAMMO);
+//	    WEAPONS
+//	    for( i = NEWCROWBAR; i < NEWCROWBAR+8; i++ )
+//	    	tloadtile(i);
+//	    for( i = NEWPISTOL; i < NEWPISTOL+11; i++ )
+//	    	tloadtile(i);
+//	    for( i = NEWSHOTGUN; i < NEWSHOTGUN+9 ; i++ )
+//	    	tloadtile(i);
+//	    for( i = 3370; i < 3373; i++ )
+//	    	tloadtile(i);
+//	    for( i = RIFLE; i < RIFLE+3 ; i++ )
+//	    	tloadtile(i);
+//	    for( i = SHELL; i < SHELL+2 ; i++ ) //Dynamite
+//	    	tloadtile(i);
+//	    for( i = 1752; i < 1757 ; i++ ) //Dynamite
+//	    	tloadtile(i);
+//	    for( i = NEWDYNAMITE; i < NEWDYNAMITE+7; i++ )
+//	    	tloadtile(i);
+//	    for( i = CIRCLESTUCK-5; i < CIRCLESTUCK; i++ )
+//	    	tloadtile(i);
+//	    for( i = BUZSAW; i < BUZSAW+3; i++ )
+//	    	tloadtile(i);
+//	    for( i = 3415; i < 3419; i++ )
+//	    	tloadtile(i);
+//	    for( i = 3427; i < 2429; i++ )
+//	    	tloadtile(i);
+//	    tloadtile(3438);
+//	    for( i = 3445; i < 3448; i++ )
+//	    	tloadtile(i);
+//	    for( i = 3452; i < 3459; i++ )
+//	    	tloadtile(i);
+//	    
+//	    //PICKUPS
+//	    for( i = FIRSTGUNSPRITE; i <= ALIENARMGUN; i++ )
+//	    	tloadtile(i);
+//	    for( i = AMMO; i <= BOOTS+1; i++ )
+//	    	tloadtile(i);
+//	    tloadtile(TEATAMMO);
 	    
 	    
 	    
@@ -400,9 +400,7 @@ public class Premap {
 	public static void cacheit()
 	{
 	    precachenecessarysounds();
-
-	    cachegoodsprites();
-
+	    
 	    for(int i=0;i<numwalls;i++) {
 	    	tloadtile(wall[i].picnum);
 	        if(wall[i].overpicnum >= 0 )
@@ -413,7 +411,14 @@ public class Premap {
 	    {
             tloadtile( sector[i].floorpicnum );
             tloadtile( sector[i].ceilingpicnum );
+	    }
+	    
+	    docacheit(0);
 
+	    cachegoodsprites();
+	    
+	    for(int i=0;i<numsectors;i++)
+	    {
 	        int j = headspritesect[i];
 	        while(j >= 0)
 	        {
@@ -422,9 +427,11 @@ public class Premap {
 	            j = nextspritesect[j];
 	        }
 	    }
+	    
+	    docacheit(1); 
 	}
 	
-	public static void docacheit(int method)
+	private static void docacheit(int method)
 	{
 	    for(int i=0;i<MAXTILES;i++) 
 	    {
@@ -641,21 +648,6 @@ public class Premap {
 	    p.drug_timer = 0;
 	    p.drug_aspect = 0;
 	    
-	    if ( numplayers >= 2 )
-	    {
-	    	UFO_SpawnCount = 32;
-	    	UFO_SpawnTime = 0;
-	    	UFO_SpawnHulk = 2;
-	    }
-	    else
-	    {
-	    	 UFO_SpawnCount = (ud.player_skill << 2) + 1;
-	    	 if ( UFO_SpawnCount > 32 )
-	    		 UFO_SpawnCount = 32;
-	    	 UFO_SpawnTime = 0;
-	    	 UFO_SpawnHulk = ud.player_skill + 1;
-	    }
-	    
 	    //last_extra check
 	    p.numloogs = 0;  //GDX 31.10.2018 XXX
 		p.truefz = 0; 
@@ -750,20 +742,6 @@ public class Premap {
 	    p.detonate_count = 0;
 	    p.kickback = 0;
 	    p.field_count = 0;
-	    if ( numplayers >= 2 )
-	    {
-	    	UFO_SpawnCount = 32;
-	    	UFO_SpawnTime = 0;
-	    	UFO_SpawnHulk = 2;
-	    }
-	    else
-	    {
-	    	UFO_SpawnCount = (ud.player_skill << 2) + 1;
-	    	if ( UFO_SpawnCount > 32 )
-	    		UFO_SpawnCount = 32;
-	    	UFO_SpawnTime = 0;
-	    	UFO_SpawnHulk = ud.player_skill + 1;
-	    }
 	}
 
 	public static void resetprestat(int snum)
@@ -1106,7 +1084,7 @@ public class Premap {
 	            continue;
 	        }
 	    }
-	  
+
 	    i = headspritestat[0];
 	    while(i >= 0)
 	    {
@@ -1188,7 +1166,7 @@ public class Premap {
 	        }
 	        i = nexti;
 	    }
-	    
+
 	    for(i=0;i < MAXSPRITES;i++)
 	    {
 	    	if(sprite[i].picnum == 19)

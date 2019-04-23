@@ -2913,6 +2913,10 @@ public class Actors {
 	                        
 	                        if (ud.multimode < 2)
 	                        	engine.deletesprite((short)j);
+	                        else {
+	                        	s.cstat &= ~1;
+	                        	s.cstat |= 32768;
+	                        }
 						}
 						j = nextj;
 					}
@@ -4721,10 +4725,9 @@ public class Actors {
 						t[4] = 0;
 						s.xvel = k;
 
-						if (UFO_SpawnHulk != 0) {
+						if (UFO_SpawnHulk > 0) {
 							UFO_SpawnHulk--;
 							int nSpawn = spawn(i, HULK);
-
 							sprite[nSpawn].z = sector[sprite[nSpawn].sectnum].ceilingz;
 							sprite[nSpawn].pal = 33;
 

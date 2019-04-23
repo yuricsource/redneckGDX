@@ -306,7 +306,6 @@ public class RRNetwork extends BuildNet {
 		short spritebridge;
 
 		Input syn = (Input) input;
-		
 
 		PlayerStruct p = ps[myconnectindex];
 
@@ -319,16 +318,107 @@ public class RRNetwork extends BuildNet {
 		psectlotag = sector[psect].lotag;
 		spritebridge = 0;
 
+		if (psectlotag == 848 && sector[psect].floorpicnum == 1045)
+			psectlotag = 1;
+
+		int clipdist = 64;
+		if (psectlotag == 857)
+			clipdist = 1;
+
 		shrunk = (sprite[p.i].yrepeat < 8);
 
 		if (!ud.clipping && (sector[psect].floorpicnum == MIRROR || psect < 0 || psect >= MAXSECTORS)) {
 			predict.x = predictOld.x;
 			predict.y = predictOld.y;
 		}
-		
-		predictOld.copy(predict);
 
+		predictOld.copy(predict);
+		
 		engine.getzrange(predict.x, predict.y, predict.z, psect, 163, CLIPMASK0);
+
+		if (p.OnMotorcycle && sprite[p.i].extra > 0) {
+			boolean var4 = false, var5 = false;
+			if ((sb_snum & 8) != 0) {
+				var4 = true;
+				sb_snum &= ~8;
+			}
+
+			if ((sb_snum & 16) != 0) {
+				var5 = true;
+				sb_snum &= ~16;
+			}
+
+			if (p.CarSpeed >= 20 && p.on_ground && (var4 || var5)) {
+				int angvel = (int) (predict.ang - 510);
+				if (var4)
+					angvel = (int) (predict.ang + 510);
+
+				short dang = 350;
+				if (!var4)
+					dang = -350;
+
+				if (p.CarVar5 != 0 || p.CarVar4 != 0 || p.NotOnWater == 0) {
+					int speed = 4 * p.CarSpeed;
+					if (p.CarVar4 != 0)
+						speed = 8 * p.CarSpeed;
+
+					if (p.CarVar6 != 0) {
+						predict.xvel += (speed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
+						predict.yvel += (speed >> 5) * 16 * sintable[angvel & kAngleMask];
+						predict.ang = ((short) predict.ang - (dang >> 2)) & kAngleMask;
+					} else {
+						predict.xvel += (speed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
+						predict.yvel += (speed >> 7) * 16 * sintable[angvel & kAngleMask];
+						predict.ang = ((short) predict.ang - (dang >> 6)) & kAngleMask;
+					}
+				} else if (p.CarVar6 != 0) {
+					predict.xvel += (p.CarSpeed >> 5) * 16 * sintable[(angvel + 512) & kAngleMask];
+					predict.yvel += (p.CarSpeed >> 5) * 16 * sintable[angvel & kAngleMask];
+					predict.ang = ((short) predict.ang - (dang >> 4)) & kAngleMask;
+				} else {
+					predict.xvel += (p.CarSpeed >> 7) * 16 * sintable[(angvel + 512) & kAngleMask];
+					predict.yvel += (p.CarSpeed >> 7) * 16 * sintable[angvel & kAngleMask];
+					predict.ang = ((short) predict.ang - (dang >> 4)) & kAngleMask;
+				}
+			}
+		} else if (p.OnBoat && sprite[p.i].extra > 0) {
+			boolean var5 = false, var6 = false;
+			if ((sb_snum & 16) != 0) {
+				var5 = true;
+				sb_snum &= ~16;
+			}
+
+			if ((sb_snum & 64) != 0) {
+				var6 = true;
+				sb_snum &= ~64;
+			}
+
+			if (p.CarSpeed > 0 && p.on_ground && (var5 || var6)) {
+				int angvel = (int) (predict.ang - 510);
+				if (var5)
+					angvel = (int) (predict.ang + 510);
+				short dang = 350;
+				if (!var5)
+					dang = -350;
+
+				int speed = 4 * p.CarSpeed;
+				if (p.CarVar6 != 0) {
+					predict.xvel += (speed >> 6) * 16 * sintable[(angvel + 512) & 0x7FF];
+					predict.yvel += (speed >> 6) * 16 * sintable[angvel & 0x7FF];
+					predict.ang = ((short) predict.ang - (dang >> 5)) & kAngleMask;
+				} else {
+					predict.xvel += (speed >> 7) * 16 * sintable[(angvel + 512) & 0x7FF];
+					predict.yvel += (speed >> 7) * 16 * sintable[angvel & 0x7FF];
+					predict.ang = ((short) predict.ang - (dang >> 6)) & kAngleMask;
+				}
+			}
+		}
+
+		if (clipdist == 64)
+			engine.getzrange(predict.x, predict.y, predict.z, psect, 163, CLIPMASK0);
+		else
+			engine.getzrange(predict.x, predict.y, predict.z, psect, 4, CLIPMASK0);
+
 		cz = zr_ceilz;
 		hz = zr_ceilhit;
 		fz = zr_florz;
@@ -352,6 +442,7 @@ public class RRNetwork extends BuildNet {
 					predict.horizoff += mulscale(j - k, 160, 16);
 			}
 		}
+		
 		if (predict.horizoff > 0)
 			predict.horizoff -= ((predict.horizoff >> 3) + 1);
 		else if (predict.horizoff < 0)
@@ -402,7 +493,8 @@ public class RRNetwork extends BuildNet {
 					if (klabs(predict.z - fz) > (PHEIGHT >> 1))
 						predict.z += 348;
 				}
-				engine.clipmove(predict.x, predict.y, predict.z, predict.sectnum, 0, 0, 164, (4 << 8), (4 << 8), CLIPMASK0);
+				engine.clipmove(predict.x, predict.y, predict.z, predict.sectnum, 0, 0, 164, (4 << 8), (4 << 8),
+						CLIPMASK0);
 				if (clipmove_sectnum != -1) {
 					predict.x = clipmove_x;
 					predict.y = clipmove_y;
@@ -425,7 +517,7 @@ public class RRNetwork extends BuildNet {
 			predict.horizoff = 0;
 
 			predictFifo[gPredictTail & kFifoMask].copy(predict);
- 	        gPredictTail++;
+			gPredictTail++;
 
 			sprite[p.i].cstat = backcstat;
 			return;
@@ -442,19 +534,27 @@ public class RRNetwork extends BuildNet {
 			if (psectlotag == 2) {
 				predict.jumpingcounter = 0;
 
-				if ((sb_snum & 1) != 0) {
+				if ((sb_snum & 1) != 0 && !p.OnMotorcycle && !p.OnBoat) {
 					if (predict.zvel > 0)
 						predict.zvel = 0;
 					predict.zvel -= 348;
 					if (predict.zvel < -(256 * 6))
 						predict.zvel = -(256 * 6);
-				} else if ((sb_snum & (1 << 1)) != 0) {
+				} else if ((sb_snum & (1 << 1)) != 0 && !p.OnMotorcycle && !p.OnBoat) {
 					if (predict.zvel < 0)
 						predict.zvel = 0;
 					predict.zvel += 348;
 					if (predict.zvel > (256 * 6))
 						predict.zvel = (256 * 6);
-				} else {
+				} 
+				else if ( p.OnMotorcycle )
+		        {
+		        	if ( predict.zvel < 0 )
+		        		predict.zvel = 0;
+		        	predict.zvel += 348;
+		        	if ( predict.zvel > 1536 )
+		        		predict.zvel = 1536;
+		        } else {
 					if (predict.zvel < 0) {
 						predict.zvel += 256;
 						if (predict.zvel > 0)
@@ -523,14 +623,21 @@ public class RRNetwork extends BuildNet {
 					else {
 						predict.onground = false;
 
-						predict.zvel += (currentGame.getCON().gc + 80);
+						if ((p.OnMotorcycle || p.OnBoat) && fz - (i << 9) > predict.z) {
+							if (p.CarOnGround) {
+								predict.zvel -= (p.CarSpeed >> 4) * currentGame.getCON().gc;
+							} else {
+								predict.zvel += 120 - p.CarSpeed + currentGame.getCON().gc - 80;
+							}
+						} else
+							predict.zvel += (currentGame.getCON().gc + 80);
 
 						if (predict.zvel >= (4096 + 2048))
 							predict.zvel = (4096 + 2048);
 					}
 				} else {
 					if (psectlotag != 1 && psectlotag != 2 && !predict.onground && predict.zvel > (6144 >> 1))
-						predict.hardlanding = (byte) (predict.zvel>>10);
+						predict.hardlanding = (byte) (predict.zvel >> 10);
 					predict.onground = true;
 
 					if (i == 40) {
@@ -551,10 +658,10 @@ public class RRNetwork extends BuildNet {
 						}
 					}
 
-					if ((sb_snum & 2) != 0)
+					if ((sb_snum & 2) != 0 && !p.OnMotorcycle && !p.OnBoat)
 						predict.z += (2048 + 768);
 
-					if ((sb_snum & 1) == 0 && predict.jumpingtoggle == 1)
+					if ((sb_snum & 1) == 0 && predict.jumpingtoggle == 1 && !p.OnMotorcycle && !p.OnBoat)
 						predict.jumpingtoggle = 0;
 
 					else if ((sb_snum & 1) != 0 && predict.jumpingtoggle == 0) {
@@ -569,7 +676,7 @@ public class RRNetwork extends BuildNet {
 				}
 
 				if (predict.jumpingcounter != 0) {
-					if ((sb_snum & 1) == 0 && predict.jumpingtoggle == 1)
+					if ((sb_snum & 1) == 0 && predict.jumpingtoggle == 1 && !p.OnMotorcycle && !p.OnBoat)
 						predict.jumpingtoggle = 0;
 
 					if (predict.jumpingcounter < (768)) {
@@ -600,7 +707,8 @@ public class RRNetwork extends BuildNet {
 
 			}
 
-			if (p.fist_incs != 0 || p.transporter_hold > 2 || predict.hardlanding != 0 || p.access_incs > 0 || p.knee_incs > 0
+			if (p.fist_incs != 0 || p.transporter_hold > 2 || predict.hardlanding != 0 || p.access_incs > 0
+					|| p.knee_incs > 0
 					|| (p.curr_weapon == POWDERKEG_WEAPON && p.kickback_pic > 1 && p.kickback_pic < 4)) {
 				doubvel = 0;
 				predict.xvel = 0;
@@ -625,18 +733,33 @@ public class RRNetwork extends BuildNet {
 				predict.xvel += ((syn.fvel * doubvel) << 6);
 				predict.yvel += ((syn.svel * doubvel) << 6);
 
-				if ((p.curr_weapon == KNEE_WEAPON && p.kickback_pic > 10 && predict.onground)
-						|| (predict.onground && (sb_snum & 2) != 0)) {
-					predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction - 0x2000, 16);
-					predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction - 0x2000, 16);
+				if (psectlotag == 2) {
+					predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction - 0x1400, 16);
+					predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction - 0x1400, 16);
 				} else {
-					if (psectlotag == 2) {
-						predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction - 0x1400, 16);
-						predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction - 0x1400, 16);
-					} else {
+					predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction, 16);
+					predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction, 16);
+				}
+
+				switch (sector[psect].floorpicnum) {
+				case 7889:
+					if (!p.OnMotorcycle && p.boot_amount <= 0) {
 						predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction, 16);
 						predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction, 16);
 					}
+					break;
+				case 3073:
+				case 2702:
+					if (p.OnMotorcycle) {
+						if (p.on_ground) {
+							predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction - 6144, 16);
+							predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction - 6144, 16);
+						}
+					} else if (p.boot_amount <= 0) {
+						predict.xvel = mulscale(predict.xvel, currentGame.getCON().dukefriction - 6144, 16);
+						predict.yvel = mulscale(predict.yvel, currentGame.getCON().dukefriction - 6144, 16);
+					}
+					break;
 				}
 
 				if (klabs(predict.xvel) < 2048 && klabs(predict.yvel) < 2048)
@@ -656,7 +779,8 @@ public class RRNetwork extends BuildNet {
 		else
 			i = (20 << 8);
 
-		engine.clipmove(predict.x, predict.y, predict.z, predict.sectnum, predict.xvel, predict.yvel, 164, 4 << 8, i, CLIPMASK0);
+		engine.clipmove(predict.x, predict.y, predict.z, predict.sectnum, predict.xvel, predict.yvel, 164, 4 << 8, i,
+				CLIPMASK0);
 		if (clipmove_sectnum != -1) {
 			predict.x = clipmove_x;
 			predict.y = clipmove_y;
@@ -664,7 +788,11 @@ public class RRNetwork extends BuildNet {
 			predict.sectnum = (short) clipmove_sectnum;
 		}
 
-		engine.pushmove(predict.x, predict.y, predict.z, predict.sectnum, 164, 4 << 8, 4 << 8, CLIPMASK0);
+		if (clipdist == 64)
+			engine.pushmove(predict.x, predict.y, predict.z, predict.sectnum, 128, 4 << 8, 4 << 8, CLIPMASK0);
+		else
+			engine.pushmove(predict.x, predict.y, predict.z, predict.sectnum, 16, 4 << 8, 4 << 8, CLIPMASK0);
+
 		if (pushmove_sectnum != -1) {
 			predict.x = pushmove_x;
 			predict.y = pushmove_y;
@@ -688,11 +816,11 @@ public class RRNetwork extends BuildNet {
 			if ((sb_snum & (1 << 5)) != 0)
 				predict.horiz -= 6;
 			predict.horiz -= 6;
-		} else if ((sb_snum & (1 << 3)) != 0) {
+		} else if ((sb_snum & (1 << 3)) != 0 && !p.OnMotorcycle && !p.OnBoat) {
 			if ((sb_snum & (1 << 5)) != 0)
 				predict.horiz += 6;
 			predict.horiz += 6;
-		} else if ((sb_snum & (1 << 4)) != 0) {
+		} else if ((sb_snum & (1 << 4)) != 0 && !p.OnMotorcycle && !p.OnBoat) {
 			if ((sb_snum & (1 << 5)) != 0)
 				predict.horiz -= 6;
 			predict.horiz -= 6;
@@ -729,7 +857,7 @@ public class RRNetwork extends BuildNet {
 		}
 
 		predictFifo[gPredictTail & kFifoMask].copy(predict);
-        gPredictTail++;
+		gPredictTail++;
 
 		sprite[p.i].cstat = backcstat;
 	}
@@ -747,7 +875,7 @@ public class RRNetwork extends BuildNet {
 			return;
 
 		predict.reset();
-//		predictOld.copy(p.prevView); XXX
+		predictOld.copy(p.prevView);
 
 		gPredictTail = gNetFifoTail;
 		while (gPredictTail < gNetFifoHead[myconnectindex])

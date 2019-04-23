@@ -16,23 +16,59 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Redneck.Globals.RR66;
-import static ru.m210projects.Redneck.Globals.currentGame;
-import static ru.m210projects.Redneck.Main.gAnmScreen;
-import static ru.m210projects.Redneck.Main.gStatisticScreen;
-import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Build.Engine.palette;
+import static ru.m210projects.Build.Engine.totalclock;
+import static ru.m210projects.Build.Engine.xdim;
+import static ru.m210projects.Build.Engine.ydim;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Sounds.*;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 
-public class EndScreen {
+import ru.m210projects.Build.Audio.Source;
+
+public class EndScreen extends ScreenAdapter {
+
+	private Source voice;
 	
-	public void episode1()
-	{
+	@Override
+	public void show() {
+		engine.setbrightness(ud.brightness >> 2, palette, 2);
+		totalclock = 0;
+		StopAllSounds();
+		voice = sound(35);
+	}
+
+	@Override
+	public void render(float delta) {
+		engine.clearview(0);
+		engine.sampletimer();
+
+		if ((totalclock >> 4 & 1) != 0) {
+			engine.rotatesprite(0, 0, 65536, 0, 8677, 0, 0, 2 + 8 + 16 + 64 + 128, 0, 0, xdim - 1, ydim - 1);
+		} else
+			engine.rotatesprite(0, 0, 65536, 0, 8678, 0, 0, 2 + 8 + 16 + 64 + 128, 0, 0, xdim - 1, ydim - 1);
+
+		if (voice == null || !voice.isPlaying()) {
+			Gdx.app.postRunnable(new Runnable() {
+				@Override
+				public void run() {
+					game.changeScreen(gStatisticScreen);
+				}
+			});
+		}
+
+		engine.nextpage();
+	}
+
+	public void episode1() {
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
 				String filename = "turdmov.anm";
-				if(currentGame.getCON().type == RR66) 
+				if (currentGame.getCON().type == RR66)
 					filename = "turd66.anm";
 
 				if (gAnmScreen.init(filename, 6)) {
@@ -43,21 +79,26 @@ public class EndScreen {
 						}
 					});
 					game.setScreen(gAnmScreen.escSkipping(true));
-				} else 
+				} else
 					game.changeScreen(gStatisticScreen);
 			}
 		});
 	}
-	
-	public void episode2()
-	{
+
+	public void episode2() {
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
+				if (currentGame.getCON().type == RRRA)
+				{
+					game.setScreen(gEndScreen);
+					return;
+				}
+				
 				String filename = "rr_outro.anm";
-				if(currentGame.getCON().type == RR66) 
+				if (currentGame.getCON().type == RR66)
 					filename = "end66.anm";
-		
+
 				if (gAnmScreen.init(filename, 5)) {
 					gAnmScreen.setCallback(new Runnable() {
 						@Override
@@ -66,7 +107,7 @@ public class EndScreen {
 						}
 					});
 					game.setScreen(gAnmScreen.escSkipping(true));
-				} else 
+				} else
 					game.changeScreen(gStatisticScreen);
 			}
 		});

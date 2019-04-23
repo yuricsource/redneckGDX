@@ -76,8 +76,6 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Weapons {
 	
-	public static int myaimmode = 0, myaimstat = 0, omyaimstat = 0;
-	
 	public static final short weapon_sprites[] = { 
 			3340, 
 			FIRSTGUNSPRITE, 

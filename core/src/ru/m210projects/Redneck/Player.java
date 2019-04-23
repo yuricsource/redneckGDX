@@ -33,7 +33,6 @@ import static ru.m210projects.Redneck.Globals.ps;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Gamedef.getincangle;
 import static ru.m210projects.Redneck.Gameutils.sgn;
-import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Premap.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Build.Gameutils.*;
@@ -1006,6 +1005,9 @@ public class Player {
 	    			p.VBumpNow = p.VBumpTarget;
 	    		p.horiz = (p.VBumpNow) / 3 + 100;
 	        }
+	    	
+//	    	if (snum == myconnectindex && numplayers > 1)
+//	    		game.net.predict.horiz = p.horiz;
 
 	    	if ( p.CarSpeed >= 20 && p.on_ground && (var4 != 0 || var5 != 0) )
 	        {
@@ -1293,6 +1295,10 @@ public class Player {
 	    		  p.VBumpNow = p.VBumpTarget;
 	    	  p.horiz = (p.VBumpNow) / 3 + 100;
 	      }
+	      
+//	      if (snum == myconnectindex && numplayers > 1)
+//	    	  game.net.predict.horiz = p.horiz;
+
 	      if ( p.CarSpeed > 0 && p.on_ground && (var5 || var6) )
 	      {
 	    	  int angvel = (int) (p.ang - 510);
@@ -1790,8 +1796,8 @@ public class Player {
 		
 			    p.oposz = p.posz;
 			    p.opyoff = p.pyoff;
-			    if(!p.OnBoat && !p.OnMotorcycle)
-			    	p.oang = p.ang; //for interpolation
+//			    if(!p.OnBoat && !p.OnMotorcycle)
+//			    	p.oang = p.ang; //for interpolation
 		
 			    if(p.one_eighty_count < 0)
 			    {
@@ -2412,7 +2418,7 @@ public class Player {
 		            	break;
 		            }
 
-			        if( abs(p.posxv) < 2048 && abs(p.posyv) < 2048 )
+			        if( klabs(p.posxv) < 2048 && klabs(p.posyv) < 2048 )
 			            p.posxv = p.posyv = 0;
 		
 			        if( shrunk )
@@ -2805,7 +2811,7 @@ public class Player {
 	        
 	        if(p.horiz > 299) p.horiz = 299;
 	        else if(p.horiz < -99) p.horiz = -99;
-	
+
 		    //Shooting code/changes
 	
 		    if( p.show_empty_weapon > 0)

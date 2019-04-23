@@ -342,8 +342,9 @@ public class View {
 	{
 		if(Console.IsShown()) return;
 		
-		int j = 200-10;
-		if (ud.screen_size > 0) j = 200-45;
+		int j = 200-63;
+		if(ud.screen_size <= 1) j = 200-20;
+		else if(ud.screen_size == 2) j = 200-55;
 		
 		char[] buf = getInput().getMessageBuffer();
 		int len = getInput().getMessageLength() + 1;
@@ -387,9 +388,9 @@ public class View {
 	{
 	     int i, j, k;
 
-	     if(ud.screen_size <= 1) j = 200-10;
-	     else if(ud.screen_size == 2) j = 200-45;
-	     else j = 200-53;
+	     if(ud.screen_size <= 1) j = 200-20;
+	     else if(ud.screen_size == 2) j = 200-55;
+	     else j = 200-63;
 	     
 	     quotebot = Math.min(quotebot,j);
 	     quotebotgoal = Math.min(quotebotgoal,j);
@@ -895,6 +896,8 @@ public class View {
 	        	}
 	        }
 	        
+	        
+	        
 	        if ( (snum == myconnectindex) && (numplayers > 1) )
 	        {
 	        	RRNetwork net = game.net;
@@ -920,6 +923,12 @@ public class View {
                 cang = p.prevView.ang + (BClampAngle(cang+1024-p.prevView.ang)-1024) * smoothratio / 65536.0f;
                 cang += p.prevView.lookang + (BClampAngle(p.look_ang+1024-p.prevView.lookang)-1024) * smoothratio / 65536.0f;
                 choriz = (p.prevView.horiz +p.prevView.horizoff+((choriz-p.prevView.horiz-p.prevView.horizoff) * smoothratio) / 65536.0f);
+	        
+                if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
+    	        {
+                    tang = p.rotscrnang;
+                    engine.getrender().settiltang(p.prevView.rotscrnang + mulscale(((p.rotscrnang - p.prevView.rotscrnang + 1024)&2047)-1024,smoothratio, 16));  
+    	        } else engine.getrender().settiltang(0);
 	        }
 	      
 	        if (p.newowner >= 0)
@@ -1921,6 +1930,7 @@ public class View {
 	        		 t.shade = -127;
 	        		 break;
 	        	 case UFOBEAM:
+	        	 case 297: //GDX 23.04.2019 UFO TELE B
 	        	 case 3586:
 	        	 case 3587:
 	        		 t.cstat |= 32768;

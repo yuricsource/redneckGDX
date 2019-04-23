@@ -127,7 +127,6 @@ import static ru.m210projects.Redneck.Player.setpal;
 import static ru.m210projects.Redneck.Premap.cacheit;
 import static ru.m210projects.Redneck.Premap.checknextlevel;
 import static ru.m210projects.Redneck.Premap.clearfrags;
-import static ru.m210projects.Redneck.Premap.docacheit;
 import static ru.m210projects.Redneck.Premap.numtorcheffects;
 import static ru.m210projects.Redneck.Premap.prelevel;
 import static ru.m210projects.Redneck.Premap.resetinventory;
@@ -346,7 +345,7 @@ public class GameScreen extends GameAdapter {
         movestandables();       //ST 6
         doanimations();
         movefx();               //ST 11
-        
+
         if ( numtorcheffects != 0)
 	    	torchesprocess();
 
@@ -641,8 +640,7 @@ public class GameScreen extends GameAdapter {
 	    }
 
 	    cacheit();
-	    docacheit(-1);
-
+	
 	    if(ud.recstat != 2)
 	    {
 	    	musicvolume = ud.volume_number;
@@ -687,6 +685,7 @@ public class GameScreen extends GameAdapter {
 
 	     everyothertime = 0;
 	     global_random = 0;
+	     lockclock = 0;
 
 	     ud.last_level = ud.level_number+1;
 

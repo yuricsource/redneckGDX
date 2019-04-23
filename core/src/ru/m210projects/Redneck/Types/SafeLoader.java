@@ -118,6 +118,16 @@ public class SafeLoader {
 	public short gEndGame;
 	public short gEndFirstEpisode;
 	
+	//RA
+	public short BellTime;
+	public int BellSound;
+	public short word_119BE0;
+	public int WindDir;
+	public int WindTime;
+	public int mamaspawn_count;
+	public int fakebubba_spawn;
+	public int dword_119C08;
+	
 	public short actortype[] = new short[MAXTILES];
 	
 	public int script[] = new int[MAXSCRIPTSIZE];
@@ -412,6 +422,16 @@ public class SafeLoader {
 		gEndGame = bb.getShort();
 
 		plantProcess = bb.get() == 1;
+		
+		
+		BellTime = bb.getShort();
+		BellSound = bb.getInt();
+		word_119BE0 = bb.getShort();
+		WindDir = bb.getInt();
+		WindTime = bb.getInt();
+		mamaspawn_count = bb.getInt();
+		fakebubba_spawn = bb.getInt();
+		dword_119C08 = bb.getInt();
 	}
 	
 	public void MapLoad(ByteBuffer bb) throws Exception

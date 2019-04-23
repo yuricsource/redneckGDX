@@ -3742,7 +3742,7 @@ public class Gamedef {
 		for(int i = 0; i < con.nSkills; i++) 
 			defGame.skillnames[i] = new String(con.skill_names[i]).trim();
 
-		if(defGame.episodes[1] != null) {
+		if(defGame.episodes[1] != null && con.type != RRRA) {
 			defGame.episodes[1].gMapInfo[7] = new MapInfo("endgame.map", "Close encounters", defGame.episodes[1].gMapInfo[0].partime, defGame.episodes[1].gMapInfo[0].designertime); //EndGame map
 			defGame.episodes[1].nMaps = 8;
 		}

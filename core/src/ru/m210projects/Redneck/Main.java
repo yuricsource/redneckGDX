@@ -32,7 +32,6 @@ import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Types.RTS.*;
 
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -67,7 +66,6 @@ import ru.m210projects.Redneck.Screens.MenuScreen;
 import ru.m210projects.Redneck.Screens.NetScreen;
 import ru.m210projects.Redneck.Screens.StatisticScreen;
 import ru.m210projects.Redneck.Types.Animwalltype;
-import ru.m210projects.Redneck.Types.MVEFile;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 import ru.m210projects.Redneck.Types.Weaponhit;
@@ -76,26 +74,20 @@ public class Main extends BuildGame {
 
 	/*
 	 * v0.761
-	 * Weapon drop fix after dead
-	 * RRRA E1L1 destruct wall in secret place fix
-	 * Moving door after load game fix
-	 * Quick pee don't resurect the player anymore
-	 * 
+	 * Weapon drop after dead in multiplayer fixed
+	 * RRRA E1L1 destruct wall in secret place fixed
+	 * Moving door after load game fixed
+	 * Quick pee don't resurrect the player anymore
+	 * FakeBubba after load game fixed
+	 * Added end cutscene in RRRA
 	 * 
 	 * 
 	 * TODO:
-	 * если дисконнектится умершим, в демо камеру будет кривая
-	 * на бочке игрока глючит каемру
-	 * поднять чат повыше
-	 * прверить прекэш
-	 * Endscreen - 8677 - 8678
-	 * fakebubba loadgame
 	 * hud из новых ресурсов
+	 * cachespritenum
 	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
-	 * проблема с fakebubba после загрузки сохранения
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * и еще есть проблема с большой задержкой при нырянии. (на лестницах лаги)
-	 * в мультиплеере конец эпизода без заставки и перехода на след эпизод
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 * cd audio from cue
@@ -228,12 +220,12 @@ public class Main extends BuildGame {
 
 		gDemoScreen.demoscan();
 		
-		ByteBuffer bb = kGetBuffer("REDINT.MVE", 0);
-		if(bb != null)
-		{
-			System.err.println("Found");
-			new MVEFile(bb);
-		}
+//		ByteBuffer bb = kGetBuffer("REDINT.MVE", 0);
+//		if(bb != null)
+//		{
+//			System.err.println("Found");
+//			new MVEFile(bb);
+//		}
 	}
 
 	public static boolean IsOriginalDemo() {

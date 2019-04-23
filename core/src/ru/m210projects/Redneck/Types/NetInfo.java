@@ -44,7 +44,7 @@ public class NetInfo {
 		nGameType = LittleEndian.getUByte(p, ptr); ptr++;
 		nEpisode = LittleEndian.getUByte(p, ptr); ptr++;
 		nLevel = LittleEndian.getUByte(p, ptr); ptr++;
-		nDifficulty = LittleEndian.getUByte(p, ptr); ptr++;
+		nDifficulty = (byte) LittleEndian.getUByte(p, ptr); ptr++;
 		nMonsters = LittleEndian.getUByte(p, ptr); ptr++;
 		nRespawnMonsters = LittleEndian.getUByte(p, ptr); ptr++;
 		nRespawnItem = LittleEndian.getUByte(p, ptr); ptr++;
