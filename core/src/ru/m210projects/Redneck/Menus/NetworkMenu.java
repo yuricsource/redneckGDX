@@ -134,7 +134,6 @@ public class NetworkMenu extends BuildMenu {
 				if(currentFile instanceof GameInfo)
 				{
 					GameInfo mGameInfo = (GameInfo) currentFile;
-					System.err.println(mEpisodeId + " " + netEpisodeInfo[mEpisodeId]);
 					int size = mGameInfo.episodes[netEpisodeInfo[mEpisodeId]].nMaps;
 					if (item.list == null || item.list.length != size)
 						item.list = new char[size][];

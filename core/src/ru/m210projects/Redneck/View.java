@@ -835,69 +835,8 @@ public class View {
 	        }
 
 	        if ( p.DrugMode > 0 && !MODE_TYPE && !game.gPaused)
-	        {
-	        	if ( p.drug_type != 0)
-	        	{
-	        		if ( p.drug_type == 3)
-	        		{
-	        			int new_aspect = 5000 * p.drug_intensive + oviewingrange;
-	        			if ( new_aspect >= oviewingrange )
-	        			{
-	        				engine.setaspect(new_aspect, yxaspect);
-	        				p.drug_aspect = new_aspect;
-	        			}
-	        			else
-	        			{
-	        				engine.setaspect(oviewingrange, yxaspect);
-	        				p.DrugMode = 0;
-	        				p.drug_type = 0;
-	        				p.drug_timer = 0;
-	        				p.drug_intensive = 0;
-	        				setpal(p);
-	        			}
-	        		}
-	        		else if ( p.drug_type == 2 )
-	                {
-	        			if ( p.drug_timer <= 30 )
-	        			{
-	        				int new_aspect = 3 * oviewingrange + 500 * p.drug_timer;
-	        				engine.setaspect(new_aspect, yxaspect);
-	        				p.drug_aspect = new_aspect;
-	        			}
-	        			else p.drug_type = 1;
-	                } 
-	        		else if ( p.drug_timer >= 1 )
-	                {
-	        			int new_aspect = 3 * oviewingrange + 500 * p.drug_timer;
-	                    engine.setaspect(new_aspect, yxaspect);
-	                    p.drug_aspect = new_aspect;
-	                }
-	        		else
-	        		{
-	        			p.drug_type = 2;
-	        			if ( --p.DrugMode == 1 )
-	        				p.drug_type = 3;
-	        		}
-	        	} 
-	        	else 
-	        	{
-	        		int new_aspect = 5000 * p.drug_intensive + oviewingrange;
-	        		if ( 3 * oviewingrange >= new_aspect )
-	        		{
-	        			engine.setaspect(new_aspect, yxaspect);
-	        			p.drug_aspect = new_aspect;
-	                }
-	                else
-	                {
-	                	engine.setaspect(3 * oviewingrange, yxaspect);
-	                	p.drug_aspect = 3 * oviewingrange;
-	                	p.drug_type = 2;
-	                }
-	        	}
-	        }
-	        
-	        
-	        
+	        	engine.setaspect(p.drug_aspect, yxaspect);
+
 	        if ( (snum == myconnectindex) && (numplayers > 1) )
 	        {
 	        	RRNetwork net = game.net;

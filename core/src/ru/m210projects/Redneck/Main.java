@@ -83,6 +83,8 @@ public class Main extends BuildGame {
 	 * 
 	 * 
 	 * TODO:
+	 * интерпол€ци€ мотоцикла predict
+	 * интерпол€ци€ при выныривании из воды predict
 	 * hud из новых ресурсов
 	 * cachespritenum
 	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)

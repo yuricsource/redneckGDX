@@ -685,7 +685,6 @@ public class GameScreen extends GameAdapter {
 
 	     everyothertime = 0;
 	     global_random = 0;
-	     lockclock = 0;
 
 	     ud.last_level = ud.level_number+1;
 
