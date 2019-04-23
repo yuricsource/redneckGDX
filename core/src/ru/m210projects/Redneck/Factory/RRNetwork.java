@@ -337,15 +337,36 @@ public class RRNetwork extends BuildNet {
 		engine.getzrange(predict.x, predict.y, predict.z, psect, 163, CLIPMASK0);
 
 		if (p.OnMotorcycle && sprite[p.i].extra > 0) {
-			boolean var4 = false, var5 = false;
+			boolean var4 = false, var5 = false, var1 = false, var3 = false;;
+			if ((sb_snum & 2) != 0) {
+				var1 = true;
+				sb_snum &= ~2;
+			}
+			
+			if ((sb_snum & 1) != 0)
+				sb_snum &= ~1;
 			if ((sb_snum & 8) != 0) {
-				var4 = true;
 				sb_snum &= ~8;
+				var3 = true;
+			}
+			
+			if ((sb_snum & 16) != 0) {
+				var4 = true;
+				sb_snum &= ~16;
 			}
 
-			if ((sb_snum & 16) != 0) {
+			if ((sb_snum & 64) != 0) {
 				var5 = true;
-				sb_snum &= ~16;
+				sb_snum &= ~64;
+			}
+			
+			if (p.on_ground) {
+				if (var3 && p.CarSpeed <= 0 && !var1) {
+					p.CarSpeed = -15;
+					boolean swap = var5;
+					var5 = var4;
+					var4 = swap;
+				}
 			}
 
 			if (p.CarSpeed >= 20 && p.on_ground && (var4 || var5)) {
@@ -383,6 +404,12 @@ public class RRNetwork extends BuildNet {
 			}
 		} else if (p.OnBoat && sprite[p.i].extra > 0) {
 			boolean var5 = false, var6 = false;
+			if ((sb_snum & 1) != 0)
+				sb_snum &= ~1;
+			if ((sb_snum & 2) != 0) 
+				sb_snum &= ~2;
+			if ((sb_snum & 8) != 0)
+				sb_snum &= ~8;
 			if ((sb_snum & 16) != 0) {
 				var5 = true;
 				sb_snum &= ~16;
@@ -524,7 +551,7 @@ public class RRNetwork extends BuildNet {
 		}
 
 		doubvel = TICSPERFRAME;
-
+		
 		if (p.on_crane < 0) {
 			if (p.one_eighty_count < 0)
 				predict.ang += 128;

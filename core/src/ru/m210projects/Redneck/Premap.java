@@ -572,7 +572,6 @@ public class Premap {
 	    setpal(p);
 	    
 	    p.field_280 = 0;
-	    p.field_284 = 0;
 	    p.field_X = 0;
 	    p.field_Y = 0;
 	    p.field_28E = 0;
@@ -806,7 +805,6 @@ public class Premap {
 	    Arrays.fill(p.pals, (short)0);
 	    
 	    p.field_280 = 0;
-	    p.field_284 = 0;
 	    p.field_X = 0x20000;
 	    p.field_Y = 0x20000;
 	    p.field_28E = 0;

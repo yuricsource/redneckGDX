@@ -83,13 +83,10 @@ public class Main extends BuildGame {
 	 * 
 	 * 
 	 * TODO:
-	 * интерполяция мотоцикла predict
-	 * интерполяция при выныривании из воды predict
 	 * hud из новых ресурсов
 	 * cachespritenum
 	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
 	 * as I said once, you cannot pickup a weapon if you already have it
-	 * и еще есть проблема с большой задержкой при нырянии. (на лестницах лаги)
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 * cd audio from cue

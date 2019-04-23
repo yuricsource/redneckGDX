@@ -28,7 +28,7 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1274;
+	public static final int sizeof = 1272;
 	
 	public PLocation prevView = new PLocation();
 	
@@ -92,7 +92,6 @@ public class PlayerStruct {
 	public byte crouch_toggle;
 
 	public int field_280;  //XXX not used
-	public short field_284;  //XXX not used
 	public int field_X;
 	public int field_Y;
 	public short field_28E;
@@ -288,7 +287,6 @@ public class PlayerStruct {
 		this.crouch_toggle = src.crouch_toggle;
 		
 		this.field_280 = src.field_280;
-		this.field_284 = src.field_284;
 		this.field_X = src.field_X;
 		this.field_Y = src.field_Y;
 		this.field_28E = src.field_28E;
@@ -485,7 +483,6 @@ public class PlayerStruct {
 		buf[ptr++] = crouch_toggle;
 
 		LittleEndian.putInt(buf, ptr, field_280); ptr+=4;
-		LittleEndian.putShort(buf, ptr, field_284); ptr+=2;
 		LittleEndian.putInt(buf, ptr, field_X); ptr+=4;
 		LittleEndian.putInt(buf, ptr, field_Y); ptr+=4;
 		LittleEndian.putShort(buf, ptr, field_28E); ptr+=2;
@@ -692,7 +689,6 @@ public class PlayerStruct {
 		crouch_toggle = bb.get();
 		
 		field_280 = bb.getInt();
-		field_284 = bb.getShort();
 		field_X = bb.getInt();
 		field_Y = bb.getInt();
 		field_28E = bb.getShort();
@@ -886,7 +882,6 @@ public class PlayerStruct {
 		this.crouch_toggle = 0;
 		
 		this.field_280 = 0;
-		this.field_284 = 0;
 		this.field_X = 0;
 		this.field_Y = 0;
 		this.field_28E = 0;
@@ -1087,7 +1082,6 @@ public class PlayerStruct {
 		out += "crouch_toggle " + crouch_toggle + " \r\n";
 		
 		out += "field_280 " + field_280 + " \r\n";
-		out += "field_284 " + field_284 + " \r\n";
 		out += "field_X " + field_X + " \r\n";
 		out += "field_Y " + field_Y + " \r\n";
 		out += "field_28E " + field_28E + " \r\n";

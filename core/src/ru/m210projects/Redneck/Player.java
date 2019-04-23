@@ -46,7 +46,6 @@ import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Player.setpal;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
@@ -820,7 +819,6 @@ public class Player {
 		}
 
 		if (p.OnMotorcycle && s.extra > 0) {
-			p.oang = p.ang;
 			if (p.CarSpeed < 0)
 				p.CarSpeed = 0;
 			int var = 0, var2 = 0;
@@ -1030,7 +1028,6 @@ public class Player {
 			p.CarVar5 = 0;
 			p.CarVar4 = 0;
 		} else if (p.OnBoat && s.extra > 0) {
-			p.oang = p.ang;
 			if (p.NotOnWater != 0) {
 				if (p.CarSpeed <= 0) {
 					if (Sound[87].num == 0)
@@ -1820,7 +1817,9 @@ public class Player {
 								}
 							}
 						}
-					} else {
+					} 
+					else 
+					{
 						if (!p.OnMotorcycle && p.footprintcount > 0 && p.on_ground)
 							if ((sector[p.cursectnum].floorstat & 2) != 2) {
 								for (j = headspritesect[psect]; j >= 0; j = nextspritesect[j])

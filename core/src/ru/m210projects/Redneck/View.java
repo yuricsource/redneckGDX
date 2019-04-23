@@ -42,7 +42,6 @@ import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.HELP;
-import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
@@ -869,7 +868,7 @@ public class View {
                     engine.getrender().settiltang(p.prevView.rotscrnang + mulscale(((p.rotscrnang - p.prevView.rotscrnang + 1024)&2047)-1024,smoothratio, 16));  
     	        } else engine.getrender().settiltang(0);
 	        }
-	      
+	     
 	        if (p.newowner >= 0)
 	        {
                 cang = (short) (p.ang+p.look_ang);
