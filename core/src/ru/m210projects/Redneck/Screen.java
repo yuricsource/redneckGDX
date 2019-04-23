@@ -169,10 +169,13 @@ public class Screen {
 		    	x += tilesizx[2339];
 		    }
 		}
-		
-		engine.rotatesprite(0,10878976,0x8000,0,BOTTOMSTATUSBAR,4,0,10+16+64, 
+
+//		engine.rotatesprite(0 << 16, 166 << 16, 0x8000, 0, WIDEHUD_PART2, 4, 0, 26 | 256, 0, 0, xdim - 1, ydim - 1);
+//		engine.rotatesprite(320 << 16, 166 << 16, 0x8000, 1024, WIDEHUD_PART2, 4, 0, 4 | 26 | 512, 0, 0, xdim - 1, ydim - 1);
+
+		engine.rotatesprite(0,166 << 16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+16+64, 
 		        scale(x1,xdim,320),scale(y1,ydim,200),                             
-		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1); 
+		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);
 	}
 
 	public static void displayinventory(PlayerStruct p)

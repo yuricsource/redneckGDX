@@ -50,6 +50,8 @@ public class ResourceHandler {
 	public static final int BACKBUTTON = 9237;
 	public static final int GUTSMETTER = 9238;
 	public static final int KILLSSIGN = 9239;
+	public static final int WIDEHUD_PART1 = 9254;
+	public static final int WIDEHUD_PART2 = 9255;
 
 	private static int usergroup;
 	private static boolean usecustomarts;

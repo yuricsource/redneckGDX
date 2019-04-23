@@ -806,13 +806,28 @@ public class RRNetwork extends BuildNet {
 		else
 			i = (20 << 8);
 
-		engine.clipmove(predict.x, predict.y, predict.z, predict.sectnum, predict.xvel, predict.yvel, 164, 4 << 8, i,
+		j = engine.clipmove(predict.x, predict.y, predict.z, predict.sectnum, predict.xvel, predict.yvel, 164, 4 << 8, i,
 				CLIPMASK0);
 		if (clipmove_sectnum != -1) {
 			predict.x = clipmove_x;
 			predict.y = clipmove_y;
 			predict.z = clipmove_z;
 			predict.sectnum = (short) clipmove_sectnum;
+		}
+		
+		if ((j & kHitTypeMask) == kHitWall) {
+			int nwall = j & kHitIndexMask;
+			if (!p.OnMotorcycle && !p.OnBoat) {
+				if (wall[nwall].lotag >= 40 && wall[nwall].lotag <= 44) {
+					engine.pushmove(predict.x, predict.y, predict.z, predict.sectnum, 172, (4 << 8), (4 << 8), CLIPMASK0);
+					if (pushmove_sectnum != -1) {
+						predict.x = pushmove_x;
+						predict.y = pushmove_y;
+						predict.z = pushmove_z;
+						predict.sectnum = (short) pushmove_sectnum;
+					}
+				}
+			}
 		}
 
 		if (clipdist == 64)

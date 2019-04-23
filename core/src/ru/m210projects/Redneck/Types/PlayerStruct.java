@@ -91,7 +91,7 @@ public class PlayerStruct {
 	public byte last_used_weapon;
 	public byte crouch_toggle;
 
-	public int field_280;  //XXX not used
+	public int field_280;
 	public int field_X;
 	public int field_Y;
 	public short field_28E;

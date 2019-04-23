@@ -51,7 +51,7 @@ public class EndScreen extends ScreenAdapter {
 		} else
 			engine.rotatesprite(0, 0, 65536, 0, 8678, 0, 0, 2 + 8 + 16 + 64 + 128, 0, 0, xdim - 1, ydim - 1);
 
-		if (voice == null || !voice.isPlaying()) {
+		if (totalclock > 500 && (voice == null || !voice.isPlaying())) {
 			Gdx.app.postRunnable(new Runnable() {
 				@Override
 				public void run() {

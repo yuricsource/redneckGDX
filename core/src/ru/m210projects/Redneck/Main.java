@@ -73,7 +73,7 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * v0.761
+	 * v0.950
 	 * Weapon drop after dead in multiplayer fixed
 	 * RRRA E1L1 destruct wall in secret place fixed
 	 * Moving door after load game fixed
@@ -94,7 +94,7 @@ public class Main extends BuildGame {
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 */
 
-	public static final String sversion = "v0.950";
+	public static final String sversion = "v1.00";
 
 	public static AnmScreen gAnmScreen;
 	public static MenuScreen gMenuScreen;
