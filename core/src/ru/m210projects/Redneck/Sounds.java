@@ -20,14 +20,9 @@ import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Gameutils.*;
-import static ru.m210projects.Build.Audio.BAudio.DIGITYPE;
-import static ru.m210projects.Build.Audio.BAudio.MIDITYPE;
-import static ru.m210projects.Build.Audio.BAudio.MUSICDRV;
-import static ru.m210projects.Build.Audio.BAudio.SOUNDDRV;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
 import static ru.m210projects.Build.FileHandle.Cache1D.kFileLength;
@@ -41,9 +36,14 @@ import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Strhandler.buildString;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.Audio.BuildAudio.Driver;
+import ru.m210projects.Build.Audio.BuildAudio.MusicType;
+import ru.m210projects.Build.Audio.MusicSource;
+import ru.m210projects.Build.Audio.Sound.SystemType;
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Audio.BMusic.Highmusic;
-import ru.m210projects.Build.Audio.BMusic.MusicSource;
+import ru.m210projects.Build.Audio.SourceCallback;
+import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Types.Sample;
@@ -51,42 +51,162 @@ import ru.m210projects.Redneck.Types.SoundOwner;
 import ru.m210projects.Redneck.Types.VOC;
 
 public class Sounds {
-	
+
 	public static final int LOUDESTVOLUME = 150;
 	public static final int NUM_SOUNDS = 500;
-	public static int backflag,numenvsnds;
-	
+	public static int backflag, numenvsnds;
+
+	public static FileEntry userMusic;
 	public static int currTrack = -1;
 	public static MusicSource currMusic;
 	public static String currSong;
-	
-	public static final String track[] = {
-		"track02.ogg",
-		"track03.ogg",
-		"track04.ogg",
-		"track05.ogg",
-		"track06.ogg",
-		"track07.ogg",
-		"track08.ogg",
-		"track09.ogg"
+
+	public static final String track[] = { 
+		"track02.ogg", "track03.ogg", "track04.ogg", 
+		"track05.ogg", "track06.ogg", "track07.ogg", 
+		"track08.ogg", "track09.ogg" };
+
+	private static SourceCallback callback = new SourceCallback() {
+		@Override
+		public void run(int num) {
+			if (num < 0) {
+//	            if(lumplockbyte[-num] >= 200)
+//	                lumplockbyte[-num]--;
+				return;
+			}
+
+			int tempk = Sound[num].num;
+
+			if (tempk > 0) {
+				if ((currentGame.getCON().soundm[num] & 16) == 0)
+					for (int tempj = 0; tempj < tempk; tempj++) {
+						int tempi = SoundOwner[num][tempj].i;
+						if (sprite[tempi].picnum == MUSICANDSFX && sprite[tempi].sectnum < MAXSECTORS
+								&& sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999) {
+							hittype[tempi].temp_data[0] = 0;
+							if ((tempj + 1) < tempk) {
+								SoundOwner[num][tempj].voice = SoundOwner[num][tempk - 1].voice;
+								SoundOwner[num][tempj].i = SoundOwner[num][tempk - 1].i;
+							}
+							break;
+						}
+					}
+
+				Sound[num].num--;
+				SoundOwner[num][tempk - 1].i = -1;
+			}
+
+			Sound[num].lock--;
+		}
 	};
-	
-	public static void checkTrack()
-	{
-		if ( cfg.musicType == 2 )
-		{
-			if(currMusic != null && !currMusic.isPlaying()) {
+
+	public static void check_fta_sounds(int i) {
+		if (sprite[i].extra > 0)
+			switch (sprite[i].picnum) {
+			case BILLYCOCK:
+			case BILLYRAY:
+			case 4249:
+				spritesound(121, i);
+				break;
+			case COOT:
+				if (currentGame.getCON().type != RRRA || (engine.krand() & 3) == 2)
+					spritesound(111, i);
+				break;
+			}
+	}
+
+	public static boolean midRestart() {
+		sndStopMusic();
+
+		if (!BuildGdx.audio.getMusic().init()) {
+			Console.Println(BuildGdx.audio.getName(Driver.Music) + " initialization failed", OSDTEXT_RED);
+			return false;
+		}
+
+		return true;
+	}
+
+	public static void sndHandlePause(boolean gPaused) {
+		if (gPaused) {
+			if (currMusic != null)
+				currMusic.pause();
+			BuildGdx.audio.getSound().stopAllSounds();
+		} else {
+			if (!cfg.muteMusic && currMusic != null)
+				currMusic.resume();
+		}
+	}
+
+	public static void sndStopMusic() {
+		if (currMusic != null)
+			currMusic.stop();
+
+		currMusic = null;
+		currTrack++;
+		if (currTrack >= track.length)
+			currTrack = 0;
+		currSong = null;
+	}
+
+	public static FileEntry sndCheckMusic(FileEntry map) {
+		if (map != null) {
+			String musName = map.getName().substring(0, map.getName().indexOf(map.getExtension()) - 1) + ".ogg";
+			userMusic = map.getParent().checkFile(musName);
+		}
+
+		return userMusic;
+	}
+
+	public static void sndPlayMusic(String name) {
+		if (!cfg.muteMusic)
+			BuildGdx.audio.setVolume(Driver.Music, cfg.musicVolume);
+		else
+			BuildGdx.audio.setVolume(Driver.Music, 0);
+
+		if (cfg.musicType != 0 && userMusic != null) {
+			if (currMusic != null && currMusic.isPlaying() && currSong == userMusic.getPath())
+				return;
+
+			sndStopMusic();
+			if ((currMusic = BuildGdx.audio.newMusic(MusicType.Digital, userMusic.getPath())) != null) {
+				currSong = userMusic.getPath();
+				currMusic.play(true);
+				return;
+			}
+		}
+
+		if (cfg.musicType == 1 && game.currentDef != null) { // music from def file
+			String himus = game.currentDef.audInfo.getDigitalInfo(name);
+			if (himus != null) {
+				if (currMusic != null && currMusic.isPlaying() && currSong == himus)
+					return;
+
+				sndStopMusic();
+				if ((currMusic = BuildGdx.audio.newMusic(MusicType.Digital, himus)) != null) {
+					currSong = himus;
+					currMusic.play(true);
+					return;
+				}
+			}
+		}
+
+		if (!sndPlayTrack(currTrack))
+			playmusic(name);
+	}
+
+	public static void checkTrack() {
+		if (cfg.musicType == 2) {
+			if (currMusic != null && !currMusic.isPlaying()) {
 				currTrack++;
-				if(currTrack >= track.length)
+				if (currTrack >= track.length)
 					currTrack = 0;
-				
+
 				System.err.println("Change music to" + currTrack);
 				sndPlayTrack(currTrack);
-			} else if(currMusic == null) {
-				if ( cfg.musicType == 2 )
-				{
-					for(int i = 0; i < track.length; i++)
-						if(sndPlayTrack(i)) {
+			} else if (currMusic == null) {
+				if (cfg.musicType == 2) {
+					for (int i = 0; i < track.length; i++)
+						if (sndPlayTrack(i)) {
 							System.err.println("Start music " + i);
 							return;
 						}
@@ -96,374 +216,314 @@ public class Sounds {
 			}
 		}
 	}
-	
-	public static void check_fta_sounds(int i)
-	{
-	    if(sprite[i].extra > 0) switch(sprite[i].picnum)
-	    {
-	        case BILLYCOCK:
-	        case BILLYRAY:
-	        case 4249:
-	            spritesound(121,i);
-	            break;
-	        case COOT:
-	        	if(currentGame.getCON().type != RRRA || (engine.krand() & 3) == 2)
-	        		spritesound(111,i);
-	            break;
-	    }
-	}
 
-	public static boolean midRestart()
-	{
-		sndStopMusic();
-		
-		if(!engine.getAudio().getMusic().init()) {
-			Console.Println(engine.getAudio().getName(MUSICDRV) + " initialization failed", OSDTEXT_RED);
+	public static boolean sndPlayTrack(int nTrack) {
+		if (cfg.musicType != 2)
 			return false;
-		}
-		
-		return true;
-	}
-	
-	public static void sndStopMusic()
-	{
-		if(currMusic != null)
-			currMusic.stop();
-		
-		currMusic = null;
-		currTrack++;
-		if(currTrack >= track.length)
-			currTrack = 0;
-		currSong = null;
-	}
-	
-	public static void sndPlayMusic(String name)
-	{
-		if(cfg.MusicToggle)
-			engine.getAudio().setVolume(MUSICDRV, cfg.musicVolume);
-		else engine.getAudio().setVolume(MUSICDRV, 0);
 
-		if ( cfg.musicType == 1) { //music from def file
-			String himus = Highmusic.checkDigitalMusic(name);
-			if(himus != null)
-			{
-				if(currMusic != null && currMusic.isPlaying() && currSong == himus)
-					return;
-				
-				sndStopMusic();
-				if((currMusic = engine.getAudio().newMusic(DIGITYPE, himus)) != null) {
-					currSong = himus;
-					currMusic.play(true);
-					return;
-				}
-			} 
-		}
-		
-		if(!sndPlayTrack(currTrack)) 
-			playmusic(name);
-	}
-	
-	public static boolean sndPlayTrack(int nTrack)
-	{
-		if ( cfg.musicType != 2 )
-			return false;
-		
-		if(currMusic != null && currMusic.isPlaying() && currTrack == nTrack)
+		if (currMusic != null && currMusic.isPlaying() && currTrack == nTrack)
 			return true;
-		
+
 		sndStopMusic();
-		if(nTrack >= 0 && nTrack < track.length && (currMusic = engine.getAudio().newMusic(DIGITYPE, track[nTrack])) != null) {
+		if (nTrack >= 0 && nTrack < track.length
+				&& (currMusic = BuildGdx.audio.newMusic(MusicType.Digital, track[nTrack])) != null) {
 			currTrack = nTrack;
 			currMusic.play(false);
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	private static void playmusic(String fn) {
-		if(fn == null) return;
+		if (fn == null)
+			return;
 		byte[] pRaw = kGetBytes(fn, 0);
-		
-		if(pRaw == null || pRaw.length <= 0)
+
+		if (pRaw == null || pRaw.length <= 0)
 			return;
-		
-		if(currMusic != null && currMusic.isPlaying() && currSong == fn)
+
+		if (currMusic != null && currMusic.isPlaying() && currSong == fn)
 			return;
-		
+
 		sndStopMusic();
-		currMusic = engine.getAudio().newMusic(MIDITYPE, pRaw);
-		if(currMusic != null) {
+		currMusic = BuildGdx.audio.newMusic(MusicType.Midi, pRaw);
+		if (currMusic != null) {
 			currMusic.play(true);
 			currSong = fn;
 		}
 	}
-	
-	public static boolean sndRestart(int nvoices, int resampler)
-	{
-		engine.getAudio().getSound().stopAllSounds();	
-		engine.getAudio().getSound().uninit();
-		cfg.NumVoices = nvoices;
-		
+
+	public static boolean sndRestart(int nvoices, int resampler) {
+		BuildGdx.audio.getSound().stopAllSounds();
+		BuildGdx.audio.getSound().uninit();
+		cfg.maxvoices = nvoices;
+
 		Console.Println("Sound restarting...");
-		
-		if(engine.getAudio().getSound().init(1, nvoices, resampler))
-		{
-			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);
-		} 
-		else
-		{
-			Console.Println(engine.getAudio().getName(SOUNDDRV) + " initialization failed", OSDTEXT_RED);
+
+		if (BuildGdx.audio.getSound().init(SystemType.Stereo, nvoices, resampler)) {
+			BuildGdx.audio.setVolume(Driver.Sound, cfg.soundVolume);
+		} else {
+			Console.Println(BuildGdx.audio.getName(Driver.Sound) + " initialization failed", OSDTEXT_RED);
 			return false;
 		}
 
 		return true;
 	}
-	
-	public static void SoundStartup() {
-		for(int i = 0; i < NUM_SOUNDS; i++) {
-	    	Sound[i] = new Sample();
-	    	for(int j = 0; j < 4; j++) 
-	    		SoundOwner[i][j] = new SoundOwner();
-	    }
-		
 
-		if(engine.getAudio().getSound().init(1, cfg.NumVoices, cfg.resampler_num)) {
-			engine.getAudio().setVolume(SOUNDDRV, cfg.soundVolume);	
+	public static void SoundStartup() {
+		for (int i = 0; i < NUM_SOUNDS; i++) {
+			Sound[i] = new Sample();
+			for (int j = 0; j < 4; j++)
+				SoundOwner[i][j] = new SoundOwner();
 		}
-		else {
-			Console.Println(engine.getAudio().getName(SOUNDDRV) + " initialization failed", OSDTEXT_RED);
+
+		if (BuildGdx.audio.getSound().init(SystemType.Stereo, cfg.maxvoices, cfg.resampler_num)) {
+			BuildGdx.audio.setVolume(Driver.Sound, cfg.soundVolume);
+		} else {
+			Console.Println(BuildGdx.audio.getName(Driver.Sound) + " initialization failed", OSDTEXT_RED);
 		}
 	}
 
 	public static void MusicStartup() {
-		if(!engine.getAudio().getMusic().init()) 
-			Console.Println(engine.getAudio().getName(MUSICDRV) + " initialization failed", OSDTEXT_RED);
+		if (!BuildGdx.audio.getMusic().init())
+			Console.Println(BuildGdx.audio.getName(Driver.Music) + " initialization failed", OSDTEXT_RED);
 
-		if(cfg.MusicToggle)
-			engine.getAudio().setVolume(MUSICDRV, cfg.musicVolume);	
-		else engine.getAudio().setVolume(MUSICDRV, 0);	
+		if (!cfg.muteMusic)
+			BuildGdx.audio.setVolume(Driver.Music, cfg.musicVolume);
+		else
+			BuildGdx.audio.setVolume(Driver.Music, 0);
 	}
 
-	public static void MusicUpdate()
-	{
+	public static void MusicUpdate() {
 		currMusic.update();
 	}
 
 	public static int loadsound(int num) {
 
-	    if(num >= NUM_SOUNDS || !cfg.SoundToggle) return 0;
-	    if (!engine.getAudio().IsInited(SOUNDDRV)) return 0;
+		if (num >= NUM_SOUNDS || cfg.noSound)
+			return 0;
+		if (!BuildGdx.audio.IsInited(Driver.Sound))
+			return 0;
 
-	    int fp = -1;
-	    if(currentGame.getCON().sounds[num] != null) fp= kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
-	    if(fp == -1)
-	    {
-	    	int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
-	    	offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
-	    	offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
+		int fp = -1;
+		if (currentGame.getCON().sounds[num] != null)
+			fp = kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
+		if (fp == -1) {
+			int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
+			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
+			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
 
-	        FTA(113,ps[myconnectindex]);
-	        return 0;
-	    }
-	    int l = kFileLength( fp );
-	    soundsiz[num] = l;
-        Sound[num].lock = 2;
-        
-        byte[] tmp = new byte[l];
-        kRead( fp, tmp , l);
-        
-        loadSample(tmp, num);
-	    
-	    kClose( fp );
-	    return 1;
+			FTA(113, ps[myconnectindex]);
+			return 0;
+		}
+		int l = kFileLength(fp);
+		soundsiz[num] = l;
+		Sound[num].lock = 2;
+
+		byte[] tmp = new byte[l];
+		kRead(fp, tmp, l);
+
+		loadSample(tmp, num);
+
+		kClose(fp);
+		return 1;
 	}
-	
-	public static Source xyzsound(int num,int i,int x,int y,int z)
-	{
-	    Source voice;
-	    int pitch;
 
-	    if( num >= NUM_SOUNDS ||
-	        !engine.getAudio().IsInited(SOUNDDRV) ||
-	        ( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) ||
-	        !cfg.SoundToggle ||
-	        Sound[num].num > 3 ||
-	        !engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[num]) ||
-	        (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26*3) ||
-	        gShowMenu) return null;
+	public static Source xyzsound(int num, int i, int x, int y, int z) {
+		Source voice;
+		int pitch;
 
-	    if( (currentGame.getCON().soundm[num]&128) != 0 )
-	    {
-	        sound(num);
-	        return null;
-	    }
+		if (num >= NUM_SOUNDS || !BuildGdx.audio.IsInited(Driver.Sound)
+				|| ((currentGame.getCON().soundm[num] & 8) != 0 && ud.lockout != 0) || cfg.noSound || Sound[num].num > 3
+				|| !BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[num])
+				|| (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26 * 3)
+				|| game.menu.gShowMenu)
+			return null;
 
-	    if( (currentGame.getCON().soundm[num]&4) != 0 )
-	    {
-	        if(!cfg.VoiceToggle || (ud.multimode > 1 && sprite[i].picnum == APLAYER && sprite[i].yvel != screenpeek && ud.coop != 1) ) return null;
+		if ((currentGame.getCON().soundm[num] & 128) != 0) {
+			sound(num);
+			return null;
+		}
 
-	        for(int j=0;j<NUM_SOUNDS;j++)
-	          for(int k=0;k<Sound[j].num;k++)
-	            if( (Sound[j].num > 0) && (currentGame.getCON().soundm[j]&4) != 0 )
-	              return null;
-	    }
+		if ((currentGame.getCON().soundm[num] & 4) != 0) {
+			if (!cfg.VoiceToggle || (ud.multimode > 1 && sprite[i].picnum == APLAYER && sprite[i].yvel != screenpeek
+					&& ud.coop != 1))
+				return null;
 
-	    int cx = ps[screenpeek].oposx;
-	    int cy = ps[screenpeek].oposy;
-	    int cz = ps[screenpeek].oposz;
-	    short cs = ps[screenpeek].cursectnum;
+			for (int j = 0; j < NUM_SOUNDS; j++)
+				for (int k = 0; k < Sound[j].num; k++)
+					if ((Sound[j].num > 0) && (currentGame.getCON().soundm[j] & 4) != 0)
+						return null;
+		}
 
-	    int sndist = FindDistance3D((cx-x),(cy-y),(cz-z)>>4);
+		int cx = ps[screenpeek].oposx;
+		int cy = ps[screenpeek].oposy;
+		int cz = ps[screenpeek].oposz;
+		short cs = ps[screenpeek].cursectnum;
 
-	    if( i >= 0 && (currentGame.getCON().soundm[num]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && sector[sprite[i].sectnum].lotag < 9 )
-	        sndist = (int) divscale(sndist,(sprite[i].hitag+1), 14);
+		int sndist = FindDistance3D((cx - x), (cy - y), (cz - z) >> 4);
 
-	    int pitchs = currentGame.getCON().soundps[num];
-	    int pitche = currentGame.getCON().soundpe[num];
-	    cx = (int) klabs(pitche-pitchs);
+		if (i >= 0 && (currentGame.getCON().soundm[num] & 16) == 0 && sprite[i].picnum == MUSICANDSFX
+				&& sprite[i].lotag < 999 && sector[sprite[i].sectnum].lotag < 9)
+			sndist = (int) divscale(sndist, (sprite[i].hitag + 1), 14);
 
-	    if(cx != 0)
-	    {
-	        if( pitchs < pitche )
-	             pitch = pitchs + ( engine.rand()%cx );
-	        else pitch = pitche + ( engine.rand()%cx );
-	    }
-	    else pitch = pitchs;
+		int pitchs = currentGame.getCON().soundps[num];
+		int pitche = currentGame.getCON().soundpe[num];
+		cx = (int) klabs(pitche - pitchs);
 
-	    sndist += currentGame.getCON().soundvo[num];
-	    if(sndist < 0) sndist = 0;
-	    if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx,cy,cz-(24<<8),cs,sprite[i].x,sprite[i].y,sprite[i].z-(24<<8),sprite[i].sectnum) )
-	        sndist += sndist>>2;
+		if (cx != 0) {
+			if (pitchs < pitche)
+				pitch = pitchs + (engine.rand() % cx);
+			else
+				pitch = pitche + (engine.rand() % cx);
+		} else
+			pitch = pitchs;
 
-	    switch(num)
-	    {
-	        case PIPEBOMB_EXPLODE:
-	        case LASERTRIP_EXPLODE:
-	        case RPG_EXPLODE:
-	            if(sndist > (6144) )
-	                sndist = 6144;
-	            if(sector[ps[screenpeek].cursectnum].lotag == 2)
-	                pitch -= 1024;
-	            break;
-	        default:
-	            if(sector[ps[screenpeek].cursectnum].lotag == 2 && (currentGame.getCON().soundm[num]&4) == 0)
-	                pitch = -768;
-	            if( sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
-	                return null;
-	            break;
-	    }
+		sndist += currentGame.getCON().soundvo[num];
+		if (sndist < 0)
+			sndist = 0;
+		if (sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx, cy, cz - (24 << 8), cs, sprite[i].x,
+				sprite[i].y, sprite[i].z - (24 << 8), sprite[i].sectnum))
+			sndist += sndist >> 2;
 
-	    if( Sound[num].num > 0 && sprite[i].picnum != MUSICANDSFX )
-	    {
-	        if( SoundOwner[num][0].i == i ) stopsound(num);
-	        else if( Sound[num].num > 1 ) stopsound(num);
-	        else if( badguy(sprite[i]) && sprite[i].extra <= 0 ) stopsound(num);
-	    }
+		switch (num) {
+		case PIPEBOMB_EXPLODE:
+		case LASERTRIP_EXPLODE:
+		case RPG_EXPLODE:
+			if (sndist > (6144))
+				sndist = 6144;
+			if (sector[ps[screenpeek].cursectnum].lotag == 2)
+				pitch -= 1024;
+			break;
+		default:
+			if (sector[ps[screenpeek].cursectnum].lotag == 2 && (currentGame.getCON().soundm[num] & 4) == 0)
+				pitch = -768;
+			if (sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
+				return null;
+			break;
+		}
 
-	    if( sprite[i].picnum == APLAYER && sprite[i].yvel == screenpeek )
-	    {
-	        sndist = 0;
-	    }
+		if (Sound[num].num > 0 && sprite[i].picnum != MUSICANDSFX) {
+			if (SoundOwner[num][0].i == i)
+				stopsound(num);
+			else if (Sound[num].num > 1)
+				stopsound(num);
+			else if (badguy(sprite[i]) && sprite[i].extra <= 0)
+				stopsound(num);
+		}
 
-	    if(Sound[num].ptr == null) { if( loadsound(num) == 0 ) return null; }
-	    else
-	    {
-	       if (Sound[num].lock < 200)
-	          Sound[num].lock = 200;
-	       else Sound[num].lock++;
-	       
-	       Sound[num].ptr.rewind();
-	    }
+		if (sprite[i].picnum == APLAYER && sprite[i].yvel == screenpeek) {
+			sndist = 0;
+		}
 
-	    if( (currentGame.getCON().soundm[num]&16) != 0 ) sndist = 0;
+		if (Sound[num].ptr == null) {
+			if (loadsound(num) == 0)
+				return null;
+		} else {
+			if (Sound[num].lock < 200)
+				Sound[num].lock = 200;
+			else
+				Sound[num].lock++;
 
-	    if(sndist < ((255-LOUDESTVOLUME)<<6) )
-	        sndist = ((255-LOUDESTVOLUME)<<6);
+			Sound[num].ptr.rewind();
+		}
 
-	    if( (currentGame.getCON().soundm[num]&1) != 0)
-	    {
-	        if(Sound[num].num > 0) return null;
-        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
-        	if(voice != null)
-        		voice.setLooping(true, 0, -1);
-	    }
-	    else
-        	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
+		if ((currentGame.getCON().soundm[num] & 16) != 0)
+			sndist = 0;
 
-	    if ( voice != null )
-	    {
-	        SoundOwner[num][Sound[num].num].i = i;
-	        SoundOwner[num][Sound[num].num].voice = voice;
-	        voice.setPosition(x, z >> 4, y);
-	        voice.play(calcVolume(sndist));
-	        Sound[num].num++;
-	    }
-	    else Sound[num].lock--;
-	    return (voice);
+		if (sndist < ((255 - LOUDESTVOLUME) << 6))
+			sndist = ((255 - LOUDESTVOLUME) << 6);
+
+		if ((currentGame.getCON().soundm[num] & 1) != 0) {
+			if (Sound[num].num > 0)
+				return null;
+			voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16),
+					Sound[num].bits, currentGame.getCON().soundpr[num]);
+			if (voice != null)
+				voice.setLooping(true, 0, -1);
+		} else
+			voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16),
+					Sound[num].bits, currentGame.getCON().soundpr[num]);
+
+		if (voice != null) {
+			SoundOwner[num][Sound[num].num].i = i;
+			SoundOwner[num][Sound[num].num].voice = voice;
+			voice.setCallback(callback, num);
+			voice.setPosition(x, z >> 4, y);
+			voice.play(calcVolume(sndist));
+			Sound[num].num++;
+		} else
+			Sound[num].lock--;
+		return (voice);
 	}
-	
-	public static Source sound(int num)
-	{
-	    Source voice;
-	    if (!engine.getAudio().IsInited(SOUNDDRV)) return null;
-	    if(!cfg.SoundToggle) return null;
-	    if(!cfg.VoiceToggle && (currentGame.getCON().soundm[num]&4) != 0 ) return null;
-	    if( (currentGame.getCON().soundm[num]&8) != 0 && ud.lockout != 0 ) return null;
-	    if(!engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[num])) return null;
 
-	    int pitch;
-	    int pitchs = currentGame.getCON().soundps[num];
-	    int pitche = currentGame.getCON().soundpe[num];
-	    int cx = (int) klabs(pitche-pitchs);
+	public static Source sound(int num) {
+		Source voice;
+		if (!BuildGdx.audio.IsInited(Driver.Sound))
+			return null;
+		if (cfg.noSound)
+			return null;
+		if (!cfg.VoiceToggle && (currentGame.getCON().soundm[num] & 4) != 0)
+			return null;
+		if ((currentGame.getCON().soundm[num] & 8) != 0 && ud.lockout != 0)
+			return null;
+		if (!BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[num]))
+			return null;
 
-	    if(cx != 0)
-	    {
-	        if( pitchs < pitche )
-	             pitch = pitchs + ( engine.rand()%cx );
-	        else pitch = pitche + ( engine.rand()%cx );
-	    }
-	    else pitch = pitchs;
+		int pitch;
+		int pitchs = currentGame.getCON().soundps[num];
+		int pitche = currentGame.getCON().soundpe[num];
+		int cx = (int) klabs(pitche - pitchs);
 
-	    if(Sound[num].ptr == null) { if( loadsound(num) == 0 ) return null; }
-	    else
-	    {
-	       if (Sound[num].lock < 200)
-	          Sound[num].lock = 200;
-	       else Sound[num].lock++;
-	       
-	       Sound[num].ptr.rewind();
-	    }
-	    
-	    if( (currentGame.getCON().soundm[num]&1) != 0)
-	    {
-	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
-        	if(voice != null) {
-        		voice.setLooping(true, 0, -1);
-        		voice.setGlobal(1);
-        		voice.play(calcVolume(LOUDESTVOLUME));
-        		return voice;
-        	}
-        	
-	    }
-	    else {
-	    	voice = engine.getAudio().newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16), Sound[num].bits, currentGame.getCON().soundpr[num]);
-        	if ( voice != null )
-        	{
-        		voice.setGlobal(1);
-        		voice.play(calcVolume(255 - LOUDESTVOLUME)); 
-        		return voice;
-        	}
-	    }
-	    Sound[num].lock--;
-	    
-	    return null;
+		if (cx != 0) {
+			if (pitchs < pitche)
+				pitch = pitchs + (engine.rand() % cx);
+			else
+				pitch = pitche + (engine.rand() % cx);
+		} else
+			pitch = pitchs;
+
+		if (Sound[num].ptr == null) {
+			if (loadsound(num) == 0)
+				return null;
+		} else {
+			if (Sound[num].lock < 200)
+				Sound[num].lock = 200;
+			else
+				Sound[num].lock++;
+
+			Sound[num].ptr.rewind();
+		}
+
+		if ((currentGame.getCON().soundm[num] & 1) != 0) {
+			voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16),
+					Sound[num].bits, currentGame.getCON().soundpr[num]);
+			if (voice != null) {
+				voice.setLooping(true, 0, -1);
+				voice.setCallback(callback, num);
+				voice.setGlobal(1);
+				voice.play(calcVolume(LOUDESTVOLUME));
+				return voice;
+			}
+
+		} else {
+			voice = BuildGdx.audio.newSound(Sound[num].ptr, mulscale(Sound[num].rate, PITCH_GetScale(pitch), 16),
+					Sound[num].bits, currentGame.getCON().soundpr[num]);
+			if (voice != null) {
+				voice.setGlobal(1);
+				voice.setCallback(callback, num);
+				voice.play(calcVolume(255 - LOUDESTVOLUME));
+				return voice;
+			}
+		}
+		Sound[num].lock--;
+
+		return null;
 	}
-	
-	public static void loadSample(byte[] data, int num)
-	{
-		if(data[0] == 'C')
-		{
+
+	public static void loadSample(byte[] data, int num) {
+		if (data[0] == 'C') {
 			VOC voc = new VOC(data);
 			Sound[num].bits = voc.samplesize;
 			Sound[num].rate = voc.samplerate;
@@ -474,282 +534,225 @@ public class Sounds {
 				Sound[num].bits = wav.samplebits;
 				Sound[num].rate = wav.samplerate;
 				Sound[num].ptr = wav.sampledata;
-			} catch(Exception e) {
+			} catch (Exception e) {
 				Console.Println("Can't load sound[" + num + "] : " + e.getMessage(), OSDTEXT_RED);
 			}
 		}
 	}
-	
-	public static Source spritesound(int num, int i)
-	{
-		 if(num >= NUM_SOUNDS) return null;
-		 return xyzsound(num,i,sprite[i].x,sprite[i].y,sprite[i].z);
+
+	public static Source spritesound(int num, int i) {
+		if (num >= NUM_SOUNDS)
+			return null;
+		return xyzsound(num, i, sprite[i].x, sprite[i].y, sprite[i].z);
 	}
-	
-	public static void stopsound(int num)
-	{
-		if(Sound[num].num > 0)
-	    {
-			SoundOwner[num][Sound[num].num-1].voice.dispose();
-			TestCallBack(num);
-	    }
-	}
-	
-	public static void StopAllSounds()
-	{
-		for(int i = 0; i < NUM_SOUNDS; i++)
-			stopsound(i);
-		engine.getAudio().getSound().stopAllSounds();
-	}
-	
-	public static void stopenvsound(int num, int i)
-	{
-	    if(Sound[num].num > 0)
-	    {
-	        int k = Sound[num].num;
-	        for(int j=0;j<k;j++)
-	           if(SoundOwner[num][j].i == i)
-	           {
-	        	   SoundOwner[num][j].voice.dispose();
-	        	   break;
-	           }
-	    }
-	}
-	
-	public static void updatesounds()
-	{
-		for(int j=0;j<NUM_SOUNDS;j++) {
-			for(int k=0;k<Sound[j].num;k++)
-		    {
-				if(!SoundOwner[j][k].voice.isActive()) 
-					TestCallBack(j);
-		    }
+
+	public static void stopsound(int num, int i) {
+		if (Sound[num].num > 0 && (i == -1 || i == SoundOwner[num][Sound[num].num - 1].i)) {
+			SoundOwner[num][Sound[num].num - 1].voice.dispose();
 		}
 	}
 
-	public static void pan3dsound()
-	{
-		int sndist, sx, sy, sz, cx, cy, cz;
-	    short cs, ca;
-
-	    numenvsnds = 0;
-
-	    if(ud.camerasprite == -1)
-	    {
-	        cx = ps[screenpeek].oposx;
-	        cy = ps[screenpeek].oposy;
-	        cz = ps[screenpeek].oposz;
-	        cs = ps[screenpeek].cursectnum;
-	        ca = (short) (ps[screenpeek].ang+ps[screenpeek].look_ang);
-	    }
-	    else
-	    {
-	        cx = sprite[ud.camerasprite].x;
-	        cy = sprite[ud.camerasprite].y;
-	        cz = sprite[ud.camerasprite].z;
-	        cs = sprite[ud.camerasprite].sectnum;
-	        ca = sprite[ud.camerasprite].ang;
-	    }
-
-	    engine.getAudio().getSound().setListener(cx, cz >> 4, cy, ca);
-	    
-	    for(int j=0;j<NUM_SOUNDS;j++) for(int k=0;k<Sound[j].num;k++)
-	    {
-	        int i = SoundOwner[j][k].i;
-
-	        sx = sprite[i].x;
-	        sy = sprite[i].y;
-	        sz = sprite[i].z;
-
-	        if( sprite[i].picnum == APLAYER && sprite[i].yvel == screenpeek)
-	        {
-	            sndist = 0;
-	        }
-	        else
-	        {
-	            sndist = FindDistance3D((cx-sx),(cy-sy),(cz-sz)>>4);
-	            if(sprite[i].sectnum >= 0 && sprite[i].sectnum < MAXSECTORS) { //0.751
-		            if( i >= 0 && (currentGame.getCON().soundm[j]&16) == 0 && sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag&0xff) < 9 )
-		                sndist = (int) divscale(sndist,(sprite[i].hitag+1), 14);
-	            }
-	        }
-
-	        sndist += currentGame.getCON().soundvo[j];
-	        if(sndist < 0) sndist = 0;
-
-	        if( sndist != 0 && sprite[i].picnum != MUSICANDSFX && !engine.cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),sprite[i].sectnum) )
-	            sndist += sndist>>5;
-
-	        if(sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999)
-	            numenvsnds++;
-
-	        switch(j)
-	        {
-	            case PIPEBOMB_EXPLODE:
-	            case LASERTRIP_EXPLODE:
-	            case RPG_EXPLODE:
-	                if(sndist > (6144)) sndist = (6144);
-	                break;
-	            default:
-	                if( sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
-	                {
-	                    stopsound(j);
-	                    continue;
-	                }
-	        }
-
-	        if(Sound[j].ptr == null && loadsound(j) == 0 ) continue;
-	        if( (currentGame.getCON().soundm[j]&16) != 0 ) sndist = 0;
-
-	        if(sndist < ((255-LOUDESTVOLUME)<<6) )
-	            sndist = ((255-LOUDESTVOLUME)<<6);
-	        
-	        SoundOwner[j][k].voice.setPosition(sx, sz >> 4, sy);
-	        SoundOwner[j][k].voice.setVolume(calcVolume(sndist));
-	    }
+	public static void stopsound(int num) {
+		if (Sound[num].num > 0) {
+			SoundOwner[num][Sound[num].num - 1].voice.dispose();
+		}
 	}
-	
-	private static float calcVolume(int dist)
-	{
-		float vol = (dist>>6) / 255.0f;
+
+	public static void StopAllSounds() {
+		for (int i = 0; i < NUM_SOUNDS; i++)
+			stopsound(i);
+		BuildGdx.audio.getSound().stopAllSounds();
+	}
+
+	public static void stopenvsound(int num, int i) {
+		if (Sound[num].num > 0) {
+			int k = Sound[num].num;
+			for (int j = 0; j < k; j++)
+				if (SoundOwner[num][j].i == i) {
+					SoundOwner[num][j].voice.dispose();
+					break;
+				}
+		}
+	}
+
+	public static void pan3dsound() {
+		int sndist, sx, sy, sz, cx, cy, cz;
+		short cs, ca;
+
+		numenvsnds = 0;
+
+		if (ud.camerasprite == -1) {
+			cx = ps[screenpeek].oposx;
+			cy = ps[screenpeek].oposy;
+			cz = ps[screenpeek].oposz;
+			cs = ps[screenpeek].cursectnum;
+			ca = (short) (ps[screenpeek].ang + ps[screenpeek].look_ang);
+		} else {
+			cx = sprite[ud.camerasprite].x;
+			cy = sprite[ud.camerasprite].y;
+			cz = sprite[ud.camerasprite].z;
+			cs = sprite[ud.camerasprite].sectnum;
+			ca = sprite[ud.camerasprite].ang;
+		}
+
+		BuildGdx.audio.getSound().setListener(cx, cz >> 4, cy, ca);
+
+		for (int j = 0; j < NUM_SOUNDS; j++)
+			for (int k = 0; k < Sound[j].num; k++) {
+				int i = SoundOwner[j][k].i;
+
+				sx = sprite[i].x;
+				sy = sprite[i].y;
+				sz = sprite[i].z;
+
+				if (sprite[i].picnum == APLAYER && sprite[i].yvel == screenpeek) {
+					sndist = 0;
+				} else {
+					sndist = FindDistance3D((cx - sx), (cy - sy), (cz - sz) >> 4);
+					if (sprite[i].sectnum >= 0 && sprite[i].sectnum < MAXSECTORS) { // 0.751
+						if (i >= 0 && (currentGame.getCON().soundm[j] & 16) == 0 && sprite[i].picnum == MUSICANDSFX
+								&& sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag & 0xff) < 9)
+							sndist = (int) divscale(sndist, (sprite[i].hitag + 1), 14);
+					}
+				}
+
+				sndist += currentGame.getCON().soundvo[j];
+				if (sndist < 0)
+					sndist = 0;
+
+				if (sndist != 0 && sprite[i].picnum != MUSICANDSFX
+						&& !engine.cansee(cx, cy, cz - (24 << 8), cs, sx, sy, sz - (24 << 8), sprite[i].sectnum))
+					sndist += sndist >> 5;
+
+				if (sprite[i].picnum == MUSICANDSFX && sprite[i].lotag < 999)
+					numenvsnds++;
+
+				switch (j) {
+				case PIPEBOMB_EXPLODE:
+				case LASERTRIP_EXPLODE:
+				case RPG_EXPLODE:
+					if (sndist > (6144))
+						sndist = (6144);
+					break;
+				default:
+					if (sndist > 31444 && sprite[i].picnum != MUSICANDSFX) {
+						stopsound(j);
+						continue;
+					}
+				}
+
+				if (Sound[j].ptr == null && loadsound(j) == 0)
+					continue;
+				if ((currentGame.getCON().soundm[j] & 16) != 0)
+					sndist = 0;
+
+				if (sndist < ((255 - LOUDESTVOLUME) << 6))
+					sndist = ((255 - LOUDESTVOLUME) << 6);
+
+				SoundOwner[j][k].voice.setPosition(sx, sz >> 4, sy);
+				SoundOwner[j][k].voice.setVolume(calcVolume(sndist));
+			}
+	}
+
+	private static float calcVolume(int dist) {
+		float vol = (dist >> 6) / 255.0f;
 		vol = Math.min(Math.max(vol, 0.0f), 1.0f);
 		return 1.0f - vol;
 	}
-	
-	public static void TestCallBack(int num)
-	{
-        if(num < 0)
-        {
-//            if(lumplockbyte[-num] >= 200)
-//                lumplockbyte[-num]--;
-            return;
-        }
 
-        int tempk = Sound[num].num;
-
-        if(tempk > 0)
-        {
-            if( (currentGame.getCON().soundm[num]&16) == 0)
-                for(int tempj=0;tempj<tempk;tempj++)
-            {
-                int tempi = SoundOwner[num][tempj].i;
-                if(sprite[tempi].picnum == MUSICANDSFX && sprite[tempi].sectnum < MAXSECTORS && sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999)
-                {
-                    hittype[tempi].temp_data[0] = 0;
-                    if( (tempj + 1) < tempk )
-                    {
-                        SoundOwner[num][tempj].voice = SoundOwner[num][tempk-1].voice;
-                        SoundOwner[num][tempj].i     = SoundOwner[num][tempk-1].i;
-                    }
-                    break;
-                }
-            }
-
-            Sound[num].num--;
-            SoundOwner[num][tempk-1].i = -1;
-        }
-
-        Sound[num].lock--;
-	}
-	
-	public static void clearsoundlocks()
-	{
-	    for(int i=0;i<NUM_SOUNDS;i++)
-	        if(Sound[i].lock >= 200)
-	            Sound[i].lock = 199;
+	public static void clearsoundlocks() {
+		for (int i = 0; i < NUM_SOUNDS; i++)
+			if (Sound[i].lock >= 200)
+				Sound[i].lock = 199;
 
 //	    for(int i=0;i<11;i++)
 //	        if(lumplockbyte[i] >= 200)
 //	            lumplockbyte[i] = 199;
 	}
-	
+
 	private static final int PitchTable[][] = {
-		{ 0x10000, 0x10097, 0x1012f, 0x101c7, 0x10260, 0x102f9, 0x10392, 0x1042c,
-			0x104c6, 0x10561, 0x105fb, 0x10696, 0x10732, 0x107ce, 0x1086a, 0x10907,
-			0x109a4, 0x10a41, 0x10adf, 0x10b7d, 0x10c1b, 0x10cba, 0x10d59, 0x10df8,
-			0x10e98 },
-		{ 0x10f38, 0x10fd9, 0x1107a, 0x1111b, 0x111bd, 0x1125f, 0x11302, 0x113a5,
-			0x11448, 0x114eb, 0x1158f, 0x11634, 0x116d8, 0x1177e, 0x11823, 0x118c9,
-			0x1196f, 0x11a16, 0x11abd, 0x11b64, 0x11c0c, 0x11cb4, 0x11d5d, 0x11e06,
-			0x11eaf },
-		{ 0x11f59, 0x12003, 0x120ae, 0x12159, 0x12204, 0x122b0, 0x1235c, 0x12409,
-			0x124b6, 0x12563, 0x12611, 0x126bf, 0x1276d, 0x1281c, 0x128cc, 0x1297b,
-			0x12a2b, 0x12adc, 0x12b8d, 0x12c3e, 0x12cf0, 0x12da2, 0x12e55, 0x12f08,
-			0x12fbc },
-		{ 0x1306f, 0x13124, 0x131d8, 0x1328d, 0x13343, 0x133f9, 0x134af, 0x13566,
-			0x1361d, 0x136d5, 0x1378d, 0x13846, 0x138fe, 0x139b8, 0x13a72, 0x13b2c,
-			0x13be6, 0x13ca1, 0x13d5d, 0x13e19, 0x13ed5, 0x13f92, 0x1404f, 0x1410d,
-			0x141cb },
-		{ 0x1428a, 0x14349, 0x14408, 0x144c8, 0x14588, 0x14649, 0x1470a, 0x147cc,
-			0x1488e, 0x14951, 0x14a14, 0x14ad7, 0x14b9b, 0x14c5f, 0x14d24, 0x14dea,
-			0x14eaf, 0x14f75, 0x1503c, 0x15103, 0x151cb, 0x15293, 0x1535b, 0x15424,
-			0x154ee },
-		{ 0x155b8, 0x15682, 0x1574d, 0x15818, 0x158e4, 0x159b0, 0x15a7d, 0x15b4a,
-			0x15c18, 0x15ce6, 0x15db4, 0x15e83, 0x15f53, 0x16023, 0x160f4, 0x161c5,
-			0x16296, 0x16368, 0x1643a, 0x1650d, 0x165e1, 0x166b5, 0x16789, 0x1685e,
-			0x16934 },
-		{ 0x16a09, 0x16ae0, 0x16bb7, 0x16c8e, 0x16d66, 0x16e3e, 0x16f17, 0x16ff1,
-			0x170ca, 0x171a5, 0x17280, 0x1735b, 0x17437, 0x17513, 0x175f0, 0x176ce,
-			0x177ac, 0x1788a, 0x17969, 0x17a49, 0x17b29, 0x17c09, 0x17cea, 0x17dcc,
-			0x17eae },
-		{ 0x17f91, 0x18074, 0x18157, 0x1823c, 0x18320, 0x18406, 0x184eb, 0x185d2,
-			0x186b8, 0x187a0, 0x18888, 0x18970, 0x18a59, 0x18b43, 0x18c2d, 0x18d17,
-			0x18e02, 0x18eee, 0x18fda, 0x190c7, 0x191b5, 0x192a2, 0x19391, 0x19480,
-			0x1956f },
-		{ 0x1965f, 0x19750, 0x19841, 0x19933, 0x19a25, 0x19b18, 0x19c0c, 0x19d00,
-			0x19df4, 0x19ee9, 0x19fdf, 0x1a0d5, 0x1a1cc, 0x1a2c4, 0x1a3bc, 0x1a4b4,
-			0x1a5ad, 0x1a6a7, 0x1a7a1, 0x1a89c, 0x1a998, 0x1aa94, 0x1ab90, 0x1ac8d,
-			0x1ad8b },
-		{ 0x1ae89, 0x1af88, 0x1b088, 0x1b188, 0x1b289, 0x1b38a, 0x1b48c, 0x1b58f,
-			0x1b692, 0x1b795, 0x1b89a, 0x1b99f, 0x1baa4, 0x1bbaa, 0x1bcb1, 0x1bdb8,
-			0x1bec0, 0x1bfc9, 0x1c0d2, 0x1c1dc, 0x1c2e6, 0x1c3f1, 0x1c4fd, 0x1c609,
-			0x1c716 },
-		{ 0x1c823, 0x1c931, 0x1ca40, 0x1cb50, 0x1cc60, 0x1cd70, 0x1ce81, 0x1cf93,
-			0x1d0a6, 0x1d1b9, 0x1d2cd, 0x1d3e1, 0x1d4f6, 0x1d60c, 0x1d722, 0x1d839,
-			0x1d951, 0x1da69, 0x1db82, 0x1dc9c, 0x1ddb6, 0x1ded1, 0x1dfec, 0x1e109,
-			0x1e225 },
-		{ 0x1e343, 0x1e461, 0x1e580, 0x1e6a0, 0x1e7c0, 0x1e8e0, 0x1ea02, 0x1eb24,
-			0x1ec47, 0x1ed6b, 0x1ee8f, 0x1efb4, 0x1f0d9, 0x1f1ff, 0x1f326, 0x1f44e,
-			0x1f576, 0x1f69f, 0x1f7c9, 0x1f8f3, 0x1fa1e, 0x1fb4a, 0x1fc76, 0x1fda3,
-			0x1fed1 }
-	};
-	
+			{ 0x10000, 0x10097, 0x1012f, 0x101c7, 0x10260, 0x102f9, 0x10392, 0x1042c,
+				0x104c6, 0x10561, 0x105fb, 0x10696, 0x10732, 0x107ce, 0x1086a, 0x10907,
+				0x109a4, 0x10a41, 0x10adf, 0x10b7d, 0x10c1b, 0x10cba, 0x10d59, 0x10df8,
+				0x10e98 },
+			{ 0x10f38, 0x10fd9, 0x1107a, 0x1111b, 0x111bd, 0x1125f, 0x11302, 0x113a5,
+				0x11448, 0x114eb, 0x1158f, 0x11634, 0x116d8, 0x1177e, 0x11823, 0x118c9,
+				0x1196f, 0x11a16, 0x11abd, 0x11b64, 0x11c0c, 0x11cb4, 0x11d5d, 0x11e06,
+				0x11eaf },
+			{ 0x11f59, 0x12003, 0x120ae, 0x12159, 0x12204, 0x122b0, 0x1235c, 0x12409,
+				0x124b6, 0x12563, 0x12611, 0x126bf, 0x1276d, 0x1281c, 0x128cc, 0x1297b,
+				0x12a2b, 0x12adc, 0x12b8d, 0x12c3e, 0x12cf0, 0x12da2, 0x12e55, 0x12f08,
+				0x12fbc },
+			{ 0x1306f, 0x13124, 0x131d8, 0x1328d, 0x13343, 0x133f9, 0x134af, 0x13566,
+				0x1361d, 0x136d5, 0x1378d, 0x13846, 0x138fe, 0x139b8, 0x13a72, 0x13b2c,
+				0x13be6, 0x13ca1, 0x13d5d, 0x13e19, 0x13ed5, 0x13f92, 0x1404f, 0x1410d,
+				0x141cb },
+			{ 0x1428a, 0x14349, 0x14408, 0x144c8, 0x14588, 0x14649, 0x1470a, 0x147cc,
+				0x1488e, 0x14951, 0x14a14, 0x14ad7, 0x14b9b, 0x14c5f, 0x14d24, 0x14dea,
+				0x14eaf, 0x14f75, 0x1503c, 0x15103, 0x151cb, 0x15293, 0x1535b, 0x15424,
+				0x154ee },
+			{ 0x155b8, 0x15682, 0x1574d, 0x15818, 0x158e4, 0x159b0, 0x15a7d, 0x15b4a,
+				0x15c18, 0x15ce6, 0x15db4, 0x15e83, 0x15f53, 0x16023, 0x160f4, 0x161c5,
+				0x16296, 0x16368, 0x1643a, 0x1650d, 0x165e1, 0x166b5, 0x16789, 0x1685e,
+				0x16934 },
+			{ 0x16a09, 0x16ae0, 0x16bb7, 0x16c8e, 0x16d66, 0x16e3e, 0x16f17, 0x16ff1,
+				0x170ca, 0x171a5, 0x17280, 0x1735b, 0x17437, 0x17513, 0x175f0, 0x176ce,
+				0x177ac, 0x1788a, 0x17969, 0x17a49, 0x17b29, 0x17c09, 0x17cea, 0x17dcc,
+				0x17eae },
+			{ 0x17f91, 0x18074, 0x18157, 0x1823c, 0x18320, 0x18406, 0x184eb, 0x185d2,
+				0x186b8, 0x187a0, 0x18888, 0x18970, 0x18a59, 0x18b43, 0x18c2d, 0x18d17,
+				0x18e02, 0x18eee, 0x18fda, 0x190c7, 0x191b5, 0x192a2, 0x19391, 0x19480,
+				0x1956f },
+			{ 0x1965f, 0x19750, 0x19841, 0x19933, 0x19a25, 0x19b18, 0x19c0c, 0x19d00,
+				0x19df4, 0x19ee9, 0x19fdf, 0x1a0d5, 0x1a1cc, 0x1a2c4, 0x1a3bc, 0x1a4b4,
+				0x1a5ad, 0x1a6a7, 0x1a7a1, 0x1a89c, 0x1a998, 0x1aa94, 0x1ab90, 0x1ac8d,
+				0x1ad8b },
+			{ 0x1ae89, 0x1af88, 0x1b088, 0x1b188, 0x1b289, 0x1b38a, 0x1b48c, 0x1b58f,
+				0x1b692, 0x1b795, 0x1b89a, 0x1b99f, 0x1baa4, 0x1bbaa, 0x1bcb1, 0x1bdb8,
+				0x1bec0, 0x1bfc9, 0x1c0d2, 0x1c1dc, 0x1c2e6, 0x1c3f1, 0x1c4fd, 0x1c609,
+				0x1c716 },
+			{ 0x1c823, 0x1c931, 0x1ca40, 0x1cb50, 0x1cc60, 0x1cd70, 0x1ce81, 0x1cf93,
+				0x1d0a6, 0x1d1b9, 0x1d2cd, 0x1d3e1, 0x1d4f6, 0x1d60c, 0x1d722, 0x1d839,
+				0x1d951, 0x1da69, 0x1db82, 0x1dc9c, 0x1ddb6, 0x1ded1, 0x1dfec, 0x1e109,
+				0x1e225 },
+			{ 0x1e343, 0x1e461, 0x1e580, 0x1e6a0, 0x1e7c0, 0x1e8e0, 0x1ea02, 0x1eb24,
+				0x1ec47, 0x1ed6b, 0x1ee8f, 0x1efb4, 0x1f0d9, 0x1f1ff, 0x1f326, 0x1f44e,
+				0x1f576, 0x1f69f, 0x1f7c9, 0x1f8f3, 0x1fa1e, 0x1fb4a, 0x1fc76, 0x1fda3,
+				0x1fed1 }
+		};
 
 	private static final int MAXDETUNE = 25;
-	private static int PITCH_GetScale( int pitchoffset)
-	{
+
+	private static int PITCH_GetScale(int pitchoffset) {
 		int scale;
 		int octaveshift;
 		int noteshift;
 		int note;
 		int detune;
 
-
-		if ( pitchoffset == 0 )
-			return( PitchTable[ 0 ][ 0 ] );
+		if (pitchoffset == 0)
+			return (PitchTable[0][0]);
 
 		noteshift = pitchoffset % 1200;
-		if ( noteshift < 0 )
+		if (noteshift < 0)
 			noteshift += 1200;
-	      
-		note   = noteshift / 100;
-		detune = ( noteshift % 100 ) / ( 100 / MAXDETUNE );
-		octaveshift = ( pitchoffset - noteshift ) / 1200;
 
-		if ( detune < 0 )
-		{
-			detune += ( 100 / MAXDETUNE );
+		note = noteshift / 100;
+		detune = (noteshift % 100) / (100 / MAXDETUNE);
+		octaveshift = (pitchoffset - noteshift) / 1200;
+
+		if (detune < 0) {
+			detune += (100 / MAXDETUNE);
 			note--;
-			if ( note < 0 )
-			{
+			if (note < 0) {
 				note += 12;
 				octaveshift--;
 			}
 		}
 
-		scale = PitchTable[ note ][ detune ];
+		scale = PitchTable[note][detune];
 
-		if ( octaveshift < 0 )
+		if (octaveshift < 0)
 			scale >>= -octaveshift;
 		else
 			scale <<= octaveshift;

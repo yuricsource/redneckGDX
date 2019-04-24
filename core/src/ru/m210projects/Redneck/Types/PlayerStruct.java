@@ -16,26 +16,32 @@
 
 package ru.m210projects.Redneck.Types;
 
+import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.SoundDefs.DUKE_SCREAM;
 import static ru.m210projects.Redneck.Sounds.spritesound;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
 	
-	public static final int sizeof = 1832;
+	public static final int sizeof = 1272;
 	
-	public int zoom,exitx,exity,loogiex[] = new int[64],loogiey[] = new int[64],numloogs,loogcnt;
-	public int posx, posy, posz, ohorizoff, invdisptime;
-	public float horiz, ohoriz, ang, oang, angvel;
-	public int bobposx,bobposy,oposx,oposy,oposz,pyoff,opyoff;
+	public PLocation prevView = new PLocation();
+	
+	public int oposx,oposy,oposz;
+	public int ohorizoff;
+	public float ohoriz, oang;
+	
+	public int exitx,exity,numloogs,loogcnt;
+	public int posx, posy, posz, invdisptime;
+	public float horiz, ang, angvel;
+	public int bobposx,bobposy,pyoff,opyoff;
 	public int posxv,posyv,poszv,last_pissed_time,truefz,truecz;
-	public int player_par,visibility;
+	public int player_par;
 	public int bobcounter,weapon_sway;
 	public int pals_time,randomflamex,crack_time;
 
@@ -48,10 +54,10 @@ public class PlayerStruct {
 	public short curr_weapon, last_weapon, tipincs, horizoff, wantweaponfire;
 	public short beer_amount,newowner,hurt_delay,hbomb_hold_delay;
 	public short jumping_counter,airleft,knee_incs,access_incs;
-	public short fta,ftq,access_wallnum,access_spritenum;
+	public short access_wallnum,access_spritenum;
 	public short kickback_pic,weapon_ang,whishkey_amount;
 	public short somethingonplayer,on_crane,i,one_parallax_sectnum;
-	public short over_shoulder_on,random_club_frame,fist_incs;
+	public short random_club_frame,fist_incs;
 	public short one_eighty_count,cheat_phase;
 	public short dummyplayersprite,extra_extra8,quick_kick;
 	public short yeehaa_amount,actorsqu,timebeforeexit,customexitsound;
@@ -68,7 +74,6 @@ public class PlayerStruct {
 	public short on_warping_sector,footprintcount;
 	public short hbomb_on,jumping_toggle,rapid_fire_hold;
 	public boolean on_ground;
-	public String name;
 	public int inven_icon, buttonpalette, jetpack_on;
 
 	public short spritebridge,lastrandomspot;
@@ -86,8 +91,7 @@ public class PlayerStruct {
 	public byte last_used_weapon;
 	public byte crouch_toggle;
 
-	public int field_280;  //XXX not used
-	public short field_284;  //XXX not used
+	public int field_280;
 	public int field_X;
 	public int field_Y;
 	public short field_28E;
@@ -140,14 +144,22 @@ public class PlayerStruct {
     public short drug_intensive;
     public short drug_timer;
     public int drug_aspect;
+    
+    public void UpdatePlayerLoc() {
+		prevView.x = posx;
+		prevView.y = posy;
+		prevView.z = posz;
+		prevView.ang = ang;
+		prevView.lookang = look_ang;
+		prevView.rotscrnang = rotscrnang;
+		prevView.horizoff = horizoff;
+		prevView.horiz = horiz;
+	}
 
 	public void copy(PlayerStruct src)
 	{
-		this.zoom = src.zoom;
 		this.exitx = src.exitx;
 		this.exity = src.exity;
-		System.arraycopy(src.loogiex, 0, this.loogiex, 0, 64);
-		System.arraycopy(src.loogiey, 0, this.loogiey, 0, 64);
 		this.numloogs = src.numloogs;
 		this.loogcnt = src.loogcnt;
 		this.posx = src.posx;
@@ -171,7 +183,6 @@ public class PlayerStruct {
 		this.truefz = src.truefz;
 		this.truecz = src.truecz;
 		this.player_par = src.player_par;
-		this.visibility = src.visibility;
 		this.bobcounter = src.bobcounter;
 		this.weapon_sway = src.weapon_sway;
 		this.pals_time = src.pals_time;
@@ -202,8 +213,6 @@ public class PlayerStruct {
 		this.airleft = src.airleft;
 		this.knee_incs = src.knee_incs;
 		this.access_incs = src.access_incs;
-		this.fta = src.fta;
-		this.ftq = src.ftq;
 		this.access_wallnum = src.access_wallnum;
 		this.access_spritenum = src.access_spritenum;
 		this.kickback_pic = src.kickback_pic;
@@ -213,7 +222,6 @@ public class PlayerStruct {
 		this.on_crane = src.on_crane;
 		this.i = src.i;
 		this.one_parallax_sectnum = src.one_parallax_sectnum;
-		this.over_shoulder_on = src.over_shoulder_on;
 		this.random_club_frame = src.random_club_frame;
 		this.fist_incs = src.fist_incs;
 		this.one_eighty_count = src.one_eighty_count;
@@ -250,7 +258,6 @@ public class PlayerStruct {
 		this.jumping_toggle = src.jumping_toggle;
 		this.rapid_fire_hold = src.rapid_fire_hold;
 		this.on_ground = src.on_ground;
-		this.name = src.name;
 		this.inven_icon = src.inven_icon;
 		this.buttonpalette = src.buttonpalette;
 		this.jetpack_on = src.jetpack_on;
@@ -280,7 +287,6 @@ public class PlayerStruct {
 		this.crouch_toggle = src.crouch_toggle;
 		
 		this.field_280 = src.field_280;
-		this.field_284 = src.field_284;
 		this.field_X = src.field_X;
 		this.field_Y = src.field_Y;
 		this.field_28E = src.field_28E;
@@ -338,16 +344,9 @@ public class PlayerStruct {
 	private byte[] buf = new byte[sizeof];
 	public byte[] getBytes() {
 		int ptr = 0;
-		LittleEndian.putInt(buf, ptr, zoom); ptr+=4;
 		LittleEndian.putInt(buf, ptr, exitx); ptr+=4;
 		LittleEndian.putInt(buf, ptr, exity); ptr+=4;
-		
-		for(int i = 0; i < 64; i++)
-		{
-			LittleEndian.putInt(buf, ptr, loogiex[i]); ptr+=4;
-			LittleEndian.putInt(buf, ptr, loogiey[i]); ptr+=4;
-		}
-		
+
 		LittleEndian.putInt(buf, ptr, numloogs); ptr+=4;
 		LittleEndian.putInt(buf, ptr, loogcnt); ptr+=4;
 		LittleEndian.putInt(buf, ptr, posx); ptr+=4;
@@ -371,7 +370,6 @@ public class PlayerStruct {
 		LittleEndian.putInt(buf, ptr, truefz); ptr+=4;
 		LittleEndian.putInt(buf, ptr, truecz); ptr+=4;
 		LittleEndian.putInt(buf, ptr, player_par); ptr+=4;
-		LittleEndian.putInt(buf, ptr, visibility); ptr+=4;
 		LittleEndian.putInt(buf, ptr, bobcounter); ptr+=4;
 		LittleEndian.putInt(buf, ptr, weapon_sway); ptr+=4;
 		LittleEndian.putInt(buf, ptr, pals_time); ptr+=4;
@@ -405,9 +403,7 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, jumping_counter); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, airleft); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, knee_incs); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, access_incs); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, fta); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, ftq); ptr+=2;	
+		LittleEndian.putShort(buf, ptr, access_incs); ptr+=2;		
 		LittleEndian.putShort(buf, ptr, access_wallnum); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, access_spritenum); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, kickback_pic); ptr+=2;		
@@ -417,7 +413,6 @@ public class PlayerStruct {
 		LittleEndian.putShort(buf, ptr, on_crane); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, i); ptr+=2;	
 		LittleEndian.putShort(buf, ptr, one_parallax_sectnum); ptr+=2;	
-		LittleEndian.putShort(buf, ptr, over_shoulder_on); ptr+=2;
 		LittleEndian.putShort(buf, ptr, random_club_frame); ptr+=2;
 		LittleEndian.putShort(buf, ptr, fist_incs); ptr+=2;
 		LittleEndian.putShort(buf, ptr, one_eighty_count); ptr+=2;
@@ -457,10 +452,6 @@ public class PlayerStruct {
 		buf[ptr++] = (byte)jumping_toggle;
 		buf[ptr++] = (byte)rapid_fire_hold;
 		buf[ptr++] = on_ground?(byte)1:0;
-		Arrays.fill(buf, ptr, ptr+32, (byte)0);
-		if(name != null)
-			System.arraycopy(name.getBytes(), 0, buf, ptr, name.length()); 
-		ptr += 32;
 		buf[ptr++] = (byte)inven_icon;		
 		buf[ptr++] = (byte)buttonpalette;		
 		buf[ptr++] = (byte)jetpack_on;		
@@ -492,7 +483,6 @@ public class PlayerStruct {
 		buf[ptr++] = crouch_toggle;
 
 		LittleEndian.putInt(buf, ptr, field_280); ptr+=4;
-		LittleEndian.putShort(buf, ptr, field_284); ptr+=2;
 		LittleEndian.putInt(buf, ptr, field_X); ptr+=4;
 		LittleEndian.putInt(buf, ptr, field_Y); ptr+=4;
 		LittleEndian.putShort(buf, ptr, field_28E); ptr+=2;
@@ -559,16 +549,8 @@ public class PlayerStruct {
 	
 	public void set(ByteBuffer bb)
 	{
-		zoom = bb.getInt();
 		exitx = bb.getInt();
 		exity = bb.getInt();
-
-		for(int i = 0; i < 64; i++)
-		{
-			loogiex[i] = bb.getInt();
-			loogiey[i] = bb.getInt();
-		}
-		
 		numloogs = bb.getInt();
 		loogcnt = bb.getInt();
 		posx = bb.getInt();
@@ -592,7 +574,6 @@ public class PlayerStruct {
 		truefz = bb.getInt();
 		truecz = bb.getInt();
 		player_par = bb.getInt();
-		visibility = bb.getInt();
 		bobcounter = bb.getInt();
 		weapon_sway = bb.getInt();
 		pals_time = bb.getInt();
@@ -626,9 +607,7 @@ public class PlayerStruct {
 		jumping_counter = bb.getShort();	
 		airleft = bb.getShort();	
 		knee_incs = bb.getShort();	
-		access_incs = bb.getShort();	
-		fta = bb.getShort();	
-		ftq = bb.getShort();	
+		access_incs = bb.getShort();		
 		access_wallnum = bb.getShort();	
 		access_spritenum = bb.getShort();	
 		kickback_pic = bb.getShort();	
@@ -638,7 +617,6 @@ public class PlayerStruct {
 		on_crane = bb.getShort();	
 		i = bb.getShort();	
 		one_parallax_sectnum = bb.getShort();	
-		over_shoulder_on = bb.getShort();
 		random_club_frame = bb.getShort();
 		fist_incs = bb.getShort();
 		one_eighty_count = bb.getShort();
@@ -679,10 +657,6 @@ public class PlayerStruct {
 		jumping_toggle = bb.get();
 		rapid_fire_hold = bb.get();
 		on_ground = bb.get() == 1;
-		
-		byte[] namebuf = new byte[32];
-		bb.get(namebuf);
-		name = new String(namebuf).trim();
 		inven_icon  = bb.get();	
 		buttonpalette  = bb.get();		
 		jetpack_on  = bb.get();	
@@ -715,7 +689,6 @@ public class PlayerStruct {
 		crouch_toggle = bb.get();
 		
 		field_280 = bb.getInt();
-		field_284 = bb.getShort();
 		field_X = bb.getInt();
 		field_Y = bb.getInt();
 		field_28E = bb.getShort();
@@ -772,5 +745,402 @@ public class PlayerStruct {
 	    drug_intensive = bb.getShort();
 	    drug_timer = bb.getShort();
 	    drug_aspect = bb.getInt();
+	}
+	
+	public void reset()
+	{
+		this.exitx = 0;
+		this.exity = 0;
+		this.numloogs = 0;
+		this.loogcnt = 0;
+		this.posx = 0;
+		this.posy = 0;
+		this.posz = 0;
+		this.horiz = 0;
+		this.ohoriz = 0;
+		this.ohorizoff = 0;
+		this.invdisptime = 0;
+		this.bobposx = 0;
+		this.bobposy = 0;
+		this.oposx = 0;
+		this.oposy = 0;
+		this.oposz = 0;
+		this.pyoff = 0;
+		this.opyoff = 0;
+		this.posxv = 0;
+		this.posyv = 0;
+		this.poszv = 0;
+		this.last_pissed_time = 0;
+		this.truefz = 0;
+		this.truecz = 0;
+		this.player_par = 0;
+		this.bobcounter = 0;
+		this.weapon_sway = 0;
+		this.pals_time = 0;
+		this.randomflamex = 0;
+		this.crack_time = 0;
+		this.aim_mode = 0;
+		this.ang = 0;
+		this.oang = 0;
+		this.angvel = 0;
+		this.cursectnum = 0;
+		this.look_ang = 0;
+		this.last_extra = 0;
+		this.subweapon = 0;
+		this.wackedbyactor = 0;
+		this.frag = 0;
+		this.fraggedself = 0;
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
+			ammo_amount[i] = 0;
+		this.curr_weapon = 0;
+		this.last_weapon = 0;
+		this.tipincs = 0;
+		this.horizoff = 0;
+		this.wantweaponfire = 0;
+		this.beer_amount = 0;
+		this.newowner = 0;
+		this.hurt_delay = 0;
+		this.hbomb_hold_delay = 0;
+		this.jumping_counter = 0;
+		this.airleft = 0;
+		this.knee_incs = 0;
+		this.access_incs = 0;
+		this.access_wallnum = 0;
+		this.access_spritenum = 0;
+		this.kickback_pic = 0;
+		this.weapon_ang = 0;
+		this.whishkey_amount = 0;
+		this.somethingonplayer = 0;
+		this.on_crane = 0;
+		this.i = 0;
+		this.one_parallax_sectnum = 0;
+		this.random_club_frame = 0;
+		this.fist_incs = 0;
+		this.one_eighty_count = 0;
+		this.cheat_phase = 0;
+		this.dummyplayersprite = 0;
+		this.extra_extra8 = 0;
+		this.quick_kick = 0;
+		this.yeehaa_amount = 0;
+		this.actorsqu = 0;
+		this.timebeforeexit = 0;
+		this.customexitsound = 0;
+		for(int i = 0; i < 16; i++)
+			weaprecs[i] = 0;
+		this.weapreccnt = 0;
+		this.interface_toggle_flag = 0;
+		this.rotscrnang = 0;
+		this.dead_flag = 0;
+		this.show_empty_weapon = 0;
+		this.snorkle_amount = 0;
+		this.cowpie_amount = 0;
+		this.moonshine_amount = 0;
+		this.shield_amount = 0;
+		this.holoduke_on = 0;
+		this.pycount = 0;
+		this.weapon_pos = 0;
+		this.frag_ps = 0;
+		this.transporter_hold = 0;
+		this.last_full_weapon = 0;
+		this.footprintshade = 0;
+		this.boot_amount = 0;
+		this.scream_voice = null;
+		this.on_warping_sector = 0;
+		this.footprintcount = 0;
+		this.hbomb_on = 0;
+		this.jumping_toggle = 0;
+		this.rapid_fire_hold = 0;
+		this.on_ground = false;
+		this.inven_icon = 0;
+		this.buttonpalette = 0;
+		this.jetpack_on = 0; //XXX
+		this.spritebridge = 0;
+		this.lastrandomspot = 0;
+		this.scuba_on = 0;
+		this.footprintpal = 0;
+		this.heat_on = 0;
+		this.holster_weapon = 0;
+		this.falling_counter = 0;
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
+			gotweapon[i] = false;
+		this.refresh_inventory = false;
+		this.palette = null;
+		this.toggle_key_flag = 0;
+		this.knuckle_incs = 0;
+		this.walking_snd_toggle = 0;
+		this.palookup = 0;
+		this.hard_landing = 0;
+		this.max_secret_rooms = 0;
+		this.secret_rooms = 0;
+		for(int i = 0; i < 3; i++) 
+			pals[i] = 0;
+		this.max_actors_killed = 0;
+		this.actors_killed = 0;
+		this.return_to_center = 0;
+		
+		this.last_used_weapon = 0;
+		this.crouch_toggle = 0;
+		
+		this.field_280 = 0;
+		this.field_X = 0;
+		this.field_Y = 0;
+		this.field_28E = 0;
+		this.field_290 = 0;
+
+		this.field_57C = 0;
+		this.detonate_count = 0;
+		
+		this.alcohol_meter = 0;
+		this.gut_meter = 0;
+		this.alcohol_amount = 0;
+		this.gut_amount = 0;
+		this.alcohol_count = 0;
+		for(int i = 0; i < 5; i++)
+			this.gotkey[i] = 0;
+		
+		this.gut_count = 0;
+		this.drunk = 0;
+		this.shotgunstatus = 0;
+		this.shotgun_splitshot = 0;
+		this.kickback = 0;
+		this.field_count = 0;
+
+		this.OnBoat = false;
+		this.OnMotorcycle = false;
+		this.CarSpeed = 0;
+		this.CarOnGround = false;
+		this.SlotWin = 0;
+		this.CarVar6 = 0;
+		this.isSwamp = false;
+		this.CarVar1 = 0;
+		this.isSea = false;
+		this.field_601 = 0;
+		this.chiken_phase = 0;
+		this.chiken_pic = 0;
+		this.field_607 = 0;
+		this.MamaEnd = 0;
+		this.fogtype = 0;
+		this.TiltStatus = 0;
+		this.CarVar2 = 0;
+		this.VBumpTarget = 0;
+		this.VBumpNow = 0;
+		this.CarVar3 = 0;
+		this.TurbCount = 0;
+		this.CarVar5 = 0;
+		this.CarVar4 = 0;
+		this.NotOnWater = 0;
+		this.SeaSick = 0;
+		this.DrugMode = 0;
+		this.drug_type = 0;
+		this.drug_intensive = 0;
+		this.drug_timer = 0;
+		this.drug_aspect = 0;
+	}
+	
+	public String toString()
+	{
+		String out = "exitx " + exitx + " \r\n";
+		out += "exity " + exity + " \r\n";
+		out += "numloogs " + numloogs + " \r\n";
+		out += "loogcnt " + loogcnt + " \r\n";
+		out += "posx " + posx + " \r\n";
+		out += "posy " + posy + " \r\n";
+		out += "posz " + posz + " \r\n";
+		out += "horiz " + horiz + " \r\n";
+		out += "ohoriz " + ohoriz + " \r\n";
+		out += "ohorizoff " + ohorizoff + " \r\n";
+		out += "invdisptime " + invdisptime + " \r\n";
+		out += "bobposx " + bobposx + " \r\n";
+		out += "bobposy " + bobposy + " \r\n";
+		out += "oposx " + oposx + " \r\n";
+		out += "oposy " + oposy + " \r\n";
+		out += "oposz " + oposz + " \r\n";
+		out += "pyoff " + pyoff + " \r\n";
+		out += "opyoff " + opyoff + " \r\n";
+		out += "posxv " + posxv + " \r\n";
+		out += "posyv " + posyv + " \r\n";
+		out += "poszv " + poszv + " \r\n";
+		out += "last_pissed_time " + last_pissed_time + " \r\n";
+		out += "truefz " + truefz + " \r\n";
+		out += "truecz " + truecz + " \r\n";
+		out += "player_par " + player_par + " \r\n";
+		out += "bobcounter " + bobcounter + " \r\n";
+		out += "weapon_sway " + weapon_sway + " \r\n";
+		out += "pals_time " + pals_time + " \r\n";
+		out += "randomflamex " + randomflamex + " \r\n";
+		out += "crack_time " + crack_time + " \r\n";
+		out += "aim_mode " + aim_mode + " \r\n";
+		out += "auto_aim " + auto_aim + " \r\n";
+		out += "ang " + ang + " \r\n";
+		out += "oang " + oang + " \r\n";
+		out += "angvel " + angvel + " \r\n";
+		out += "cursectnum " + cursectnum + " \r\n";
+		out += "look_ang " + look_ang + " \r\n";
+		out += "last_extra " + last_extra + " \r\n";
+		out += "subweapon " + subweapon + " \r\n";
+		out += "wackedbyactor " + wackedbyactor + " \r\n";
+		out += "frag " + frag + " \r\n";
+		out += "fraggedself " + fraggedself + " \r\n";
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
+		{
+			out += "ammo_amount[" + i + "] " + ammo_amount[i] + " \r\n";
+		}
+		out += "curr_weapon " + curr_weapon + " \r\n";
+		out += "last_weapon " + last_weapon + " \r\n";
+		out += "tipincs " + tipincs + " \r\n";
+		out += "horizoff " + horizoff + " \r\n";
+		out += "wantweaponfire " + wantweaponfire + " \r\n";
+		out += "beer_amount " + beer_amount + " \r\n";
+		out += "newowner " + newowner + " \r\n";
+		out += "hurt_delay " + hurt_delay + " \r\n";
+		out += "hbomb_hold_delay " + hbomb_hold_delay + " \r\n";
+		out += "jumping_counter " + jumping_counter + " \r\n";
+		out += "airleft " + airleft + " \r\n";
+		out += "knee_incs " + knee_incs + " \r\n";
+		out += "access_incs " + access_incs + " \r\n";
+		out += "access_wallnum " + access_wallnum + " \r\n";
+		out += "access_spritenum " + access_spritenum + " \r\n";
+		out += "kickback_pic " + kickback_pic + " \r\n";
+		out += "weapon_ang " + weapon_ang + " \r\n";
+		out += "whishkey_amount " + whishkey_amount + " \r\n";
+		out += "somethingonplayer " + somethingonplayer + " \r\n";
+		out += "on_crane " + on_crane + " \r\n";
+		out += "i " + i + " \r\n";
+		out += "one_parallax_sectnum " + one_parallax_sectnum + " \r\n";
+		out += "random_club_frame " + random_club_frame + " \r\n";
+		out += "fist_incs " + fist_incs + " \r\n";
+		out += "one_eighty_count " + one_eighty_count + " \r\n";
+		out += "cheat_phase " + cheat_phase + " \r\n";
+		out += "dummyplayersprite " + dummyplayersprite + " \r\n";
+		out += "extra_extra8 " + extra_extra8 + " \r\n";
+		out += "quick_kick " + quick_kick + " \r\n";
+		out += "yeehaa_amount " + yeehaa_amount + " \r\n";
+		out += "actorsqu " + actorsqu + " \r\n";
+		out += "timebeforeexit " + timebeforeexit + " \r\n";
+		out += "customexitsound " + customexitsound + " \r\n";
+		for(int i = 0; i < 16; i++)
+		{
+			out += "weaprecs[" + i + "] " + weaprecs[i] + " \r\n";
+		}
+		out += "weapreccnt " + weapreccnt + " \r\n";
+		out += "interface_toggle_flag " + interface_toggle_flag + " \r\n";
+		out += "rotscrnang " + rotscrnang + " \r\n";
+		out += "dead_flag " + dead_flag + " \r\n";
+		out += "show_empty_weapon " + show_empty_weapon + " \r\n";
+		out += "snorkle_amount " + snorkle_amount + " \r\n";
+		out += "cowpie_amount " + cowpie_amount + " \r\n";
+		out += "moonshine_amount " + moonshine_amount + " \r\n";
+		out += "shield_amount " + shield_amount + " \r\n";
+		out += "holoduke_on " + holoduke_on + " \r\n";
+		out += "pycount " + pycount + " \r\n";
+		out += "weapon_pos " + weapon_pos + " \r\n";
+		out += "frag_ps " + frag_ps + " \r\n";
+		out += "transporter_hold " + transporter_hold + " \r\n";
+		out += "last_full_weapon " + last_full_weapon + " \r\n";
+		out += "footprintshade " + footprintshade + " \r\n";
+		out += "boot_amount " + boot_amount + " \r\n";
+		out += "scream_voice " + scream_voice + " \r\n";
+
+		out += "on_warping_sector " + on_warping_sector + " \r\n";
+		out += "footprintcount " + footprintcount + " \r\n";
+		out += "hbomb_on " + hbomb_on + " \r\n";
+		out += "jumping_toggle " + jumping_toggle + " \r\n";
+		out += "rapid_fire_hold " + rapid_fire_hold + " \r\n";
+		out += "on_ground " + on_ground + " \r\n";
+		out += "inven_icon " + inven_icon + " \r\n";
+		out += "buttonpalette " + buttonpalette + " \r\n";
+		out += "jetpack_on " + jetpack_on + " \r\n";
+		out += "spritebridge " + spritebridge + " \r\n";
+		out += "lastrandomspot " + lastrandomspot + " \r\n";
+		out += "scuba_on " + scuba_on + " \r\n";
+		out += "footprintpal " + footprintpal + " \r\n";
+		out += "heat_on " + heat_on + " \r\n";
+		out += "holster_weapon " + holster_weapon + " \r\n";
+		out += "falling_counter " + falling_counter + " \r\n";
+		for(int i = 0; i < MAX_WEAPONSRA; i++)
+		{
+			out += "gotweapon[" + i + "] " + gotweapon[i] + " \r\n";
+		}
+		out += "refresh_inventory " + refresh_inventory + " \r\n";
+		out += "palette " + game.net.Checksum(palette,768) + " \r\n";
+		out += "toggle_key_flag " + toggle_key_flag + " \r\n";
+		out += "knuckle_incs " + knuckle_incs + " \r\n";
+		out += "walking_snd_toggle " + walking_snd_toggle + " \r\n";
+		out += "palookup " + palookup + " \r\n";
+		out += "hard_landing " + hard_landing + " \r\n";
+		out += "max_secret_rooms " + max_secret_rooms + " \r\n";
+		out += "secret_rooms " + secret_rooms + " \r\n";
+		for(int i = 0; i < 3; i++)
+		{
+			out += "pals[" + i + "] " + pals[i] + " \r\n";
+		}
+		out += "max_actors_killed " + max_actors_killed + " \r\n";
+		out += "actors_killed " + actors_killed + " \r\n";
+		out += "return_to_center " + return_to_center + " \r\n";
+				
+		out += "last_used_weapon " + last_used_weapon + " \r\n";
+		out += "crouch_toggle " + crouch_toggle + " \r\n";
+		
+		out += "field_280 " + field_280 + " \r\n";
+		out += "field_X " + field_X + " \r\n";
+		out += "field_Y " + field_Y + " \r\n";
+		out += "field_28E " + field_28E + " \r\n";
+		out += "field_290 " + field_290 + " \r\n";
+
+		out += "field_57C " + field_57C + " \r\n";
+		out += "detonate_count " + detonate_count + " \r\n";
+
+		out += "alcohol_meter " + alcohol_meter + " \r\n";
+		out += "gut_meter " + gut_meter + " \r\n";
+		out += "alcohol_amount " + alcohol_amount + " \r\n";
+		out += "gut_amount " + gut_amount + " \r\n";
+		out += "alcohol_count " + alcohol_count + " \r\n";
+		out += "gut_count " + gut_count + " \r\n";
+
+		for(int i = 0; i < 3; i++)
+		{
+			out += "gotkey[" + i + "] " + gotkey[i] + " \r\n";
+		}
+
+		out += "drunk " + drunk + " \r\n";
+		out += "shotgunstatus " + shotgunstatus + " \r\n";
+		out += "shotgun_splitshot " + shotgun_splitshot + " \r\n";
+
+		out += "kickback " + kickback + " \r\n";
+		out += "field_count " + field_count + " \r\n";
+
+		//RA
+		out += "OnBoat " + OnBoat + " \r\n";
+		out += "OnMotorcycle " + OnMotorcycle + " \r\n";
+		out += "CarSpeed " + CarSpeed + " \r\n";
+		out += "CarOnGround " + CarOnGround + " \r\n";
+		out += "SlotWin " + SlotWin + " \r\n";
+		out += "CarVar6 " + CarVar6 + " \r\n";
+		out += "isSwamp " + isSwamp + " \r\n";
+		out += "CarVar1 " + CarVar1 + " \r\n";
+		out += "isSea " + isSea + " \r\n";
+		out += "field_601 " + field_601 + " \r\n";
+		out += "chiken_phase " + chiken_phase + " \r\n";
+		out += "chiken_pic " + chiken_pic + " \r\n";
+		out += "field_607 " + field_607 + " \r\n";
+		out += "MamaEnd " + MamaEnd + " \r\n";
+		out += "fogtype " + fogtype + " \r\n";
+		out += "TiltStatus " + TiltStatus + " \r\n";
+		out += "CarVar2 " + CarVar2 + " \r\n";
+		out += "VBumpTarget " + VBumpTarget + " \r\n";
+		out += "VBumpNow " + VBumpNow + " \r\n";
+		out += "CarVar3 " + CarVar3 + " \r\n";
+		out += "TurbCount " + TurbCount + " \r\n";
+		out += "CarVar5 " + CarVar5 + " \r\n";
+		out += "CarVar4 " + CarVar4 + " \r\n";
+		out += "NotOnWater " + NotOnWater + " \r\n";
+		out += "SeaSick " + SeaSick + " \r\n";
+		out += "DrugMode " + DrugMode + " \r\n";
+		out += "drug_type " + drug_type + " \r\n";
+		out += "drug_intensive " + drug_intensive + " \r\n";
+		out += "drug_timer " + drug_timer + " \r\n";
+		out += "drug_aspect " + drug_aspect + " \r\n";
+
+		return out;
 	}
 }

@@ -27,10 +27,10 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
+import static ru.m210projects.Redneck.Main.game;
 
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.LittleEndian;
@@ -170,7 +170,7 @@ public class RTS {
 	{
 		lump++;
 		if (lump >= numlumps)
-			dassert("RTS_SoundLength: " + lump + " >= numlumps");
+			game.dassert("RTS_SoundLength: " + lump + " >= numlumps");
 		return lumpinfo[lump].size;
 	}
 	
@@ -186,7 +186,7 @@ public class RTS {
 	{
 		i++;
 		if (i>=numlumps)
-			dassert("RTS_GetSoundName: " + i + " >= numlumps");
+			game.dassert("RTS_GetSoundName: " + i + " >= numlumps");
 	   return lumpinfo[i].name;
 	}
 	
@@ -203,9 +203,9 @@ public class RTS {
 	public static void RTS_ReadLump (int lump, byte[] dest)
 	{
 		if (lump >= numlumps)
-			dassert("RTS_ReadLump: " + lump + " >= numlumps");
+			game.dassert("RTS_ReadLump: " + lump + " >= numlumps");
 		if (lump < 0)
-			dassert("RTS_ReadLump: " + lump + " < 0");
+			game.dassert("RTS_ReadLump: " + lump + " < 0");
 		LumpInfo l = lumpinfo[lump];
 		
 		klseek (l.handle, l.position, SEEK_SET);
@@ -223,10 +223,10 @@ public class RTS {
 	{
 		lump++;
 		if (lump >= numlumps)
-			dassert("RTS_GetSound: " + lump + " >= " + numlumps);
+			game.dassert("RTS_GetSound: " + lump + " >= " + numlumps);
 	   
 		if(lumpcache == null)
-			dassert("RTS_GetSound: lumpcache == null");
+			game.dassert("RTS_GetSound: lumpcache == null");
 
 		if (lumpcache[lump] == null)
 		{

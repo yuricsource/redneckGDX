@@ -35,14 +35,9 @@ import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Strhandler.*;
-import static ru.m210projects.Redneck.LoadSave.lastload;
-import static ru.m210projects.Redneck.Menus.RRMenu.LOADGAME;
-import static ru.m210projects.Redneck.Menus.MENU.mMenus;
-import static ru.m210projects.Redneck.Menus.MENU.mOpen;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Premap.*;
 import static ru.m210projects.Redneck.Spawn.*;
 import static ru.m210projects.Redneck.Actors.*;
@@ -56,8 +51,9 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Weapons.*;
 import static ru.m210projects.Redneck.Globals.*;
 
-
+import ru.m210projects.Build.FileHandle.IResource;
 import ru.m210projects.Build.OnSceenDisplay.Console;
+import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.EpisodeInfo;
@@ -68,9 +64,8 @@ public class Gamedef {
 	
 	public static final int[] params = new int[35];
 	public static String confilename = "GAME.CON";
-	public static int conweigth = 10;
-	private static int GameCON = RR;
-	
+	public static int conweigth = 0;
+
 	// Defines the motion characteristics of an actor;
 	public static final int face_player = 1;
 	public static final int geth = 2;
@@ -549,16 +544,16 @@ public class Gamedef {
 
 	    textptr += l;
 	    if( tempbuf[0] == '{' && tempbuf[1] != 0)
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '{' and '" + tempbuf[1] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '{' and '" + new String(tempbuf, 1, l) + "'.");
 	    else if( tempbuf[0] == '}' && tempbuf[1] != 0)
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '}' and '" + tempbuf[1] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE or CR between '}' and '" + new String(tempbuf, 1, l) + "'.");
 	    else if( tempbuf[0] == '/' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '//' and '" + tempbuf[2] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '//' and '" + new String(tempbuf, 2, l) + "'.");
 	    else if( tempbuf[0] == '/' && tempbuf[1] == '*' && tempbuf[2] != 0 )
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '/*' and '" + tempbuf[2] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '/*' and '" + new String(tempbuf, 2, l) + "'.");
 	    else if( tempbuf[0] == '*' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '*/' and '" + tempbuf[2] + "'.");
-	    else Console.Println("  * ERROR!(L" + line_number + ") Expecting key word, but found '" + tempbuf[0] + "'.");
+	        Console.Println("  * ERROR!(L" + line_number + ") Expecting a SPACE between '*/' and '" + new String(tempbuf, 2, l) + "'.");
+	    else Console.Println("  * ERROR!(L" + line_number + ") Expecting key word, but found '" + new String(tempbuf, 0, l) + "'.");
 
 	    error++;
 	    return -1;
@@ -901,10 +896,10 @@ public class Gamedef {
 	            		|| name.equalsIgnoreCase("bubba66.con"))
 	            	conweigth += 1;
 	            
-	            if(conweigth == 3 && GameCON != RRRA )
+	            if(conweigth == 3 && con.type != RRRA )
 	            {
-	            	 GameCON = RR66;
-	            	 conweigth = 0;
+	            	con.type = RR66;
+	            	conweigth = 0;
 	            }
 
 	            temp_line_number = line_number;
@@ -1571,10 +1566,10 @@ public class Gamedef {
 	        		 if (j != 30) continue;
 	        		 
 	        		 if (keyword() != -1) {
-		            	 GameCON = RR;
+	        			 con.type = RR;
 	        			 break;
 	        		 } else {
-	        			 GameCON = RRRA;
+	        			 con.type = RRRA;
 	        		 }
 	        	}
 	        	
@@ -1611,7 +1606,7 @@ public class Gamedef {
 	    		con.spriteqamount = (short)ClipRange(params[j++], 0, 1024);
 	    		con.dildoblase = (char)params[j++];
     			
-    			if(GameCON == RRRA)
+    			if(con.type == RRRA)
     			{
     				con.max_ammo_amount[MOTO_WEAPON] = params[j++];
     				con.max_ammo_amount[BOAT_WEAPON] = params[j++];
@@ -1652,21 +1647,19 @@ public class Gamedef {
 
 	    if(cache.checkFile(filenam) == null && loadfromgrouponly == 0)
 	    {
-	    	if(GameMessage("Missing external con file(s). \n \"COPY INTERNAL DEFAULTS TO DIRECTORY?\"", true))
+	    	if(game.GameMessage("Missing external con file(s). \n \"COPY INTERNAL DEFAULTS TO DIRECTORY?\"", true))
 	    	{
 	    		Console.Println(" Yes");
 	            copydefaultcons();
-	    	};
+	    	} else loadfromgrouponly = 1;
 	    }
 
 	    fp = kOpen(filenam,loadfromgrouponly);
 	    if( fp == -1 )
 	    {
 	        if( loadfromgrouponly == 1 )
-	            dassert("\nMissing con file(s).");
-
-	        loadfromgrouponly = 1;
-	        return null; //Not there
+	        	game.dassert("\nMissing con file(s).");
+	        return null;
 	    }
 	    else
 	    {
@@ -1705,10 +1698,10 @@ public class Gamedef {
 	    if(error != 0)
 	    {
 	        if( loadfromgrouponly != 0 )
-	            dassert("\nError in " + filenam + ".");
+	            game.dassert("\nError in " + filenam + ".");
 	        else
 	        {
-	        	if(GameMessage("\nErrors found in " + filenam + " file.  You should backup the original copies \n"
+	        	if(game.GameMessage("\nErrors found in " + filenam + " file.  You should backup the original copies \n"
     	    			+ "before attempting to modify them.\nDo you want to use the internal defaults?"
             			, true))
     	    	{
@@ -1716,7 +1709,7 @@ public class Gamedef {
                     loadfromgrouponly = 1;
                     return null;
     	    	} else {
-    	    		appdispose();
+    	    		game.dispose();
     				System.exit(0);
     	    	}
 	        }
@@ -1994,10 +1987,11 @@ public class Gamedef {
 
 	    if( g_t[1] == 0 || a == 0 )
 	    {
-	        if( ( badguy(g_sp) && g_sp.extra <= 0 ) || (hittype[g_i].bposx != g_sp.x) || (hittype[g_i].bposy != g_sp.y) )
+	    	ILoc oldLoc = game.pInt.getsprinterpolate(g_i);
+	        if( oldLoc != null && (( badguy(g_sp) && g_sp.extra <= 0 ) || (oldLoc.x != g_sp.x) || (oldLoc.y != g_sp.y)) )
 	        {
-	            hittype[g_i].bposx = g_sp.x;
-	            hittype[g_i].bposy = g_sp.y;
+	        	oldLoc.x = g_sp.x;
+	        	oldLoc.y = g_sp.y;
 	            engine.setsprite(g_i,g_sp.x,g_sp.y,g_sp.z);
 	        }
 	        return;
@@ -2085,7 +2079,8 @@ public class Gamedef {
             		&& g_sp.picnum != UFO5 
             		&& g_sp.picnum != MINIONUFO)
 	            {
-	                if( hittype[g_i].bposz != g_sp.z || ( ud.multimode < 2 && ud.player_skill < 2 ) )
+	            	ILoc oldLoc = game.pInt.getsprinterpolate(g_i);
+	                if( (oldLoc != null && oldLoc.z != g_sp.z) || ( ud.multimode < 2 && ud.player_skill < 2 ) )
 	                {
 	                    if( (g_t[0]&1) != 0 || ps[g_p].actorsqu == g_i ) return;
 	                    else daxvel <<= 1;
@@ -2476,8 +2471,6 @@ public class Gamedef {
 	        	insptr++;
 	        	LeaveMap();
 	        	ud.level_number++;
-//	        	checknextlevel();
-	            ud.m_level_number = ud.level_number;
 	        	break;
 	        case 119:
 	        	insptr++;
@@ -2667,8 +2660,10 @@ public class Gamedef {
 	            insptr++;
 	            if(g_sp.detail < 1 || g_sp.detail == 128)
 	            {
-	            	if ( checkaddkills(g_sp) )
-	            		ps[g_p].actors_killed += con.script[insptr];
+	            	if ( checkaddkills(g_sp) ) {
+	            		ps[connecthead].actors_killed += con.script[insptr];
+	            		if(ud.coop == 1) ps[g_p].frag += con.script[insptr];
+	            	}
 	            }
 	            hittype[g_i].actorstayput = -1;
 	            insptr++;
@@ -2810,6 +2805,11 @@ public class Gamedef {
                                 wall[w].yrepeat = wall[spwall].yrepeat;
                                 wall[w].xpanning = wall[spwall].xpanning;
                                 wall[w].ypanning = wall[spwall].ypanning;
+                                if ( currentGame.getCON().type == RRRA && wall[w].nextwall != -1 )
+                                {
+                                	wall[w].cstat = 0;
+                                	wall[wall[w].nextwall].cstat = 0;
+                                }
                 			}
                 			s = g_sp.sectnum;
                 			sector[s].floorz = sector[sp.sectnum].floorz;
@@ -3061,23 +3061,21 @@ public class Gamedef {
 	            break;
 	        case 42:
 	            insptr++;
-	            if(gm == MODE_DEMO) break;
-	            
 	            if(ud.multimode < 2)
 	            {
-	            	if((currentGame.getCON().type != RRRA && ud.player_skill >= 5) || lastload == null || ud.recstat == 2)
-	            		gm = MODE_RESTART;
-	            	else 
-		               mOpen(mMenus[LOADGAME], -1);
-	            	
+	            	if(game.isCurrentScreen(gDemoScreen)) break;
+
+	            	gGameScreen.enterlevel(gGameScreen.getTitle());
 	                killit_flag = 2;
 	            }
 	            else
 	            {
 	                pickrandomspot(g_p);
-	                g_sp.x = hittype[g_i].bposx = ps[g_p].bobposx = ps[g_p].oposx = ps[g_p].posx;
-	                g_sp.y = hittype[g_i].bposy = ps[g_p].bobposy = ps[g_p].oposy =ps[g_p].posy;
-	                g_sp.z = hittype[g_i].bposy = ps[g_p].oposz =ps[g_p].posz;
+	                game.pInt.clearspriteinterpolate(g_i);
+	                game.pInt.setsprinterpolate(g_i, sprite[ps[g_p].i]);
+	                g_sp.x = ps[g_p].bobposx = ps[g_p].oposx = ps[g_p].posx;
+	                g_sp.y = ps[g_p].bobposy = ps[g_p].oposy =ps[g_p].posy;
+	                g_sp.z = ps[g_p].oposz =ps[g_p].posz;
 	                ps[g_p].cursectnum = engine.updatesector(ps[g_p].posx,ps[g_p].posy,ps[g_p].cursectnum);
 	                engine.setsprite(ps[g_p].i,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz+PHEIGHT);
 	                g_sp.cstat = 257;
@@ -3103,8 +3101,6 @@ public class Gamedef {
 	                ps[g_p].pals_time = 0;
 	                ps[g_p].footprintcount = 0;
 	                ps[g_p].weapreccnt = 0;
-	                ps[g_p].fta = 0;
-	                ps[g_p].ftq = 0;
 	                ps[g_p].posxv = ps[g_p].posyv = 0;
 	                ps[g_p].rotscrnang = 0;
 
@@ -3122,6 +3118,9 @@ public class Gamedef {
 
 	                resetinventory(g_p);
 	                resetweapons(g_p);
+
+	                fta = 0;
+	                ftq = 0;
 
 	                cameradist = 0;
 	                cameraclock = totalclock;
@@ -3554,7 +3553,7 @@ public class Gamedef {
 	        	break;
 	        case 141: //mamaend
 	        	insptr++;
-	        	ps[myconnectindex].MamaEnd = 150;
+	        	ps[connecthead].MamaEnd = 150;
 	        	break;
 	        case 142: //newpic
 	        	insptr++;
@@ -3627,8 +3626,10 @@ public class Gamedef {
 
 	    if(g_sp.sectnum < 0 || g_sp.sectnum >= MAXSECTORS)
 	    {
-	        if(badguy(g_sp))
-	            ps[g_p].actors_killed++;
+	        if(badguy(g_sp)) {
+	            ps[connecthead].actors_killed++;
+	            if(ud.coop == 1) ps[g_p].frag++;
+	        }
 	        engine.deletesprite(g_i);
 	        return;
 	    }
@@ -3700,15 +3701,20 @@ public class Gamedef {
 	public static void compilecons()
 	{
 		conweigth = 0;
-		defGame = new GameInfo(cache, confilename);
 		Script con = loadefs(confilename);
-		if( loadfromgrouponly != 0 )
-		{
-			Console.Println("  * Writing defaults to current directory.");
-			con = loadefs(confilename);
+		if(loadfromgrouponly == 0)
+			defGame = new GameInfo(cache.checkFile(confilename), confilename);
+		else {
+			try {
+				IResource grp = checkgroupfile("redneck.grp");
+				defGame = new GameInfo(grp, cache.checkFile(grp.name), confilename);
+			} catch (Exception e) {
+				game.ThrowError("Unknown error!", e);
+				return;
+			}
 		}
-		
-		switch(GameCON)
+
+		switch(con.type)
 		{
 			case RR:
 				Console.Println("Looks like Redneck Rampage Edition CON files.");
@@ -3721,7 +3727,6 @@ public class Gamedef {
 				break;
 		}
 
-		con.type = GameCON;
 		defGame.setCON(con);
 		defGame.Title = "Default";
 
@@ -3737,12 +3742,14 @@ public class Gamedef {
 		for(int i = 0; i < con.nSkills; i++) 
 			defGame.skillnames[i] = new String(con.skill_names[i]).trim();
 
-		if(defGame.episodes[1] != null) {
+		if(defGame.episodes[1] != null && con.type != RRRA) {
 			defGame.episodes[1].gMapInfo[7] = new MapInfo("endgame.map", "Close encounters", defGame.episodes[1].gMapInfo[0].partime, defGame.episodes[1].gMapInfo[0].designertime); //EndGame map
 			defGame.episodes[1].nMaps = 8;
 		}
 		defGame.isInited = true;
 		currentGame = defGame;
+		
+		episodes.put(defGame.getFile().getPath(), defGame);
 	}
 	
 	//For user episodes
@@ -3756,6 +3763,8 @@ public class Gamedef {
         	while( buf[textptr] != 0x0a ) {
         		buf[textptr] = 0;
         		textptr++;
+        		if( textptr >= buf.length )
+                	return buf;
         	}
         }
         
@@ -3823,7 +3832,7 @@ public class Gamedef {
 	    	return null;
 	    }
 	    
-	    switch(GameCON)
+	    switch(con.type)
 		{
 			case RR:
 				Console.Println("Looks like Redneck Rampage Edition CON files.");
@@ -3835,7 +3844,6 @@ public class Gamedef {
 				Console.Println("Looks like Redneck Rampage: Rides Again Edition CON files.");
 				break;
 		}
-	    con.type = GameCON;
 
 	    if((warning|error) != 0)
 	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");

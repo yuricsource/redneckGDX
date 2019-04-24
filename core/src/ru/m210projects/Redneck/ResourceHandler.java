@@ -1,3 +1,19 @@
+// This file is part of RedneckGDX.
+// Copyright (C) 2017-2019  Alexander Makarov-[M210] (m210-2007@mail.ru)
+//
+// RedneckGDX is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// RedneckGDX is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
+
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
@@ -9,7 +25,6 @@ import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Sounds.*;
 
@@ -35,9 +50,9 @@ public class ResourceHandler {
 	public static final int BACKBUTTON = 9237;
 	public static final int GUTSMETTER = 9238;
 	public static final int KILLSSIGN = 9239;
-	
-	public static int[] deftiletovox = new int[MAXTILES];
-	
+	public static final int WIDEHUD_PART1 = 9254;
+	public static final int WIDEHUD_PART2 = 9255;
+
 	private static int usergroup;
 	private static boolean usecustomarts;
 
@@ -114,28 +129,7 @@ public class ResourceHandler {
 			bb.clear();
 			bb = null;
 
-			CRC32 tilecrc32 = new CRC32();
-			for(int i = 0; i < replace.length; i++)
-			{
-				int tilenume = replace[i][0];
-				int newtile = replace[i][1];
-				long crc32 = replace[i][2] & 0xFFFFFFFFL;
-				
-				if(waloff[tilenume] == null)
-					if(engine.loadtile(tilenume) == null)
-						continue; //nothing replace
-				
-				tilecrc32.reset();
-				tilecrc32.update(waloff[tilenume]);
-				if(tilecrc32.getValue() != crc32) //RA protect
-					continue;
-				
-				waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
-				System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
-				tilesizx[tilenume] = tilesizx[newtile];
-				tilesizy[tilenume] = tilesizy[newtile];
-				picanm[tilenume] = picanm[newtile];
-			}
+			ReplaceUserTiles();
 		}
 	}
 		
@@ -144,8 +138,7 @@ public class ResourceHandler {
 		kDynamicClear();
 		usergroup = -1;
 		currentGame = defGame;
-		
-		System.arraycopy(deftiletovox, 0, tiletovox, 0, MAXTILES); //reset user voxels
+
 		for(int i = 0; i < NUM_SOUNDS; i++)
 			Sound[i].ptr = null;
 
@@ -153,15 +146,15 @@ public class ResourceHandler {
 			return; 
 
 		System.err.println("Reset to default resources");
-		Arrays.fill(tilesizx, 0, MAXTILES, (short)0);
-		Arrays.fill(tilesizy, 0, MAXTILES, (short)0);
-		Arrays.fill(picanm, 0, MAXTILES, 0);
-		Arrays.fill(waloff, 0, MAXTILES, null);
+		Arrays.fill(tilesizx, 0, kMaxTiles, (short)0);
+		Arrays.fill(tilesizy, 0, kMaxTiles, (short)0);
+		Arrays.fill(picanm, 0, kMaxTiles, 0);
+		Arrays.fill(waloff, 0, kMaxTiles, null);
 		
 		if(engine.loadpics("tiles000.art") == 0)
-			dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
+			game.dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
 		
-		LoadUserRes();
+		ReplaceUserTiles();
 		
 		InitSpecialTextures();
 	    
@@ -182,6 +175,8 @@ public class ResourceHandler {
 	
 	public static GameInfo levelGetEpisode(String filepath)
 	{
+		if(filepath == null) return null;
+		
 		String fullname = filepath;
 		String conName = null;
 		int filenameIndex = -1;
@@ -198,8 +193,7 @@ public class ResourceHandler {
 			if(filenameIndex == -1 && (ini = episodes.get(file.getPath())) == null)
 			{
 				if(file.getExtension().equals("con")) {
-					
-					ini = new GameInfo(file.getParent(), file.getName());
+					ini = new GameInfo(file, file.getName());
 					ini.init();
 					if(ini.isInited)
 						episodes.put(file.getPath(), ini);
@@ -283,15 +277,15 @@ public class ResourceHandler {
 	{
 		resetEpisodeResources();
 		
-		FileEntry fil;
-		if((fil = addon.isPackage()) != null)
+		if(addon.isPackage())
 		{
+			FileEntry fil = addon.getFile();
 			try {
 				int gr = initgroupfile(fil.getPath());
 				setgroupflags(gr, true, true);
 				prepareusergroup(gr, true);
 			} catch(Exception e) { 
-				GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
+				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
 				return;
 			}
 		} else
@@ -309,10 +303,12 @@ public class ResourceHandler {
 		if(addon.getCON() == null) 
 			addon.setCON(loaduserdef(addon.ConName));
 		
-		if(error == 0)
+		if(error == 0) {
 			currentGame = addon;
+			ReplaceUserTiles();
+		}
 		else {
-			GameCrash("\nErrors found in " + addon.ConName + " file.");
+			game.GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}
 	}
 	
@@ -326,4 +322,34 @@ public class ResourceHandler {
 	    tilesizx[13] = 0;
 	    waloff[13] = null;
 	}
+	
+	public static void ReplaceUserTiles()
+	{
+		CRC32 tilecrc32 = new CRC32();
+		for(int i = 0; i < replace.length; i++)
+		{
+			int tilenume = replace[i][0];
+			int newtile = replace[i][1];
+			long crc32 = replace[i][2] & 0xFFFFFFFFL;
+			
+			if(game.currentDef != null && game.currentDef.texInfo.isHighTile(tilenume))
+				continue;
+	
+			if(waloff[tilenume] == null)
+				if(engine.loadtile(tilenume) == null)
+					continue; //nothing replace
+			
+			tilecrc32.reset();
+			tilecrc32.update(waloff[tilenume]);
+			if(tilecrc32.getValue() != crc32)
+				continue;
+			
+			waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
+			System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
+			tilesizx[tilenume] = tilesizx[newtile];
+			tilesizy[tilenume] = tilesizy[newtile];
+			picanm[tilenume] = picanm[newtile];
+		}
+	}
+
 }

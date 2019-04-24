@@ -30,12 +30,10 @@ import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Redneck.Interpolation.setinterpolation;
-import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
+import static ru.m210projects.Redneck.LoadSave.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Redneck.Premap.*;
-import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Types.ANIMATION.*;
 import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Globals.*;
@@ -51,7 +49,10 @@ import static ru.m210projects.Redneck.Weapons.*;
 
 import java.util.Arrays;
 
+import com.badlogic.gdx.Input.Keys;
+
 import ru.m210projects.Build.Engine.Point;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
@@ -482,6 +483,8 @@ public class Actors {
 
 		boolean bg = badguy(sprite[spritenum]);
 
+		game.pInt.setsprinterpolate(spritenum, sprite[spritenum]);
+
 		if (sprite[spritenum].statnum == 5
 				|| (bg && sprite[spritenum].xrepeat < 4)) {
 			sprite[spritenum].x += (xchange * TICSPERFRAME) >> 2;
@@ -604,12 +607,12 @@ public class Actors {
 		int j = hittype[i].temp_data[1];
 		int k = hittype[i].temp_data[2];
 
-		int startwall = sector[s.sectnum].wallptr;
+		short startwall = sector[s.sectnum].wallptr;
 		int endwall = startwall + sector[s.sectnum].wallnum;
-		for (int x = startwall; x < endwall; x++) {
+		for (short x = startwall; x < endwall; x++) {
 			Point out = engine.rotatepoint(0, 0, msx[j], msy[j], (short) (k & 2047));
 
-			DragPoint(x, s.x + out.getX(), s.y + out.getY());
+			engine.dragpoint(x, s.x + out.getX(), s.y + out.getY());
 			j++;
 		}
 	}
@@ -975,9 +978,10 @@ public class Actors {
 			if (s.owner >= 0) {
 				if (p.newowner >= 0) // Looking thru the camera
 				{
+					game.pInt.setsprinterpolate(i, s);
 					s.x = p.oposx;
 					s.y = p.oposy;
-					hittype[i].bposz = s.z = p.oposz + PHEIGHT;
+					s.z = p.oposz + PHEIGHT;
 					s.ang = (short) p.oang;
 					engine.setsprite(i, s.x, s.y, s.z);
 				} else {
@@ -1028,6 +1032,21 @@ public class Actors {
 	                        p.ang = BClampAngle(p.ang);
 	                    }
 
+						if(currentGame.getCON().type == RRRA || ud.player_skill < 5) {
+							if( ud.multimode < 2 && lastload != null && !lastload.isEmpty() && ud.recstat != 2 ) {
+		                    	if(game.pInput.ctrlKeyPressed(Keys.ENTER))
+		                    	{
+		                    		game.changeScreen(gLoadingScreen.setTitle(lastload));
+		        					gLoadingScreen.init(new Runnable() {
+		        						public void run() {
+		        							if(!loadgame(lastload)) 
+		        								game.GameMessage("Can't load game!");
+		        						}
+		        					});
+		                    		return;
+		                    	}
+		                    }
+						}
 					}
 					s.ang = (short) p.ang;
 				}
@@ -1038,9 +1057,7 @@ public class Actors {
 					continue;
 				}
 
-				hittype[i].bposx = s.x;
-				hittype[i].bposy = s.y;
-				hittype[i].bposz = s.z;
+				game.pInt.setsprinterpolate(i, s);
 
 				s.cstat = 0;
 
@@ -1135,19 +1152,19 @@ public class Actors {
 			case MUSICANDSFX:
 
 				ht = s.hitag;
-				if (hittype[i].temp_data[1] != (cfg.SoundToggle ? 1 : 0)) {
-					hittype[i].temp_data[1] = cfg.SoundToggle ? 1 : 0;
+				if (hittype[i].temp_data[1] != (cfg.noSound ? 0 : 1)) {
+					hittype[i].temp_data[1] = (cfg.noSound ? 0 : 1);
 					hittype[i].temp_data[0] = 0;
 				}
 
 				if (s.lotag >= 1000 && s.lotag < 2000) {
 					x = ldist(sprite[ps[screenpeek].i], s);
 					if (x < ht && hittype[i].temp_data[0] == 0) {
-						engine.getAudio().getSound().setReverb(true, (s.lotag - 1000) / 255f);
+						BuildGdx.audio.getSound().setReverb(true, (s.lotag - 1000) / 255f);
 						hittype[i].temp_data[0] = 1;
 					}
 					if (x >= ht && hittype[i].temp_data[0] == 1) {
-						engine.getAudio().getSound().setReverb(false, 0);
+						BuildGdx.audio.getSound().setReverb(false, 0);
 						hittype[i].temp_data[0] = 0;
 					}
 				} else if (s.lotag < 999
@@ -1156,9 +1173,9 @@ public class Actors {
 						&& sector[sprite[i].sectnum].floorz != sector[sprite[i].sectnum].ceilingz) {
 					if ((currentGame.getCON().soundm[s.lotag] & 2) != 0) {
 						x = dist(sprite[ps[screenpeek].i], s);
-						if (x < ht && hittype[i].temp_data[0] == 0 && engine.getAudio().getSound().isAvailable(currentGame.getCON().soundpr[s.lotag]-1))
+						if (x < ht && hittype[i].temp_data[0] == 0 && BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[s.lotag]-1))
 						{
-							if (numenvsnds == cfg.NumVoices) {
+							if (numenvsnds == cfg.maxvoices) {
 								j = headspritestat[11];
 								while (j >= 0) {
 									if (sprite[i].picnum == MUSICANDSFX
@@ -1190,8 +1207,7 @@ public class Actors {
 							hittype[i].temp_data[4]--;
 						else
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
-								if (p == myconnectindex
-										&& ps[p].cursectnum == s.sectnum) {
+								if (p == myconnectindex && ps[p].cursectnum == s.sectnum) {
 									j = s.lotag+((global_random & 0xFFFF)%(s.hitag+1));
 									sound(j);
 									hittype[i].temp_data[4] = 26 * 40 + (global_random % (26 * 40));
@@ -1346,9 +1362,7 @@ public class Actors {
 				continue BOLT;
 			}
 
-			hittype[i].bposx = s.x;
-			hittype[i].bposy = s.y;
-			hittype[i].bposz = s.z;
+			game.pInt.setsprinterpolate(i, s);
 
 			if (IFWITHIN(sprite[i], CRANE, CRANE + 3)) {
 				// t[0] = state
@@ -1367,7 +1381,7 @@ public class Actors {
 						case 2:
 						case 6:
 						case 10:
-							s.ang = (short) engine.getangle(
+							s.ang = engine.getangle(
 									msx[t[4] + 1] - s.x, msy[t[4] + 1] - s.y);
 							engine.setsprite((short) j, msx[t[4] + 1], msy[t[4] + 1],
 									sprite[j].z);
@@ -1403,8 +1417,8 @@ public class Actors {
 								s.picnum--;
 							else {
 								if (s.owner == -2) {
-									spritesound(390, ps[p].i);
 									p = findplayer(s);
+									spritesound(390, ps[p].i);
 									x = player_dist;
 									if (ps[p].on_crane == i)
 										ps[p].on_crane = -1;
@@ -1423,6 +1437,13 @@ public class Actors {
 							ps[p].on_crane = (short) i;
 							spritesound(390, ps[p].i);
 							ps[p].ang = (short) (s.ang + 1024);
+							
+							ps[p].posxv = 0;
+		                	ps[p].posyv = 0;
+		                	ps[p].poszv = 0;
+		                	sprite[ps[p].i].xvel = 0;
+		                	ps[p].look_ang = 0;
+		                	ps[p].rotscrnang = 0;
 						} else {
 							j = headspritesect[t[1]];
 							while (j >= 0) {
@@ -1458,8 +1479,7 @@ public class Actors {
 				} else if (t[0] == 6) {
 					if (s.xvel < 192)
 						s.xvel += 8;
-					s.ang = (short) engine.getangle(msx[t[4]] - s.x, msy[t[4]]
-							- s.y);
+					s.ang = engine.getangle(msx[t[4]] - s.x, msy[t[4]] - s.y);
 					ssp(i, CLIPMASK0);
 					if (((s.x - msx[t[4]]) * (s.x - msx[t[4]]) + (s.y - msy[t[4]])
 							* (s.y - msy[t[4]])) < (128 * 128))
@@ -1469,6 +1489,7 @@ public class Actors {
 				else if (t[0] == 9)
 					t[0] = 0;
 
+				game.pInt.setsprinterpolate(msy[t[4]+2], sprite[msy[t[4]+2]]);
 				engine.setsprite((short) msy[t[4] + 2], s.x, s.y, s.z - (34 << 8));
 
 				if (s.owner != -1) {
@@ -1486,25 +1507,26 @@ public class Actors {
 
 					if (s.owner >= 0) {
 						engine.setsprite(s.owner, s.x, s.y, s.z);
-
-						hittype[s.owner].bposx = s.x;
-						hittype[s.owner].bposy = s.y;
-						hittype[s.owner].bposz = s.z;
-
 						s.zvel = 0;
 					} else if (s.owner == -2) {
+						
+						ps[p].oposx = ps[p].posx;
+	                	ps[p].oposy = ps[p].posy;
+	                	ps[p].oposz = ps[p].posz;
+	                	ps[p].oang = ps[p].ang;
+	                	ps[p].opyoff = ps[p].pyoff;
+
 						if(IsOriginalDemo())
 	                	{
-	                		ps[p].oposx = ps[p].posx = s.x-(sintable[((int)ps[p].ang+512)&2047]>>6);
-	                        ps[p].oposy = ps[p].posy = s.y-(sintable[(int)ps[p].ang&2047]>>6);
+	                		ps[p].posx = s.x-(sintable[((int)ps[p].ang+512)&2047]>>6);
+	                        ps[p].posy = s.y-(sintable[(int)ps[p].ang&2047]>>6);
 	                	} else {
-		                    ps[p].oposx = ps[p].posx = (int) (s.x-(BCosAngle(BClampAngle(ps[p].ang)) / 64.0f));
-		                    ps[p].oposy = ps[p].posy = (int) (s.y-(BSinAngle(BClampAngle(ps[p].ang)) / 64.0f));
+		                    ps[p].posx = (int) (s.x-(BCosAngle(BClampAngle(ps[p].ang)) / 64.0f));
+		                    ps[p].posy = (int) (s.y-(BSinAngle(BClampAngle(ps[p].ang)) / 64.0f));
 	                	}
 
-						ps[p].oposz = ps[p].posz = s.z + (2 << 8);
-						engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy,
-								ps[p].posz);
+						ps[p].posz = s.z + (2 << 8);
+						engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy, ps[p].posz);
 						ps[p].cursectnum = sprite[ps[p].i].sectnum;
 					}
 				}
@@ -1795,7 +1817,8 @@ public class Actors {
 							engine.deletesprite(i);
 							continue;
 						} else {
-							hittype[i].bposz = s.z = t[0];
+							game.pInt.setsprinterpolate(i, s);
+                            s.z = t[0];
 							t[1] = 48 + (engine.krand() & 31);
 						}
 					}
@@ -1817,11 +1840,11 @@ public class Actors {
 
 					if (t[3] == 1) {
 						if (x >= t[2]) {
-							setinterpolation(sector[sect], FLOORZ);
+							game.pInt.setfloorinterpolate(sect, sector[sect]);
 							sector[sect].floorz = x;
 							t[1] = 0;
 						} else {
-							setinterpolation(sector[sect], FLOORZ);
+							game.pInt.setfloorinterpolate(sect, sector[sect]);
 							sector[sect].floorz += sector[sect].extra;
 							p = checkcursectnums(sect);
 							if (p >= 0)
@@ -1829,11 +1852,11 @@ public class Actors {
 						}
 					} else {
 						if (x <= s.z) {
-							setinterpolation(sector[sect], FLOORZ);
+							game.pInt.setfloorinterpolate(sect, sector[sect]);
 							sector[sect].floorz = s.z;
 							t[1] = 0;
 						} else {
-							setinterpolation(sector[sect], FLOORZ);
+							game.pInt.setfloorinterpolate(sect, sector[sect]);
 							sector[sect].floorz -= sector[sect].extra;
 							p = checkcursectnums(sect);
 							if (p >= 0)
@@ -1976,8 +1999,8 @@ public class Actors {
 			if (hittype[i].temp_data[0] > 0)
 				hittype[i].temp_data[0]--;
 
-			int j = headspritesect[sect];
-			int nextj = j >= 0 ? nextspritesect[j] : 0;
+			short j = headspritesect[sect];
+			short nextj = j >= 0 ? nextspritesect[j] : 0;
 
 			for (; j >= 0; j = nextj) {
 				nextj = nextspritesect[j];
@@ -2015,8 +2038,10 @@ public class Actors {
 
 								ps[p].bobposx = ps[p].oposx = ps[p].posx = sprite[sprite[i].owner].x;
 								ps[p].bobposy = ps[p].oposy = ps[p].posy = sprite[sprite[i].owner].y;
-								ps[p].oposz = ps[p].posz = sprite[sprite[i].owner].z
-										- PHEIGHT;
+								ps[p].oposz = ps[p].posz = sprite[sprite[i].owner].z - PHEIGHT;
+								
+								game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
+                                ps[p].UpdatePlayerLoc();
 
 								engine.changespritesect((short)j,
 										sprite[sprite[i].owner].sectnum);
@@ -2049,12 +2074,11 @@ public class Actors {
 									ps[p].posz = sprite[sprite[i].owner].z + 6144;
 								ps[p].oposz = ps[p].posz;
 
-								hittype[ps[p].i].bposx = ps[p].posx;
-								hittype[ps[p].i].bposy = ps[p].posy;
-								hittype[ps[p].i].bposz = ps[p].posz;
+								game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
 
-								engine.changespritesect((short)j,
-										sprite[sprite[i].owner].sectnum);
+	                            ps[p].UpdatePlayerLoc();
+
+								engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 								ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
 
 								break;
@@ -2093,13 +2117,16 @@ public class Actors {
 		                        break;;
 							k = 1;
 							if (screenpeek == p) {
-								engine.getAudio().getSound().stopAllSounds();
+								BuildGdx.audio.getSound().stopAllSounds();
 								clearsoundlocks();
 							}
 							spritesound(DUKE_UNDERWATER, j);
 							ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].ceilingz + (7 << 8);
 							if ( ps[p].OnMotorcycle )
 		                        ps[p].CarVar1 = 1;
+							
+							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
+                            ps[p].UpdatePlayerLoc();
 							
 //							ps[p].posxv = 4096 - (engine.krand() & 8192); GDX
 //							ps[p].posyv = 4096 - (engine.krand() & 8192);
@@ -2113,18 +2140,23 @@ public class Actors {
 							if (sprite[j].extra <= 0)
 								break;
 							if (screenpeek == p) {
-								engine.getAudio().getSound().stopAllSounds();
+								BuildGdx.audio.getSound().stopAllSounds();
 								clearsoundlocks();
 							}
 							spritesound(DUKE_GASP, j);
 
 							ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].floorz - (7 << 8);
 
+							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
+                            ps[p].UpdatePlayerLoc();
+							
 //							ps[p].jumping_toggle = 1; GDX 2.10.2018
 //							ps[p].jumping_counter = 0;
 						}
 
 						if (k == 1) {
+							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
+							
 							ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x - sprite[i].x;
 							ps[p].oposy = ps[p].posy += sprite[sprite[i].owner].y - sprite[i].y;
 
@@ -2147,9 +2179,13 @@ public class Actors {
 //									q = spawn(ps[p].i, WATERBUBBLE);
 //									sprite[q].z += engine.krand() & 16383;
 //								}
+							
+							ps[p].UpdatePlayerLoc();
 						} 
 						else if ( k == 2 )
 	                    {
+							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
+							
 							ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x - sprite[i].x;
 							ps[p].oposy = ps[p].posy += sprite[sprite[i].owner].y - sprite[i].y;
 
@@ -2157,6 +2193,8 @@ public class Actors {
 								ps[p].transporter_hold = -2;
 							ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
 							engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
+							
+							ps[p].UpdatePlayerLoc();
 	                    }
 					}
 					break;
@@ -2284,15 +2322,13 @@ public class Actors {
 										if (onfloorz != 0) {
 											if (sprite[j].statnum == 4
 													|| (checkcursectnums(sect) == -1 && checkcursectnums(sprite[sprite[i].owner].sectnum) == -1)) {
+												game.pInt.setsprinterpolate(j, sprite[j]);
+												
 												sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 												sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 												sprite[j].z -= sprite[i].z
 														- sector[sprite[sprite[i].owner].sectnum].floorz;
 												sprite[j].ang = sprite[sprite[i].owner].ang;
-
-												hittype[j].bposx = sprite[j].x;
-												hittype[j].bposy = sprite[j].y;
-												hittype[j].bposz = sprite[j].z;
 
 												if (sprite[i].pal == 0) {
 													k = (short) spawn(i,
@@ -2315,13 +2351,11 @@ public class Actors {
 														sprite[sprite[i].owner].sectnum);
 											}
 										} else {
+											game.pInt.setsprinterpolate(j, sprite[j]);
+											
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 											sprite[j].z = sprite[sprite[i].owner].z + 4096;
-
-											hittype[j].bposx = sprite[j].x;
-											hittype[j].bposy = sprite[j].y;
-											hittype[j].bposz = sprite[j].z;
 
 											engine.changespritesect(
 													(short)j,
@@ -2329,41 +2363,34 @@ public class Actors {
 										}
 										break;
 									case 1:
+										game.pInt.setsprinterpolate(j, sprite[j]);
+										
 										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].ceilingz
-												+ ll;
-
-										hittype[j].bposx = sprite[j].x;
-										hittype[j].bposy = sprite[j].y;
-										hittype[j].bposz = sprite[j].z;
+										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].ceilingz + ll;
 
 										engine.changespritesect((short)j,
 												sprite[sprite[i].owner].sectnum);
 
 										break;
 									case 2:
+										game.pInt.setsprinterpolate(j, sprite[j]);
+										
 										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - ll;
-
-										hittype[j].bposx = sprite[j].x;
-										hittype[j].bposy = sprite[j].y;
-										hittype[j].bposz = sprite[j].z;
 
 										engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
 
 										break;
 									case 160:
 										if(currentGame.getCON().type == RRRA) {
+											game.pInt.setsprinterpolate(j, sprite[j]);
+											
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 											sprite[j].z = zz + sector[sprite[sprite[i].owner].sectnum].ceilingz;
-											
-											hittype[j].bposx = sprite[j].x;
-											hittype[j].bposy = sprite[j].y;
-											hittype[j].bposz = sprite[j].z;
-											
+			
 											engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
 											
 											movesprite((short)j,
@@ -2374,14 +2401,12 @@ public class Actors {
 										break;
 									case 161:
 										if(currentGame.getCON().type == RRRA) {
+											game.pInt.setsprinterpolate(j, sprite[j]);
+											
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 											sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - zz;
-											
-											hittype[j].bposx = sprite[j].x;
-											hittype[j].bposy = sprite[j].y;
-											hittype[j].bposz = sprite[j].z;
-											
+				
 											engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
 											
 											movesprite((short)j,
@@ -2431,43 +2456,43 @@ public class Actors {
 			        		{
 			        			if ( chance >= 126 )
 			        			{
-			        				if ( (ps[screenpeek].SlotWin & 8) != 0 )
+			        				if ( (ps[connecthead].SlotWin & 8) != 0 )
 			        					sprite[i].picnum = 8165;
 			        				else
 			        				{
 			        					sprite[i].picnum = 8166;
 			        					spawn(i, 5595);
-			        					ps[screenpeek].SlotWin |= 8;
+			        					ps[connecthead].SlotWin |= 8;
 			        					spritesound(52, i);
 			        				}
 			        			}
-			        			else if ( (ps[screenpeek].SlotWin & 4) != 0)
+			        			else if ( (ps[connecthead].SlotWin & 4) != 0)
 			        				sprite[i].picnum = 8165;
 			        			else
 			        			{
 			        				sprite[i].picnum = 8167;
 			        				spawn(i, 52);
-			        				ps[screenpeek].SlotWin |= 4;
+			        				ps[connecthead].SlotWin |= 4;
 			        				spritesound(52, i);
 			        			}
 			        		}
-			        		else if ( (ps[screenpeek].SlotWin & 2) != 0 )
+			        		else if ( (ps[connecthead].SlotWin & 2) != 0 )
 			        			sprite[i].picnum = 8165;
 			        		else
 			        		{
 			        			sprite[i].picnum = 8168;
 			        			spawn(i, 26);
-			        			ps[screenpeek].SlotWin |= 2;
+			        			ps[connecthead].SlotWin |= 2;
 			        			spritesound(52, i);
 			        		}
 			        	}
-			        	else if ( (ps[screenpeek].SlotWin & 1) != 0 )
+			        	else if ( (ps[connecthead].SlotWin & 1) != 0 )
 			        		sprite[i].picnum = 8165;
 			        	else
 			        	{
 			        		sprite[i].picnum = 8164;
 			        		spawn(i, 41);
-			        		ps[screenpeek].SlotWin |= 1;
+			        		ps[connecthead].SlotWin |= 1;
 			        		spritesound(52, i);
 			        	}
 			        }
@@ -2483,7 +2508,7 @@ public class Actors {
 				if ( sprite[i].extra == sprite[i].lotag )
 					sound(183);
 				sprite[i].extra--;
-				
+
 				k = movesprite(
 						i,
 						mulscale(sintable[(sprite[i].ang + 512) & kAngleMask], sprite[i].hitag, 14),
@@ -2500,10 +2525,12 @@ public class Actors {
 					sound(215);
 					engine.deletesprite(i);
 					earthquaketime = 32;
-					ps[myconnectindex].pals[0] = 32;
-					ps[myconnectindex].pals[1] = 32;
-					ps[myconnectindex].pals[2] = 32;
-					ps[myconnectindex].pals_time = 48;
+					for (p = connecthead; p >= 0; p = connectpoint2[p]) {
+						ps[p].pals[0] = 32;
+						ps[p].pals[1] = 32;
+						ps[p].pals[2] = 32;
+						ps[p].pals_time = 48;
+					}
 				}
 			}
 		}
@@ -2561,16 +2588,13 @@ public class Actors {
 			movesprite(i, 0, 0, sprite[i].extra, CLIPMASK0);
 		}
 		
-		if ( ps[screenpeek].MamaEnd > 0 && --ps[screenpeek].MamaEnd == 0 )
+		if ( ps[connecthead].MamaEnd > 0 && --ps[connecthead].MamaEnd == 0 )
 		{
 			LeaveMap();
 		    ud.eog = 1;
-		    ud.level_number++;
-//		    checknextlevel();
-		    ud.m_level_number = ud.level_number;
 		}
 		
-		if ( ps[screenpeek].field_607 > 0 )
+		if ( ps[connecthead].field_607 > 0 )
 		{
 			for(j = 0; j < MAXSPRITES; j++)
 			{
@@ -2612,13 +2636,13 @@ public class Actors {
 					case 7206:
 				 	case 7280:
 				 	case 8705:
-				 		if ( ps[screenpeek].field_607 == 3 )
+				 		if ( ps[connecthead].field_607 == 3 )
 						{
 					        sprite[j].xrepeat <<= 1;
 					        sprite[j].yrepeat <<= 1;
 					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
 						}
-						else if ( ps[screenpeek].field_607 == 2 )
+						else if ( ps[connecthead].field_607 == 2 )
 						{
 							sprite[j].xrepeat >>= 1;
 					        sprite[j].yrepeat >>= 1;
@@ -2627,7 +2651,7 @@ public class Actors {
 					 break;
 				}
 			}
-			ps[screenpeek].field_607 = 0;
+			ps[connecthead].field_607 = 0;
 		}
 		
 		for (int i = headspritestat[119]; i >= 0; i = nextspritestat[i]) { //RA
@@ -2688,43 +2712,43 @@ public class Actors {
 							{
 								if ( change >= 126 )
 								{
-									if ( (ps[screenpeek].SlotWin & 8) != 0 )
+									if ( (ps[connecthead].SlotWin & 8) != 0 )
 										sprite[i].picnum = 8593;
 									else
 									{
 										sprite[i].picnum = 8592;
 										spawn(i, 5595);
-										ps[screenpeek].SlotWin |= 8;
+										ps[connecthead].SlotWin |= 8;
 										spritesound(342, i);
 									}
 								}
-								else if ( (ps[screenpeek].SlotWin & 4) != 0)
+								else if ( (ps[connecthead].SlotWin & 4) != 0)
 									sprite[i].picnum = 8593;
 								else
 								{
 									sprite[i].picnum = 8591;
 									spawn(i, 52);
-									ps[screenpeek].SlotWin |= 4;
+									ps[connecthead].SlotWin |= 4;
 									spritesound(342, i);
 								}
 							}
-							else if ( (ps[screenpeek].SlotWin & 2) != 0)
+							else if ( (ps[connecthead].SlotWin & 2) != 0)
 								sprite[i].picnum = 8593;
 							else
 							{
 								sprite[i].picnum = 8595;
 								spawn(i, 26);
-								ps[screenpeek].SlotWin |= 2;
+								ps[connecthead].SlotWin |= 2;
 								spritesound(342, i);
 							}
 						}
-						else if ( (ps[screenpeek].SlotWin & 1) != 0)
+						else if ( (ps[connecthead].SlotWin & 1) != 0)
 							sprite[i].picnum = 8593;
 						else
 						{
 							sprite[i].picnum = 8594;
 							spawn(i, 41);
-							ps[screenpeek].SlotWin |= 1;
+							ps[connecthead].SlotWin |= 1;
 							spritesound(342, i);
 						}
 					}
@@ -2883,7 +2907,16 @@ public class Actors {
 							engine.changespritesect(ps[p].i, s.sectnum);
 							ps[p].cursectnum = sprite[p].sectnum;
 							spritesound(TELEPORTER, j);
-							engine.deletesprite((short)j);
+							
+							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
+	                        ps[p].UpdatePlayerLoc();
+	                        
+	                        if (ud.multimode < 2)
+	                        	engine.deletesprite((short)j);
+	                        else {
+	                        	s.cstat &= ~1;
+	                        	s.cstat |= 32768;
+	                        }
 						}
 						j = nextj;
 					}
@@ -2908,9 +2941,8 @@ public class Actors {
 
 			t = hittype[i].temp_data;
 
-			hittype[i].bposx = s.x;
-			hittype[i].bposy = s.y;
-			hittype[i].bposz = s.z;
+			game.pInt.clearspriteinterpolate(i);
+			game.pInt.setsprinterpolate(i, sprite[i]);
 
 			switch (s.picnum) {
 			case CAMERA1:
@@ -3697,7 +3729,7 @@ public class Actors {
 						for (l = 0; l < 16; l++)
 							RANDOMSCRAP(s, i);
 						spritesound(LASERTRIP_EXPLODE, i);
-						if ( ps[myconnectindex].isSwamp )
+						if ( ps[connecthead].isSwamp )
 							spawn(i, MINION);
 		                else {
 							switch (s.picnum) {
@@ -3722,7 +3754,7 @@ public class Actors {
 							}
 		                }
 
-						ps[myconnectindex].actors_killed++;
+						ps[connecthead].actors_killed++;
 						engine.deletesprite(i);
 					}
 					continue;
@@ -3899,9 +3931,7 @@ public class Actors {
 				continue;
 			}
 
-			hittype[i].bposx = s.x;
-			hittype[i].bposy = s.y;
-			hittype[i].bposz = s.z;
+			game.pInt.setsprinterpolate(i, sprite[i]);
 
 			switch (s.picnum) {
 			case BLOODPOOL:
@@ -4540,7 +4570,7 @@ public class Actors {
 
 						if (sc.floorz > s.z) // z's are touching
 						{
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz -= 512;
 							zchange = -512;
 							if (sc.floorz < s.z)
@@ -4549,7 +4579,7 @@ public class Actors {
 
 						else if (sc.floorz < s.z) // z's are touching
 						{
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz += 512;
 							zchange = 512;
 							if (sc.floorz > s.z)
@@ -4567,20 +4597,18 @@ public class Actors {
 						} else
 							hittype[i].tempang = 0;
 
-						if (sc.floorz > hittype[i].temp_data[3]) // z's are
-																	// touching
+						if (sc.floorz > hittype[i].temp_data[3]) // z's are touching
 						{
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz -= 512;
 							zchange = -512;
 							if (sc.floorz < hittype[i].temp_data[3])
 								sc.floorz = hittype[i].temp_data[3];
 						}
 
-						else if (sc.floorz < hittype[i].temp_data[3]) // z's are
-																		// touching
+						else if (sc.floorz < hittype[i].temp_data[3]) // z's are touching
 						{
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz += 512;
 							zchange = 512;
 							if (sc.floorz > hittype[i].temp_data[3])
@@ -4648,10 +4676,11 @@ public class Actors {
 								p = nextspritesect[p];
 								continue;
 							}
+							
+							game.pInt.setsprinterpolate(p, sprite[p]);
 
 							sprite[p].ang += (l * q);
 							sprite[p].ang &= 2047;
-	
 							sprite[p].z += zchange;
 	
 							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y,
@@ -4696,10 +4725,9 @@ public class Actors {
 						t[4] = 0;
 						s.xvel = k;
 
-						if (UFO_SpawnHulk != 0) {
+						if (UFO_SpawnHulk > 0) {
 							UFO_SpawnHulk--;
 							int nSpawn = spawn(i, HULK);
-
 							sprite[nSpawn].z = sector[sprite[nSpawn].sectnum].ceilingz;
 							sprite[nSpawn].pal = 33;
 
@@ -4777,7 +4805,7 @@ public class Actors {
 							(short) t[0]);
 
 				if (s.owner == -1) {
-					dassert("Could not find any locators for SE# 6 and 14 with a hitag of " + t[3]);
+					game.dassert("Could not find any locators for SE# 6 and 14 with a hitag of " + t[3]);
 				}
 
 				j = ldist(sprite[s.owner], s);
@@ -4821,7 +4849,7 @@ public class Actors {
 
 					if (s.xvel <= 64 && (sc.floorstat & 1) == 0
 							&& (sc.ceilingstat & 1) == 0)
-						stopsound(hittype[i].lastvx);
+						stopsound(hittype[i].lastvx, i);
 
 					if ((sc.floorz - sc.ceilingz) < (108 << 8)) {
 						if (!ud.clipping && s.xvel >= 192)
@@ -4864,6 +4892,7 @@ public class Actors {
 								ps[p].bobposy += x;
 
 								ps[p].ang += q;
+								ps[p].ang = BClampAngle(ps[p].ang);
 
 								if (numplayers > 1) {
 									ps[p].oposx = ps[p].posx;
@@ -4883,6 +4912,9 @@ public class Actors {
 								&& sprite[j].picnum != LOCATORS) {
 							Point out = engine.rotatepoint(s.x, s.y, sprite[j].x,
 									sprite[j].y, (short) q);
+							
+							game.pInt.setsprinterpolate(j, sprite[j]);
+
 							sprite[j].x = out.getX();
 							sprite[j].y = out.getY();
 
@@ -4891,10 +4923,10 @@ public class Actors {
 
 							sprite[j].ang += q;
 
-							if (numplayers > 1) {
-								hittype[j].bposx = sprite[j].x;
-								hittype[j].bposy = sprite[j].y;
-							}
+//							if (numplayers > 1) {
+//								hittype[j].bposx = sprite[j].x;
+//								hittype[j].bposy = sprite[j].y;
+//							}
 						}
 						j = nextspritesect[j];
 					}
@@ -4980,8 +5012,7 @@ public class Actors {
 							while (j >= 0) {
 								if (sprite[j].picnum != SECTOREFFECTOR
 										&& sprite[j].picnum != LOCATORS) {
-									hittype[j].bposx = sprite[j].x;
-									hittype[j].bposy = sprite[j].y;
+									game.pInt.setsprinterpolate(j, sprite[j]);
 								}
 								j = nextspritesect[j];
 							}
@@ -5036,18 +5067,16 @@ public class Actors {
 					while (j >= 0) {
 						if (sprite[j].picnum != SECTOREFFECTOR
 								&& sprite[j].picnum != LOCATORS) {
-							if (numplayers < 2) {
-								hittype[j].bposx = sprite[j].x;
-								hittype[j].bposy = sprite[j].y;
-							}
 
+							game.pInt.setsprinterpolate(j, sprite[j]);
+							
 							sprite[j].x += l;
 							sprite[j].y += x;
 
-							if (numplayers > 1) {
-								hittype[j].bposx = sprite[j].x;
-								hittype[j].bposy = sprite[j].y;
-							}
+//							if (numplayers > 1) {
+//								hittype[j].bposx = sprite[j].x;
+//								hittype[j].bposy = sprite[j].y;
+//							}
 						}
 						j = nextspritesect[j];
 					}
@@ -5151,6 +5180,8 @@ public class Actors {
 						nextj = nextspritesect[jj];
 
 						if (sprite[jj].picnum != SECTOREFFECTOR) {
+							game.pInt.setsprinterpolate(jj, sprite[jj]);
+
 							sprite[jj].x += m;
 							sprite[jj].y += x;
 							engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
@@ -5328,9 +5359,9 @@ public class Actors {
 				}
 
 				s.z += s.zvel;
-				setinterpolation(sc, CEILZ);
+				game.pInt.setceilinterpolate(s.sectnum, sc);
 				sc.ceilingz += s.zvel;
-				setinterpolation(sector[t[0]], CEILZ);
+				game.pInt.setceilinterpolate(t[0], sector[t[0]]);
 				sector[t[0]].ceilingz += s.zvel;
 				ms(i);
 				engine.setsprite(i, s.x, s.y, s.z);
@@ -5607,21 +5638,21 @@ public class Actors {
 
 					if (s.ang == 512) {
 						if (s.owner != 0) {
-							setinterpolation(sc, CEILZ);
+							game.pInt.setceilinterpolate(s.sectnum, sc);
 							if (klabs(t[0] - sc.ceilingz) >= j)
 								sc.ceilingz += sgn(t[0] - sc.ceilingz) * j;
 							else
 								sc.ceilingz = t[0];
 						} else {
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum,sc);
 							if (klabs(t[1] - sc.floorz) >= j)
 								sc.floorz += sgn(t[1] - sc.floorz) * j;
 							else
 								sc.floorz = t[1];
 						}
 					} else {
-						setinterpolation(sc, CEILZ);
-						setinterpolation(sc, FLOORZ);
+						game.pInt.setfloorinterpolate(s.sectnum,sc);
+                    	game.pInt.setceilinterpolate(s.sectnum, sc);
 						if (klabs(t[1] - sc.floorz) >= j)
 							sc.floorz += sgn(t[1] - sc.floorz) * j;
 						else
@@ -5648,9 +5679,9 @@ public class Actors {
 
 							sc.floorshade = s.shade;
 
-							if (ps[0].one_parallax_sectnum >= 0) {
-								sc.ceilingpicnum = sector[ps[0].one_parallax_sectnum].ceilingpicnum;
-								sc.ceilingshade = sector[ps[0].one_parallax_sectnum].ceilingshade;
+							if (ps[connecthead].one_parallax_sectnum >= 0) {
+								sc.ceilingpicnum = sector[ps[connecthead].one_parallax_sectnum].ceilingpicnum;
+								sc.ceilingshade = sector[ps[connecthead].one_parallax_sectnum].ceilingshade;
 							}
 						}
 					}
@@ -5720,7 +5751,7 @@ public class Actors {
 						s.shade = 1;
 				}
 
-				setinterpolation(sc, CEILZ);
+				game.pInt.setceilinterpolate(s.sectnum, sc);
 				if (s.shade != 0)
 					sc.ceilingz += 1024;
 				else
@@ -5735,8 +5766,8 @@ public class Actors {
 
 				q = t[0] * (sprite[i].yvel << 2);
 
-				setinterpolation(sc, FLOORZ);
-                setinterpolation(sc, CEILZ);
+				game.pInt.setfloorinterpolate(s.sectnum, sc);
+                game.pInt.setceilinterpolate(s.sectnum, sc);
 				sc.ceilingz += q;
 				sc.floorz += q;
 
@@ -5744,8 +5775,7 @@ public class Actors {
 				while (j >= 0) {
 					if (sprite[j].statnum == 10 && sprite[j].owner >= 0) {
 						p = sprite[j].yvel;
-						if (numplayers < 2)
-							ps[p].oposz = ps[p].posz;
+
 						ps[p].posz += q;
 						ps[p].truefz += q;
 						ps[p].truecz += q;
@@ -5753,7 +5783,7 @@ public class Actors {
 							ps[p].oposz = ps[p].posz;
 					}
 					if (sprite[j].statnum != 3) {
-						hittype[j].bposz = sprite[j].z;
+						game.pInt.setsprinterpolate(j, sprite[j]);
 						sprite[j].z += q;
 					}
 
@@ -5815,17 +5845,18 @@ public class Actors {
 							ps[p].truecz = hittype[k].ceilingz;
 							ps[p].bobcounter = 0;
 
+							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
 							engine.changespritesect(k, sprite[j].sectnum);
 							ps[p].cursectnum = sprite[j].sectnum;
+							
+							ps[p].UpdatePlayerLoc();
 						} else if (sprite[k].statnum != 3) {
+							game.pInt.setsprinterpolate(k, sprite[k]);
+
 							sprite[k].x += sprite[j].x - s.x;
 							sprite[k].y += sprite[j].y - s.y;
 							sprite[k].z = sector[sprite[j].sectnum].floorz
 									- (sc.floorz - sprite[k].z);
-
-							hittype[k].bposx = sprite[k].x;
-							hittype[k].bposy = sprite[k].y;
-							hittype[k].bposz = sprite[k].z;
 
 							engine.changespritesect(k, sprite[j].sectnum);
 							engine.setsprite(k, sprite[k].x, sprite[k].y,
@@ -5844,7 +5875,7 @@ public class Actors {
 				if (t[0] != 0) {
 					if (s.pal != 0) {
 						if (s.ang == 512) {
-							setinterpolation(sc, CEILZ);
+							game.pInt.setceilinterpolate(s.sectnum, sc);
 							sc.ceilingz -= sc.extra;
 							if (sc.ceilingz <= t[1]) {
 								sc.ceilingz = t[1];
@@ -5852,7 +5883,7 @@ public class Actors {
 								continue;
 							}
 						} else {
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz += sc.extra;
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
@@ -5863,7 +5894,8 @@ public class Actors {
 								if (sprite[j].zvel == 0
 										&& sprite[j].statnum != 3
 										&& sprite[j].statnum != 4) {
-									hittype[j].bposz = sprite[j].z += sc.extra;
+									game.pInt.setsprinterpolate(j, sprite[j]);
+									sprite[j].z += sc.extra;
 									hittype[j].floorz = sc.floorz;
 								}
 								j = nextspritesect[j];
@@ -5876,7 +5908,7 @@ public class Actors {
 						}
 					} else {
 						if (s.ang == 512) {
-							setinterpolation(sc, CEILZ);
+							game.pInt.setceilinterpolate(s.sectnum, sc);
 							sc.ceilingz += sc.extra;
 							if (sc.ceilingz >= s.z) {
 								sc.ceilingz = s.z;
@@ -5884,7 +5916,7 @@ public class Actors {
 								continue;
 							}
 						} else {
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz -= sc.extra;
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
@@ -5895,7 +5927,8 @@ public class Actors {
 								if (sprite[j].zvel == 0
 										&& sprite[j].statnum != 3
 										&& sprite[j].statnum != 4) {
-									hittype[j].bposz = sprite[j].z -= sc.extra;
+									game.pInt.setsprinterpolate(j, sprite[j]);
+                                    sprite[j].z -= sc.extra;
 									hittype[j].floorz = sc.floorz;
 								}
 								j = nextspritesect[j];
@@ -5934,7 +5967,7 @@ public class Actors {
 							}
 					}
 
-					 setinterpolation(sc, CEILZ);
+					game.pInt.setceilinterpolate(s.sectnum, sc);
 					if (sc.ceilingz < sc.floorz)
 						sc.ceilingz += sprite[i].yvel;
 					else {
@@ -6026,6 +6059,8 @@ public class Actors {
 						nextj = nextspritesect[jj];
 
 						if (sprite[jj].statnum != 3 && sprite[jj].zvel == 0) {
+							game.pInt.setsprinterpolate(jj, sprite[jj]);
+
 							sprite[jj].x += x;
 							sprite[jj].y += l;
 							engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
@@ -6037,16 +6072,16 @@ public class Actors {
 						jj = nextj;
 					}
 
-					DragPoint(t[1], wall[t[1]].x + x, wall[t[1]].y + l);
-					DragPoint(t[2], wall[t[2]].x + x, wall[t[2]].y + l);
+					engine.dragpoint((short)t[1], wall[t[1]].x + x, wall[t[1]].y + l);
+					engine.dragpoint((short)t[2], wall[t[2]].x + x, wall[t[2]].y + l);
 
 					for (p = connecthead; p >= 0; p = connectpoint2[p])
 						if (ps[p].cursectnum == s.sectnum && ps[p].on_ground) {
 							ps[p].posx += x;
 							ps[p].posy += l;
 
-							ps[p].oposx = ps[p].posx;
-							ps[p].oposy = ps[p].posy;
+//							ps[p].oposx = ps[p].posx;
+//							ps[p].oposy = ps[p].posy;
 
 							engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy,
 									ps[p].posz + PHEIGHT);
@@ -6087,11 +6122,11 @@ public class Actors {
 					if (klabs(l - s.z) < 1024) {
 						l = s.z;
 						if (s.ang == 1536) {
-							setinterpolation(sc, CEILZ);
+							game.pInt.setceilinterpolate(s.sectnum, sc);
 							sc.ceilingz = l;
 						}
 						else {
-							setinterpolation(sc, FLOORZ);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz = l;
 						}
 						engine.deletesprite(i);
@@ -6105,7 +6140,7 @@ public class Actors {
 
 				if (t[1] != 0) {
 					if (getanimationgoal(sector[t[0]], CEILZ) >= 0) {
-						setinterpolation(sc, CEILZ);
+						game.pInt.setceilinterpolate(s.sectnum, sc);
 						sc.ceilingz += sc.extra * 9;
 					}
 					else
@@ -6157,8 +6192,7 @@ public class Actors {
 
 							if (!(sprite[jj].picnum >= CRANE && sprite[jj].picnum <= (CRANE + 3))) {
 								if (sprite[jj].z > (hittype[jj].floorz - (16 << 8))) {
-									hittype[jj].bposx = sprite[jj].x;
-									hittype[jj].bposy = sprite[jj].y;
+									game.pInt.setsprinterpolate(jj, sprite[jj]);
 
 									sprite[jj].x += x >> 2;
 									sprite[jj].y += l >> 2;
@@ -6202,8 +6236,9 @@ public class Actors {
 
 				switch (t[0]) {
 				case 0:
-					setinterpolation(sc, FLOORZ);
-                	setinterpolation(sc, CEILZ);
+					game.pInt.setfloorinterpolate(s.sectnum, sc);
+                	game.pInt.setceilinterpolate(s.sectnum, sc);
+
 					sc.ceilingz += s.yvel;
 					if (sc.ceilingz > sc.floorz)
 						sc.floorz = sc.ceilingz;
@@ -6211,7 +6246,7 @@ public class Actors {
 						t[0]++;
 					break;
 				case 1:
-					setinterpolation(sc, CEILZ);
+					game.pInt.setceilinterpolate(s.sectnum, sc);
 					sc.ceilingz -= (s.yvel << 2);
 					if (sc.ceilingz < t[4]) {
 						sc.ceilingz = t[4];
@@ -6231,7 +6266,7 @@ public class Actors {
 				else if (sc.ceilingz <= t[3])
 					s.shade = 1;
 
-				setinterpolation(sc, CEILZ);
+				game.pInt.setceilinterpolate(s.sectnum, sc);
 				if (s.shade != 0) {
 					sc.ceilingz += sprite[i].yvel << 4;
 					if (sc.ceilingz > sc.floorz) {
@@ -6257,7 +6292,7 @@ public class Actors {
 				x = (s.xvel * sintable[s.ang & 2047]) >> 14;
 
 				s.shade++;
-				setinterpolation(sc, FLOORZ);
+				game.pInt.setfloorinterpolate(s.sectnum, sc);
 				if (s.shade > 7) {
 					s.x = t[3];
 					s.y = t[4];
@@ -6270,8 +6305,7 @@ public class Actors {
 				while (jj >= 0) {
 					nextj = nextspritesect[jj];
 					if (sprite[jj].statnum != 3 && sprite[jj].statnum != 10) {
-						hittype[jj].bposx = sprite[jj].x;
-						hittype[jj].bposy = sprite[jj].y;
+						game.pInt.setsprinterpolate(jj, sprite[jj]);
 
 						sprite[jj].x += l;
 						sprite[jj].y += x;
@@ -6362,7 +6396,14 @@ public class Actors {
 						break;
 					}
 
-					setinterpolation(sc, FLOORZ);
+					game.pInt.setfloorinterpolate(s.sectnum, sc);
+                    j = headspritesect[s.sectnum];
+                    while(j >= 0)
+                    {
+                    	game.pInt.setsprinterpolate(j, sprite[j]);
+                        j = nextspritesect[j];
+                    }
+
 					if (t[2] == 1) // Retract
 					{
 						if (sprite[i].ang != 1536) {
@@ -6383,7 +6424,7 @@ public class Actors {
 											ps[sprite[j].yvel].posz += l;
 									if (sprite[j].zvel == 0
 											&& sprite[j].statnum != 3) {
-										hittype[j].bposz = sprite[j].z += l;
+										sprite[j].z += l;
 										hittype[j].floorz = sc.floorz;
 									}
 									j = nextspritesect[j];
@@ -6407,7 +6448,7 @@ public class Actors {
 											ps[sprite[j].yvel].posz += l;
 									if (sprite[j].zvel == 0
 											&& sprite[j].statnum != 3) {
-										hittype[j].bposz = sprite[j].z += l;
+										sprite[j].z += l;
 										hittype[j].floorz = sc.floorz;
 									}
 									j = nextspritesect[j];
@@ -6435,7 +6476,7 @@ public class Actors {
 								if (sprite[j].zvel == 0
 										&& sprite[j].statnum != 3
 										&& sprite[j].statnum != 4) {
-									hittype[j].bposz = sprite[j].z += l;
+									sprite[j].z += l;
 									hittype[j].floorz = sc.floorz;
 								}
 								j = nextspritesect[j];
@@ -6459,7 +6500,7 @@ public class Actors {
 								if (sprite[j].zvel == 0
 										&& sprite[j].statnum != 3
 										&& sprite[j].statnum != 4) {
-									hittype[j].bposz = sprite[j].z -= l;
+									sprite[j].z -= l;
 									hittype[j].floorz = sc.floorz;
 								}
 								j = nextspritesect[j];
@@ -6478,7 +6519,7 @@ public class Actors {
 				if (t[0] == 1) {
 					// Choose dir
 
-					setinterpolation(sc, CEILZ);
+					game.pInt.setceilinterpolate(s.sectnum, sc);
 					if (t[2] == 1) // Retract
 					{
 						if (sprite[i].ang != 1536) {

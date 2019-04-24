@@ -18,18 +18,17 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Sector.*;
 import static ru.m210projects.Redneck.Weapons.*;
+import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
 
 import java.util.Arrays;
 
 import ru.m210projects.Build.OnSceenDisplay.Console;
-
-import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
 
 public class Cheats {
 
@@ -131,11 +130,11 @@ public class Cheats {
                     FTA(100, ps[myconnectindex]);		
 					break;
 				case 12: // rdview
-					if( ps[myconnectindex].over_shoulder_on != 0 )
-                        ps[myconnectindex].over_shoulder_on = 0;
+					if( over_shoulder_on != 0 )
+                        over_shoulder_on = 0;
                     else
                     {
-                        ps[myconnectindex].over_shoulder_on = 1;
+                        over_shoulder_on = 1;
                         cameradist = 0;
                         cameraclock = totalclock;
                     }
@@ -149,11 +148,19 @@ public class Cheats {
 					{
 						int volnume = opt[0] - 1;
 						int levnume = opt[1] - 1;
-						ud.m_volume_number = ud.volume_number = volnume;
-                        ud.m_level_number = ud.level_number = levnume;
+						if(volnume >= currentGame.nEpisodes || volnume < 0)
+							volnume = ud.volume_number;
+						if(levnume >= currentGame.episodes[volnume].nMaps || levnume < 0)
+							levnume = ud.level_number;
+						ud.volume_number = volnume;
+                        ud.level_number = levnume;
+                       
+						if(mUserFlag == UserFlag.UserMap)
+							mUserFlag = UserFlag.None;
 					} else return false;
-					gm = MODE_RESTART; 
-	                Console.show();
+					gGameScreen.enterlevel(gGameScreen.getTitle());
+					if(Console.IsShown())
+						Console.toggle();
 					break;
 				case 7: //rdskill
 					if(opt.length == 1)
@@ -161,27 +168,28 @@ public class Cheats {
 						int skill = opt[0];
 						if(skill < 1 || skill > 5)
 							return false;
-						ud.m_player_skill = ud.player_skill = skill-1;
+						ud.player_skill = skill-1; //XXX Check in RR
 
 		                if(numplayers > 1 && myconnectindex == connecthead)
 		                {
 		                    tempbuf[0] = 5;
-		                    tempbuf[1] = (byte) ud.m_level_number;
-		                    tempbuf[2] = (byte) ud.m_volume_number;
-		                    tempbuf[3] = (byte) ud.m_player_skill;
-		                    tempbuf[4] = ud.m_monsters_off?(byte)1:0;
-		                    tempbuf[5] = ud.m_respawn_monsters?(byte)1:0;
-		                    tempbuf[6] = ud.m_respawn_items?(byte)1:0;
-		                    tempbuf[7] = ud.m_respawn_inventory?(byte)1:0;
-		                    tempbuf[8] = (byte) ud.m_coop;
-		                    tempbuf[9] = (byte) ud.m_marker;
-		                    tempbuf[10] = (byte) ud.m_ffire;
+		                    tempbuf[1] = (byte) ud.level_number;
+		                    tempbuf[2] = (byte) ud.volume_number;
+		                    tempbuf[3] = (byte) ud.player_skill;
+		                    tempbuf[4] = ud.monsters_off?(byte)1:0;
+		                    tempbuf[5] = ud.respawn_monsters?(byte)1:0;
+		                    tempbuf[6] = ud.respawn_items?(byte)1:0;
+		                    tempbuf[7] = ud.respawn_inventory?(byte)1:0;
+		                    tempbuf[8] = (byte) ud.coop;
+		                    tempbuf[9] = (byte) ud.marker;
+		                    tempbuf[10] = (byte) ud.ffire;
 		
 		                    for(int i=connecthead;i>=0;i=connectpoint2[i])
 		                        sendpacket(i,tempbuf,11);
 		                }
-		                else gm = MODE_RESTART; 
-		                Console.show();
+		                gGameScreen.enterlevel(gGameScreen.getTitle());
+						if(Console.IsShown())
+							Console.toggle();
 					} else return false;
 					break;
 					

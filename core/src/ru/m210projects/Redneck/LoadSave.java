@@ -20,11 +20,8 @@ import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Redneck.*;
 import static ru.m210projects.Redneck.Screen.*;
-import static ru.m210projects.Redneck.Interpolation.*;
 import static ru.m210projects.Redneck.View.*;
-import static ru.m210projects.Redneck.Network.mFakeMultiplayer;
 import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Sounds.*;
@@ -45,30 +42,28 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import com.badlogic.gdx.Gdx;
-
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.Pattern.BuildGame.NetMode;
+import ru.m210projects.Build.Pattern.Tools.SaveManager;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Types.ANIMATION;
+import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.LSInfo;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 import ru.m210projects.Redneck.Types.SafeLoader;
-import ru.m210projects.Redneck.Types.SaveManager;
 import ru.m210projects.Redneck.Types.Weaponhit;
 
 public class LoadSave {
 	
 	public static boolean gQuickSaving;
 	public static boolean gAutosaveRequest;
-	public static boolean gScreenCapture;
-	
+
 	public static LSInfo lsInf = new LSInfo();
-	
-	public static byte[] saveBuffer;
 	
 	public static final String savsign = "RGDX";
 	
@@ -107,14 +102,14 @@ public class LoadSave {
 							long time = LittleEndian.getLong(buf);
 							Bread(fil, buf, SAVENAME);
 							String savname = new String(buf).trim();
-							SaveManager.add(savname, time, file.getName());
+							game.pSavemgr.add(savname, time, file.getName());
 						}
 					}
 					Bclose(fil);
 				}
 			}
 		}
-		SaveManager.sort();
+		game.pSavemgr.sort();
 	}
 	
 	public static int lsReadLoadData(String filename)
@@ -127,8 +122,8 @@ public class LoadSave {
 			ByteBuffer bb = ByteBuffer.wrap(buf);
 			bb.order( ByteOrder.LITTLE_ENDIAN);
 			
-			if(waloff[TILE_LOADSHOT] == null)
-				engine.allocatepermanenttile(TILE_LOADSHOT, 160, 100);
+			if(waloff[SaveManager.Screenshot] == null)
+				engine.allocatepermanenttile(SaveManager.Screenshot, 160, 100);
 			
 			int nVersion = checkSave(bb);
 			lsInf.clear();
@@ -136,12 +131,12 @@ public class LoadSave {
 			if(nVersion == currentGdxSave)
 			{
 				bb.position(SAVEVERSION);
-				lsInf.date = Main.date.getDate(bb.getLong());
+				lsInf.date = game.date.getDate(bb.getLong());
 				bb.position(SAVEVERSION + SAVETIME + SAVENAME); //to SAVELEVELINFO
 				
 				lsInf.read(bb);
 
-				if(Bread(fil, waloff[TILE_LOADSHOT], SAVESCREENSHOTSIZE) == -1)
+				if(Bread(fil, waloff[SaveManager.Screenshot], SAVESCREENSHOTSIZE) == -1)
 					return -1;
 				
 				int gUserEpisode = Bread(fil, 1); 
@@ -163,7 +158,7 @@ public class LoadSave {
 						lsInf.addonfile = "File: " + ininame;
 				}
 
-				engine.invalidatetile(TILE_LOADSHOT, 0, 255);
+				engine.invalidatetile(SaveManager.Screenshot, 0, -1);
 				Bclose(fil);
 				return 1;
 			} else 	lsInf.info = "Incompatible ver. " + nVersion + " != " + currentGdxSave;
@@ -209,9 +204,9 @@ public class LoadSave {
 	
 		int fil = Bopen(FileUserdir+filename, "RW");
 		if(fil != -1) {
-			long time = Main.date.getCurrentDate();
+			long time = game.date.getCurrentDate();
 			save(fil, savename, time);
-			SaveManager.add(savename, time, filename);
+			game.pSavemgr.add(savename, time, filename);
 			lastload = filename;
 
 			addmessage("GAME SAVED");
@@ -278,7 +273,7 @@ public class LoadSave {
 					+ 2 + 64 * 4 + show2dsector.length
 					+ MAXSECTORS + 4 + 22 * MAXJAILDOORS +  4 + 22 * MAXMINECARDS
 					+ 4 + 5 * MAXTORCHES + 4 + 4 * MAXLIGHTNINS + 4 + 6 * MAXAMBIENTS
-					+ 30 * MAXGEOMETRY + 15;
+					+ 30 * MAXGEOMETRY + 15 + 28;
 
 		ByteBuffer bb = ByteBuffer.allocate(bufsize);
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
@@ -388,6 +383,15 @@ public class LoadSave {
 		bb.putShort((short)0); //gEndFirstEpisode
 		bb.putShort((short)0); //gEndGame
 		bb.put((byte) (plantProcess?1:0));
+		
+		bb.putShort(BellTime);
+		bb.putInt(BellSound);
+		bb.putShort(word_119BE0);
+		bb.putInt(WindDir);
+		bb.putInt(WindTime);
+		bb.putInt(mamaspawn_count);
+		bb.putInt(fakebubba_spawn);
+		bb.putInt(dword_119C08);
 
 		Bwrite(fil,bb.array(),bb.capacity());
 	}
@@ -485,18 +489,31 @@ public class LoadSave {
 		Bwrite(fil, ud.player_skill, 4); 
 	}
 	
+	public static void SaveScreenshot(int fil) {
+		Bwrite(fil, gGameScreen.captBuffer, SAVESCREENSHOTSIZE);
+		gGameScreen.captBuffer = null;
+	}
+	
 	public static void SaveGDXBlock(int fil)
 	{
-		Bwrite(fil, saveBuffer, SAVESCREENSHOTSIZE);
+		SaveScreenshot(fil);
+		
 		ByteBuffer bb = ByteBuffer.allocate(SAVEGDXDATA);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.put((byte)ud.warp_on);
-		if(ud.warp_on == 1) //user episode
+		
+		byte warp_on = 0;
+		if(mUserFlag == UserFlag.Addon)
+			warp_on = 1;
+		if(mUserFlag == UserFlag.UserMap)
+			warp_on = 2;
+
+		bb.put(warp_on);
+		if(warp_on == 1) //user episode
 		{
 			byte[] name = new byte[144];
 			if(currentGame != null)
 			{
-				FileEntry addon = currentGame.isPackage();
+				FileEntry addon = currentGame.getFile();
 				if(addon != null) {
 					String path = addon.getPath();
 					path += ":" + currentGame.ConName;
@@ -509,7 +526,7 @@ public class LoadSave {
 			}
 			bb.put(name);
 		}
-		Bwrite(fil, bb.array(), SAVEGDXDATA); 	
+		Bwrite(fil, bb.array(), SAVEGDXDATA); 
 	}
 
 	public static void save(int fil, String savename, long time)
@@ -532,7 +549,6 @@ public class LoadSave {
 		if(numplayers > 1 || mFakeMultiplayer) return;
 		if (sprite[ps[myconnectindex].i].extra > 0) {
 			gQuickSaving = true;
-			gScreenCapture = true;
 		}
 	}
 	
@@ -544,25 +560,13 @@ public class LoadSave {
 			FTA(53, ps[myconnectindex]);
 			return;
 		}
-		final String loadname = SaveManager.getLast();
-		if(loadname != null)
-		{
-			final int oFlags = gm;
-			setloading(null, 0, false);
-			Gdx.app.postRunnable(new Runnable() {
+		final String loadname = game.pSavemgr.getLast();
+		if (loadname != null) {
+			game.changeScreen(gLoadingScreen.setTitle(loadname));
+			gLoadingScreen.init(new Runnable() {
 				public void run() {
-					if(!loadgame(loadname))
-					{
-						gm = oFlags;
-						if (gm == MODE_GAME) {
-							if (!kGameCrash) {
-								if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
-									FTA(53, ps[myconnectindex]);
-								else addmessage("Incompatible version of saved game found!");
-								ready2send = true;
-							}
-						} 
-					}
+					if(!loadgame(loadname)) 
+						game.setPrevScreen();
 				}
 			});
 		}
@@ -579,6 +583,25 @@ public class LoadSave {
 			gAnimationData[i].sect = bb.gAnimationData[i].sect;
 		}	
 		gAnimationCount = bb.gAnimationCount;
+		
+		for(int i = gAnimationCount-1;i>=0;i--)
+		{
+			ANIMATION gAnm = gAnimationData[i];
+			Object object = (gAnm.ptr = getobject(gAnm.id, gAnm.type));
+			switch(gAnm.type)
+			{
+	    	 	case WALLX:
+	    	 	case WALLY:
+	    	 		game.pInt.setwallinterpolate(gAnm.id, (WALL)object);
+					break;
+	    	 	case FLOORZ:
+	    	 		game.pInt.setfloorinterpolate(gAnm.id, (SECTOR)object);
+	    	 		break;
+	    	 	case CEILZ:
+	    	 		game.pInt.setceilinterpolate(gAnm.id, (SECTOR)object);
+					break;
+			}
+		}
 	}
 	
 	public static void ConLoad(SafeLoader bb)
@@ -730,6 +753,15 @@ public class LoadSave {
 	    
 	    BowlReset();
 		plantProcess = bb.plantProcess;
+		
+		BellTime = bb.BellTime;
+		BellSound = bb.BellSound;
+		word_119BE0 = bb.word_119BE0;
+		WindDir = bb.WindDir;
+		WindTime = bb.WindTime;
+		mamaspawn_count = bb.mamaspawn_count;
+		fakebubba_spawn = bb.fakebubba_spawn;
+		dword_119C08 = bb.dword_119C08;
 	}
 	
 	public static void MapLoad(SafeLoader bb)
@@ -766,12 +798,20 @@ public class LoadSave {
 		System.arraycopy(bb.rortype, 0, rortype, 0, 16);
 	}
 	
-	public static void LoadGDXBlock(SafeLoader bb)
+	public static void LoadGDXBlock()
 	{
-		ud.warp_on = bb.warp_on;
-		if(bb.warp_on == 1)
-			checkEpisodeResources(bb.addon);
-		else resetEpisodeResources();
+		if(loader.warp_on == 0)
+			mUserFlag = UserFlag.None;
+		if(loader.warp_on == 1)
+			mUserFlag = UserFlag.Addon;
+		if(loader.warp_on == 2)
+			mUserFlag = UserFlag.UserMap;
+
+		if (mUserFlag == UserFlag.Addon) {
+			GameInfo ini = loader.addon;
+			checkEpisodeResources(ini);
+		} else
+			resetEpisodeResources();
 	}
 	
 	public static boolean checkfile(ByteBuffer bb)
@@ -788,39 +828,41 @@ public class LoadSave {
 	
 	public static void load()
 	{
-		ready2send = false;
-		
-		engine.getAudio().getSound().stopAllSounds();
-		
 		ud.multimode = loader.multimode;
 		ud.volume_number = loader.volume_number;
 		ud.level_number = loader.level_number;
 		ud.player_skill = loader.player_skill;
 		
-		LoadGDXBlock(loader);
+		LoadGDXBlock();
 		MapLoad(loader);
 		StuffLoad(loader);
 		ConLoad(loader);
 		AnimationLoad(loader);
 		GameInfoLoad(loader);
 			
-		if(ps[myconnectindex].over_shoulder_on != 0)
+		if(over_shoulder_on != 0)
 		{
 	         cameradist = 0;
 	         cameraclock = 0;
-	         ps[myconnectindex].over_shoulder_on = 1;
+	         over_shoulder_on = 1;
 		}
 
 		screenpeek = myconnectindex;
 		
-		if(ps[screenpeek].fogtype == 2)
+		if(ps[myconnectindex].fogtype == 2)
 			applyfog(2);
 		else applyfog(0);
      
 		Arrays.fill(gotpic, (byte)0);
 		clearsoundlocks();
 		cacheit();
-		docacheit();
+
+		userMusic = null;
+		if(boardfilename != null) {
+			FileEntry file = cache.checkFile(boardfilename);
+			if(file != null) 
+				sndCheckMusic(file);
+		}
 
 		musicvolume = ud.volume_number;
     	musiclevel = ud.level_number;
@@ -834,7 +876,7 @@ public class LoadSave {
 		setpal(ps[myconnectindex]);
 		vscrn(ud.screen_size);
 
-		engine.getAudio().getSound().setReverb(false, 0); //XXX
+		BuildGdx.audio.getSound().setReverb(false, 0);
 	   
 //		if(ud.lockout == 0)
 //		{
@@ -872,44 +914,33 @@ public class LoadSave {
 //
 //	        k = nextspritestat[k];
 //		} XXX
-
-		for(int i = gAnimationCount-1;i>=0;i--)
-		{
-			ANIMATION gAnm = gAnimationData[i];
-			Object obj = gAnm.ptr;
-			switch(gAnm.type)
-			{
-	    	 	case WALLX:
-	    	 	case WALLY:
-	    	 		viewBackupWallLoc(gAnm.id, (WALL)obj);
-					break;
-	    	 	case FLOORZ:
-	    	 	case CEILZ:
-	    	 		viewBackupSectorLoc(gAnm.id, (SECTOR)obj);
-					break;
-			}
-		}
 		
-		ps[myconnectindex].fta = 0;
+		fta = 0;
 
 		everyothertime = 0;
-
-		Arrays.fill(playerquitflag, 1);
-
-		resetmys();
 		
+		game.pInput.resetMousePos();
+		game.net.predict.reset();
+		game.gPaused = false;
+		
+		game.nNetMode = NetMode.Single;
+
 		if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
 			setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
 
-		clearfifo();
+		game.changeScreen(gGameScreen);
+		game.pNet.ResetTimers();
+		game.pNet.WaitForAllPlayers(0);
+		game.pNet.ready2send = true;
+
+		engine.getrender().preload();
 		
-		resettimevars();
-		
-		gm = MODE_GAME;
+		StopAllSounds();
+
+		System.gc();
 	}
 	
-	public static boolean loadgame(String filename)
-	{
+	public static boolean loadgame(String filename) {
 		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
 		{
 			FTA(53, ps[myconnectindex]);
@@ -917,24 +948,30 @@ public class LoadSave {
 		}
 		
 		int fil = Bopen(FileUserdir + filename, "R");
-		if(fil != -1) {
+		if (fil != -1) {
 			byte[] data = new byte[Bfilelength(fil)];
 			Bread(fil, data, data.length);
 			ByteBuffer bb = ByteBuffer.wrap(data);
 			bb.order( ByteOrder.LITTLE_ENDIAN);
 			
 			boolean status = checkfile(bb);
-			if(status)
-			{
+			Bclose(fil);
+			if (status) {
 				load();
-				if(lastload == null || lastload.isEmpty()) 
+				if (lastload == null || lastload.isEmpty())
 					lastload = filename;
+				
+				if(loader.getMessage() != null)
+					addmessage(loader.getMessage());
+				
+				return true;
 			}
 			
-			Bclose(fil);
-			return status;
+			addmessage("Incompatible version of saved game found!");
+			return false;
 		}
-		
+
+		addmessage("Can't access to file or file not found!");
 		return false;
 	}
 }

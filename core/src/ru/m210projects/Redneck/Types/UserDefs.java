@@ -22,8 +22,10 @@ import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.Globals.ud;
 
+import ru.m210projects.Redneck.Types.DemoFile;
+
 public class UserDefs {
-	public int warp_on,cashman,eog,showallmap;
+	public int cashman,eog,showallmap;
 	public boolean god,scrollmode,clipping;
 	public String[] user_name = new String[MAXPLAYERS];
 	public char[][] ridecule = new char[10][];
@@ -32,23 +34,23 @@ public class UserDefs {
 	public String rtsname;
 	public int overhead_on,last_overhead,showweapons;
 
-	public int pause_on,from_bonus;
+	public int /*pause_on,*/from_bonus;
 	public int camerasprite = -1,last_camsprite;
 	public int last_level,secretlevel;
 
 	public int camera_time,folfvel,folx,foly,fola;
-	public int reccnt;
+	public DemoFile rec;
 	public float folavel;
 
 	public int entered_name,screen_tilting = 1,shadows,fta_on = 1,executions,auto_run;
-	public int coords,m_coop,coop,screen_size=2,lockout,crosshair=1, playerai;
+	public int coords,coop,screen_size=2,lockout,crosshair=1, playerai;
 	public int[][] wchoice = new int[MAXPLAYERS][MAX_WEAPONSRA];
 
 	public int recstat,brightness, m_recstat, detail;
 	public boolean monsters_off;
-	public boolean respawn_monsters,respawn_items,respawn_inventory, m_respawn_items,m_respawn_monsters,m_respawn_inventory,m_monsters_off;
-	public int m_ffire,ffire,m_player_skill,m_level_number,m_volume_number,multimode;
-	public int player_skill,level_number,volume_number,m_marker,marker;
+	public boolean respawn_monsters,respawn_items,respawn_inventory;
+	public int ffire,multimode;
+	public int player_skill,level_number,volume_number,marker;
 	
 	public void setDefaults(Config cfg)
 	{
@@ -56,9 +58,7 @@ public class UserDefs {
 		detail = 1;
 		lockout = 0;
 		pwlockout[0] = '\0';
-		m_marker = 1;
-		m_ffire = 1;
-		
+
 		ud.rtsname = "REDNECK.RTS";
 
 	    ridecule[0] = "Yer as ugly as mud fence! \0".toCharArray();

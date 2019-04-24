@@ -22,16 +22,14 @@ import ru.m210projects.Build.Types.LittleEndian;
 
 public class Weaponhit {
 	
-	public static final int sizeof = 90;
+	public static final int sizeof = 78;
 	
 	public short cgg;
 	public int picnum,ang,extra,owner,movflag;
 	public int tempang,actorstayput,dispicnum;
 	public int timetosleep;
-	public int floorz,ceilingz,lastvx,lastvy,bposx,bposy,bposz;
+	public int floorz,ceilingz,lastvx,lastvy;
 	public int temp_data[] = new int[6];
-	 
-	 
 	 
 	private byte buf[] = new byte[sizeof];
 	public byte[] getBytes()
@@ -53,10 +51,7 @@ public class Weaponhit {
 		 LittleEndian.putInt(buf, ptr, floorz); ptr += 4; 
 		 LittleEndian.putInt(buf, ptr, ceilingz); ptr += 4; 
 		 LittleEndian.putInt(buf, ptr, lastvx); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, lastvy); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, bposx); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, bposy); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, bposz); ptr += 4; 
+		 LittleEndian.putInt(buf, ptr, lastvy); ptr += 4;  
 		 
 		 for(int i = 0; i < 6; i++) {
 			 LittleEndian.putInt(buf, ptr, temp_data[i]); ptr += 4; 
@@ -85,10 +80,7 @@ public class Weaponhit {
 		 ceilingz = bb.getInt();
 		 lastvx = bb.getInt();
 		 lastvy = bb.getInt();
-		 bposx = bb.getInt();
-		 bposy = bb.getInt();
-		 bposz = bb.getInt();
-		 
+
 		 for(int i = 0; i < 6; i++) 
 			 temp_data[i] = bb.getInt();
 	 }
@@ -113,10 +105,7 @@ public class Weaponhit {
 		 ceilingz = src.ceilingz;
 		 lastvx = src.lastvx;
 		 lastvy = src.lastvy;
-		 bposx = src.bposx;
-		 bposy = src.bposy;
-		 bposz = src.bposz;
-		 
+
 		 System.arraycopy(src.temp_data, 0, temp_data, 0, 6);
 	 }
 }

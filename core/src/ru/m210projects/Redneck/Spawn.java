@@ -25,9 +25,7 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.Net.Mmulti.connecthead;
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
+import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Redneck.Premap.*;
@@ -35,10 +33,8 @@ import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Gameutils.FindDistance2D;
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Interpolation.*;
-import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Redneck.currentGame;
 import static ru.m210projects.Redneck.Sector.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.SoundDefs.SUBWAY;
@@ -50,15 +46,11 @@ public class Spawn {
 	public static short EGS(short whatsect,int s_x,int s_y,int s_z,int s_pn, int s_s,int s_xr,int s_yr,int s_a,int s_ve,int s_zv,int s_ow,short s_ss)
 	{
 		if(whatsect < 0 || whatsect >= MAXSECTORS)
-			dassert("Wrong sector! " + whatsect);
+			game.dassert("Wrong sector! " + whatsect);
 		
 	    short i = engine.insertsprite(whatsect,s_ss);
 	    if( i < 0 )
-	    	dassert(" Too many sprites spawned.");
-
-	    hittype[i].bposx = s_x;
-	    hittype[i].bposy = s_y;
-	    hittype[i].bposz = s_z;
+	    	game.dassert(" Too many sprites spawned.");
 
 	    SPRITE s = sprite[i];
 
@@ -119,6 +111,9 @@ public class Spawn {
 	    if ((show2dsector[s.sectnum>>3]&(1<<(s.sectnum&7))) != 0) show2dsprite[i>>3] |= (1<<(i&7));
 	    else show2dsprite[i>>3] &= ~(1<<(i&7));
 
+	    game.pInt.clearspriteinterpolate(i);
+		game.pInt.setsprinterpolate(i, s);
+		
 	    return(i);
 	}
 	
@@ -144,10 +139,6 @@ public class Spawn {
 	        hittype[i].timetosleep = 0;
 	        hittype[i].extra = -1;
 
-	        hittype[i].bposx = sprite[i].x;
-	        hittype[i].bposy = sprite[i].y;
-	        hittype[i].bposz = sprite[i].z;
-
 	        sprite[i].owner = (short) (hittype[i].owner = i);
 	        hittype[i].cgg = 0;
 	        hittype[i].movflag = 0;
@@ -165,6 +156,7 @@ public class Spawn {
 	       if((sprite[i].cstat&48) != 0 )
 	            if( !(sprite[i].picnum >= CRACK1 && sprite[i].picnum <= CRACK4) )
 	        {
+	            	game.pInt.setsprinterpolate(i, sprite[i]);
 	            if(sprite[i].shade == 127) return i;
 	            if( wallswitchcheck(i) && (sprite[i].cstat&16) != 0 )
 	            {
@@ -207,6 +199,8 @@ public class Spawn {
 	        else hittype[i].temp_data[1] = hittype[i].temp_data[4] = 0;
 	    }
 
+	    game.pInt.clearspriteinterpolate(i);
+	    
 	    sp = sprite[i];
 	    sect = sp.sectnum;
 
@@ -242,7 +236,7 @@ public class Spawn {
 	                            hittype[i].actorstayput = sp.sectnum;
 	                       
 	                        if ( checkaddkills(sp) )
-	                        	ps[myconnectindex].max_actors_killed++;
+	                        	ps[connecthead].max_actors_killed++;
 	                        
 	                        sp.clipdist = 80;
 	                        if(j >= 0)
@@ -1070,10 +1064,11 @@ public class Spawn {
                     {
                         sp.xrepeat = sp.yrepeat = 0;
                         engine.changespritestat(i,(short)5);
+                        game.pInt.setsprinterpolate(i, sprite[i]);
                         return i;
                     }
                     if ( checkaddkills(sp) )
-                        ps[myconnectindex].max_actors_killed++;
+                        ps[connecthead].max_actors_killed++;
                     
                     hittype[i].temp_data[5] = 0;
                     if(ud.monsters_off)
@@ -1143,6 +1138,7 @@ public class Spawn {
                         hittype[i].temp_data[4] = (sector[sect].floorz == sprite[i].z)?1:0;
                         sp.cstat = 0;
                         engine.changespritestat(i,(short)9);
+                        game.pInt.setsprinterpolate(i, sprite[i]);
                         return i;
                     case 1:
                         sp.owner = -1;
@@ -1170,7 +1166,7 @@ public class Spawn {
                         hittype[i].temp_data[3] = sector[sect].ceilingz;
                         hittype[i].temp_data[4] = 1;
                         sector[sect].ceilingz = sp.z;
-                        viewBackupSectorLoc(sect, sector[sect]); //ceilinz
+                        game.pInt.setceilinterpolate(sect, sector[sect]); //ceilinz
                         break;
                     case 35:
                         sector[sect].ceilingz = sp.z;
@@ -1254,10 +1250,10 @@ public class Spawn {
                         j = engine.nextsectorneighborz(sect,sector[sect].ceilingz,1,1);
                         hittype[i].temp_data[4] = sector[j].floorz;
 
-                        if(numplayers < 2)
-                        	viewBackupSectorLoc(sect, sector[sect]); 
-                        
-
+                        if(numplayers < 2) {
+                        	game.pInt.setceilinterpolate(sect, sector[sect]);
+                        	game.pInt.setfloorinterpolate(sect, sector[sect]);
+                        }
                         break;
 
                     case 24: 
@@ -1357,7 +1353,7 @@ public class Spawn {
                         for(s=startwall;s<endwall;s++)
                             if(wall[s].hitag == 0) wall[s].hitag = 9999;
 
-                        viewBackupSectorLoc(sect, sector[sect]);  //floorz
+                        game.pInt.setfloorinterpolate(sect, sector[sect]);  //floorz
 
                         break;
                     case 32: 
@@ -1371,7 +1367,7 @@ public class Spawn {
                         for(s=startwall;s<endwall;s++)
                             if(wall[s].hitag == 0) wall[s].hitag = 9999;
 
-                        viewBackupSectorLoc(sect, sector[sect]);  //ceiling
+                        game.pInt.setceilinterpolate(sect, sector[sect]);  //ceiling
 
                         break;
 
@@ -1458,7 +1454,7 @@ public class Spawn {
                             }
                             if(j == MAXSPRITES)
                             {
-                            	dassert("Found lonely Sector Effector (lotag 0) at ("+sp.x + "," + sp.y + ")");
+                            	game.dassert("Found lonely Sector Effector (lotag 0) at ("+sp.x + "," + sp.y + ")");
                             }
                             sp.owner = (short) j;
                         }
@@ -1474,7 +1470,7 @@ public class Spawn {
                             tempwallptr++;
                             if(tempwallptr > 2047)
                             {
-                            	dassert("Too many moving sectors at ("+wall[s].x + "," + wall[s].y + ")");
+                            	game.dassert("Too many moving sectors at ("+wall[s].x + "," + wall[s].y + ")");
                             }
                         }
                         if( sp.lotag == 30 || sp.lotag == 6 || sp.lotag == 14 || sp.lotag == 5 )
@@ -1506,7 +1502,7 @@ public class Spawn {
 
                             if(j == 0)
                             {
-                            	dassert("Subway found no zero'd sectors with locators\nat ("+sp.x + "," + sp.y + ")");
+                            	game.dassert("Subway found no zero'd sectors with locators\nat ("+sp.x + "," + sp.y + ")");
                             }
 
                             sp.owner = -1;
@@ -1748,7 +1744,7 @@ public class Spawn {
                         sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
                         if(sp.picnum == MINION || sp.picnum == MINION+1)
                         {
-                        	if ( ps[screenpeek].isSwamp )
+                        	if ( ps[connecthead].isSwamp )
                                 sp.pal = 8;
                         } 	
         				break;
@@ -1888,7 +1884,7 @@ public class Spawn {
                         sp.cstat |= 257;
 
                         if(sp.picnum != 5501 && checkaddkills(sp))
-                            ps[myconnectindex].max_actors_killed++;
+                            ps[connecthead].max_actors_killed++;
                     }
 
                     if(j >= 0)
@@ -2207,7 +2203,8 @@ public class Spawn {
             	break;
             case 8192:
             	sp.xrepeat = sp.yrepeat = 0;
-                ps[screenpeek].isSwamp = true;
+            	for (int p = connecthead; p >= 0; p = connectpoint2[p])
+            		ps[p].isSwamp = true;
                 break;
             case 1083:
         	case 1134:
@@ -2236,7 +2233,8 @@ public class Spawn {
         		break;
         	case 6144:
         		sp.xrepeat = sp.yrepeat = 0;
-                ps[screenpeek].isSea = true;
+        		for (int p = connecthead; p >= 0; p = connectpoint2[p])
+        			ps[p].isSea = true;
         		break;
         	case 4956:
         		sp.xrepeat = 16;
@@ -2255,7 +2253,8 @@ public class Spawn {
         	case 7936:
         		sp.xrepeat = sp.yrepeat = 0;
         		applyfog(2);
-                ps[screenpeek].fogtype = 2;
+        		for (int p = connecthead; p >= 0; p = connectpoint2[p])
+        			ps[p].fogtype = 2;
         		break;
         	case 8099:
         		sp.lotag = 5;
@@ -2271,7 +2270,8 @@ public class Spawn {
         		break;
         	case 8193:
         		sp.xrepeat = sp.yrepeat = 0;
-        		ps[screenpeek].field_601 = 1;
+        		for (int p = connecthead; p >= 0; p = connectpoint2[p])
+        			ps[p].field_601 = 1;
         		break;
         	case 8448:
         	case 8704:
@@ -2295,6 +2295,7 @@ public class Spawn {
         		engine.changespritestat(i, (short)122);
         		break;
 	    }
+	    game.pInt.setsprinterpolate(i, sprite[i]);
 	    return i;
 	}
 	

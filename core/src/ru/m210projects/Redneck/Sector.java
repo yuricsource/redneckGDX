@@ -30,8 +30,6 @@ import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Strhandler.buildString;
-import static ru.m210projects.Redneck.Redneck.currentGame;
-import static ru.m210projects.Redneck.Types.Demo.IsOriginalDemo;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Redneck.Types.ANIMATION.*;
 import static ru.m210projects.Redneck.Animate.*;
@@ -155,7 +153,7 @@ public class Sector {
 
 	            if(hittype[i].temp_data[0] == 0)
 	            {
-	                if( (currentGame.getCON().soundm[sprite[i].lotag]&16) == 0)
+	                if( sprite[i].lotag < NUM_SOUNDS && (currentGame.getCON().soundm[sprite[i].lotag]&16) == 0)
 	                {
 	                    if(sprite[i].lotag != 0)
 	                    {
@@ -481,7 +479,7 @@ public class Sector {
 	{
 	    int i, j, p, t;
 
-	    if ( ps[screenpeek].isSea )
+	    if ( ps[connecthead].isSea )
 	    {
 	    	for ( i = 0; i < MAXWALLS; ++i )
 	    	{
@@ -793,6 +791,8 @@ public class Sector {
 	                i = nextspritesect[i];
 	            }
 
+	            if(i == -1) return;
+	            
 	            if(sprite[ii].sectnum == sn)
 	            {
 	                if( activatewarpelevators(i,-1) )
@@ -1074,7 +1074,7 @@ public class Sector {
 	                j = nextspritesect[j];
 	            }
 
-	            j = sprite[j].hitag;
+	            if(j != -1) j = sprite[j].hitag;
 
 	            l = headspritestat[3];
 	            while(l >= 0)
@@ -1597,19 +1597,15 @@ public class Sector {
 
 	    if(lotag == (short) 65535)
 	    {
-	    	gm = MODE_EOL;
             LeaveMap();
 	        if(ud.from_bonus != 0)
 	        {
 	            ud.level_number = ud.from_bonus;
-	            ud.m_level_number = ud.level_number;
 	            ud.from_bonus = 0;
 	        }
 	        else
 	        {
 	            ud.level_number++;
-//	            checknextlevel();
-	            ud.m_level_number = ud.level_number;
 	        }
 	        return true;
 	    }
@@ -3224,27 +3220,16 @@ public class Sector {
 		        case 32767:
 		            sector[p.cursectnum].lotag = 0;
 		            FTA(9,p);
-		            p.secret_rooms++;
+		            ps[connecthead].secret_rooms++;
 		            return;
 		        case -1:
-		        	gm = MODE_EOL;
 		            LeaveMap();
 		            sector[p.cursectnum].lotag = 0;
-		            if(currentGame.getCON().type != RRRA || word_119BE2 == 0) {
-			            if(ud.from_bonus != 0)
-			            {
-			                ud.level_number = ud.from_bonus;
-			                ud.m_level_number = ud.level_number;
-			                ud.from_bonus = 0;
-			            }
-			            else
-			            {
-			                ud.level_number++;
-//			                checknextlevel();
-			                ud.m_level_number = ud.level_number;
-			            }
-			            word_119BE2 = 1;
-		            }
+		            if(ud.from_bonus != 0)
+		            {
+		                ud.level_number = ud.from_bonus;
+		                ud.from_bonus = 0;
+		            } else ud.level_number++;
 		            return;
 		        case -2:
 		            sector[p.cursectnum].lotag = 0;
@@ -3265,7 +3250,7 @@ public class Sector {
 
 	    //After this point the the player effects the map with space
 
-	    if(MODE_TYPE || sprite[p.i].extra <= 0) return;
+	    if(sprite[p.i].extra <= 0) return;
 
 	    if( ud.cashman != 0 && (sync[snum].bits&(1<<29)) != 0 )
 	        lotsofmoney(sprite[p.i],2);
@@ -3612,7 +3597,7 @@ public class Sector {
 		int maxy = -131072;
 		
 		int wx, wy;
-		int wallptr = sector[box].wallptr;
+		short wallptr = sector[box].wallptr;
 		int wallnum = wallptr + sector[box].wallnum;
 		for(int i = wallptr; i < wallnum; i++)
 		{
@@ -3643,7 +3628,7 @@ public class Sector {
 		{
 			if ( Sound[389].num == 0)
 				spritesound(389, ps[snum].i);
-			for(int i = wallptr; i < wallnum; i++)
+			for(short i = wallptr; i < wallnum; i++)
 			{
 				wx = wall[i].x;
 			    wy = wall[i].y;
@@ -3657,13 +3642,13 @@ public class Sector {
 			    		case 2: wy += hitag; break;
 			    		case 3: wx += hitag; break;
 			    	}
-			    	DragPoint(i, wx, wy);
+			    	engine.dragpoint(i, wx, wy);
 			    }
 			}
 		} 
 		else
 		{
-			for(int i = wallptr; i < wallnum; i++)
+			for(short i = wallptr; i < wallnum; i++)
 			{
 				wx = wall[i].x;
 			    wy = wall[i].y;
@@ -3677,7 +3662,7 @@ public class Sector {
 			    		case 2: wy -= hitag - 2; break;
 			    		case 3: wx -= hitag - 2; break;
 			    	}
-			    	DragPoint(i, wx, wy);
+			    	engine.dragpoint(i, wx, wy);
 			    }
 			}
 		}
@@ -3721,9 +3706,9 @@ public class Sector {
 				{
 					int wx = 0, wy = 0;
 					int sect = jailsect[i];
-					int wallptr = sector[sect].wallptr;
+					short wallptr = sector[sect].wallptr;
 					int wallnum = wallptr + sector[sect].wallnum;
-					for(int w = wallptr; w < wallnum; w++)
+					for(short w = wallptr; w < wallnum; w++)
 					{
 						switch(jaildirection[i])
 						{
@@ -3744,7 +3729,7 @@ public class Sector {
 								wy = wall[w].y;
 								break;
 						}
-						DragPoint(w, wx, wy);
+						engine.dragpoint(w, wx, wy);
 					}
 				}
 				else
@@ -3789,9 +3774,9 @@ public class Sector {
 				{
 					int wx = 0, wy = 0;
 					int sect = mineparent[i];
-					int wallptr = sector[sect].wallptr;
+					short wallptr = sector[sect].wallptr;
 					int wallnum = wallptr + sector[sect].wallnum;
-					for(int w = wallptr; w < wallnum; w++)
+					for(short w = wallptr; w < wallnum; w++)
 					{
 						switch(minedirection[i])
 						{
@@ -3812,7 +3797,7 @@ public class Sector {
 								wy = wall[w].y;
 								break;
 						}
-						DragPoint(w, wx, wy);
+						engine.dragpoint(w, wx, wy);
 					}
 				} 
 				else
@@ -3933,7 +3918,7 @@ public class Sector {
 			{
 				byte_18D0BB = brightness;
 				dword_18D0A0 = 0;
-				visibility = ps[snum].visibility;
+				visibility = gVisibility;
 				
 //				engine.setbrightness(brightness, palette);
 				for(tourcheffect = 0; tourcheffect < numlightnineffects; tourcheffect++)
@@ -3965,7 +3950,7 @@ public class Sector {
 		else
 		{
 			byte_18D0BB = brightness;
-		    visibility = ps[snum].visibility;
+		    visibility = gVisibility;
 		}
 		if ( dword_18D0A4 != 0 )
 		{
@@ -4050,5 +4035,25 @@ public class Sector {
 					wall[w].shade = (byte) tshade;
 			}
 		}
+	}
+	
+	public static void setsectinterpolate(int i)
+	{
+		 int j, k, startwall,endwall;
+
+	    startwall = sector[sprite[i].sectnum].wallptr;
+	    endwall = startwall+sector[sprite[i].sectnum].wallnum;
+
+	    for(j=startwall;j<endwall;j++)
+	    {
+	    	game.pInt.setwallinterpolate(j, wall[j]);
+	        k = wall[j].nextwall;
+	        if(k >= 0)
+	        {
+	        	game.pInt.setwallinterpolate(k, wall[k]);
+	            k = wall[k].point2;
+	            game.pInt.setwallinterpolate(k, wall[k]);
+	        }
+	    }
 	}
 }
