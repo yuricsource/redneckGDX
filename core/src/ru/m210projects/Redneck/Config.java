@@ -288,24 +288,34 @@ public class Config extends BuildConfig {
 		{
 			LoadCommon(defkeys, defclassickeys);
 			if(set("Options")) {
-				screen_size = GetKeyInt("Size");
-				crosshair = GetKeyInt("Crosshair");
-				fta_on = GetKeyInt("MessageState");
+				int value = GetKeyInt("Size");
+				if(value != -1) screen_size = value;
+				value = GetKeyInt("Crosshair");
+				if(value != -1) crosshair = value;
+				value = GetKeyInt("MessageState");
+				if(value != -1) fta_on = value;
 				gAutoAim = GetKeyInt("Autoaim") == 1;
-				screen_tilting = GetKeyInt("Tilt");
-				auto_run = GetKeyInt("AutoRun");
-				fta_on = GetKeyInt("MessageState");
-				
-				gStatSize = GetKeyInt("StatSize");
-				if(gStatSize < 16384) gStatSize = 16384;
-				gCrossSize = GetKeyInt("CrossSize");
-				if(gCrossSize < 16384) gCrossSize = 16384;
-				gShowStat = GetKeyInt("ShowStat");
-				showMapInfo = GetKeyInt("showMapInfo");
-				int demos = GetKeyInt("DemoSequence");
-				if(demos != -1) gDemoSeq = demos;
-				int coloredk = GetKeyInt("Colored_keys");
-				if(coloredk != -1) gColoredKeys = coloredk != 0;
+				value = GetKeyInt("Tilt");
+				if(value != -1) screen_tilting = value;
+				value = GetKeyInt("AutoRun");
+				if(value != -1) auto_run = value;
+				value = GetKeyInt("StatSize");
+				if(value != -1) {
+					gStatSize = value;
+					if(gStatSize < 16384) gStatSize = 16384;
+				}
+				value = GetKeyInt("CrossSize");
+				if(value != -1) {
+					gCrossSize = value;
+					if(gCrossSize < 16384) gCrossSize = 16384;
+				}
+				value = GetKeyInt("ShowStat");
+				if(value != -1) gShowStat = value;
+				value = GetKeyInt("showMapInfo");
+				if(value != -1) showMapInfo = value;
+				value = GetKeyInt("DemoSequence");
+				if(value != -1) gDemoSeq = value;
+				gColoredKeys = GetKeyInt("Colored_keys") == 1;
 			}
 			close();
 		} 
