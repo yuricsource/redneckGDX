@@ -514,7 +514,7 @@ public class LoadSave {
 			if(currentGame != null)
 			{
 				FileEntry addon = currentGame.getFile();
-				if(addon != null) {
+				if(addon != null && currentGame.isPackage()) {
 					String path = addon.getPath();
 					path += ":" + currentGame.ConName;
 					System.arraycopy(path.getBytes(), 0, name, 0, Math.min(path.length(), 144));

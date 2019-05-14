@@ -49,7 +49,6 @@ import ru.m210projects.Build.Pattern.BuildConfig;
 import ru.m210projects.Build.Pattern.BuildFactory;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Types.LittleEndian;
-import ru.m210projects.Build.Types.MemLog;
 import ru.m210projects.Redneck.Factory.RREngine;
 import ru.m210projects.Redneck.Factory.RRFactory;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
@@ -73,13 +72,8 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * v0.950
-	 * Weapon drop after dead in multiplayer fixed
-	 * RRRA E1L1 destruct wall in secret place fixed
-	 * Moving door after load game fixed
-	 * Quick pee don't resurrect the player anymore
-	 * FakeBubba after load game fixed
-	 * Added end cutscene in RRRA
+	 * v1.01
+	 * Invert mouse fix
 	 * 
 	 * 
 	 * TODO:
@@ -94,7 +88,7 @@ public class Main extends BuildGame {
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 */
 
-	public static final String sversion = "v1.00";
+	public static final String sversion = "v1.01";
 
 	public static AnmScreen gAnmScreen;
 	public static MenuScreen gMenuScreen;
@@ -296,24 +290,10 @@ public class Main extends BuildGame {
 		Console.Println("Initializing on-screen display system");
 		Console.setVersion(appname + " " + sversion, 10, OSDTEXT_GOLD);
 
-		Console.RegisterCvar(new OSDCOMMAND("memusage", "mem usage / total", new OSDCVARFUNC() {
-			@Override
-			public void execute() {
-				Console.Println("Memory used: " + MemLog.used() + " / " + MemLog.total() + " mb");
-			}
-		}));
-
 		Console.RegisterCvar(new OSDCOMMAND("restart", "restart", new OSDCVARFUNC() {
 			@Override
 			public void execute() {
 				LeaveMap();
-			}
-		}));
-
-		Console.RegisterCvar(new OSDCOMMAND("net_bufferjitter", "net_bufferjitter", new OSDCVARFUNC() {
-			@Override
-			public void execute() {
-				Console.Println("bufferjitter: " + net.bufferJitter);
 			}
 		}));
 
@@ -372,13 +352,6 @@ public class Main extends BuildGame {
 					quickload();
 				} else
 					Console.Println("quickload: not in a game");
-			}
-		}));
-
-		Console.RegisterCvar(new OSDCOMMAND("quit", null, new OSDCVARFUNC() {
-			@Override
-			public void execute() {
-				game.gExit = true;
 			}
 		}));
 

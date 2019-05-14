@@ -187,7 +187,6 @@ import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
-import ru.m210projects.Build.Pattern.BuildConfig.MenuKeys;
 import ru.m210projects.Build.Pattern.BuildControls;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
@@ -422,7 +421,7 @@ public class GameScreen extends GameAdapter {
 		if(Console.IsShown() || MODE_TYPE) return;
 		
 		BuildControls input = game.pInput;
-		if (input.ctrlGetInputKey(MenuKeys.Menu_Toggle, true)) 
+		if (input.ctrlGetInputKey(GameKeys.Menu_Toggle, true)) 
 			menu.mOpen(menu.mMenus[GAME], -1);
 
 		if (input.ctrlGetInputKey(RRKeys.Show_Help, true))

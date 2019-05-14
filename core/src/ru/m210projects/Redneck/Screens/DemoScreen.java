@@ -46,7 +46,7 @@ import java.util.List;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildConfig.MenuKeys;
+import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
 import ru.m210projects.Build.Pattern.BuildControls;
 import ru.m210projects.Redneck.Config.RRKeys;
 import ru.m210projects.Redneck.Main;
@@ -149,7 +149,7 @@ public class DemoScreen extends GameScreen {
 		}
 		
 		BuildControls input = game.pInput;
-		if (input.ctrlGetInputKey(MenuKeys.Menu_Toggle, true))
+		if (input.ctrlGetInputKey(GameKeys.Menu_Toggle, true))
 			menu.mOpen(menu.mMenus[MAIN], -1);
 		if (input.ctrlGetInputKey(RRKeys.Show_Sounds, true))
 			menu.mOpen(menu.mMenus[SOUNDSET], -1);

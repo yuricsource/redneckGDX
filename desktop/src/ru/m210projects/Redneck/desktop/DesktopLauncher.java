@@ -52,7 +52,8 @@ public class DesktopLauncher {
 		lwjglConfig.width = (cfg.ScreenWidth);
 		lwjglConfig.height = (cfg.ScreenHeight);
 		lwjglConfig.resizable = false;
-		lwjglConfig.depth = 32; // z-buffer
+		lwjglConfig.depth = 16; // z-buffer
+		lwjglConfig.stencil = 8;
 
 		lwjglConfig.backgroundFPS = cfg.fpslimit;
 		lwjglConfig.foregroundFPS = cfg.fpslimit;
