@@ -395,8 +395,8 @@ public class Main extends BuildGame {
 	public void Disconnect() {
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
-
-		changeScreen(gDisconnectScreen);
+		if(gDisconnectScreen != null)
+			changeScreen(gDisconnectScreen);
 	}
 
 	@Override
