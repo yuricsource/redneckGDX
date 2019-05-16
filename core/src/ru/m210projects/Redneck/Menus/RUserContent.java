@@ -131,7 +131,7 @@ public class RUserContent extends BuildMenu {
 		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
-			if(file.getExtension().equals("con"))
+			if(file.getExtension().equals("con")) 
 				InitTree(map, preparescript(kGetBytes(file.getPath(), 0)), file.getName());
 		}
 		
@@ -228,6 +228,8 @@ public class RUserContent extends BuildMenu {
 
 	private void InitTree(HashMap<String, List<String>> map, byte[] buf, String parentName)
 	{
+		if(buf == null) return;
+		
         List<String> list = null;
 		int index = -1;
         while( (index = indexOf("include ", buf, index+1)) != -1)
@@ -238,7 +240,7 @@ public class RUserContent extends BuildMenu {
         	while( !isaltok(buf[textptr]) )
             {
                 textptr++;
-                if( buf[textptr] == 0 ) break;
+                if( textptr >= buf.length || buf[textptr] == 0 ) break;
             }
 
             int i = 0;

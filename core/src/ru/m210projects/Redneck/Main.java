@@ -74,6 +74,8 @@ public class Main extends BuildGame {
 	/*
 	 * v1.01
 	 * Invert mouse fix
+	 * CONfile extract requiring is disabled
+	 * Addon like game.con save fix
 	 * 
 	 * 
 	 * TODO:
@@ -123,12 +125,14 @@ public class Main extends BuildGame {
 	}
 
 	@Override
-	public void init() throws Exception {
+	public boolean init() throws Exception {
 		net = (RRNetwork) pNet;
 
-		compilecons();
-
 		ConsoleInit();
+		
+		genspriteremaps();
+		
+		compilecons();
 
 		engine.inittimer(TICRATE);
 
@@ -142,8 +146,6 @@ public class Main extends BuildGame {
 
 		SoundStartup();
 		MusicStartup();
-
-		genspriteremaps();
 
 		initanimations();
 		FindSaves();
@@ -219,6 +221,8 @@ public class Main extends BuildGame {
 //			System.err.println("Found");
 //			new MVEFile(bb);
 //		}
+		
+		return true;
 	}
 
 	public static boolean IsOriginalDemo() {
@@ -237,8 +241,7 @@ public class Main extends BuildGame {
 		kGameCrash = false;
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
-		resetEpisodeResources();
-
+	
 		if (gAnmScreen.init("rr_intro.anm", 0)) {
 			gAnmScreen.setCallback(new Runnable() {
 				@Override

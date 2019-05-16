@@ -298,10 +298,10 @@ public class RRMenuHandler extends MenuHandler {
 		switch(opt)
 		{
 		case Open:
-			if(mCount > 1)
+//			if(mCount > 1)
 				sound(PISTOL_BODYHIT);
-		    else 
-				sound(JIBBED_ACTOR6);
+//		    else 
+//				sound(JIBBED_ACTOR6);
 			break;
 		case Close:
 			sound(EXITMENUSOUND);

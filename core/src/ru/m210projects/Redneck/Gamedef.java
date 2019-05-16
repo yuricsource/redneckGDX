@@ -1565,6 +1565,8 @@ public class Gamedef {
 	        		 
 	        		 if (j != 30) continue;
 	        		 
+	        		 if(error > 0) return false;
+	        		 
 	        		 if (keyword() != -1) {
 	        			 con.type = RR;
 	        			 break;
@@ -1698,7 +1700,8 @@ public class Gamedef {
 	    if(error != 0)
 	    {
 //	        if( loadfromgrouponly != 0 )
-	            game.dassert("\nError in " + filenam + ".");
+	            game.GameCrash("\nCompilation error in " + filenam + ".");
+	            System.exit(0);
 //	        else
 //	        {
 //	        	if(game.GameMessage("\nErrors found in " + filenam + " file.  You should backup the original copies \n"
@@ -3065,7 +3068,10 @@ public class Gamedef {
 	            {
 	            	if(game.isCurrentScreen(gDemoScreen)) break;
 
-	            	gGameScreen.enterlevel(gGameScreen.getTitle());
+	            	if(!gGameScreen.enterlevel(gGameScreen.getTitle())) {
+	            		game.show();
+	            		return false;
+	            	}
 	                killit_flag = 2;
 	            }
 	            else
@@ -3756,6 +3762,8 @@ public class Gamedef {
 
 	public static byte[] preparescript(byte[] buf)
 	{
+		if(buf == null) return null;
+		
         int index = -1;
         while( (index = indexOf("//", buf, index+1)) != -1)
         {

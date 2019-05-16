@@ -69,6 +69,7 @@ import static ru.m210projects.Redneck.Globals.DYNAMITE_WEAPON;
 import static ru.m210projects.Redneck.Globals.GDXBYTEVERSION;
 import static ru.m210projects.Redneck.Globals.HANDREMOTE_WEAPON;
 import static ru.m210projects.Redneck.Globals.KNEE_WEAPON;
+import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.Globals.MODE_END;
 import static ru.m210projects.Redneck.Globals.MODE_EOL;
 import static ru.m210projects.Redneck.Globals.MODE_TYPE;
@@ -868,9 +869,9 @@ public class GameScreen extends GameAdapter {
 		});
 	}
 	
-	public void enterlevel(String title)
+	public boolean enterlevel(String title)
 	{
-		if(title == null) return;
+		if(title == null) return false;
 		String map;
 		if(mUserFlag == UserFlag.UserMap)
 			map = boardfilename;
@@ -880,6 +881,7 @@ public class GameScreen extends GameAdapter {
 			ud.recstat = ud.m_recstat;
 
 		loadboard(map, null).setTitle(title);
+		return true;
 	}
 
 	public String getTitle()
@@ -1237,7 +1239,7 @@ public class GameScreen extends GameAdapter {
 	                    sb_snum |= 1<<19;
 	                    p.weapon_pos = -9;
 	                }
-	                else if( j >= 0 && p.gotweapon[j] && p.curr_weapon != j ) switch(j)
+	                else if( j >= 0  && j < MAX_WEAPONSRA && p.gotweapon[j] && p.curr_weapon != j ) switch(j)
 	                {
 	                    case KNEE_WEAPON:
 	                        addweapon( p, KNEE_WEAPON );

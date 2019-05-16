@@ -407,10 +407,10 @@ public class RRInput extends BuildControls {
 		}
 
 		if (stick2.y != 0) {
-			vel = (short) BClipRange(vel - (80 * stick2.y), -4 * keymove, 4 * keymove);
+			vel = (short) BClipRange(vel - (keymove * stick2.y), -4 * keymove, 4 * keymove);
 		}
 		if (stick2.x != 0) {
-			svel = (short) BClipRange(svel - (80 * stick2.x), -4 * keymove, 4 * keymove);
+			svel = (short) BClipRange(svel - (keymove * stick2.x), -4 * keymove, 4 * keymove);
 		}
 
 	    if(vel < -MAXVEL) vel = -MAXVEL;
