@@ -227,6 +227,9 @@ public class DemoScreen extends GameScreen {
 	private void DemoRender() { 
 		pNet.ready2send = false;
 		
+		if(!game.isCurrentScreen(this))
+			return;
+		
 		if(!game.gPaused && demfile != null) {
 			while (totalclock >= (lockclock + TICSPERFRAME)) {
 				for (int j = connecthead; j >= 0; j = connectpoint2[j]) {

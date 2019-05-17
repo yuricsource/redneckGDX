@@ -76,6 +76,7 @@ public class Main extends BuildGame {
 	 * Invert mouse fix
 	 * CONfile extract requiring is disabled
 	 * Addon like game.con save fix
+	 * Crash fixes
 	 * 
 	 * 
 	 * TODO:

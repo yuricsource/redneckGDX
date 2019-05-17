@@ -119,8 +119,8 @@ public class RRNetwork extends BuildNet {
 		case kPacketContentRequest:
 			int pathlen = LittleEndian.getInt(p, ptr);
 			ptr += 4;
-			if (pathlen >= p.length)
-				pathlen = p.length - 1;
+			if(pathlen >= p.length - ptr) 
+				pathlen = p.length - ptr - 1;
 
 			String path = new String(p, ptr, pathlen);
 			ptr += pathlen;
@@ -972,12 +972,10 @@ public class RRNetwork extends BuildNet {
 
 		int ptr = 0;
 		packbuf[ptr++] = kPacketContentRequest;
-		LittleEndian.putInt(packbuf, ptr, filepath.length());
-		ptr += 4;
-		System.arraycopy(filepath.getBytes(), 0, packbuf, ptr, filepath.length());
-		ptr += filepath.length();
-		LittleEndian.putUInt(packbuf, ptr, crc32);
-		ptr += 4;
+		int len = Math.min(filepath.length(), 246); //255 - 1 - 4 - 4
+		LittleEndian.putInt(packbuf, ptr, len);  ptr += 4;
+		System.arraycopy(filepath.getBytes(), 0, packbuf, ptr, len); ptr += len;
+		LittleEndian.putUInt(packbuf, ptr, crc32); ptr += 4;
 		sendtoall(packbuf, ptr);
 		gContentFound[myconnectindex] = 1;
 
