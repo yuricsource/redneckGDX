@@ -320,6 +320,8 @@ public class Weapons {
 	    SPRITE s = sprite[i];
 	    sect = s.sectnum;
 	    zvel = 0;
+	    
+	    if(sect < 0 || sect >= MAXSECTORS) return;
 
 	    if( s.picnum == APLAYER )
 	    {

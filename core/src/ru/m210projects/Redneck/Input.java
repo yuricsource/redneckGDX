@@ -169,6 +169,8 @@ public class Input implements NetInput {
 	}
 	@Override
 	public NetInput Copy(NetInput netsrc) {
+		if(netsrc == null) return null;
+		
 		Input src = (Input) netsrc;
 		
 		this.fvel = src.fvel;

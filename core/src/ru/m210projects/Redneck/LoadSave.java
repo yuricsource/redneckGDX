@@ -35,6 +35,7 @@ import static ru.m210projects.Redneck.Premap.*;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Sector.*;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -514,7 +515,7 @@ public class LoadSave {
 			if(currentGame != null)
 			{
 				FileEntry addon = currentGame.getFile();
-				if(addon != null) {
+				if(addon != null && currentGame.isPackage()) {
 					String path = addon.getPath();
 					path += ":" + currentGame.ConName;
 					System.arraycopy(path.getBytes(), 0, name, 0, Math.min(path.length(), 144));
@@ -878,42 +879,41 @@ public class LoadSave {
 
 		BuildGdx.audio.getSound().setReverb(false, 0);
 	   
-//		if(ud.lockout == 0)
-//		{
-//			for(int x=0;x<numanimwalls;x++)
-//				if( wall[animwall[x].wallnum].extra >= 0 )
-//					wall[animwall[x].wallnum].picnum = wall[animwall[x].wallnum].extra;
-//		}
-//	
-//		InterpolationCount = 0;
-//		startofdynamicinterpolations = 0;
-//
-//		int k = headspritestat[3];
-//		while(k >= 0)
-//		{
-//	        switch(sprite[k].lotag)
-//	        {
-//	            case 31:
-//	            case 32:
-//	            case 25:
-//	            case 17:
-//	                viewBackupSectorLoc(sprite[k].sectnum, sector[sprite[k].sectnum]);
-//	                break;
-//	            case 0:
-//	            case 5:
-//	            case 6:
-//	            case 11:
-//	            case 14:
-//	            case 15:
-//	            case 16:
-//	            case 26:
-//	            case 30:
-//	                setsectinterpolate(k);
-//	                break;
-//	        }
-//
-//	        k = nextspritestat[k];
-//		} XXX
+		if(ud.lockout == 0)
+		{
+			for(int x=0;x<numanimwalls;x++)
+				if( wall[animwall[x].wallnum].extra >= 0 )
+					wall[animwall[x].wallnum].picnum = wall[animwall[x].wallnum].extra;
+		}
+
+		startofdynamicinterpolations = 0;
+
+		int k = headspritestat[3];
+		while(k >= 0)
+		{
+	        switch(sprite[k].lotag)
+	        {
+	            case 31:
+	            case 32:
+	            case 25:
+	            case 17:
+	            	game.pInt.setfheinuminterpolate(sprite[k].sectnum, sector[sprite[k].sectnum]);
+	                break;
+	            case 0:
+	            case 5:
+	            case 6:
+	            case 11:
+	            case 14:
+	            case 15:
+	            case 16:
+	            case 26:
+	            case 30:
+	                setsectinterpolate(k);
+	                break;
+	        }
+
+	        k = nextspritestat[k];
+		}
 		
 		fta = 0;
 

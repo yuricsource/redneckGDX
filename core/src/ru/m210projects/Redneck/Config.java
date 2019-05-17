@@ -16,11 +16,8 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Input.Keymap.*;
 
-import ru.m210projects.Build.Input.ButtonMap;
-import ru.m210projects.Build.Input.Keymap;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildConfig;
 
@@ -247,97 +244,24 @@ public class Config extends BuildConfig {
 	public int fta_on = 1;
 	public boolean gColoredKeys;
 	
-	
-	
-	
 	@Override
 	public void SaveConfig(int fil) {
 		if(fil != -1)
 		{
-			saveString(fil, "[ScreenSetup]\r\n");
-				//Screen Setup	
-		
-			saveInteger(fil, "Size", ud.screen_size);
-			saveInteger(fil, "Crosshair", crosshair);
-			saveBoolean(fil, "VSync", gVSync);
-			saveInteger(fil, "MessageState", ud.fta_on);
-			saveInteger(fil, "FpsScale", (int)(gFpsScale * 65536.0f));
-			
-			saveInteger(fil, "Gamma", (int) ((1 - gamma) * 4096));
-			saveInteger(fil, "Brightness", (int) (brightness * 4096));
-			saveInteger(fil, "Contrast", (int) (contrast * 4096));
-		
-			saveString(fil, "[SoundSetup]\r\n");
-				//Sound Setup
-			
-			saveInteger(fil, "SoundVolume", (int)(soundVolume * 256.0f));
-			saveInteger(fil, "MaxVoices", maxvoices);
-			saveInteger(fil, "Resampler", resampler_num);
-			saveInteger(fil, "MusicVolume", (int)(musicVolume * 256.0f));
-			saveString(fil, ";\r\n;\r\n");
-
-			saveString(fil, "[KeyDefinitions]\r\n");
-			for(int i = 0; i < keymap.length; i++) {
-				String line = keymap[i] + " = \"" + Keymap.toString(primarykeys[i]) +  "\", \"" + Keymap.toString(secondkeys[i]) +  "\", \"" + Keymap.toString(mousekeys[i]) +  "\", \"" + ButtonMap.buttonName(gpadkeys[i]) + "\"\r\n";
-				saveString(fil, line);
-			}
-			saveString(fil, ";\r\n");
-			saveString(fil, "MouseDigitalAxes0_0 " + ((mouseaxis[AXISLEFT] != -1)?("= " + keymap[mouseaxis[AXISLEFT]]):"= \"N/A\"") +"\r\n");
-			saveString(fil, "MouseDigitalAxes0_1 " + ((mouseaxis[AXISRIGHT] != -1)?("= " + keymap[mouseaxis[AXISRIGHT]]):"= \"N/A\"") +"\r\n");
-			saveString(fil, "MouseDigitalAxes1_0 " + ((mouseaxis[AXISUP] != -1)?("= " + keymap[mouseaxis[AXISUP]]):"= \"N/A\"") +"\r\n");
-			saveString(fil, "MouseDigitalAxes1_1 " + ((mouseaxis[AXISDOWN] != -1)?("= " + keymap[mouseaxis[AXISDOWN]]):"= \"N/A\"") +"\r\n");
-			saveString(fil, ";\r\n");
-			saveString(fil, "[JoyDefinitions]\r\n");
-			for(int i = 0; i < joymap.length; i++) {
-				String line = joymap[i] + " = \"" + ButtonMap.buttonName(gJoyMenukeys[((MenuKeys)joymap[i]).getJoyNum()]) + "\"\r\n";
-				saveString(fil, line);
-			}
-			saveString(fil, ";\r\n;\r\n");
-			
-			saveString(fil, "[Controls]\r\n");
-				//Controls
-			saveBoolean(fil, "UseMouse", useMouse);
-			saveBoolean(fil, "UseMouseInMenu", menuMouse);
-			saveInteger(fil, "MouseSensitivity", gSensitivity);
-			saveBoolean(fil, "MouseAiming", gMouseAim);
-			saveBoolean(fil, "MouseAimingFlipped", gInvertmouse);
-			saveInteger(fil, "MouseTurnSpeed", gMouseTurnSpeed);
-			saveInteger(fil, "MouseLookSpeed", gMouseLookSpeed);
-			saveInteger(fil, "MouseMoveSpeed", gMouseMoveSpeed);
-			saveInteger(fil, "MouseStrafeSpeed", gMouseStrafeSpeed);
-			saveInteger(fil, "MouseCursor", gMouseCursor);
-			saveInteger(fil, "MouseCursorSize", gMouseCursorSize);
-			saveInteger(fil, "JoyDevice", gJoyDevice);
-			saveInteger(fil, "JoyTurnAxis", gJoyTurnAxis);
-			saveInteger(fil, "JoyMoveAxis", gJoyMoveAxis);
-			saveInteger(fil, "JoyStrafeAxis", gJoyStrafeAxis);
-			saveInteger(fil, "JoyLookAxis", gJoyLookAxis);
-			saveInteger(fil, "JoyTurnSpeed", gJoyTurnSpeed);
-			saveInteger(fil, "JoyLookSpeed", gJoyLookSpeed);
-			saveBoolean(fil, "JoyInvertLook", gJoyInvert);
-			saveInteger(fil, "JoyDeadZone", gJoyDeadZone);
-			saveString(fil, ";\r\n;\r\n");
-			
 			saveString(fil, "[Options]\r\n");	
 				//Options
-
+			saveInteger(fil, "Size", ud.screen_size);
+			saveInteger(fil, "Crosshair", crosshair);
+			saveInteger(fil, "MessageState", ud.fta_on);
 			saveBoolean(fil, "Autoaim", gAutoAim);
 			saveInteger(fil, "Tilt", ud.screen_tilting);
 			saveInteger(fil, "AutoRun", ud.auto_run);
-			saveBoolean(fil, "ShowFPS", gShowFPS);	
 			saveInteger(fil, "MessageState", ud.fta_on);	
 			saveInteger(fil, "StatSize", gStatSize);	
 			saveInteger(fil, "CrossSize", gCrossSize);
 			saveInteger(fil, "ShowStat", gShowStat);
 			saveInteger(fil, "showMapInfo", showMapInfo);
-			saveInteger(fil, "OSDTextScale", Console.getTextScale());
-			saveBoolean(fil, "UseVoxels", usevoxels);
-			saveBoolean(fil, "UseModels", usemodels);
-			saveBoolean(fil, "UseHightiles", usehightile);
 			saveInteger(fil, "DemoSequence", gDemoSeq);
-			saveString(fil,  "Player_name", pName);	
-			saveString(fil,  "IP_Address", mAddress);	
-			saveInteger(fil, "Port", mPort);
 			saveBoolean(fil, "Colored_keys", gColoredKeys);
 		}
 	}
@@ -362,164 +286,36 @@ public class Config extends BuildConfig {
 
 		if(!isDefault)
 		{
-			if(set("ScreenSetup")) {
-				screen_size = GetKeyInt("Size");
-				crosshair = GetKeyInt("Crosshair");
-				gVSync = GetKeyInt("VSync") == 1;
-				fta_on = GetKeyInt("MessageState");
-				int fpssize = GetKeyInt("FpsScale");
-				if(fpssize != -1) gFpsScale = fpssize / 65536.0f;
-				
-				int gm = GetKeyInt("Gamma");
-				if( gm != -1) gamma = 1.0f - (gm / 4096.0f);
-				int bg = GetKeyInt("Brightness");
-				if( bg != -1) brightness = bg / 4096.0f;
-				int ct = GetKeyInt("Contrast");
-				if( ct != -1) contrast = ct / 4096.0f;
-			}
-			
-			if(set("SoundSetup")) {
-				soundVolume = GetKeyInt("SoundVolume") / 256.0f;
-				maxvoices = GetKeyInt("MaxVoices");
-				int resampler = GetKeyInt("Resampler"); 
-				if(resampler != -1) resampler_num = resampler;
-				musicVolume = GetKeyInt("MusicVolume") / 256.0f;
-			}
-			
-			if(set("KeyDefinitions")) {
-				for(int i = 0; i < keymap.length; i++) {
-					primarykeys[i] = defkeys[i];
-					secondkeys[i] = 0;
-					mousekeys[i] = 0;
-					gpadkeys[i] = -1;
-
-					String primary = GetKeyString(keymap[i].getName(), 0);
-					String secondary = GetKeyString(keymap[i].getName(), 1);
-					String mouse = GetKeyString(keymap[i].getName(), 2);
-					String joystick = GetKeyString(keymap[i].getName(), 3);
-
-					if(primary != null) 
-						primarykeys[i] = Keymap.valueOf(primary);
-					if(secondary != null) 
-						secondkeys[i] = Keymap.valueOf(secondary);
-					if(mouse != null)
-						mousekeys[i] = Keymap.valueOf(mouse);
-					if(joystick != null)
-						gpadkeys[i] = ButtonMap.valueOf(joystick);
-				}
-				if(primarykeys[MenuKeys.Menu_Toggle.getNum()] == 0)
-					primarykeys[MenuKeys.Menu_Toggle.getNum()] = defclassickeys[MenuKeys.Menu_Toggle.getNum()];
-
-				String left = GetKeyString("MouseDigitalAxes0_0");
-				if(left != null)
-					mouseaxis[AXISLEFT] = getKeyIndex(left);
-				String right = GetKeyString("MouseDigitalAxes0_1");
-				if(right != null)
-					mouseaxis[AXISRIGHT] = getKeyIndex(right);
-				String up = GetKeyString("MouseDigitalAxes1_0");
-				if(up != null)
-					mouseaxis[AXISUP] = getKeyIndex(up);
-				String down = GetKeyString("MouseDigitalAxes1_1");
-				if(down != null)
-					mouseaxis[AXISDOWN] = getKeyIndex(down);
-			}
-			
-			if(set("JoyDefinitions")) {
-				for(int i = 0; i < joymap.length; i++) { 
-					gJoyMenukeys[((MenuKeys)joymap[i]).getJoyNum()] = -1;
-					String joymenu = GetKeyString(joymap[i].getName(), 0);
-					if(joymenu != null)
-						gJoyMenukeys[((MenuKeys)joymap[i]).getJoyNum()] = ButtonMap.valueOf(joymenu);
-				}
-			}
-			
-			if(set("Controls")) {
-				int value = GetKeyInt("UseMouse");
-				if(value != -1) useMouse = value == 1;
-				value = GetKeyInt("UseMouseInMenu");
-				if(value != -1) menuMouse = value == 1;
-				value = GetKeyInt("MouseSensitivity");
-				if(value != -1) gSensitivity = value;
-				value = GetKeyInt("MouseAiming");
-				if(value != -1) gMouseAim = value == 1;
-				value = GetKeyInt("MouseAimingFlipped");
-				if(value != -1) gInvertmouse = value == 1;
-				value = GetKeyInt("MouseTurnSpeed");
-				if(value != -1) gMouseTurnSpeed = value;
-				value = GetKeyInt("MouseLookSpeed");
-				if(value != -1) gMouseLookSpeed = value;
-				value = GetKeyInt("MouseMoveSpeed");
-				if(value != -1) gMouseMoveSpeed = value;
-				value = GetKeyInt("MouseStrafeSpeed");
-				if(value != -1) gMouseStrafeSpeed = value;
-				value = GetKeyInt("MouseCursor");
-				if(value != -1) gMouseCursor = value;
-				value = GetKeyInt("MouseCursorSize");
-				if(value != -1) gMouseCursorSize = value;
-				value = GetKeyInt("JoyDevice");
-				if (value != -1) gJoyDevice = value;
-				value = GetKeyInt("JoyTurnAxis");
-				if(value != -1) gJoyTurnAxis = value;
-				value = GetKeyInt("JoyMoveAxis");
-				if(value != -1) gJoyMoveAxis = value;
-				value = GetKeyInt("JoyStrafeAxis");
-				if(value != -1) gJoyStrafeAxis = value;
-				value = GetKeyInt("JoyLookAxis");
-				if(value != -1) gJoyLookAxis = value;
-				value = GetKeyInt("JoyTurnSpeed");
-				if(value != -1) gJoyTurnSpeed = value;
-				value = GetKeyInt("JoyLookSpeed");
-				if(value != -1) gJoyLookSpeed = value;
-				value = GetKeyInt("JoyInvertLook");
-				if(value != -1) gJoyInvert = value == 1;
-				value = GetKeyInt("JoyDeadZone");
-				if(value != -1) gJoyDeadZone = value;
-			}
-			
+			LoadCommon(defkeys, defclassickeys);
 			if(set("Options")) {
+				int value = GetKeyInt("Size");
+				if(value != -1) screen_size = value;
+				value = GetKeyInt("Crosshair");
+				if(value != -1) crosshair = value;
+				value = GetKeyInt("MessageState");
+				if(value != -1) fta_on = value;
 				gAutoAim = GetKeyInt("Autoaim") == 1;
-				screen_tilting = GetKeyInt("Tilt");
-				auto_run = GetKeyInt("AutoRun");
-				gShowFPS = GetKeyInt("ShowFPS") == 1;
-				fta_on = GetKeyInt("MessageState");
-				
-				gStatSize = GetKeyInt("StatSize");
-				if(gStatSize < 16384) gStatSize = 16384;
-				gCrossSize = GetKeyInt("CrossSize");
-				if(gCrossSize < 8192) gCrossSize = 8192;
-				gShowStat = GetKeyInt("ShowStat");
-				showMapInfo = GetKeyInt("showMapInfo");
-				int scale = GetKeyInt("OSDTextScale");
-				if(scale != -1)
-					Console.setTextScale(scale);
-				
-				int voxels = GetKeyInt("UseVoxels");
-				if(voxels != -1)
-					usevoxels = (voxels == 1);
-				int models = GetKeyInt("UseModels");
-				if(models != -1)
-					usemodels = (models == 1);
-				int hires = GetKeyInt("UseHightiles");
-				if(hires != -1)
-					usehightile = (hires == 1);
-				
-				int demos = GetKeyInt("DemoSequence");
-				if(demos != -1) gDemoSeq = demos;
-				
-				String name = GetKeyString("Player_name");
-				if(name != null)
-					pName = name;
-				
-				String ip = GetKeyString("IP_Address");
-				if(ip != null)
-					mAddress = ip;
-				int port = GetKeyInt("Port");
-				if(port != -1)
-					mPort = port;
-				
-				int coloredk = GetKeyInt("Colored_keys");
-				if(coloredk != -1)
-					gColoredKeys = coloredk != 0;
+				value = GetKeyInt("Tilt");
+				if(value != -1) screen_tilting = value;
+				value = GetKeyInt("AutoRun");
+				if(value != -1) auto_run = value;
+				value = GetKeyInt("StatSize");
+				if(value != -1) {
+					gStatSize = value;
+					if(gStatSize < 16384) gStatSize = 16384;
+				}
+				value = GetKeyInt("CrossSize");
+				if(value != -1) {
+					gCrossSize = value;
+					if(gCrossSize < 16384) gCrossSize = 16384;
+				}
+				value = GetKeyInt("ShowStat");
+				if(value != -1) gShowStat = value;
+				value = GetKeyInt("showMapInfo");
+				if(value != -1) showMapInfo = value;
+				value = GetKeyInt("DemoSequence");
+				if(value != -1) gDemoSeq = value;
+				gColoredKeys = GetKeyInt("Colored_keys") == 1;
 			}
 			close();
 		} 
@@ -612,7 +408,7 @@ public class Config extends BuildConfig {
 			RRKeys.Cowpie,
 			RRKeys.Wiskey,
 			RRKeys.Moonshine,
-			MenuKeys.Menu_Toggle,
+			GameKeys.Menu_Toggle,
 			GameKeys.Show_Console,
 			RRKeys.Show_Help,
 			RRKeys.Show_Savemenu,

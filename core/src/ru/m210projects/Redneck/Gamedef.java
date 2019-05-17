@@ -1565,6 +1565,8 @@ public class Gamedef {
 	        		 
 	        		 if (j != 30) continue;
 	        		 
+	        		 if(error > 0) return false;
+	        		 
 	        		 if (keyword() != -1) {
 	        			 con.type = RR;
 	        			 break;
@@ -1645,20 +1647,20 @@ public class Gamedef {
 	{
 	    int fs,fp;
 
-	    if(cache.checkFile(filenam) == null && loadfromgrouponly == 0)
-	    {
-	    	if(game.GameMessage("Missing external con file(s). \n \"COPY INTERNAL DEFAULTS TO DIRECTORY?\"", true))
-	    	{
-	    		Console.Println(" Yes");
-	            copydefaultcons();
-	    	} else loadfromgrouponly = 1;
-	    }
+//	    if(cache.checkFile(filenam) == null && loadfromgrouponly == 0)
+//	    {
+//	    	if(game.GameMessage("Missing external con file(s). \n \"COPY INTERNAL DEFAULTS TO DIRECTORY?\"", true))
+//	    	{
+//	    		Console.Println(" Yes");
+//	            copydefaultcons();
+//	    	} else loadfromgrouponly = 1;
+//	    }
 
 	    fp = kOpen(filenam,loadfromgrouponly);
 	    if( fp == -1 )
 	    {
-	        if( loadfromgrouponly == 1 )
-	        	game.dassert("\nMissing con file(s).");
+//	        if( loadfromgrouponly == 1 )
+	        game.dassert("\nMissing con file(s).");
 	        return null;
 	    }
 	    else
@@ -1697,22 +1699,23 @@ public class Gamedef {
 
 	    if(error != 0)
 	    {
-	        if( loadfromgrouponly != 0 )
-	            game.dassert("\nError in " + filenam + ".");
-	        else
-	        {
-	        	if(game.GameMessage("\nErrors found in " + filenam + " file.  You should backup the original copies \n"
-    	    			+ "before attempting to modify them.\nDo you want to use the internal defaults?"
-            			, true))
-    	    	{
-            		Console.Println(" Yes");
-                    loadfromgrouponly = 1;
-                    return null;
-    	    	} else {
-    	    		game.dispose();
-    				System.exit(0);
-    	    	}
-	        }
+//	        if( loadfromgrouponly != 0 )
+	            game.GameCrash("\nCompilation error in " + filenam + ".");
+	            System.exit(0);
+//	        else
+//	        {
+//	        	if(game.GameMessage("\nErrors found in " + filenam + " file.  You should backup the original copies \n"
+//    	    			+ "before attempting to modify them.\nDo you want to use the internal defaults?"
+//            			, true))
+//    	    	{
+//            		Console.Println(" Yes");
+//                    loadfromgrouponly = 1;
+//                    return null;
+//    	    	} else {
+//    	    		game.dispose();
+//    				System.exit(0);
+//    	    	}
+//	        }
 	    }
 	    else
 	    {
@@ -3065,7 +3068,10 @@ public class Gamedef {
 	            {
 	            	if(game.isCurrentScreen(gDemoScreen)) break;
 
-	            	gGameScreen.enterlevel(gGameScreen.getTitle());
+	            	if(!gGameScreen.enterlevel(gGameScreen.getTitle())) {
+	            		game.show();
+	            		return false;
+	            	}
 	                killit_flag = 2;
 	            }
 	            else
@@ -3702,9 +3708,9 @@ public class Gamedef {
 	{
 		conweigth = 0;
 		Script con = loadefs(confilename);
-		if(loadfromgrouponly == 0)
-			defGame = new GameInfo(cache.checkFile(confilename), confilename);
-		else {
+//		if(loadfromgrouponly == 0)
+//			defGame = new GameInfo(cache.checkFile(confilename), confilename);
+//		else {
 			try {
 				IResource grp = checkgroupfile("redneck.grp");
 				defGame = new GameInfo(grp, cache.checkFile(grp.name), confilename);
@@ -3712,7 +3718,7 @@ public class Gamedef {
 				game.ThrowError("Unknown error!", e);
 				return;
 			}
-		}
+//		}
 
 		switch(con.type)
 		{
@@ -3756,6 +3762,8 @@ public class Gamedef {
 
 	public static byte[] preparescript(byte[] buf)
 	{
+		if(buf == null) return null;
+		
         int index = -1;
         while( (index = indexOf("//", buf, index+1)) != -1)
         {

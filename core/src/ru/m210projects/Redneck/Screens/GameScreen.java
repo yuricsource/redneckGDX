@@ -69,6 +69,7 @@ import static ru.m210projects.Redneck.Globals.DYNAMITE_WEAPON;
 import static ru.m210projects.Redneck.Globals.GDXBYTEVERSION;
 import static ru.m210projects.Redneck.Globals.HANDREMOTE_WEAPON;
 import static ru.m210projects.Redneck.Globals.KNEE_WEAPON;
+import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
 import static ru.m210projects.Redneck.Globals.MODE_END;
 import static ru.m210projects.Redneck.Globals.MODE_EOL;
 import static ru.m210projects.Redneck.Globals.MODE_TYPE;
@@ -187,7 +188,6 @@ import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
-import ru.m210projects.Build.Pattern.BuildConfig.MenuKeys;
 import ru.m210projects.Build.Pattern.BuildControls;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
@@ -422,7 +422,7 @@ public class GameScreen extends GameAdapter {
 		if(Console.IsShown() || MODE_TYPE) return;
 		
 		BuildControls input = game.pInput;
-		if (input.ctrlGetInputKey(MenuKeys.Menu_Toggle, true)) 
+		if (input.ctrlGetInputKey(GameKeys.Menu_Toggle, true)) 
 			menu.mOpen(menu.mMenus[GAME], -1);
 
 		if (input.ctrlGetInputKey(RRKeys.Show_Help, true))
@@ -869,9 +869,9 @@ public class GameScreen extends GameAdapter {
 		});
 	}
 	
-	public void enterlevel(String title)
+	public boolean enterlevel(String title)
 	{
-		if(title == null) return;
+		if(title == null) return false;
 		String map;
 		if(mUserFlag == UserFlag.UserMap)
 			map = boardfilename;
@@ -881,6 +881,7 @@ public class GameScreen extends GameAdapter {
 			ud.recstat = ud.m_recstat;
 
 		loadboard(map, null).setTitle(title);
+		return true;
 	}
 
 	public String getTitle()
@@ -1238,7 +1239,7 @@ public class GameScreen extends GameAdapter {
 	                    sb_snum |= 1<<19;
 	                    p.weapon_pos = -9;
 	                }
-	                else if( j >= 0 && p.gotweapon[j] && p.curr_weapon != j ) switch(j)
+	                else if( j >= 0  && j < MAX_WEAPONSRA && p.gotweapon[j] && p.curr_weapon != j ) switch(j)
 	                {
 	                    case KNEE_WEAPON:
 	                        addweapon( p, KNEE_WEAPON );

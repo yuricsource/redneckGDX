@@ -385,8 +385,6 @@ public class RRInput extends BuildControls {
 
 	    if(cfg.gMouseAim) {
 			horiz = BClipRange(ctrlGetMouseLook(!cfg.gInvertmouse), -(ydim>>1), 100+(ydim>>1));
-            if ( cfg.gInvertmouse )
-            	horiz = -horiz;
         } else 
         	vel =  (short) BClipRange(vel - ctrlGetMouseMove(), -4 * keymove, 4 * keymove);
 	    
@@ -409,10 +407,10 @@ public class RRInput extends BuildControls {
 		}
 
 		if (stick2.y != 0) {
-			vel = (short) BClipRange(vel - (80 * stick2.y), -4 * keymove, 4 * keymove);
+			vel = (short) BClipRange(vel - (keymove * stick2.y), -4 * keymove, 4 * keymove);
 		}
 		if (stick2.x != 0) {
-			svel = (short) BClipRange(svel - (80 * stick2.x), -4 * keymove, 4 * keymove);
+			svel = (short) BClipRange(svel - (keymove * stick2.x), -4 * keymove, 4 * keymove);
 		}
 
 	    if(vel < -MAXVEL) vel = -MAXVEL;

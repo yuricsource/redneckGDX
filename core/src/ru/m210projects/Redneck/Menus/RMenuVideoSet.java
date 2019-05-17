@@ -28,21 +28,22 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
 public class RMenuVideoSet extends MenuVideoSetup {
 
 	public RMenuVideoSet(Main app) {
-		super(app, 46, 35, 240, 12, app.getFont(1));
+		super(app, 46, 25, 240, 12, app.getFont(1));
 	
 		mVideoMode.font = app.getFont(2);
 		mColorMode.font = app.getFont(2);
 		mColorMode.x -= 5;
 		mColorMode.y += 10;
 
-		sFilter.y += 10;
-		sAnisotropy.y += 10;
-		sWidescreen.y += 10;	
-		mMenuFPS.y += 10;
-		sVSync.y += 10;
-		UseVoxels.y += 10;
-		UseModels.y += 10;
-		Usehrp.y += 10;
+		sFov.y += 10;
+		sFilter.y += 8;
+		sAnisotropy.y += 8;
+		sWidescreen.y += 8;	
+		mMenuFPS.y += 8;
+		sVSync.y += 8;
+		UseVoxels.y += 6;
+		UseModels.y += 6;
+		Usehrp.y += 6;
 	}
 
 	@Override

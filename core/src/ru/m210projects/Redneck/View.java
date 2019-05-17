@@ -297,7 +297,8 @@ public class View {
 			if(cfg.showMapInfo != 0 && !game.menu.gShowMenu)
 			{	
 				if(mUserFlag != UserFlag.UserMap || boardfilename == null) {
-					game.getFont(2).drawText(160,114, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title, -128, 0, TextAlign.Center, 2 | transp, false);
+					if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null && currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title != null)
+						game.getFont(2).drawText(160,114, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title, -128, 0, TextAlign.Center, 2 | transp, false);
 				}
 				else {
 					Arrays.fill(buffer, (char)0);
