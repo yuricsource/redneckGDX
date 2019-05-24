@@ -18,6 +18,8 @@ package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Redneck.Names.*;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Input.GPManager;
 import ru.m210projects.Build.OnSceenDisplay.OSDFunc;
 import ru.m210projects.Build.Pattern.BuildControls;
@@ -56,7 +58,9 @@ public class RRFactory extends BuildFactory {
 
 	@Override
 	public Renderer renderer() {
-		return new RRPolymost(app.pEngine);
+		if(BuildGdx.app.getFrameType() == FrameType.Software)
+			return new RRSoftware(app.pEngine);
+		else return new RRPolymost(app.pEngine);
 	}
 
 	@Override

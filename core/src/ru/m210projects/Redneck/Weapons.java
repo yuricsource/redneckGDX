@@ -1270,7 +1270,7 @@ public class Weapons {
 					{
 						SPRITE spr = sprite[s.lotag];
 						short ang = engine.getangle(spr.x - s.x, spr.y - s.y);
-						long seekang = ang - s.ang;
+						int seekang = ang - s.ang;
 						if(seekang >= 100)
 						{
 							if(seekang == 100)

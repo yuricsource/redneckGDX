@@ -72,14 +72,9 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * v1.01
-	 * Invert mouse fix
-	 * CONfile extract requiring is disabled
-	 * Addon like game.con save fix
-	 * Crash fixes
-	 * 
-	 * 
 	 * TODO:
+	 * 
+	 * CrouchMode by jumpkey toggle and disable it in underwater
 	 * hud из новых ресурсов
 	 * cachespritenum
 	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
@@ -405,9 +400,9 @@ public class Main extends BuildGame {
 
 	@Override
 	public void dispose() {
-		super.dispose();
 		if (ud.rec != null)
 			ud.rec.close();
+		super.dispose();
 	}
 
 	@Override
