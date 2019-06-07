@@ -47,6 +47,7 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
 import ru.m210projects.Build.Pattern.Tools.SaveManager;
+import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
@@ -933,7 +934,8 @@ public class LoadSave {
 		game.pNet.WaitForAllPlayers(0);
 		game.pNet.ready2send = true;
 
-		engine.getrender().preload();
+		GLRenderer gl = engine.glrender();
+		if(gl != null) gl.preload();
 		
 		StopAllSounds();
 

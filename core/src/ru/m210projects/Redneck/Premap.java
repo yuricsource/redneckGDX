@@ -43,6 +43,7 @@ import java.util.Arrays;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
+import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.PlayerInfo;
@@ -433,18 +434,17 @@ public class Premap {
 	
 	private static void docacheit(int method)
 	{
+		GLRenderer gl = engine.glrender();
 	    for(int i=0;i<MAXTILES;i++) 
 	    {
 	    	if(gotpic[i>>3] == 0) { i += 7; continue; }
 	    	
-	        if( (gotpic[i>>3]&(1<<(i&7))) != 0 )
+	        if( waloff[i] == null && (gotpic[i>>3]&(1<<(i&7))) != 0)
 		    {
-	        	if (waloff[i] == null) {
-	        		engine.loadtile(i);
-	        		if(engine.getrender() != null) 
-	    				engine.getrender().precache(i, 0, method);
-	        		}
-		    } 
+		        engine.loadtile(i);
+		        if(gl != null) 
+					gl.precache(i, 0, method);
+		    }
 	    }
 
 	    Arrays.fill(gotpic, (byte)0);

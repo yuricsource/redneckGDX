@@ -193,6 +193,7 @@ import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
 import ru.m210projects.Build.Pattern.BuildNet;
 import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
+import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Redneck.Config.RRKeys;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Main;
@@ -705,7 +706,8 @@ public class GameScreen extends GameAdapter {
 	     game.net.predict.reset();
 	     clearfrags();
 	    
-	     engine.getrender().preload();
+	     GLRenderer gl = engine.glrender();
+	     if(gl != null) gl.preload();
 	     System.err.println("New level " + map);
 	     
 	     if((uGameFlags & MODE_EOL) == MODE_EOL && game.nNetMode == NetMode.Single)
