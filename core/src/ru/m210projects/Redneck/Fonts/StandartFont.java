@@ -77,12 +77,12 @@ public class StandartFont extends BuildFont {
 		int xdim = (4 * ydim) / 3;
 		float scale = ((nScale / 65536.0f) * xdim) / 320.0f;
 		
-		byte[] oldpal = curpalette;
-		curpalette = colpal;
+		byte[] oldpal = curpalette.getBytes();
+		curpalette.update(colpal, false);
 		for(int i = 0; i < 3; i++)
 			colpal[i] = (byte) (shade * 255 / 48); //48 - max shade (black)
 		draw.getrender().printext(font, x, y, text, 0, shade, Transparent.None, scale);
-		curpalette = oldpal;
+		curpalette.update(oldpal, false);
 		return 0;
 	}
 }

@@ -82,8 +82,15 @@ public class RRMenuHandler extends MenuHandler {
 	public void mDrawMenu() {
 		if(screensize != 0) vscrn(0);
 		if(!(app.pMenu.getCurrentMenu() instanceof MenuColorCorr) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
-			engine.setpalettefade(0, 0, 0, 32);
-			engine.showfade();
+			int tile = LOADSCREEN;
+			float kt = xdim / (float) ydim;
+			float kv = tilesizx[tile] / (float) tilesizy[tile];
+			float scale;
+			if(kv >= kt)
+	        	scale = (ydim + 1) / (float) tilesizy[tile];
+	        else scale = (xdim + 1) / (float) tilesizx[tile];
+	  
+			engine.rotatesprite(0, 0, (int) (scale * 65536), 0, tile, 127, 4, 8 | 16 | 1, 0, 0, xdim - 1, ydim - 1);
 		}
 
 		super.mDrawMenu();
@@ -93,7 +100,6 @@ public class RRMenuHandler extends MenuHandler {
 	{
 		super.mClose();
 		vscrn(ud.screen_size);
-		engine.setpalettefade(0, 0, 0, 0);
 	}
 	
 	@Override

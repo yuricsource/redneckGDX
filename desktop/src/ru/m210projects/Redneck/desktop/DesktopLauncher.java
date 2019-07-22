@@ -73,6 +73,6 @@ public class DesktopLauncher {
 		
 		initVideoModes(LwjglApplicationConfiguration.getDisplayModes(), LwjglApplicationConfiguration.getDesktopDisplayMode());
 
-		new BuildApplicationImpl(new Main(cfg, appname, Main.sversion, true), new DesktopMessage(null), cfg.frameType, lwjglConfig);
+		new BuildApplicationImpl(new Main(cfg, appname, Main.sversion, true), new DesktopMessage(null), cfg.renderType, lwjglConfig);
 	}
 }

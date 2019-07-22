@@ -137,6 +137,18 @@ public class View {
 	    	cg = pp.pals[1];
 	    	cb = pp.pals[2];
 	    	cf = pp.pals_time;
+	    	
+	    	if(engine.glrender() == null) //software render
+	    		restorepalette = true;
+	    }
+	    else if( restorepalette )
+	    {
+	    	setgamepalette(pp, pp.palette, 0);
+
+			dotint = true;
+			cr = cg = cb = 0;
+			cf = 0;
+	        restorepalette = false;
 	    }
 
 	    if (dotint && !game.menu.gShowMenu) 

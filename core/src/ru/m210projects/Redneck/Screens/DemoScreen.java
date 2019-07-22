@@ -142,6 +142,8 @@ public class DemoScreen extends GameScreen {
 	
 	@Override
 	public void KeyHandler() {
+		pEngine.handleevents();
+		
 		RRMenuHandler menu = game.menu;
 		if (menu.gShowMenu) {
 			menu.mKeyHandler(game.pInput, BuildGdx.graphics.getDeltaTime());

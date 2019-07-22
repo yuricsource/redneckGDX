@@ -18,8 +18,6 @@ package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Redneck.Names.*;
 
-import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Input.GPManager;
 import ru.m210projects.Build.OnSceenDisplay.OSDFunc;
 import ru.m210projects.Build.Pattern.BuildControls;
@@ -31,6 +29,7 @@ import ru.m210projects.Build.Pattern.FontHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.SliderDrawable;
 import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Build.Render.Renderer.RenderType;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Fonts.GameFont;
 import ru.m210projects.Redneck.Fonts.MenuFont;
@@ -57,8 +56,8 @@ public class RRFactory extends BuildFactory {
 	}
 
 	@Override
-	public Renderer renderer() {
-		if(BuildGdx.app.getFrameType() == FrameType.Software)
+	public Renderer renderer(RenderType type) {
+		if(type == RenderType.Software)
 			return new RRSoftware(app.pEngine);
 		else return new RRPolymost(app.pEngine);
 	}

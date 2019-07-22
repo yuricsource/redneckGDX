@@ -58,6 +58,7 @@ public class RMenuLoad extends MenuLoadSave {
 		
 		list.questionFont = app.getFont(1);
 		list.nListOffset = 15;
+		list.backgroundPal = 4;
 	}
 
 	@Override

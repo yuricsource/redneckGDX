@@ -121,6 +121,7 @@ public class RUserContent extends BuildMenu {
 		list.topPal = 10;
 		list.pathPal = 10;
 		list.listPal = 12;
+		list.backgroundPal = 4;
 		
 		addItem(title, false);
 		addItem(list, true);

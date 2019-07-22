@@ -16,7 +16,6 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Build.Engine.curpalette;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.sintable;
 import static ru.m210projects.Build.Engine.tilesizx;
@@ -98,8 +97,6 @@ public class AnmScreen extends SkippableAdapter {
 	    try {
 	    	anmfil = new AnimFile(animbuf);
 
-	    	System.arraycopy(anmfil.getPalette(), 0, curpalette, 0, 768);
-	    	
 		    tilesizx[TILE_ANIM] = 200;
 		    tilesizy[TILE_ANIM] = 320;
 		    lastanimhack = t;
@@ -110,6 +107,8 @@ public class AnmScreen extends SkippableAdapter {
 			name = fn;
 
 		    waloff[TILE_ANIM] = null;
+		    
+		    engine.changepalette(anmfil.getPalette());
 		    return true;
 	    } catch (Exception e) {
 	    	e.printStackTrace();

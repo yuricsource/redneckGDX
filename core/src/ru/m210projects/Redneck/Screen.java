@@ -45,6 +45,7 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 public class Screen {
 	
 	public static int changepalette;
+	public static boolean restorepalette;
 	public static int screensize;
 	public static int gViewXScaled;
 	public static int gViewYScaled;
@@ -113,15 +114,18 @@ public class Screen {
 	
 	public static void palto(int r, int g, int b, int count)
 	{
-		int fr = 0, fg = 0, fb = 0;
-		if(r > 0) fr = count - 128;
-		if(g > 0) fg = count - 128;
-		if(b > 0) fb = count - 128;
-
-		if(count > 0) {
-			engine.setpalettefade(fr, fg, fb, 1);
-			engine.showfade();	
-		}
+		if(engine.glrender() != null)
+		{
+			if(count > 0) {
+				int fr = 0, fg = 0, fb = 0;
+				if(r > 0) fr = count - 128;
+				if(g > 0) fg = count - 128;
+				if(b > 0) fb = count - 128;
+				engine.setpalettefade(fr, fg, fb, 1);
+				engine.showfade();
+			}
+		} else 
+			engine.setpalettefade(r, g, b, count & 127);
 	}
 	
 	public static void scrReset()
