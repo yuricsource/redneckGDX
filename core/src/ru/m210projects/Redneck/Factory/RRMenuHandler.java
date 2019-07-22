@@ -28,7 +28,7 @@ import static ru.m210projects.Redneck.ResourceHandler.*;
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
 import ru.m210projects.Build.Pattern.BuildGame;
-import ru.m210projects.Build.Pattern.CommonMenus.MenuColorCorr;
+import ru.m210projects.Build.Pattern.CommonMenus.MenuRendererSettings;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuVideoMode;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
@@ -81,7 +81,7 @@ public class RRMenuHandler extends MenuHandler {
 	@Override
 	public void mDrawMenu() {
 		if(screensize != 0) vscrn(0);
-		if(!(app.pMenu.getCurrentMenu() instanceof MenuColorCorr) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
+		if(!(app.pMenu.getCurrentMenu() instanceof MenuRendererSettings) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
 			int tile = LOADSCREEN;
 			float kt = xdim / (float) ydim;
 			float kv = tilesizx[tile] / (float) tilesizy[tile];

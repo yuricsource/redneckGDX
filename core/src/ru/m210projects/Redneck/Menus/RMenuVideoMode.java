@@ -16,6 +16,7 @@
 
 package ru.m210projects.Redneck.Menus;
 
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.COLORCORR;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Screen.*;
 
@@ -25,6 +26,7 @@ import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuRendererSettings;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuVideoMode;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Redneck.Factory.RRMenuHandler;
 
 public class RMenuVideoMode extends MenuVideoMode {
 
@@ -48,12 +50,17 @@ public class RMenuVideoMode extends MenuVideoMode {
 	@Override
 	public MenuRendererSettings getRenSettingsMenu(BuildGame app, int posx, int posy, int width,
 			int nHeight, BuildFont style) {
+		
+		final RRMenuHandler rmenu = (RRMenuHandler) app.pMenu;
+		
 		MenuRendererSettings menu = new MenuRendererSettings(app, posx, posy - 10, width, nHeight, style) {
 			@Override
 			public MenuTitle getTitle(BuildGame app, String text) {
 				return new RRTitle(text);
 			}
 		};
+		
+		rmenu.mMenus[COLORCORR] = menu;
 		return menu;
 	}
 
