@@ -382,7 +382,14 @@ public class GameScreen extends GameAdapter {
 						});
 						break;
 			    }
-	    	} else game.changeScreen(gStatisticScreen);
+	    	} else {
+	    		Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						game.changeScreen(gStatisticScreen);
+					}
+				});
+	    	}
 	    }
 	}
 
