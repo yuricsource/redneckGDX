@@ -248,6 +248,7 @@ public class DemoScreen extends GameScreen {
 				
 				demfile.rcnt++;
 				engine.updatesmoothticks();
+				game.pInt.clearinterpolations();
 				ProcessFrame(pNet);
 			}
 		} else lockclock = totalclock;
