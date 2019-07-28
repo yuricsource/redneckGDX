@@ -26,6 +26,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import ru.m210projects.Build.Audio.BuildAudio;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
 import ru.m210projects.Build.Pattern.BuildConfig;
+import ru.m210projects.Build.desktop.BuildApplicationConfiguration;
 import ru.m210projects.Build.desktop.BuildApplicationImpl;
 import ru.m210projects.Build.desktop.DesktopMessage;
 import ru.m210projects.Build.desktop.audio.ALAudio;
@@ -46,7 +47,7 @@ public class DesktopLauncher {
 
 		BuildConfig cfg = new Config(FilePath, appname + ".ini");
 
-		LwjglApplicationConfiguration lwjglConfig = new LwjglApplicationConfiguration();
+		BuildApplicationConfiguration lwjglConfig = new BuildApplicationConfiguration();
 		lwjglConfig.fullscreen = setFullscreen(cfg.ScreenWidth, cfg.ScreenHeight, cfg.fullscreen == 1);
 		lwjglConfig.width = (cfg.ScreenWidth);
 		lwjglConfig.height = (cfg.ScreenHeight);
@@ -57,6 +58,7 @@ public class DesktopLauncher {
 		lwjglConfig.backgroundFPS = cfg.fpslimit;
 		lwjglConfig.foregroundFPS = cfg.fpslimit;
 		lwjglConfig.vSyncEnabled = cfg.gVSync;
+		lwjglConfig.borderless = cfg.borderless;
 
 		BuildAudio.registerDriver(Driver.Sound, new ALSoundDrv(new ALSoundDrv.DriverCallback() {
 			public ALAudio InitDriver() throws Throwable {
