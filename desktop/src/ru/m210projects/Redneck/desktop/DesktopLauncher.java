@@ -25,7 +25,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import ru.m210projects.Build.Audio.BuildAudio;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
-import ru.m210projects.Build.Pattern.BuildConfig;
+import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.desktop.BuildApplicationConfiguration;
 import ru.m210projects.Build.desktop.BuildApplicationImpl;
 import ru.m210projects.Build.desktop.DesktopMessage;

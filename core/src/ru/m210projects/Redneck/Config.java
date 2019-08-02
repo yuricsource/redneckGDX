@@ -19,7 +19,7 @@ package ru.m210projects.Redneck;
 import static ru.m210projects.Build.Input.Keymap.*;
 
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildConfig;
+import ru.m210projects.Build.Settings.BuildConfig;
 
 import com.badlogic.gdx.Input.Keys;
 

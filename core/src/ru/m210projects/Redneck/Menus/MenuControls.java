@@ -29,13 +29,13 @@ import static ru.m210projects.Build.Input.Keymap.MOUSE_WHELLUP;
 import java.util.Arrays;
 
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildConfig;
-import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuText;
 import ru.m210projects.Build.Pattern.MenuItems.MenuVariants;
+import ru.m210projects.Build.Settings.BuildConfig;
+import ru.m210projects.Build.Settings.BuildConfig.GameKeys;
 
 public class MenuControls extends BuildMenu {
 

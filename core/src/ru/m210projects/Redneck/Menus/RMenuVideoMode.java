@@ -20,12 +20,12 @@ import static ru.m210projects.Redneck.Factory.RRMenuHandler.COLORCORR;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Screen.*;
 
-import ru.m210projects.Build.Pattern.BuildConfig;
 import ru.m210projects.Build.Pattern.BuildFont;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuRendererSettings;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuVideoMode;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
 
 public class RMenuVideoMode extends MenuVideoMode {
