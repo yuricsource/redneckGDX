@@ -18,7 +18,7 @@ package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Redneck.Names.*;
 
-import ru.m210projects.Build.Input.GPManager;
+import ru.m210projects.Build.Input.BuildControllers;
 import ru.m210projects.Build.OnSceenDisplay.OSDFunc;
 import ru.m210projects.Build.Pattern.BuildControls;
 import ru.m210projects.Build.Pattern.BuildEngine;
@@ -63,7 +63,7 @@ public class RRFactory extends BuildFactory {
 	}
 
 	@Override
-	public BuildControls input(GPManager gpmanager) {
+	public BuildControls input(BuildControllers gpmanager) {
 		return new RRInput(app.pCfg, gpmanager);
 	}
 

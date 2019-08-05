@@ -56,7 +56,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Input.GPManager;
+import ru.m210projects.Build.Input.BuildControllers;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildControls;
@@ -85,7 +85,7 @@ public class RRInput extends BuildControls {
 	private short vel, svel;
 	private float horiz, angvel;
 
-	public RRInput(BuildConfig cfg, GPManager gpmanager) {
+	public RRInput(BuildConfig cfg, BuildControllers gpmanager) {
 		super(cfg, gpmanager);
 	}
 	
