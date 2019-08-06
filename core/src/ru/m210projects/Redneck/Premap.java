@@ -1576,13 +1576,11 @@ public class Premap {
 			opalookup[3] = palookup[30];
 			opalookup[4] = palookup[33];
 
-			if(BuildGdx.app.getFrameType() == FrameType.GL) {
-				opalookupfog[0] = palookupfog[0];
-				opalookupfog[1] = palookupfog[8];
-				opalookupfog[2] = palookupfog[23];
-				opalookupfog[3] = palookupfog[30];
-				opalookupfog[4] = palookupfog[33];
-			}
+			opalookupfog[0] = palookupfog[0];
+			opalookupfog[1] = palookupfog[8];
+			opalookupfog[2] = palookupfog[23];
+			opalookupfog[3] = palookupfog[30];
+			opalookupfog[4] = palookupfog[33];
 
 			for(int i = 0; i < 256; i++)
 		    	tempbuf[i] = (byte) i;
