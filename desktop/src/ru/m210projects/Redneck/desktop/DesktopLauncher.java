@@ -16,15 +16,19 @@
 
 package ru.m210projects.Redneck.desktop;
 
-import static ru.m210projects.Build.FileHandle.Compat.FilePath;
-import static ru.m210projects.Build.FileHandle.Compat.FileUserdir;
 import static ru.m210projects.Build.Render.VideoMode.initVideoModes;
 import static ru.m210projects.Build.Render.VideoMode.setFullscreen;
 
+import java.io.File;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
+import ru.m210projects.Build.FileHandle.Cache1D;
+import ru.m210projects.Build.FileHandle.Compat;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.desktop.BuildApplicationConfiguration;
 import ru.m210projects.Build.desktop.BuildApplicationImpl;
@@ -41,11 +45,13 @@ public class DesktopLauncher {
 	public static final String appname = "RedneckGDX";
 
 	public static void main(final String[] arg) {
-		//Run configurations: "D:\Games\RR\\"
-		FilePath = FileUserdir = arg[0];
+		String filepath = arg[0] + File.separator;
+		BuildGdx.compat = new Compat(filepath, filepath);
+		BuildGdx.cache = new Cache1D(BuildGdx.compat);
+		
 		int midiDevice = 0;
 
-		BuildConfig cfg = new Config(FilePath, appname + ".ini");
+		BuildConfig cfg = new Config(Path.Game.getPath(), appname + ".ini");
 
 		BuildApplicationConfiguration lwjglConfig = new BuildApplicationConfiguration();
 		lwjglConfig.fullscreen = setFullscreen(cfg.ScreenWidth, cfg.ScreenHeight, cfg.fullscreen == 1);
