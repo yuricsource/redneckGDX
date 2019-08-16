@@ -18,8 +18,6 @@ package ru.m210projects.Redneck.Menus;
 
 import static ru.m210projects.Redneck.Gamedef.preparescript;
 import static ru.m210projects.Redneck.Gamedef.isaltok;
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
-import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Strhandler.*;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
 import static ru.m210projects.Redneck.Names.*;
@@ -34,10 +32,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import ru.m210projects.Redneck.Types.GameInfo;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.IResource;
-import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
+import ru.m210projects.Build.FileHandle.Group;
+import ru.m210projects.Build.FileHandle.GroupResource;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.MenuItems.BrowserFileType;
@@ -133,7 +133,7 @@ public class RUserContent extends BuildMenu {
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
 			if(file.getExtension().equals("con")) 
-				InitTree(map, preparescript(kGetBytes(file.getPath(), 0)), file.getName());
+				InitTree(map, preparescript(BuildGdx.compat.getBytes(file)), file.getName());
 		}
 		
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
@@ -148,7 +148,7 @@ public class RUserContent extends BuildMenu {
 
 		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
 			String con = it.next();
-			if(dir != cache || !con.equals("game.con")) {
+			if(dir != BuildGdx.compat.getDirectory(Path.Game) || !con.equals("game.con")) {
 				FileEntry fil = dir.checkFile(con);
 				GameInfo addon = episodes.get(fil.getPath());
 				if(addon == null) {
@@ -166,7 +166,7 @@ public class RUserContent extends BuildMenu {
 			}
 		}
 		
-		if(showmain && dir == cache) {
+		if(showmain && dir == BuildGdx.compat.getDirectory(Path.Game)) {
 			String entry = defGame.getFile().getPath();
 			GameInfo addon = episodes.get(entry);
 			if(addon == null) {
@@ -180,22 +180,22 @@ public class RUserContent extends BuildMenu {
 	
 	private void buildPackage(MenuFileBrowser blist, FileEntry file, BrowserFileType type)
 	{
-		if(file.getParent() == cache && file.getName().equals("redneck.grp"))
+		if(file.getParent() == BuildGdx.compat.getDirectory(Path.Game) && file.getName().equals("redneck.grp"))
 			return; //show main
 		
 		try {
-			IResource res = checkgroupfile(file.getPath());
+			Group res = BuildGdx.cache.isGroup(file.getPath());
 			if(res != null)
 			{
 				HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-				for(RESHANDLE files : res.fList()) {
-					if(files.fileformat.equals("con")) 
-						InitTree(map, preparescript(files.getBytes()), files.filename);	
+				for(GroupResource files : res.getList()) {
+					if(files.getExtension().equals("con")) 
+						InitTree(map, preparescript(files.getBytes()), files.getFullName());	
 				}
 				
-				for(RESHANDLE files : res.fList()) {
-					if(files.fileformat.equals("con")) {
-						List<String> list = map.get(files.filename);
+				for(GroupResource files : res.getList()) {
+					if(files.getExtension().equals("con")) {
+						List<String> list = map.get(files.getFullName());
 						if(list != null) 
 							handleList(map, list);
 					}
@@ -219,7 +219,7 @@ public class RUserContent extends BuildMenu {
 					}
 				}
 				
-				res.Dispose();
+				res.dispose();
 				res = null;
 			}
 		} catch (Exception e) {
@@ -277,7 +277,7 @@ public class RUserContent extends BuildMenu {
 	public void setShowMain(boolean show)
 	{
 		this.showmain = show;
-		if(list.getDirectory() == cache)
+		if(list.getDirectory() == BuildGdx.compat.getDirectory(Path.Game))
 			list.refreshList();
 	}
 	

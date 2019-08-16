@@ -16,9 +16,12 @@
 
 package ru.m210projects.Redneck.Types;
 
+import ru.m210projects.Build.FileHandle.Resource;
+
 public class LumpInfo {
 	
 	public String name;
-	public int handle, position, size;
+	public int position, size;
+	public Resource handle;
 
 }

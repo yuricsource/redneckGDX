@@ -24,11 +24,6 @@ import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Gameutils.*;
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
-import static ru.m210projects.Build.FileHandle.Cache1D.kFileLength;
-import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
-import static ru.m210projects.Build.FileHandle.Cache1D.kOpen;
-import static ru.m210projects.Build.FileHandle.Cache1D.kRead;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Pragmas.divscale;
@@ -44,6 +39,7 @@ import ru.m210projects.Build.Audio.Sound.SystemType;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.Audio.SourceCallback;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Types.Sample;
@@ -238,7 +234,7 @@ public class Sounds {
 	private static void playmusic(String fn) {
 		if (fn == null)
 			return;
-		byte[] pRaw = kGetBytes(fn, 0);
+		byte[] pRaw = BuildGdx.cache.getBytes(fn, 0);
 
 		if (pRaw == null || pRaw.length <= 0)
 			return;
@@ -306,10 +302,10 @@ public class Sounds {
 		if (!BuildGdx.audio.IsInited(Driver.Sound))
 			return 0;
 
-		int fp = -1;
+		Resource fp = null;
 		if (currentGame.getCON().sounds[num] != null)
-			fp = kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
-		if (fp == -1) {
+			fp = BuildGdx.cache.open(currentGame.getCON().sounds[num], loadfromgrouponly);
+		if (fp == null) {
 			int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
 			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
 			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
@@ -317,16 +313,14 @@ public class Sounds {
 			FTA(113, ps[myconnectindex]);
 			return 0;
 		}
-		int l = kFileLength(fp);
-		soundsiz[num] = l;
+
+		soundsiz[num] = fp.size();
 		Sound[num].lock = 2;
 
-		byte[] tmp = new byte[l];
-		kRead(fp, tmp, l);
-
+		byte[] tmp = fp.getBytes();
 		loadSample(tmp, num);
 
-		kClose(fp);
+		fp.close();
 		return 1;
 	}
 

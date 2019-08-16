@@ -27,7 +27,6 @@ import static ru.m210projects.Build.Engine.parallaxyscale;
 import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.sprite;
 import static ru.m210projects.Build.Engine.totalclock;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
@@ -729,7 +728,7 @@ public class GameScreen extends GameAdapter {
 	{
 		String name = "scrxxxx.png";
 		FileEntry map;
-		if(mUserFlag == UserFlag.UserMap && (map = cache.checkFile(boardfilename)) != null) 
+		if(mUserFlag == UserFlag.UserMap && (map = BuildGdx.compat.checkFile(boardfilename)) != null) 
 			name = "scr-" + map.getName() + "-xxxx.png";
 		if(mUserFlag != UserFlag.UserMap && currentGame != null)
 			name = "scr-e" + (ud.volume_number+1) + "m" + (ud.level_number+1) + "[" + currentGame.getFile().getName() + "]-xxxx.png";
@@ -905,7 +904,7 @@ public class GameScreen extends GameAdapter {
 			}
 		}
 		else {
-			FileEntry file = cache.checkFile(boardfilename);
+			FileEntry file = BuildGdx.compat.checkFile(boardfilename);
 			if(file != null) 
 				title = file.getName();
 			else {

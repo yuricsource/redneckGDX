@@ -25,7 +25,6 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Animate.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
@@ -43,6 +42,7 @@ import java.util.Arrays;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
@@ -370,22 +370,19 @@ public class Premap {
 	    if(num >= NUM_SOUNDS || cfg.noSound) return false;
 
 	    if(currentGame.getCON().sounds[num] == null) return false;
-	    int fp = kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
-	    if(fp == -1) return false;
+	    
+	    
+	    Resource fp = BuildGdx.cache.open(currentGame.getCON().sounds[num], loadfromgrouponly);
+	    if(fp == null) return false;
 
-	    int l = kFileLength( fp );
-	    soundsiz[num] = l;
+	    soundsiz[num] = fp.size();
 
-//	    if( (ud.level_number == 0 && ud.volume_number == 0 && (num == 189 || num == 232 || num == 99 || num == 233 || num == 17 ) ) || ( l < 12288 ) )
+	    //if( (ud.level_number == 0 && ud.volume_number == 0 && (num == 189 || num == 232 || num == 99 || num == 233 || num == 17 ) ) || ( l < 12288 ) )
 	    {
-	        Sound[num].lock = 2;
-	        
-	        byte[] tmp = new byte[l];
-	        kRead( fp, tmp , l);
-	        
-	        loadSample(tmp, num);
+	    	Sound[num].lock = 2;
+	        loadSample(fp.getBytes(), num);
 	    }
-	    kClose( fp );
+	    fp.close();
 	    return true;
 	}
 
@@ -1501,26 +1498,26 @@ public class Premap {
 	    int look_pos;
 	    int numl = 0;
 
-	    int fp = kOpen("lookup.dat",0);
-	    if(fp != -1)
-	    	numl = kRead(fp,1);
+	    Resource fp = BuildGdx.cache.open("lookup.dat", 0);
+	    if(fp != null)
+	    	numl = fp.readByte();
 	    else
 	        game.dassert("\nERROR: File 'LOOKUP.DAT' not found.");
 
 	    for(j=0; j < numl; j++)
 	    {
-	        look_pos = kRead(fp,1);
-	        kRead(fp,tempbuf,256);
+	    	look_pos = fp.readByte();
+	    	 fp.read(tempbuf,256);
 	        engine.makepalookup(look_pos,tempbuf,0,0,0,1);
 	        if(look_pos == 8)
 	        	engine.makepalookup(54,tempbuf,32,32,32,1);
 	    }
 
-	    kRead(fp,waterpal,768);
-	    kRead(fp,slimepal,768);
-	    kRead(fp,titlepal,768);
-	    kRead(fp,drealms,768);
-	    kRead(fp,endingpal,768);
+	    fp.read(waterpal,768);
+	    fp.read(slimepal,768);
+	    fp.read(titlepal,768);
+	    fp.read(drealms,768);
+	    fp.read(endingpal,768);
 
 	    palette[765] = palette[766] = palette[767] = 0;
 	    slimepal[765] = slimepal[766] = slimepal[767] = 0;
@@ -1528,7 +1525,7 @@ public class Premap {
 	    
 		System.arraycopy(palette, 1, drugpal, 0, 767);
 		
-	    kClose(fp);
+		 fp.close();
 	    
 	    for(int i = 0; i < 768; i++)
 	    	tempbuf[i] = (byte) i;

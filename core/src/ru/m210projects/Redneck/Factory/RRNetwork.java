@@ -32,7 +32,6 @@ import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Build.Gameutils.*;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
@@ -50,6 +49,7 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.FileUtils;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildNet;
@@ -122,17 +122,12 @@ public class RRNetwork extends BuildNet {
 			if(pathlen >= p.length - ptr) 
 				pathlen = p.length - ptr - 1;
 
-			String path = new String(p, ptr, pathlen);
+			String path = FileUtils.getCorrectPath(new String(p, ptr, pathlen));
 			ptr += pathlen;
 			long crc32 = LittleEndian.getUInt(p, ptr);
 			long mycrc = -1;
 
-			if (path.contains("/"))
-				path = path.replace("/", File.separator);
-			if (path.contains("\\"))
-				path = path.replace("\\", File.separator);
-
-			FileEntry fil = cache.checkFile(path);
+			FileEntry fil = BuildGdx.compat.checkFile(path);
 			GameInfo ini = levelGetEpisode(path);
 
 			byte found = 0;

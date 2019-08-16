@@ -18,6 +18,7 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Input.Keymap.*;
 
+import ru.m210projects.Build.FileHandle.FileResource;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Settings.BuildConfig;
 
@@ -245,8 +246,8 @@ public class Config extends BuildConfig {
 	public boolean gColoredKeys;
 	
 	@Override
-	public void SaveConfig(int fil) {
-		if(fil != -1)
+	public void SaveConfig(FileResource fil) {
+		if(fil != null)
 		{
 			saveString(fil, "[Options]\r\n");	
 				//Options

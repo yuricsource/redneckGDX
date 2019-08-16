@@ -21,7 +21,6 @@ import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Input.Keymap.ANYKEY;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
@@ -294,7 +293,7 @@ public class StatisticScreen extends ScreenAdapter {
 
 			String lastmapname = null;
 		    if (ud.volume_number == 2 && ud.last_level == 4 && boardfilename != null) {
-				FileEntry file = cache.checkFile(boardfilename);
+				FileEntry file = BuildGdx.compat.checkFile(boardfilename);
 				lastmapname = file.getName();
 			} else 
 				lastmapname = gMapInfo.title;

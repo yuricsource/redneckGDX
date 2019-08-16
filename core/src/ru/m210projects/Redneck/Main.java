@@ -18,8 +18,6 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Redneck.LoadSave.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
-import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.OnSceenDisplay.Console.*;
 import static ru.m210projects.Redneck.Animate.*;
@@ -41,7 +39,8 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildMessage.MessageType;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
+import ru.m210projects.Build.FileHandle.Group;
+import ru.m210projects.Build.FileHandle.GroupResource;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
@@ -162,39 +161,38 @@ public class Main extends BuildGame {
 			hittype[i] = new Weaponhit();
 
 		Console.Println("Initializing def-scripts...");
+		baseDef.setEngine(engine);
+		
 		if (cfg.autoloadFolder) {
 			Console.Println("Initializing autoload folder");
 			DirectoryEntry autoload;
-			if ((autoload = cache.checkDirectory("autoload")) != null) {
+			if((autoload = BuildGdx.compat.checkDirectory("autoload")) != null) {
 				for (Iterator<FileEntry> it = autoload.getFiles().values().iterator(); it.hasNext();) {
 					FileEntry file = it.next();
 					if (file.getExtension().equals("zip")) {
 						String filename = file.getName().substring(0, file.getName().lastIndexOf('.'));
-						int group = initgroupfile(file.getPath());
-						for (RESHANDLE res : kList(group)) {
-							if (res.filename.lastIndexOf('.') == -1)
-								continue;
-
-							String resname = res.filename.substring(0, res.filename.lastIndexOf('.'));
-							if (resname.equals(filename) && res.fileformat.equals("def")) {
-								byte[] buf = res.getBytes();
-								baseDef.loadScript(res.filename, buf);
-								break;
-							}
+						
+						Group group = BuildGdx.cache.add(file.getPath());
+						if(group == null) continue;
+						
+						GroupResource def = group.open(filename + ".def");
+						if(def != null)
+						{
+							byte[] buf = def.getBytes();
+				    		baseDef.loadScript(def.getFullName(), buf);
+				    		def.close();
 						}
-					}
-
-					if (file.getExtension().equals("def"))
+					} else if (file.getExtension().equals("def"))
 						baseDef.loadScript(file);
 				}
 			}
 		}
-
-		FileEntry mainDef = null;
-		if ((mainDef = cache.checkFile("rrgdx.def")) != null)
-			baseDef.loadScript(mainDef);
-
-		setDefs(baseDef);
+		
+		
+		FileEntry filgdx = BuildGdx.compat.checkFile("rrgdx.def");
+		if(filgdx != null)
+			baseDef.loadScript(filgdx);
+		this.setDefs(baseDef);
 
 		menu.mMenus[MAIN] = new MainMenu(this);
 		menu.mMenus[GAME] = new GameMenu(this);

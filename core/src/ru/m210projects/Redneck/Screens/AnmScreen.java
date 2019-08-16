@@ -24,7 +24,6 @@ import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.waloff;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
 import static ru.m210projects.Build.Input.Keymap.ANYKEY;
 import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Redneck.Globals.RR66;
@@ -38,6 +37,7 @@ import static ru.m210projects.Redneck.Sounds.sound;
 import com.badlogic.gdx.Gdx;
 
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.ScreenAdapters.SkippableAdapter;
 import ru.m210projects.Redneck.Types.AnimFile;
@@ -91,7 +91,7 @@ public class AnmScreen extends SkippableAdapter {
 	{
 		if(anmfil != null) return false;
 		
-		byte[] animbuf = kGetBytes(fn, 0);
+		byte[] animbuf = BuildGdx.cache.getBytes(fn, 0);
 		if(animbuf == null) return false;
 
 	    try {

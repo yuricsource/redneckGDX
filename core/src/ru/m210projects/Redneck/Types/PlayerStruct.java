@@ -16,14 +16,13 @@
 
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
+import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Redneck.SoundDefs.DUKE_SCREAM;
 import static ru.m210projects.Redneck.Sounds.spritesound;
 
-import java.nio.ByteBuffer;
-
 import ru.m210projects.Build.Audio.Source;
+import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
@@ -547,7 +546,7 @@ public class PlayerStruct {
 		return buf;
 	}
 	
-	public void set(ByteBuffer bb)
+	public void set(ResourceData bb)
 	{
 		exitx = bb.getInt();
 		exity = bb.getInt();

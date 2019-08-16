@@ -17,10 +17,6 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
-import static ru.m210projects.Build.FileHandle.Compat.FilePath;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
-import static ru.m210projects.Build.FileHandle.Compat.getFilename;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Main.*;
@@ -39,10 +35,15 @@ import java.util.zip.CRC32;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.IResource;
-import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
+import ru.m210projects.Build.FileHandle.Group;
+import ru.m210projects.Build.FileHandle.GroupResource;
+import ru.m210projects.Build.FileHandle.PackedZipGroup;
+import ru.m210projects.Build.FileHandle.ZipGroup;
+import ru.m210projects.Build.FileHandle.Cache1D.PackageType;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Redneck.Types.GameInfo;
 
 public class ResourceHandler {
@@ -53,7 +54,7 @@ public class ResourceHandler {
 	public static final int WIDEHUD_PART1 = 9254;
 	public static final int WIDEHUD_PART2 = 9255;
 
-	private static int usergroup;
+	private static Group usergroup;
 	private static boolean usecustomarts;
 
 	public static final int[][] replace = {
@@ -135,10 +136,11 @@ public class ResourceHandler {
 		
 	public static void resetEpisodeResources()
 	{
-		kDynamicClear();
-		usergroup = -1;
-		currentGame = defGame;
+		BuildGdx.cache.clearDynamicResources();
 
+		usergroup = null;
+		currentGame = defGame;
+		
 		for(int i = 0; i < NUM_SOUNDS; i++)
 			Sound[i].ptr = null;
 
@@ -152,22 +154,23 @@ public class ResourceHandler {
 		Arrays.fill(waloff, 0, kMaxTiles, null);
 		
 		if(engine.loadpics("tiles000.art") == 0)
-			game.dassert("ART files not found " + new File(FilePath + "TILES###.ART").getAbsolutePath());
+			game.dassert("ART files not found " + new File(Path.Game.getPath() + "TILES###.ART").getAbsolutePath());
 		
-		ReplaceUserTiles();
-		
+//		ReplaceUserTiles(); XXX
+		game.currentDef.dispose();
+		game.setDefs(game.baseDef);  //return tilefromtiles textures
+			
 		InitSpecialTextures();
-	    
-	    BowlReset();
-	    
+		BowlReset();
+
 	    usecustomarts = false;
 	}
 	
-	public static void InitGroupResources(List<RESHANDLE> list)
+	public static void InitGroupResources(List<GroupResource> list)
 	{
-		for(RESHANDLE res : list) {
-			if(res.fileformat.equals("art")) {
-				engine.loadpic(res.filename);
+		for(GroupResource res : list) {
+			if(res.getExtension().equals("art")) {
+				engine.loadpic(res.getFullName());
 				usecustomarts = true;
 			}
 		}
@@ -186,7 +189,7 @@ public class ResourceHandler {
 			conName = fullname.substring(filenameIndex+1);
 		}
 
-		FileEntry file = cache.checkFile(filepath);
+		FileEntry file = BuildGdx.compat.checkFile(filepath);
 		if(file != null)
 		{
 			GameInfo ini = null;
@@ -205,7 +208,7 @@ public class ResourceHandler {
 					|| file.getExtension().equals("grp"))
 				{
 					try {
-						IResource res = checkgroupfile(file.getPath());
+						Group res = BuildGdx.cache.isGroup(file.getPath());
 						if(res != null)
 						{
 							ini = new GameInfo(res, file, conName);
@@ -215,7 +218,7 @@ public class ResourceHandler {
 							}
 							else ini = null;
 						}
-						res.Dispose();
+						res.dispose();
 						res = null;
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -228,21 +231,20 @@ public class ResourceHandler {
 		return null;
 	}
 	
-	public static void prepareusergroup(int group, boolean removable) throws Exception
+	public static void prepareusergroup(Group group, boolean removable) throws Exception
 	{
-		//Searching and loading rfs scripts
-		for(RESHANDLE res : kList(group)) {
-			if(res.paktype == ZIP) //zips can use subfolders
-				res.filename = getFilename(res.filename); //Correct path in archive (files shouldn't be in a subfolder)
-			
-			if(res.fileformat.equals("grp"))
+		if(group.type == PackageType.Zip) //Correct path in archive (files shouldn't be in a subfolder)
+			((ZipGroup) group).removeFolders();
+		else if(group.type == PackageType.PackedZip)
+			((PackedZipGroup) group).removeFolders();
+		
+		List<GroupResource> list = group.getList();
+		for(GroupResource res : list) {
+			if(res.getExtension().equals("grp") || res.getExtension().equals("zip"))
 			{
-				int groupnum = initgroupfile(res.getBytes());
-				setgroupflags(groupnum, true, removable);
+				BuildGdx.cache.add(res, removable);
 			}
-			if(res.fileformat.equals("zip"))
-				throw new Exception("ZIP in groupfile not support!");
-
+			
 //			if(res.fileformat.equals("cue")) {
 //				Console.Println("Cd tracks found...");
 //				parserfs(removable?group:-1, res.filename, res.getBytes());
@@ -262,14 +264,14 @@ public class ResourceHandler {
 			}
 		}
 
-		if(usergroup == -1)
-			usergroup = kGroupNew("User", true);
+		if(usergroup == null)
+			usergroup = BuildGdx.cache.add("User", true);
 		
 		for (Iterator<FileEntry> it = cache.getFiles().values().iterator(); it.hasNext(); ) {
 			FileEntry file = it.next();
 			if(!file.getExtension().equals("zip")
 					&& !file.getExtension().equals("grp")) 
-				kGroupAdd(usergroup, file.getPath(), null, 0);
+				usergroup.add(file.getPath(), null, 0);
 	    }
 	}
 	
@@ -281,8 +283,8 @@ public class ResourceHandler {
 		{
 			FileEntry fil = addon.getFile();
 			try {
-				int gr = initgroupfile(fil.getPath());
-				setgroupflags(gr, true, true);
+				Group gr = BuildGdx.cache.add(fil.getPath());
+				gr.setFlags(true, true);
 				prepareusergroup(gr, true);
 			} catch(Exception e) { 
 				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
@@ -299,7 +301,7 @@ public class ResourceHandler {
 		
 		error = 0;
 		//Loading user package files
-		InitGroupResources(kDynamicList());
+		InitGroupResources(BuildGdx.cache.getDinamicResources());
 		if(addon.getCON() == null) 
 			addon.setCON(loaduserdef(addon.ConName));
 		

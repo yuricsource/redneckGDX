@@ -16,10 +16,9 @@
 
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Build.FileHandle.Compat.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
 import static ru.m210projects.Build.Strhandler.Bstrcmp;
 import static ru.m210projects.Build.Strhandler.indexOf;
+import static ru.m210projects.Build.Strhandler.toLowerCase;
 import static ru.m210projects.Build.OnSceenDisplay.Console.*;
 import static ru.m210projects.Redneck.Gamedef.*;
 import static ru.m210projects.Redneck.Globals.*;
@@ -27,9 +26,12 @@ import static ru.m210projects.Redneck.Globals.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.IResource;
+import ru.m210projects.Build.FileHandle.FileUtils;
+import ru.m210projects.Build.FileHandle.Group;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 
 public class GameInfo {
@@ -58,7 +60,7 @@ public class GameInfo {
 		isInited = false;
 	}
 	
-	public GameInfo(IResource res, FileEntry file, String mainCon)
+	public GameInfo(Group res, FileEntry file, String mainCon)
 	{
 		this.ConName = mainCon;
 		this.Title = file.getName() + ":" + mainCon;
@@ -74,14 +76,14 @@ public class GameInfo {
 			nMaps = 0;
 			nEpisodes = 0;
 			for(int i = 0; i < list.size(); i++) {
-				int fil = res.Lookup(list.get(i));
-				if(fil == -1) continue;
+				Resource fil = res.open(list.get(i));
+				if(fil == null) continue;
 				
-				byte[] data = preparescript(res.Lock(fil));
+				byte[] data = preparescript(fil.getBytes());
 				findSkillNames(data);
 				findVolumes(data);
 				findMaps(data, res);
-				res.Close(fil);
+				fil.close();
 			}
 
 			if(nEpisodes != 0 && nMaps != 0) 
@@ -144,7 +146,7 @@ public class GameInfo {
 			for(int i = 0; i < list.size(); i++) {
 				FileEntry scriptfile = list.get(i);
 				if(scriptfile == null) continue;
-				byte[] data = preparescript(kGetBytes(scriptfile.getPath(), 0));
+				byte[] data = preparescript(BuildGdx.compat.getBytes(scriptfile));
 				findSkillNames(data);
 				findVolumes(data);
 				findMaps(data, null);
@@ -188,7 +190,7 @@ public class GameInfo {
 	private void InitTree(List<FileEntry> list, FileEntry confile)
 	{
 		if(confile == null) return;
-		byte[] buf = preparescript(kGetBytes(confile.getPath(),0));
+		byte[] buf = preparescript(BuildGdx.compat.getBytes(confile));
 		int index = -1;
         while( (index = indexOf("include ", buf, index+1)) != -1)
         {
@@ -206,12 +208,12 @@ public class GameInfo {
         }
 	}
 	
-	private void InitTree(List<String> list, IResource res, String filename)
+	private void InitTree(List<String> list, Group res, String filename)
 	{
-		int fil = res.Lookup(filename);
-		if(fil != -1)
+		Resource fil = res.open(filename);
+		if(fil != null)
 		{
-			byte[] buf = preparescript(res.Lock(fil));
+			byte[] buf = preparescript(fil.getBytes());
 			int index = -1;
 	        while( (index = indexOf("include ", buf, index+1)) != -1)
 	        {
@@ -227,7 +229,7 @@ public class GameInfo {
 	            String name = new String(buf, textptr, i);
 	            list.add(name);
 	        }
-	        res.Close(fil);
+	        fil.close();
 		}
 	}
 	
@@ -256,7 +258,7 @@ public class GameInfo {
         return false;
 	}
 	
-	private void findMaps(byte[] buf, IResource res)
+	private void findMaps(byte[] buf, Group res)
 	{
 		int index = -1;
 		
@@ -274,7 +276,7 @@ public class GameInfo {
             int ptr = textptr;
             while( buf[textptr] != ' ' && buf[textptr] != 0x0a ) { textptr++; i++; }
             
-            String path = bCorrectPath(toLowerCase(new String(buf, ptr, i)));
+            String path = FileUtils.getCorrectPath(toLowerCase(new String(buf, ptr, i)));
             boolean mapFound = false;
             String mapPath = path;
             if(res == null)
@@ -284,7 +286,7 @@ public class GameInfo {
             	if(mapFound)
             		mapPath = mapFile.getPath();
             } else {
-            	mapFound = res.Lookup(path) != -1;
+            	mapFound = res.contains(path);
             	mapPath = path;
             }
             
