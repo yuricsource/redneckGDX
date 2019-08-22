@@ -39,7 +39,6 @@ import static ru.m210projects.Redneck.Sector.*;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
@@ -51,7 +50,6 @@ import ru.m210projects.Build.FileHandle.FileResource.Mode;
 import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
 import ru.m210projects.Build.Pattern.Tools.SaveManager;
-import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
@@ -865,32 +863,11 @@ public class LoadSave {
 		if(ps[myconnectindex].fogtype == 2)
 			applyfog(2);
 		else applyfog(0);
-     
-		Arrays.fill(gotpic, (byte)0);
-		clearsoundlocks();
-		cacheit();
 
-		userMusic = null;
-		if(boardfilename != null) {
-			FileEntry file = BuildGdx.compat.checkFile(boardfilename);
-			if(file != null) 
-				sndCheckMusic(file);
-		}
-
-		musicvolume = ud.volume_number;
-    	musiclevel = ud.level_number;
-    	sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
-
+		if(ud.rec != null)
+			ud.rec.close();
 		ud.recstat = 0;
 
-		if(ps[myconnectindex].jetpack_on != 0)
-			spritesound(DUKE_JETPACK_IDLE,ps[myconnectindex].i);
-
-		setpal(ps[myconnectindex]);
-		vscrn(ud.screen_size);
-
-		BuildGdx.audio.getSound().setReverb(false, 0);
-	   
 		if(ud.lockout == 0)
 		{
 			for(int x=0;x<numanimwalls;x++)
@@ -928,29 +905,55 @@ public class LoadSave {
 		}
 		
 		fta = 0;
-
 		everyothertime = 0;
 		
-		game.pInput.resetMousePos();
-		game.net.predict.reset();
-		game.gPaused = false;
-		
-		game.nNetMode = NetMode.Single;
+		gPrecacheScreen.init(false, new Runnable() {
+			@Override
+			public void run() {
+				InitSpecialTextures();
+				clearsoundlocks();
 
-		if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
-			setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
+				userMusic = null;
+				if(boardfilename != null) {
+					FileEntry file = BuildGdx.compat.checkFile(boardfilename);
+					if(file != null) 
+						sndCheckMusic(file);
+				}
+				
+				musicvolume = ud.volume_number;
+		    	musiclevel = ud.level_number;
+		    	sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
 
-		game.changeScreen(gGameScreen);
-		game.pNet.ResetTimers();
-		game.pNet.WaitForAllPlayers(0);
-		game.pNet.ready2send = true;
+		    	
 
-		GLRenderer gl = engine.glrender();
-		if(gl != null) gl.preload();
-		
-		StopAllSounds();
+				if(ps[myconnectindex].jetpack_on != 0)
+					spritesound(DUKE_JETPACK_IDLE,ps[myconnectindex].i);
 
-		System.gc();
+				setpal(ps[myconnectindex]);
+				vscrn(ud.screen_size);
+
+				BuildGdx.audio.getSound().setReverb(false, 0);
+				
+				game.pInput.resetMousePos();
+				game.net.predict.reset();
+				game.gPaused = false;
+				
+				game.nNetMode = NetMode.Single;
+				
+				if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
+					setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
+
+				game.changeScreen(gGameScreen);
+				game.pNet.ResetTimers();
+				game.pNet.WaitForAllPlayers(0);
+				game.pNet.ready2send = true;
+
+				StopAllSounds();
+
+				System.gc();
+			}
+		});
+		game.changeScreen(gPrecacheScreen);
 	}
 	
 	public static boolean loadgame(String filename) {

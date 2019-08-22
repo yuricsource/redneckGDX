@@ -130,12 +130,18 @@ public class DemoScreen extends GameScreen {
 	}
 	
 	@Override
-	protected void startboard() 
+	protected void startboard(final Runnable startboard) 
 	{
-		super.startboard(); //call faketimehandler
-		pNet.ResetTimers();
-		lockclock = 0;
-		pNet.ready2send = false;
+		gPrecacheScreen.init(false, new Runnable() {
+			@Override
+			public void run() {
+				startboard.run(); //call faketimehandler
+				pNet.ResetTimers(); //reset ototalclock
+				lockclock = 0;
+				pNet.ready2send = false;
+			}
+		});
+		game.changeScreen(gPrecacheScreen);
 	}
 	
 	@Override

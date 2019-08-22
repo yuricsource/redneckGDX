@@ -62,6 +62,7 @@ import ru.m210projects.Redneck.Screens.GameScreen;
 import ru.m210projects.Redneck.Screens.LoadingScreen;
 import ru.m210projects.Redneck.Screens.MenuScreen;
 import ru.m210projects.Redneck.Screens.NetScreen;
+import ru.m210projects.Redneck.Screens.PrecacheScreen;
 import ru.m210projects.Redneck.Screens.StatisticScreen;
 import ru.m210projects.Redneck.Types.Animwalltype;
 import ru.m210projects.Redneck.Types.PlayerOrig;
@@ -96,6 +97,7 @@ public class Main extends BuildGame {
 	public static EndScreen gEndScreen;
 	public static NetScreen gNetScreen;
 	public static DisconnectScreen gDisconnectScreen;
+	public static PrecacheScreen gPrecacheScreen;
 
 	public static enum UserFlag {
 		None, UserMap, Addon
@@ -206,6 +208,7 @@ public class Main extends BuildGame {
 		gEndScreen = new EndScreen();
 		gNetScreen = new NetScreen(this);
 		gDisconnectScreen = new DisconnectScreen(this);
+		gPrecacheScreen = new PrecacheScreen(this);
 
 		gDemoScreen.demoscan();
 		
@@ -404,7 +407,7 @@ public class Main extends BuildGame {
 	}
 
 	@Override
-	protected String reportData() {
+	protected byte[] reportData() {
 		String text = "";
 		text += "boardfilename " + boardfilename;
 		text += "\r\n";
@@ -423,6 +426,6 @@ public class Main extends BuildGame {
 		text += "sectnum " + ps[myconnectindex].cursectnum;
 		text += "\r\n";
 
-		return text;
+		return text.getBytes();
 	}
 }

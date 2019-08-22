@@ -156,7 +156,7 @@ public class ResourceHandler {
 		if(engine.loadpics("tiles000.art") == 0)
 			game.dassert("ART files not found " + new File(Path.Game.getPath() + "TILES###.ART").getAbsolutePath());
 		
-//		ReplaceUserTiles(); XXX
+		ReplaceUserTiles();
 		game.currentDef.dispose();
 		game.setDefs(game.baseDef);  //return tilefromtiles textures
 			

@@ -116,6 +116,7 @@ import static ru.m210projects.Redneck.Main.gDemoScreen;
 import static ru.m210projects.Redneck.Main.gEndScreen;
 import static ru.m210projects.Redneck.Main.gGameScreen;
 import static ru.m210projects.Redneck.Main.gLoadingScreen;
+import static ru.m210projects.Redneck.Main.gPrecacheScreen;
 import static ru.m210projects.Redneck.Main.gStatisticScreen;
 import static ru.m210projects.Redneck.Main.mUserFlag;
 import static ru.m210projects.Redneck.Names.DYNAMITE;
@@ -124,7 +125,6 @@ import static ru.m210projects.Redneck.Player.checkavailinven;
 import static ru.m210projects.Redneck.Player.processinput;
 import static ru.m210projects.Redneck.Player.quickkill;
 import static ru.m210projects.Redneck.Player.setpal;
-import static ru.m210projects.Redneck.Premap.cacheit;
 import static ru.m210projects.Redneck.Premap.checknextlevel;
 import static ru.m210projects.Redneck.Premap.clearfrags;
 import static ru.m210projects.Redneck.Premap.numtorcheffects;
@@ -646,8 +646,6 @@ public class GameScreen extends GameAdapter {
 	    	sndStopMusic();
 	    }
 
-	    cacheit();
-	
 	    if(ud.recstat != 2)
 	    {
 	    	musicvolume = ud.volume_number;
@@ -875,6 +873,13 @@ public class GameScreen extends GameAdapter {
 				enterlevel(getTitle());
 			}
 		});
+	}
+	
+	@Override
+	protected void startboard(Runnable startboard) 
+	{
+		gPrecacheScreen.init(false, startboard);
+		game.changeScreen(gPrecacheScreen);
 	}
 	
 	public boolean enterlevel(String title)
