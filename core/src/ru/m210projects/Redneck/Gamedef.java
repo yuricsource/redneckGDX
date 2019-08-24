@@ -1798,7 +1798,7 @@ public class Gamedef {
 	    if( (g_t[0]&63) != 0 ) return -1;
 
 	    short angincs = 1024; 
-	    if(ud.multimode >= 2 && ud.player_skill >= 3)
+	    if(ud.multimode >= 2 || ud.player_skill >= 3)
 	        angincs = (short) (2048/(1+(engine.krand()&1)));
 
 	    for(int j=ts.ang;j<(2048+ts.ang);j+=(angincs-(engine.krand()&511)))

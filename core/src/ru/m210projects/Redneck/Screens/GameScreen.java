@@ -302,7 +302,7 @@ public class GameScreen extends GameAdapter {
 	    	if (user_quote_time[i] != 0)
 	    		user_quote_time[i]--;
 	         
-	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 2))
+	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 3))
 	         quotebot += ksgn(quotebotgoal-quotebot);
 	    else quotebot = quotebotgoal;
 
@@ -497,10 +497,10 @@ public class GameScreen extends GameAdapter {
 			 }
 			 if ( input.ctrlGetInputKey(GameKeys.Shrink_Screen, true) )
 			 {
-				 if(ud.screen_size < 3) {
+				 if(ud.screen_size < 4) {
 					 sound(THUD);
 					 ud.screen_size++;
-					 if(ud.screen_size > 4) ud.screen_size = 4;
+					 if(ud.screen_size > 5) ud.screen_size = 5;
 					 vscrn(ud.screen_size);
 				 }
 			 }

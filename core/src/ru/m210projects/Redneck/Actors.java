@@ -1761,7 +1761,7 @@ public class Actors {
 						s.xrepeat = (short) t[0];
 						s.yrepeat = (short) t[1];
 					}
-	                else if( (engine.krand() & 8) == 0 )
+	                else if( ((engine.krand()&8) == 0) )
 	                {
 	                	t[0] = s.xrepeat;
 						t[1] = s.yrepeat;

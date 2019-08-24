@@ -87,6 +87,7 @@ public class Main extends BuildGame {
 	 */
 
 	public static final String sversion = "v1.01";
+	public static final String appdef = "rrgdx.def";
 
 	public static AnmScreen gAnmScreen;
 	public static MenuScreen gMenuScreen;
@@ -147,8 +148,6 @@ public class Main extends BuildGame {
 		initanimations();
 		FindSaves();
 
-		LoadUserRes();
-
 		for (int i = 0; i < MAXPLAYERS; i++) {
 			ps[i] = new PlayerStruct();
 			po[i] = new PlayerOrig();
@@ -172,12 +171,10 @@ public class Main extends BuildGame {
 				for (Iterator<FileEntry> it = autoload.getFiles().values().iterator(); it.hasNext();) {
 					FileEntry file = it.next();
 					if (file.getExtension().equals("zip")) {
-						String filename = file.getName().substring(0, file.getName().lastIndexOf('.'));
-						
 						Group group = BuildGdx.cache.add(file.getPath());
 						if(group == null) continue;
 						
-						GroupResource def = group.open(filename + ".def");
+						GroupResource def = group.open(appdef);
 						if(def != null)
 						{
 							byte[] buf = def.getBytes();
@@ -191,7 +188,7 @@ public class Main extends BuildGame {
 		}
 		
 		
-		FileEntry filgdx = BuildGdx.compat.checkFile("rrgdx.def");
+		FileEntry filgdx = BuildGdx.compat.checkFile(appdef);
 		if(filgdx != null)
 			baseDef.loadScript(filgdx);
 		this.setDefs(baseDef);

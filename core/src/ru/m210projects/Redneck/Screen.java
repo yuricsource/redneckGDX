@@ -55,9 +55,9 @@ public class Screen {
 	     int i, j, ss, x1, x2, y1, y2;
 
 		 if(size < 0) size = 0;
-		 else if(size > 4) size = 4;
+		 else if(size > 5) size = 5;
 
-		 ss = max(size-4,0);
+		 ss = max(size-5,0);
 
 		 x1 = scale(ss,xdim,160);
 		 x2 = xdim-x1;
@@ -75,7 +75,7 @@ public class Screen {
 	         if (j >= 12) y1 += 8;
 		 }
 
-		 if (size >= 4) y2 -= (4*(ss)+41);
+		 if (size >= 5) y2 -= (5*(ss)+41);
 
 		 y1 = scale(y1,ydim,200);
 		 y2 = scale(y2,ydim,200);
@@ -162,7 +162,7 @@ public class Screen {
 	
 	public static void patchstatusbar(int x1,int y1, int x2, int y2)
 	{
-		if(ud.screen_size > 3)
+		if(ud.screen_size > 4)
 		{
 			int framesx = xdim / tilesizx[BACKGROUND];
 			int framesy = ydim - scale((tilesizy[BOTTOMSTATUSBAR] + tilesizy[1649]) / 2, ydim, 200);
@@ -174,12 +174,16 @@ public class Screen {
 		    }
 		}
 
-//		engine.rotatesprite(0 << 16, 166 << 16, 0x8000, 0, WIDEHUD_PART2, 4, 0, 26 | 256, 0, 0, xdim - 1, ydim - 1);
-//		engine.rotatesprite(320 << 16, 166 << 16, 0x8000, 1024, WIDEHUD_PART2, 4, 0, 4 | 26 | 512, 0, 0, xdim - 1, ydim - 1);
-
-		engine.rotatesprite(0,166 << 16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+16+64, 
+		engine.rotatesprite(160<<16,183<<16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+64, 
 		        scale(x1,xdim,320),scale(y1,ydim,200),                             
-		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);
+		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1); 
+		
+//		engine.rotatesprite(0,166 << 16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+16+64, 
+//		        scale(x1,xdim,320),scale(y1,ydim,200),                             
+//		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);
+		
+		engine.rotatesprite(8 << 16, 183 << 16, 0x8000, 0, WIDEHUD_LEFTSHADOW, 0, 0, 10 | 256, 0, 0, xdim - 1, ydim - 1);
+		engine.rotatesprite(311 << 16, 183 << 16, 0x8000, 0, WIDEHUD_RIGHTSHADOW, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
 	}
 
 	public static void displayinventory(PlayerStruct p)
@@ -200,7 +204,7 @@ public class Screen {
 
 	    j = 0;
 
-	    if(ud.screen_size > 4)
+	    if(ud.screen_size > 5)
 	    {
 	    	y = 140; //160
 	    	if(ud.multimode > 1)
@@ -209,7 +213,7 @@ public class Screen {
 	        	y -=4;
 	    } else y = 180;
 
-	    if(ud.screen_size == 4)
+	    if(ud.screen_size == 5)
 	    	 xoff += 56;
 	    
 	    while( j <= 9 )

@@ -26,6 +26,7 @@ import com.badlogic.gdx.Screen;
 
 import ru.m210projects.Build.Pattern.BuildEngine;
 import ru.m210projects.Build.Pattern.BuildGame;
+import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
 import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Build.Render.Renderer.RenderType;
 
@@ -53,15 +54,17 @@ public class RREngine extends BuildEngine {
 			if(render.getType() != RenderType.Software)
 			{
 				final Screen screen = game.getScreen();
-				gPrecacheScreen.init(true, new Runnable() {
-					@Override
-					public void run() {
-						game.changeScreen(screen);
-						if(game.isCurrentScreen(gGameScreen))
-							game.net.ready2send = true;
-					}
-				});
-				game.changeScreen(gPrecacheScreen);
+				if(screen instanceof GameAdapter) {
+					gPrecacheScreen.init(true, new Runnable() {
+						@Override
+						public void run() {
+							game.changeScreen(screen);
+							if(game.isCurrentScreen(gGameScreen))
+								game.net.ready2send = true;
+						}
+					});
+					game.changeScreen(gPrecacheScreen);
+				}
 			}
 		}
 		
