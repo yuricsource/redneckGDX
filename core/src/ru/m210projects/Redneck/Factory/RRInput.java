@@ -138,6 +138,22 @@ public class RRInput extends BuildControls {
 	    	return;
 	    }
 	    
+	    if(ctrlKeyStatus(Keys.SHIFT_LEFT) && ctrlKeyStatusOnce(Keys.F5))
+		{
+			int music_select = 11 * musicvolume + musiclevel;
+			music_select++;
+			if(music_select >= 44) 
+				music_select = 0;
+			
+			musicvolume = music_select / 11;
+			musiclevel = music_select % 11;
+			
+			buildString(currentGame.getCON().fta_quotes[26], 0, "PLAYING ", currentGame.getCON().music_fn[musicvolume][musiclevel]);
+			sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
+            FTA(26, ps[myconnectindex]);
+            return;
+		}
+	    
 	    if(multiflag == 1)
 	    {
 	        loc.bits =   1<<17;
@@ -147,24 +163,8 @@ public class RRInput extends BuildControls {
 	        return;
 	    }
 	    
-	    if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.SHIFT_LEFT))
+	    if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.CONTROL_LEFT))
 		{
-			if(ctrlKeyStatus(Keys.SHIFT_LEFT) && ctrlKeyStatusOnce(Keys.F5))
-			{
-				int music_select = 11 * musicvolume + musiclevel;
-				music_select++;
-				if(music_select >= 44) 
-					music_select = 0;
-				
-				musicvolume = music_select / 11;
-				musiclevel = music_select % 11;
-				
-				buildString(currentGame.getCON().fta_quotes[26], 0, "PLAYING ", currentGame.getCON().music_fn[musicvolume][musiclevel]);
-				sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
-	            FTA(26, ps[myconnectindex]);
-	            return;
-			}
-			
 			if(!cfg.noSound && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && cfg.VoiceToggle)
 			{
 				int fkey = -1;
@@ -214,7 +214,7 @@ public class RRInput extends BuildControls {
 						}
 					}
 					
-					if(ctrlKeyStatus(Keys.SHIFT_LEFT))
+					if(ctrlKeyStatus(Keys.CONTROL_LEFT))
 					{
 						adduserquote(ud.ridecule[fkey]);
 

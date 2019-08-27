@@ -290,7 +290,7 @@ public class GameInfo {
             	mapPath = path;
             }
             
-			if(mapFound) {
+			if(mapFound && episodes[epnum] != null) {
 	            while( buf[textptr] == ' ' ) textptr++;
 	
 	            int partime = (((buf[textptr+0]-'0')*10+(buf[textptr+1]-'0'))*26*60)+

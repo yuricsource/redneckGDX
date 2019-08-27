@@ -23,6 +23,7 @@ import static ru.m210projects.Redneck.Sounds.spritesound;
 
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.Resource.ResourceData;
+import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerStruct {
@@ -145,6 +146,14 @@ public class PlayerStruct {
     public int drug_aspect;
     
     public void UpdatePlayerLoc() {
+    	
+    	ILoc oldLoc = game.pInt.getsprinterpolate(i);
+        if(oldLoc != null)
+        {
+        	oldLoc.x = posx;
+        	oldLoc.y = posy;
+        	oldLoc.z = posz;
+        }
 		prevView.x = posx;
 		prevView.y = posy;
 		prevView.z = posz;

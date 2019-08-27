@@ -118,9 +118,10 @@ public class Screen {
 		{
 			if(count > 0) {
 				int fr = 0, fg = 0, fb = 0;
-				if(r > 0) fr = count - 128;
-				if(g > 0) fg = count - 128;
-				if(b > 0) fb = count - 128;
+				if(r > 0) fr = Math.min(count - 128, r / 2);
+				if(g > 0) fg = Math.min(count - 128, g / 2);
+				if(b > 0) fb = Math.min(count - 128, b / 2);
+
 				engine.setpalettefade(fr, fg, fb, 1);
 				engine.showfade();
 			}

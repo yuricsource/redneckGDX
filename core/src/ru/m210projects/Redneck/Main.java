@@ -86,7 +86,7 @@ public class Main extends BuildGame {
 	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 */
 
-	public static final String sversion = "v1.01";
+	public static final String sversion = "v1.02";
 	public static final String appdef = "rrgdx.def";
 
 	public static AnmScreen gAnmScreen;

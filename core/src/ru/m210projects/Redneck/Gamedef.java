@@ -33,6 +33,7 @@ import com.badlogic.gdx.utils.IntArray;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Strhandler.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Premap.*;
@@ -606,9 +607,16 @@ public class Gamedef {
 	        return;
 	    }
 
-	    con.script[scriptptr] = Integer.parseInt(new String(text, textptr, l));
+	    try {
+	    	con.script[scriptptr] = Integer.parseInt(new String(text, textptr, l));
+	    } catch (Exception e) {
+	    	Console.Println("  * ERROR!(L" + line_number + ") Parameter '" + new String(tempbuf, 0, l) + "' is undefined.", OSDTEXT_RED);
+	        error++;
+	        textptr+=l;
+	        return;
+	    }
+	    
 	    scriptptr++;
-
 	    textptr += l;
 	}
 

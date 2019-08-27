@@ -23,7 +23,6 @@ import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Redneck.ResourceHandler.*;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;

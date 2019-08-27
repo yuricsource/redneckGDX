@@ -31,6 +31,8 @@ import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Screen.*;
+import static ru.m210projects.Redneck.SoundDefs.THUD;
+import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
 
@@ -113,8 +115,9 @@ public class DemoScreen extends GameScreen {
 			else ps[i].auto_aim = 1;
 		}
 
+		ud.god = false;
 		ud.cashman = ud.eog = ud.showallmap = 0;
-			ud.clipping = ud.scrollmode = false;
+		ud.clipping = ud.scrollmode = false;
 		ud.overhead_on = 0;
 		ud.recstat = 2;
 		
@@ -182,6 +185,25 @@ public class DemoScreen extends GameScreen {
 				changepalette = 1; //if player has other palette
 			}
 		}
+		
+		 if ( input.ctrlGetInputKey(GameKeys.Enlarge_Screen, true) )
+		 {
+			 if(ud.screen_size > 0) {
+				 sound(THUD);
+				 ud.screen_size--;
+				 if(ud.screen_size < 0) ud.screen_size = 0;
+				 vscrn(ud.screen_size);
+			 }
+		 }
+		 if ( input.ctrlGetInputKey(GameKeys.Shrink_Screen, true) )
+		 {
+			 if(ud.screen_size < 4) {
+				 sound(THUD);
+				 ud.screen_size++;
+				 if(ud.screen_size > 5) ud.screen_size = 5;
+				 vscrn(ud.screen_size);
+			 }
+		 }
 	}
 	
 	@Override

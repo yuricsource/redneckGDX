@@ -1977,6 +1977,7 @@ public class Player {
 					}
 
 					if (p.jumping_counter != 0) {
+						p.crouch_toggle = 0;
 						if ((sb_snum & 1) == 0 && !p.OnMotorcycle && p.jumping_toggle == 1)
 							p.jumping_toggle = 0;
 
