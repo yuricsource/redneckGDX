@@ -36,6 +36,7 @@ import ru.m210projects.Build.FileHandle.Group;
 import ru.m210projects.Build.FileHandle.GroupResource;
 import ru.m210projects.Build.FileHandle.PackedZipGroup;
 import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.UserGroup;
 import ru.m210projects.Build.FileHandle.ZipGroup;
 import ru.m210projects.Build.FileHandle.Cache1D.PackageType;
 import ru.m210projects.Build.FileHandle.Compat.Path;
@@ -44,7 +45,7 @@ import ru.m210projects.Redneck.Types.GameInfo;
 
 public class ResourceHandler {
 
-	private static Group usergroup;
+	private static UserGroup usergroup;
 	private static boolean usecustomarts;
 
 //	public static final int[][] replace = {
@@ -261,7 +262,7 @@ public class ResourceHandler {
 			FileEntry file = it.next();
 			if(!file.getExtension().equals("zip")
 					&& !file.getExtension().equals("grp")) 
-				usergroup.add(file.getPath(), null, 0);
+				usergroup.add(file, -1);
 	    }
 	}
 	
@@ -276,14 +277,15 @@ public class ResourceHandler {
 			try {
 				Group gr = BuildGdx.cache.add(fil.getPath());
 				gr.setFlags(true, true);
-				prepareusergroup(gr, true);
 				
-				Resource res = gr.open(appdef);
+				Resource res = gr.open(appdef); //load def scripts before delete folders
 				if(res != null)
 				{
 					addonScript.loadScript(gr.name + " script", res.getBytes());
 					res.close();
 				}
+				
+				prepareusergroup(gr, true);
 			} catch(Exception e) { 
 				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
 				return;

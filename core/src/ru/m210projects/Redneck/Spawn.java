@@ -1110,7 +1110,7 @@ public class Spawn {
                 break;   
             case ACTIVATORLOCKED:
             case ACTIVATOR:
-                sp.cstat = (short) 32768;
+                sp.cstat |= 32768;
                 if(sp.picnum == ACTIVATORLOCKED)
                     sector[sp.sectnum].lotag |= 16384;
                 engine.changespritestat(i,(short)8);

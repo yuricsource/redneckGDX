@@ -92,6 +92,7 @@ import static ru.m210projects.Redneck.Globals.earthquaketime;
 import static ru.m210projects.Redneck.Globals.everyothertime;
 import static ru.m210projects.Redneck.Globals.gVisibility;
 import static ru.m210projects.Redneck.Globals.global_random;
+import static ru.m210projects.Redneck.Globals.kGameCrash;
 import static ru.m210projects.Redneck.Globals.lockclock;
 import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Globals.musiclevel;
@@ -719,7 +720,7 @@ public class GameScreen extends GameAdapter {
 
 	     uGameFlags &= ~(MODE_EOL | MODE_END);
 
-	     return true;
+	     return !kGameCrash;
 	}
 	
 	protected void makeScreenshot()
@@ -933,7 +934,7 @@ public class GameScreen extends GameAdapter {
 
 	    i = p.aim_mode;
 	    p.aim_mode = (sb_snum>>23)&1;
-	    if(p.aim_mode < i)
+	    if(p.aim_mode < i && !pMenu.gShowMenu)
 	        p.return_to_center = 9;
 	    
 	    if((sb_snum & 1 << 22) != 0 && p.last_pissed_time == 0 && sprite[p.i].extra > 0)

@@ -245,7 +245,7 @@ public class RUserContent extends BuildMenu {
             }
 
             int i = 0;
-            while( isaltok(buf[textptr+i]) ) i++;
+            while(  textptr+i < buf.length && isaltok(buf[textptr+i]) ) i++;
             
             String name = new String(buf, textptr, i);
             list.add(name.toLowerCase());

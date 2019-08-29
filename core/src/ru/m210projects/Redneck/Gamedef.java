@@ -1668,8 +1668,8 @@ public class Gamedef {
 	    if( fp == null )
 	    {
 //	        if( loadfromgrouponly == 1 )
-	        game.dassert("\nMissing con file(s).");
-	        return null;
+	        game.GameCrash("\nMissing con file(s).");
+	        System.exit(1);
 	    }
 	    
 	    
@@ -1700,7 +1700,12 @@ public class Gamedef {
 	    error = 0;
 	    line_number = 1;
 	
-	    passone(con); //Tokenize
+	    try {
+	    	passone(con); //Tokenize
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	error = 1;
+	    }
 
 	    if((warning|error) != 0)
 	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");

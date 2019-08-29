@@ -205,6 +205,12 @@ public class NetworkMenu extends BuildMenu {
 			public void open() {
 				num = mDifficulty+1;
 			}
+			
+			@Override
+			public void draw(MenuHandler handler) {
+				mCheckEnableItem(currentFile instanceof GameInfo);
+				super.draw(handler);
+			}
 		};
 		
 		MenuSwitch mMenuMarkers = new MenuSwitch("MARKERS", app.getFont(1), 20, pos += 12, 280, mMarkers==1, new MenuProc() {

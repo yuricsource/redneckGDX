@@ -17,9 +17,7 @@
 package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.gGameScreen;
-import static ru.m210projects.Redneck.Main.gPrecacheScreen;
-import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Screen.*;
 
 import com.badlogic.gdx.Screen;
@@ -70,5 +68,20 @@ public class RREngine extends BuildEngine {
 		
 		return super.setrendermode(render);
 	}
+	
+//	@Override
+//	public void sampletimer() {
+//		if (timerfreq == 0)
+//			return;
+//
+//		long n = (getticks() * timerticspersec / timerfreq) - timerlastsample;
+//		if (n > 0) {
+//			if(game.isCurrentScreen(gDemoScreen)) {
+//				totalclock += 4;
+//			} else totalclock += n;
+//
+//			timerlastsample += n;
+//		}
+//	}
 
 }
