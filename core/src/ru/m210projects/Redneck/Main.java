@@ -46,8 +46,11 @@ import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
 import ru.m210projects.Build.Pattern.BuildFactory;
 import ru.m210projects.Build.Pattern.BuildGame;
+import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.Types.LittleEndian;
+import ru.m210projects.Redneck.Fonts.GameFont;
+import ru.m210projects.Redneck.Fonts.MenuFont;
 import ru.m210projects.Redneck.Factory.RREngine;
 import ru.m210projects.Redneck.Factory.RRFactory;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
@@ -227,6 +230,19 @@ public class Main extends BuildGame {
 		if(screen instanceof GameScreen)
 			return ((GameScreen) screen).IsOriginalGame();
 
+		return false;
+	}
+	
+	@Override
+	public boolean setDefs(DefScript script)
+	{
+		if(super.setDefs(script))
+		{
+			((GameFont)this.getFont(1)).update();
+			((MenuFont)this.getFont(2)).update();
+			return true;
+		}
+		
 		return false;
 	}
 

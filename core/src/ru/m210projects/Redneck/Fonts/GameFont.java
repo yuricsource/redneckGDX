@@ -19,7 +19,7 @@ package ru.m210projects.Redneck.Fonts;
 import static ru.m210projects.Build.Engine.tilesizx;
 import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Strhandler.isdigit;
-import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Names.STARTALPHANUM;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
@@ -36,6 +36,17 @@ public class GameFont extends BuildFont {
 			if(tilesizx[nTile + i] != 0) {
 				char symbol = (char) (i + '!');
 				this.addChar(symbol, nTile + i, isdigit(symbol) ? 8 : tilesizx[nTile + i] / 2, nScale, 0, 0);
+			}
+		}
+	}
+	
+	public void update()
+	{
+		int nTile = STARTALPHANUM;
+		for(int i = 0; i < 95; i++) {
+			if(tilesizx[nTile + i] != 0) {
+				char symbol = (char) (i + '!');
+				charInfo[symbol].nWidth = isdigit(symbol) ? 8 : (short) (tilesizx[nTile + i] / 2);
 			}
 		}
 	}
