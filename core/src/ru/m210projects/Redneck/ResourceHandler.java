@@ -29,7 +29,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
 import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.FileHandle.DataResource;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.Group;
@@ -270,7 +274,7 @@ public class ResourceHandler {
 	{
 		resetEpisodeResources();
 		
-		DefScript addonScript = new DefScript(game.baseDef);
+		DefScript addonScript = new DefScript(game.baseDef, addon.getFile());
 		if(addon.isPackage())
 		{
 			FileEntry fil = addon.getFile();
@@ -331,6 +335,23 @@ public class ResourceHandler {
 		tilesizy[13] = 0; //ROR tile
 	    tilesizx[13] = 0;
 	    waloff[13] = null;
+	}
+	
+	public static void loadGdxDef(DefScript baseDef)
+	{
+		FileHandle fil = Gdx.files.internal("rrgdx.dat");
+		if(fil != null)
+		{
+			DataResource res = new DataResource(null, fil.name(), -1, fil.readBytes());
+			Group group = BuildGdx.cache.add(res, fil.name());
+			
+			GroupResource def = group.open(appdef);
+			if(def != null)
+			{
+	    		baseDef.loadScript(fil.name(), def.getBytes());
+	    		def.close();
+			}
+		}
 	}
 	
 //	public static void ReplaceUserTiles()

@@ -74,16 +74,12 @@ public class Main extends BuildGame {
 	/*
 	 * TODO:
 	 * 
-	 * CrouchMode by jumpkey toggle and disable it in underwater
-	 * hud из новых ресурсов
 	 * cachespritenum
-	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 * cd audio from cue
 	 * cutscenes MVE
-	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 */
 
 	public static final String sversion = "v1.02";
@@ -110,11 +106,15 @@ public class Main extends BuildGame {
 	public static Config cfg;
 	public RRMenuHandler menu;
 	public RRNetwork net;
-
-	public Main(BuildConfig bcfg, String appname, String sversion, boolean release) {
-		super(bcfg, appname, sversion, release);
+	
+	public Main(BuildConfig dcfg, String appname, String sversion, boolean isDemo, boolean isRelease) {
+		super(dcfg, appname, sversion, isRelease);
 		game = this;
-		cfg = (Config) bcfg;
+		cfg = (Config) dcfg;
+	}
+	
+	public Main(BuildConfig dcfg, String appname, String sversion, boolean isDemo) {
+		this(dcfg, appname, sversion, isDemo, true);
 	}
 
 	@Override
@@ -164,6 +164,8 @@ public class Main extends BuildGame {
 		Console.Println("Initializing def-scripts...");
 		baseDef.setEngine(engine);
 		
+		loadGdxDef(baseDef);
+		
 		if (cfg.autoloadFolder) {
 			Console.Println("Initializing autoload folder");
 			DirectoryEntry autoload;
@@ -178,7 +180,7 @@ public class Main extends BuildGame {
 						if(def != null)
 						{
 							byte[] buf = def.getBytes();
-				    		baseDef.loadScript(def.getFullName(), buf);
+				    		baseDef.loadScript(file.getName(), buf);
 				    		def.close();
 						}
 					} else if (file.getExtension().equals("def"))
@@ -186,8 +188,7 @@ public class Main extends BuildGame {
 				}
 			}
 		}
-		
-		
+
 		FileEntry filgdx = BuildGdx.compat.checkFile(appdef);
 		if(filgdx != null)
 			baseDef.loadScript(filgdx);

@@ -27,9 +27,7 @@ package ru.m210projects.Redneck;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.Gameutils.BClampAngle;
-import static ru.m210projects.Build.Gameutils.BCosAngle;
-import static ru.m210projects.Build.Gameutils.BSinAngle;
+import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
@@ -686,41 +684,42 @@ public class View {
 	    if(ss == 2) //GDX'S STATUS BAR
 	    {
 	    	//left part
-	    	engine.rotatesprite(73 << 16, 183 << 16, 0x8000, 0, WIDEHUD_PART1, 0, 0, 10 | 256, 0, 0, xdim - 1, ydim - 1);
+	    	engine.rotatesprite(81 << 16, 183 << 16, 0x8000, 0, WIDEHUD_PART1, 0, 0, 10 | 256, 0, 0, xdim - 1, ydim - 1);
 	    	
 	    	//health
 	    	if(sprite[p.i].pal == 1 && p.last_extra < 2)
-	            digitalnumber(65,200-20,1,-16,10+16+256);
-	        else digitalnumber(65,200-20,p.last_extra,-16,10+16+256);
+	            digitalnumber(59,200-20,1,-16,10+16+256);
+	        else digitalnumber(59,200-20,p.last_extra,-16,10+16+256);
 	    	
 	    	//ammo
 	        if (p.curr_weapon == HANDREMOTE_WEAPON) i = CROSSBOW_WEAPON; else i = p.curr_weapon;
 	        if(p.ammo_amount[i] != 0) 
-		        digitalnumber(92+16,200-20,p.ammo_amount[i],-16,10+16+256);
-	    	
-	        //right part
-	        engine.rotatesprite(219 << 16, 183 << 16, 0x8000, 0, WIDEHUD_PART2, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+		        digitalnumber(96,200-20,p.ammo_amount[i],-16,10+16+256);
 	    	
 	        //keys
-	        int x = 133;
+	        int x = 117;
 	        if ( p.gotkey[3] != 0 ) {
 	        	int pal = 23;
 	        	if(cfg.gColoredKeys) pal = 7;
-	    		engine.rotatesprite(x+5<<16,180<<16, 0x8000, 0, 1656, 0, pal, 10+16+512, 0, 0, xdim - 1, ydim - 1);
+	    		engine.rotatesprite(x+5<<16,180<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1);
 	        }
 	    	if ( p.gotkey[2] != 0  ) {
 	    		int pal = 21;
 	        	if(cfg.gColoredKeys) pal = 2;
-	    		engine.rotatesprite(x+18<<16,180<<16, 0x8000, 0, 1656, 0, pal, 10+16+512, 0, 0, xdim - 1, ydim - 1);
+	    		engine.rotatesprite(x+18<<16,180<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1);
 	    	}
 	    	if ( p.gotkey[1] != 0  ) {
 	    		int pal = 0;
 	        	if(cfg.gColoredKeys) pal = 1;
-	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16+512, 0, 0, xdim - 1, ydim - 1); 
+	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
 	    	}
+	    	
 
+	        //right part
+	        engine.rotatesprite(244 << 16, 183 << 16, 0x8000, 0, WIDEHUD_PART2, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
+	    	
 	    	//inventory
-	    	x = 177;
+	    	x = 185;
 	    	if (p.inven_icon != 0)
 	        {
 	        	buf[0] = '%';
@@ -2357,7 +2356,7 @@ public class View {
 
 	public static void displaygeom3d(int sectnum, int cposx, int cposy, int cposz,  float choriz, float cang, int csect, int smoothratio)
 	{
-		if(sectnum != -1 && sector[sectnum].lotag == 848)
+		if(isValidSector(sectnum)  && sector[sectnum].lotag == 848)
 		{
 	        short geomsect = 0;
 	        

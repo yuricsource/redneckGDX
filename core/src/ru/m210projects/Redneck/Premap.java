@@ -148,6 +148,7 @@ import static ru.m210projects.Redneck.Spawn.tempwallptr;
 import static ru.m210projects.Redneck.View.animatesprites;
 import static ru.m210projects.Redneck.View.gNameShowTime;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
@@ -1220,7 +1221,7 @@ public class Premap {
 		}
 	}
 
-	public static void genspriteremaps() {
+	public static void genspriteremaps() throws FileNotFoundException {
 		int j;
 		int look_pos;
 		int numl = 0;
@@ -1228,8 +1229,7 @@ public class Premap {
 		Resource fp = BuildGdx.cache.open("lookup.dat", 0);
 		if (fp != null)
 			numl = fp.readByte();
-		else
-			game.dassert("\nERROR: File 'LOOKUP.DAT' not found.");
+		else throw new FileNotFoundException("\nERROR: File 'LOOKUP.DAT' not found.");
 
 		for (j = 0; j < numl; j++) {
 			look_pos = fp.readByte();
