@@ -50,7 +50,7 @@ import ru.m210projects.Redneck.Types.GameInfo;
 public class ResourceHandler {
 
 	private static UserGroup usergroup;
-	private static boolean usecustomarts;
+	public static boolean usecustomarts;
 
 //	public static final int[][] replace = {
 //		{ 3363, 9217, 0x7dbfeb81 }, 

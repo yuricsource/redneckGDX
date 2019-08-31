@@ -934,7 +934,7 @@ public class GameScreen extends GameAdapter {
 
 	    i = p.aim_mode;
 	    p.aim_mode = (sb_snum>>23)&1;
-	    if(p.aim_mode < i && !pMenu.gShowMenu)
+	    if(p.aim_mode < i && (game.nNetMode != NetMode.Single || !pMenu.gShowMenu))
 	        p.return_to_center = 9;
 	    
 	    if((sb_snum & 1 << 22) != 0 && p.last_pissed_time == 0 && sprite[p.i].extra > 0)

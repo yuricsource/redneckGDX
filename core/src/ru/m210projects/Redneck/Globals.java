@@ -34,15 +34,19 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Globals {
 	
 	public static final int BACKBUTTON = 9216;
-	public static final int KEYSIGN = 9217;
-	public static final int GUTSMETTER = 9218;
-	public static final int KILLSSIGN = 9219;
+	public static final int MOUSECURSOR = 9217;
+	public static final int RESERVED1 = 9218;
+	public static final int RESERVED2 = 9219;
 	
-	public static final int WIDEHUD_LEFTSHADOW = 9220;
-	public static final int WIDEHUD_RIGHTSHADOW = 9221;
+	public static final int KEYSIGN = 9220;
+	public static final int GUTSMETTER = 9221;
+	public static final int KILLSSIGN = 9222;
 	
-	public static final int WIDEHUD_PART1 = 9223;
-	public static final int WIDEHUD_PART2 = 9224;
+	public static final int WIDEHUD_LEFTSHADOW = 9223;
+	public static final int WIDEHUD_RIGHTSHADOW = 9224;
+	
+	public static final int WIDEHUD_PART1 = 9225;
+	public static final int WIDEHUD_PART2 = 9226;
 	
 	public static final int RR = 0;
 	public static final int RR66 = 1;

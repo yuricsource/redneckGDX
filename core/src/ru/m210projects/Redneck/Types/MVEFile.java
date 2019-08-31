@@ -17,6 +17,8 @@
 // You should have received a copy of the GNU General Public License
 // along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
 
+//https://github.com/ubports/oxide_ffmpeg/blob/master/libavcodec/interplayvideo.c
+
 package ru.m210projects.Redneck.Types;
 
 import java.nio.ByteBuffer;
@@ -156,6 +158,16 @@ public class MVEFile {
 			audio_type = 0; /* no audio */
 		} else if (process_chunk(bb) != CHUNK_INIT_AUDIO)
 			return; // AVERROR_INVALIDDATA;
+		
+		for(int i = 0; i < 100; i++) {
+			process_chunk(bb);
+			
+			if(pkt.decode_map_chunk_size != 0)
+			{
+				System.err.println(pkt.stream_index);
+				
+			}
+		}
 	}
 
 	private int process_chunk(ByteBuffer bb) {
@@ -169,22 +181,22 @@ public class MVEFile {
 
 		switch (chunk_type) {
 		case CHUNK_INIT_AUDIO:
-//			System.err.println("initialize audio");
+			System.err.println("initialize audio");
 			break;
 		case CHUNK_AUDIO_ONLY:
-//			System.err.println("audio only");
+			System.err.println("audio only");
 			break;
 		case CHUNK_INIT_VIDEO:
-//			System.err.println("initialize video");
+			System.err.println("initialize video");
 			break;
 		case CHUNK_VIDEO:
-//			System.err.println("video (and audio)");
+			System.err.println("video (and audio)");
 			break;
 		case CHUNK_SHUTDOWN:
-//			System.err.println("shutdown");
+			System.err.println("shutdown");
 			break;
 		case CHUNK_END:
-//			System.err.println("end");
+			System.err.println("end");
 			break;
 		default:
 			System.err.println("invalid chunk " + chunk_type);
@@ -498,5 +510,64 @@ public class MVEFile {
 		}
 
 		return chunk_type;
+	}
+	
+	
+	
+	public byte[] decode_frame()
+	{
+//		const uint8_t *buf = avpkt->data;
+//	    int buf_size = avpkt->size;
+//	    IpvideoContext *s = avctx->priv_data;
+//	    AVFrame *frame = data;
+//	    int ret;
+//
+//	    if (av_packet_get_side_data(avpkt, AV_PKT_DATA_PARAM_CHANGE, NULL)) {
+//	        av_frame_unref(s->last_frame);
+//	        av_frame_unref(s->second_last_frame);
+//	    }
+//
+//	    if (buf_size < 2)
+//	        return AVERROR_INVALIDDATA;
+//
+//	    /* decoding map contains 4 bits of information per 8x8 block */
+//	    s->decoding_map_size = AV_RL16(avpkt->data);
+//
+//	    /* compressed buffer needs to be large enough to at least hold an entire
+//	     * decoding map */
+//	    if (buf_size < s->decoding_map_size + 2)
+//	        return buf_size;
+//
+//
+//	    s->decoding_map = buf + 2;
+//	    bytestream2_init(&s->stream_ptr, buf + 2 + s->decoding_map_size,
+//	                     buf_size - s->decoding_map_size);
+//
+//	    if ((ret = ff_get_buffer(avctx, frame, AV_GET_BUFFER_FLAG_REF)) < 0)
+//	        return ret;
+//
+//	    if (!s->is_16bpp) {
+//	        int size;
+//	        const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, &size);
+//	        if (pal && size == AVPALETTE_SIZE) {
+//	            frame->palette_has_changed = 1;
+//	            memcpy(s->pal, pal, AVPALETTE_SIZE);
+//	        } else if (pal) {
+//	            av_log(avctx, AV_LOG_ERROR, "Palette size %d is wrong\n", size);
+//	        }
+//	    }
+//
+//	    ipvideo_decode_opcodes(s, frame);
+//
+//	    *got_frame = 1;
+//
+//	    /* shuffle frames */
+//	    av_frame_unref(s->second_last_frame);
+//	    FFSWAP(AVFrame*, s->second_last_frame, s->last_frame);
+//	    if ((ret = av_frame_ref(s->last_frame, frame)) < 0)
+//	        return ret;
+//
+//	    /* report that the buffer was completely consumed */
+	    return null;
 	}
 }

@@ -16,20 +16,37 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.SoundDefs.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Actors.*;
-import static ru.m210projects.Redneck.View.*;
-import static ru.m210projects.Redneck.Gameutils.*;
-import static ru.m210projects.Build.Engine.*;
+import static ru.m210projects.Build.Engine.MAXSECTORS;
+import static ru.m210projects.Build.Engine.sector;
+import static ru.m210projects.Build.Engine.sprite;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Pragmas.divscale;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.mulscale;
-import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Redneck.Actors.badguy;
+import static ru.m210projects.Redneck.Gameutils.FindDistance3D;
+import static ru.m210projects.Redneck.Globals.RRRA;
+import static ru.m210projects.Redneck.Globals.Sound;
+import static ru.m210projects.Redneck.Globals.SoundOwner;
+import static ru.m210projects.Redneck.Globals.currentGame;
+import static ru.m210projects.Redneck.Globals.hittype;
+import static ru.m210projects.Redneck.Globals.loadfromgrouponly;
+import static ru.m210projects.Redneck.Globals.ps;
+import static ru.m210projects.Redneck.Globals.screenpeek;
+import static ru.m210projects.Redneck.Globals.soundsiz;
+import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Main.cfg;
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Names.APLAYER;
+import static ru.m210projects.Redneck.Names.BILLYCOCK;
+import static ru.m210projects.Redneck.Names.BILLYRAY;
+import static ru.m210projects.Redneck.Names.COOT;
+import static ru.m210projects.Redneck.Names.MUSICANDSFX;
+import static ru.m210projects.Redneck.SoundDefs.LASERTRIP_EXPLODE;
+import static ru.m210projects.Redneck.SoundDefs.PIPEBOMB_EXPLODE;
+import static ru.m210projects.Redneck.SoundDefs.RPG_EXPLODE;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
@@ -306,11 +323,12 @@ public class Sounds {
 		if (currentGame.getCON().sounds[num] != null)
 			fp = BuildGdx.cache.open(currentGame.getCON().sounds[num], loadfromgrouponly);
 		if (fp == null) {
-			int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
-			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
-			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
-
-			FTA(113, ps[myconnectindex]);
+//			int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
+//			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
+//			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
+//			FTA(113, ps[myconnectindex]);
+			
+			Console.Println("Sound " + "(" + num + ") not found.");
 			return 0;
 		}
 

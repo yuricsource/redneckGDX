@@ -16,20 +16,48 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Redneck.LoadSave.*;
-import static ru.m210projects.Build.Net.Mmulti.*;
-import static ru.m210projects.Build.OnSceenDisplay.Console.*;
-import static ru.m210projects.Redneck.Animate.*;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-import static ru.m210projects.Redneck.Gamedef.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Premap.*;
-import static ru.m210projects.Redneck.Player.*;
-import static ru.m210projects.Redneck.ResourceHandler.*;
-import static ru.m210projects.Redneck.Sounds.*;
-import static ru.m210projects.Redneck.Types.RTS.*;
+import static ru.m210projects.Build.Engine.MAXPLAYERS;
+import static ru.m210projects.Build.Engine.MAXSPRITES;
+import static ru.m210projects.Build.Net.Mmulti.connecthead;
+import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.Net.Mmulti.numplayers;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
+import static ru.m210projects.Build.OnSceenDisplay.Console.osd_argv;
+import static ru.m210projects.Redneck.Animate.initanimations;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.GAME;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.MAIN;
+import static ru.m210projects.Redneck.Gamedef.compilecons;
+import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
+import static ru.m210projects.Redneck.Globals.TICRATE;
+import static ru.m210projects.Redneck.Globals.animwall;
+import static ru.m210projects.Redneck.Globals.boardfilename;
+import static ru.m210projects.Redneck.Globals.hittype;
+import static ru.m210projects.Redneck.Globals.kGameCrash;
+import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
+import static ru.m210projects.Redneck.Globals.po;
+import static ru.m210projects.Redneck.Globals.ps;
+import static ru.m210projects.Redneck.Globals.uGameFlags;
+import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.LoadSave.FindSaves;
+import static ru.m210projects.Redneck.LoadSave.quickload;
+import static ru.m210projects.Redneck.LoadSave.quicksave;
+import static ru.m210projects.Redneck.Player.InitPlayers;
+import static ru.m210projects.Redneck.Premap.LeaveMap;
+import static ru.m210projects.Redneck.Premap.genspriteremaps;
+import static ru.m210projects.Redneck.Premap.packbuf;
+import static ru.m210projects.Redneck.ResourceHandler.InitSpecialTextures;
+import static ru.m210projects.Redneck.ResourceHandler.loadGdxDef;
+import static ru.m210projects.Redneck.ResourceHandler.resetEpisodeResources;
+import static ru.m210projects.Redneck.ResourceHandler.usecustomarts;
+import static ru.m210projects.Redneck.Sounds.MusicStartup;
+import static ru.m210projects.Redneck.Sounds.SoundStartup;
+import static ru.m210projects.Redneck.Sounds.StopAllSounds;
+import static ru.m210projects.Redneck.Types.RTS.RTS_Init;
+import static ru.m210projects.Redneck.Types.RTS.numlumps;
 
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -41,6 +69,7 @@ import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.Group;
 import ru.m210projects.Build.FileHandle.GroupResource;
+import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
@@ -49,12 +78,12 @@ import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.Types.LittleEndian;
-import ru.m210projects.Redneck.Fonts.GameFont;
-import ru.m210projects.Redneck.Fonts.MenuFont;
 import ru.m210projects.Redneck.Factory.RREngine;
 import ru.m210projects.Redneck.Factory.RRFactory;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
 import ru.m210projects.Redneck.Factory.RRNetwork;
+import ru.m210projects.Redneck.Fonts.GameFont;
+import ru.m210projects.Redneck.Fonts.MenuFont;
 import ru.m210projects.Redneck.Menus.GameMenu;
 import ru.m210projects.Redneck.Menus.MainMenu;
 import ru.m210projects.Redneck.Screens.AnmScreen;
@@ -68,6 +97,7 @@ import ru.m210projects.Redneck.Screens.NetScreen;
 import ru.m210projects.Redneck.Screens.PrecacheScreen;
 import ru.m210projects.Redneck.Screens.StatisticScreen;
 import ru.m210projects.Redneck.Types.Animwalltype;
+import ru.m210projects.Redneck.Types.MVEFile;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 import ru.m210projects.Redneck.Types.Weaponhit;
@@ -127,6 +157,15 @@ public class Main extends BuildGame {
 
 	@Override
 	public boolean init() throws Exception {
+		ResourceData bb = BuildGdx.cache.getData("REDINT.MVE", 0);
+		if(bb != null)
+		{
+			System.err.println("Found");
+			MVEFile mve = new MVEFile(bb.getBuffer());
+
+			mve.decode_frame();
+		}
+		
 		net = (RRNetwork) pNet;
 
 		ConsoleInit();
@@ -212,14 +251,7 @@ public class Main extends BuildGame {
 		gPrecacheScreen = new PrecacheScreen(this);
 
 		gDemoScreen.demoscan();
-		
-//		ByteBuffer bb = kGetBuffer("REDINT.MVE", 0);
-//		if(bb != null)
-//		{
-//			System.err.println("Found");
-//			new MVEFile(bb);
-//		}
-		
+
 		return true;
 	}
 
@@ -250,6 +282,9 @@ public class Main extends BuildGame {
 	public void show() {
 		uGameFlags = 0;
 		kGameCrash = false;
+		if(usecustomarts)
+			resetEpisodeResources();
+		
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
 	

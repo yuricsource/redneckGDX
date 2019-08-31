@@ -264,12 +264,12 @@ public class RRMenuHandler extends MenuHandler {
 		if(!app.pCfg.menuMouse) return;
 		
 		int zoom = scale(0x10000, ydim, 200);
-		int czoom = mulscale(48000, mulscale(zoom, app.pCfg.gMouseCursorSize, 16), 16);
-		int xoffset = mulscale(16, czoom, 16);
-		int yoffset = mulscale(16, czoom, 16);	
-		int ang = 1800;
+		int czoom = mulscale(0x10000, mulscale(zoom, app.pCfg.gMouseCursorSize, 16), 16);
+		int xoffset = 0; //mulscale(16, czoom, 16);
+		int yoffset = 0; //mulscale(16, czoom, 16);	
+		int ang = 0; //1800;
 
-		engine.rotatesprite((x + xoffset) << 16, (y + yoffset) << 16, czoom, ang, 62, 0, 0, 8, 0, 0, xdim-1, ydim-1);
+		engine.rotatesprite((x + xoffset) << 16, (y + yoffset) << 16, czoom, ang, MOUSECURSOR, 0, 0, 8, 0, 0, xdim-1, ydim-1);
 	}
 
 	@Override

@@ -27,8 +27,6 @@ package ru.m210projects.Redneck;
 import static java.lang.Math.max;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Gameutils.*;
-import static ru.m210projects.Build.Net.Mmulti.connecthead;
-import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
@@ -52,7 +50,7 @@ public class Screen {
 	
 	public static void vscrn(int size)
 	{
-	     int i, j, ss, x1, x2, y1, y2;
+	     int ss, x1, x2, y1, y2;
 
 		 if(size < 0) size = 0;
 		 else if(size > 5) size = 5;
@@ -63,17 +61,17 @@ public class Screen {
 		 x2 = xdim-x1;
 
 		 y1 = 5*ss; y2 = 200;
-	     if ( size > 0 && ud.coop != 1 && ud.multimode > 1)
-		 {
-	         j = 0;
-	         for(i=connecthead;i>=0;i=connectpoint2[i])
-	             if(i > j) j = i;
-
-	         if (j >= 1) y1 += 8;
-	         if (j >= 4) y1 += 8;
-	         if (j >= 8) y1 += 8;
-	         if (j >= 12) y1 += 8;
-		 }
+//	     if ( size > 0 && ud.coop != 1 && ud.multimode > 1)
+//		 {
+//	         j = 0;
+//	         for(i=connecthead;i>=0;i=connectpoint2[i])
+//	             if(i > j) j = i;
+//
+//	         if (j >= 1) y1 += 8;
+//	         if (j >= 4) y1 += 8;
+//	         if (j >= 8) y1 += 8;
+//	         if (j >= 12) y1 += 8;
+//		 }
 
 		 if (size >= 5) y2 -= (5*(ss)+41);
 
