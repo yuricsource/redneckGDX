@@ -18,6 +18,7 @@
 // along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
 
 //https://github.com/ubports/oxide_ffmpeg/blob/master/libavcodec/interplayvideo.c
+//https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/blob/5dbec4ecf422943e0a9b7dadb16106b29e0753ca/gst/mve/mvevideodec8.c
 
 package ru.m210projects.Redneck.Types;
 
@@ -141,7 +142,8 @@ public class MVEFile {
 
 	private int back_buf1;
 	private int back_buf2;
-	private ByteBuffer buffer;
+	private byte[] buffer;
+
 	private int max_block_offset;
 	
 	private ByteBuffer file;
@@ -199,7 +201,7 @@ public class MVEFile {
 	
 	public byte[] getFrame()
 	{
-		byte[] data = new byte[buffer.capacity() / 2];
+		byte[] data = new byte[buffer.length / 2];
 		if(pkt.video_chunk_data == null)
 			return data;
 		
@@ -333,7 +335,7 @@ public class MVEFile {
 
 				int size = width * height * ((video_bpp == 8) ? 1 : 2);
 
-				buffer = ByteBuffer.allocate(2 * size).order(ByteOrder.LITTLE_ENDIAN);
+				buffer = new byte[2 * size]; //ByteBuffer.allocate(2 * size).order(ByteOrder.LITTLE_ENDIAN);
 				back_buf1 = 0;
 				back_buf2 = size;
 				max_block_offset = (height - 7) * width - 8;
@@ -628,8 +630,7 @@ public class MVEFile {
 		int xx = width >> 3;
 		int yy = height >> 3;
 
-		buffer.position(back_buf1);
-		ByteBuffer frame = buffer;
+		ByteBuffer frame = ByteBuffer.wrap(buffer, back_buf1, buffer.length / 2);
 
 		int pos = frame.position();
 		for (int y = 0; y < yy; ++y) {
@@ -646,7 +647,7 @@ public class MVEFile {
 				switch (opcode) {
 				case 0x00:
 					/* copy a block from the previous frame */
-					rc = copy_block(frame, buffer, pos + (back_buf2 - back_buf1), 0);
+					rc = copy_block(frame, buffer, frame.position() + (back_buf2 - back_buf1), 0);
 					break;
 				case 0x01:
 					/*
@@ -705,7 +706,7 @@ public class MVEFile {
 				frame.position(pos + 8);
 				pos = frame.position();
 			}
-
+			
 			frame.position(pos + 7 * width);
 			pos = frame.position();
 		}
@@ -714,7 +715,7 @@ public class MVEFile {
 	}
 
 	/* copy an 8x8 block from the stream to the frame buffer */
-	private boolean copy_block(ByteBuffer frame, ByteBuffer src, int src_offset, int offset) {
+	private boolean copy_block(ByteBuffer frame, byte[] src, int src_offset, int offset) {
 		long frame_offset = frame.position() - back_buf1 + offset;
 
 		if (frame_offset < 0) {
@@ -727,8 +728,8 @@ public class MVEFile {
 
 		for (int i = 0, pos; i < 8; ++i) {
 			pos = frame.position();
-			frame.put(src.array(), src_offset, 8);
-			if (pos + width < frame.capacity())
+			frame.put(src, src_offset, 8);
+			if (pos + width < frame.limit())
 				frame.position(pos + width);
 			src_offset += width;
 		}
@@ -825,16 +826,14 @@ public class MVEFile {
 					else frame.put(P0);
 					pos++;
 				}
-				if (pos + width - 8 < frame.capacity())
+				if (pos + width - 8 < frame.limit())
 					frame.position(pos + width - 8);
 			}
 		} else {
 			/* need 2 more bytes from the stream */
-//			int b1 = data.get() & 0xFF;
-//			int b2 = data.get() & 0xFF;
-//			flags = (b2 << 8) | b1;
-			
-			flags = data.getShort() & 0xFFFF;
+			int b1 = data.get() & 0xFF;
+			int b2 = data.get() & 0xFF;
+			flags = (b2 << 8) | b1;
 			bitmask = 0x0001;
 
 			int pos;
@@ -853,7 +852,7 @@ public class MVEFile {
 						frame.put(pos + x + 1 + width, P0);
 					}
 				}
-				if (pos + width * 2 < frame.capacity())
+				if (pos + width * 2 < frame.limit())
 					frame.position(pos + width * 2);
 			}
 		}
@@ -937,7 +936,7 @@ public class MVEFile {
 					pos++;
 				}
 
-				if (pos + width - 8 < frame.capacity())
+				if (pos + width - 8 < frame.limit())
 					frame.position(pos + width - 8);
 			}
 
@@ -987,7 +986,7 @@ public class MVEFile {
 						pos++;
 					}
 					
-					if (pos + width - 8 < frame.capacity())
+					if (pos + width - 8 < frame.limit())
 						frame.position(pos + width - 8);
 				}
 
@@ -1014,7 +1013,7 @@ public class MVEFile {
 						
 						pos++;
 					}
-					if (pos + width - 8 < frame.capacity())
+					if (pos + width - 8 < frame.limit())
 						frame.position(pos + width - 8);
 				}
 			}
@@ -1050,7 +1049,7 @@ public class MVEFile {
 					frame.put(P[(flags >> shifter) & 0x03]);
 					pos++;
 				}
-				if (pos + width - 8 < frame.capacity())
+				if (pos + width - 8 < frame.limit())
 					frame.position(pos + width - 8);
 			}
 		} else if (((P[0] & 0xFF) <= (P[1] & 0xFF)) && ((P[2] & 0xFF) > (P[3] & 0xFF))) {
@@ -1075,7 +1074,7 @@ public class MVEFile {
 					frame.put(pos + x + width, pix);
 					frame.put(pos + x + 1 + width, pix);
 				}
-				if (pos + width * 2 < frame.capacity())
+				if (pos + width * 2 < frame.limit())
 					frame.position(pos + width * 2);
 			}
 		} else if (((P[0] & 0xFF) > (P[1] & 0xFF)) && ((P[2] & 0xFF) <= (P[3] & 0xFF))) {
@@ -1102,7 +1101,7 @@ public class MVEFile {
 					frame.put(pos + x, pix);
 					frame.put(pos + x + 1, pix);
 				}
-				if (pos + width < frame.capacity())
+				if (pos + width < frame.limit())
 					frame.position(pos + width);
 			}
 		} else {
@@ -1126,10 +1125,10 @@ public class MVEFile {
 				}
 				for (x = 0; x < 8; ++x, shifter += 2) {
 					byte pix = P[(flags >> shifter) & 0x03];
+					frame.put(pos + x, pix);
 					frame.put(pos + x + width, pix);
-					frame.put(pos + x + 1 + width, pix);
 				}
-				if (pos + width * 2 < frame.capacity())
+				if (pos + width * 2 < frame.limit())
 					frame.position(pos + width * 2);
 			}
 		}
@@ -1188,7 +1187,7 @@ public class MVEFile {
 					pos++;
 				}
 
-				if (pos + width - 8 < frame.capacity())
+				if (pos + width - 8 < frame.limit())
 					frame.position(pos + width - 8);
 			}
 		} else {
@@ -1222,7 +1221,7 @@ public class MVEFile {
 						pos++;
 					}
 
-					if (pos + width - 8 < frame.capacity())
+					if (pos + width - 8 < frame.limit())
 						frame.position(pos + width - 8);
 				}
 			} else {
@@ -1239,7 +1238,7 @@ public class MVEFile {
 						pos++;
 					}
 
-					if (pos + width - 8 < frame.capacity())
+					if (pos + width - 8 < frame.limit())
 						frame.position(pos + width - 8);
 				}
 			}
@@ -1256,7 +1255,7 @@ public class MVEFile {
 		for (int y = 0, pos; y < 8; ++y) {
 			pos = frame.position();
 			frame.put(data.array(), data.position(), 8);
-			if (pos + width < frame.capacity())
+			if (pos + width < frame.limit())
 				frame.position(pos + width);
 			data.position(data.position() + 8);
 		}
@@ -1280,7 +1279,7 @@ public class MVEFile {
 				frame.put(pos + x + width, pix);
 				frame.put(pos + x + 1 + width, pix);
 			}
-			if (pos + width * 2 < frame.capacity())
+			if (pos + width * 2 < frame.limit())
 				frame.position(pos + width * 2);
 		}
 
@@ -1291,25 +1290,20 @@ public class MVEFile {
 		if (data.remaining() < 4)
 			return false;
 
-		byte[] P = new byte[4];
-		data.get(P);
-
-		int pos, index = 0;
+		byte[] P = new byte[2];
 		for (int y = 0, x; y < 8; ++y) {
-			pos = frame.position();
-			if (y < 4)
-				index = 0;
-			else
-				index = 2;
-
-			for (x = 0; x < 8; ++x) {
-				if (x == 4)
-					++index;
-				frame.put(P[index]);
-				pos++;
+			if ((y & 3) == 0) {
+				P[0] = data.get();
+				P[1] = data.get();
 			}
-			if (pos + width - 8 < frame.capacity())
-				frame.position(pos + width - 8);
+			
+			for (x = 0; x < 4; ++x) 
+				frame.put(P[0]);
+			for (x = 0; x < 4; ++x) 
+				frame.put(P[1]);
+			
+			if (frame.position() + width < frame.limit())
+				frame.position(frame.position() + width);
 		}
 
 		return true;
@@ -1325,7 +1319,7 @@ public class MVEFile {
 			for (x = 0; x < 8; x++)
 				frame.put(pix);
 
-			if (pos + width < frame.capacity())
+			if (pos + width < frame.limit()) 
 				frame.position(pos + width);
 		}
 
@@ -1346,7 +1340,7 @@ public class MVEFile {
 				frame.put(P[(y & 1) ^ 1]);
 				pos += 2;
 			}
-			if (pos + width - 8 < frame.capacity())
+			if (pos + width - 8 < frame.limit())
 				frame.position(pos + width - 8);
 		}
 
