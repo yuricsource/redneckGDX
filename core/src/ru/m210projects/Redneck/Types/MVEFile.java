@@ -22,6 +22,8 @@
 package ru.m210projects.Redneck.Types;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class MVEFile {
@@ -32,7 +34,7 @@ public class MVEFile {
 	public class FramePacket {
 
 		public int pts;
-		public int stream_index;
+//		public int stream_index;
 
 		public byte frame_format;
 		public boolean send_buffer;
@@ -86,24 +88,28 @@ public class MVEFile {
 	private final int AV_CODEC_ID_PCM_S16LE = 2;
 	private final int AV_CODEC_ID_PCM_U8 = 3;
 
-	//For each chunk of DPCM data in an Interplay MVE file, the first 2 bytes comprise an initial predictor stored in a signed, 16-bit, little-endian format.
-	//The remainder of the bytes are indices into the delta table. For each byte, fetch a signed delta and apply it to the appropriate predictor
-	//Saturate the predictor to a signed 16-bit range after each delta is applied.
-	private int interplay_dpcm_delta_table[] = { 
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-		20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 47, 51, 56,
-		61, 66, 72, 79, 86, 94, 102, 112, 122, 133, 145, 158, 173, 189, 206, 225, 245, 267, 292, 318, 348, 379, 414,
-		452, 493, 538, 587, 640, 699, 763, 832, 908, 991, 1081, 1180, 1288, 1405, 1534, 1673, 1826, 1993, 2175,
-		2373, 2590, 2826, 3084, 3365, 3672, 4008, 4373, 4772, 5208, 5683, 6202, 6767, 7385, 8059, 8794, 9597, 10472,
-		11428, 12471, 13609, 14851, 16206, 17685, 19298, 21060, 22981, 25078, 27367, 29864, 32589, -29973, -26728,
-		-23186, -19322, -15105, -10503, -5481, -1, 1, 1, 5481, 10503, 15105, 19322, 23186, 26728, 29973, -32589,
-		-29864, -27367, -25078, -22981, -21060, -19298, -17685, -16206, -14851, -13609, -12471, -11428, -10472,
-		-9597, -8794, -8059, -7385, -6767, -6202, -5683, -5208, -4772, -4373, -4008, -3672, -3365, -3084, -2826,
-		-2590, -2373, -2175, -1993, -1826, -1673, -1534, -1405, -1288, -1180, -1081, -991, -908, -832, -763, -699,
-		-640, -587, -538, -493, -452, -414, -379, -348, -318, -292, -267, -245, -225, -206, -189, -173, -158, -145,
-		-133, -122, -112, -102, -94, -86, -79, -72, -66, -61, -56, -51, -47, -43, -42, -41, -40, -39, -38, -37, -36,
-		-35, -34, -33, -32, -31, -30, -29, -28, -27, -26, -25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15,
-		-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1 };
+	private final int VIDEO_DELTA_FRAME = 1;
+
+	// For each chunk of DPCM data in an Interplay MVE file, the first 2 bytes
+	// comprise an initial predictor stored in a signed, 16-bit, little-endian
+	// format.
+	// The remainder of the bytes are indices into the delta table. For each byte,
+	// fetch a signed delta and apply it to the appropriate predictor
+	// Saturate the predictor to a signed 16-bit range after each delta is applied.
+	private int interplay_dpcm_delta_table[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+			20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 47, 51, 56,
+			61, 66, 72, 79, 86, 94, 102, 112, 122, 133, 145, 158, 173, 189, 206, 225, 245, 267, 292, 318, 348, 379, 414,
+			452, 493, 538, 587, 640, 699, 763, 832, 908, 991, 1081, 1180, 1288, 1405, 1534, 1673, 1826, 1993, 2175,
+			2373, 2590, 2826, 3084, 3365, 3672, 4008, 4373, 4772, 5208, 5683, 6202, 6767, 7385, 8059, 8794, 9597, 10472,
+			11428, 12471, 13609, 14851, 16206, 17685, 19298, 21060, 22981, 25078, 27367, 29864, 32589, -29973, -26728,
+			-23186, -19322, -15105, -10503, -5481, -1, 1, 1, 5481, 10503, 15105, 19322, 23186, 26728, 29973, -32589,
+			-29864, -27367, -25078, -22981, -21060, -19298, -17685, -16206, -14851, -13609, -12471, -11428, -10472,
+			-9597, -8794, -8059, -7385, -6767, -6202, -5683, -5208, -4772, -4373, -4008, -3672, -3365, -3084, -2826,
+			-2590, -2373, -2175, -1993, -1826, -1673, -1534, -1405, -1288, -1180, -1081, -991, -908, -832, -763, -699,
+			-640, -587, -538, -493, -452, -414, -379, -348, -318, -292, -267, -245, -225, -206, -189, -173, -158, -145,
+			-133, -122, -112, -102, -94, -86, -79, -72, -66, -61, -56, -51, -47, -43, -42, -41, -40, -39, -38, -37, -36,
+			-35, -34, -33, -32, -31, -30, -29, -28, -27, -26, -25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15,
+			-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1 };
 
 	private int audio_type;
 	private int audio_sample_rate;
@@ -133,7 +139,15 @@ public class MVEFile {
 	private FramePacket pkt = new FramePacket();
 	private int video_pts;
 
+	private int back_buf1;
+	private int back_buf2;
+	private ByteBuffer buffer;
+	private int max_block_offset;
+	
+	private ByteBuffer file;
+
 	public MVEFile(ByteBuffer bb) {
+		this.file = bb;
 		byte[] data = new byte[20];
 		bb.get(data);
 		for (int i = 0; i < 20; i++)
@@ -158,16 +172,51 @@ public class MVEFile {
 			audio_type = 0; /* no audio */
 		} else if (process_chunk(bb) != CHUNK_INIT_AUDIO)
 			return; // AVERROR_INVALIDDATA;
+	}
+	
+	public int getWidth()
+	{
+		return width;
+	}
+	
+	public int getHeight()
+	{
+		return height;
+	}
+	
+	public boolean process()
+	{
+		return process_chunk(file) == CHUNK_DONE;
+	}
+	
+	public byte[] getPalette()
+	{
+		if(hasPalette)
+			return palette;
 		
-		for(int i = 0; i < 100; i++) {
-			process_chunk(bb);
-			
-			if(pkt.decode_map_chunk_size != 0)
-			{
-				System.err.println(pkt.stream_index);
-				
-			}
-		}
+		return null;
+	}
+	
+	public byte[] getFrame()
+	{
+		byte[] data = new byte[buffer.capacity() / 2];
+		if(pkt.video_chunk_data == null)
+			return data;
+		
+		ByteBuffer dec = decode();
+		
+		dec.position(back_buf1);
+		dec.get(data);
+		
+		return data;
+	}
+	
+	public int getRate()
+	{
+		if(frame_pts_inc == 0)
+			return 1000;
+		
+		return frame_pts_inc;
 	}
 
 	private int process_chunk(ByteBuffer bb) {
@@ -181,25 +230,25 @@ public class MVEFile {
 
 		switch (chunk_type) {
 		case CHUNK_INIT_AUDIO:
-			System.err.println("initialize audio");
+//			System.err.println("initialize audio");
 			break;
 		case CHUNK_AUDIO_ONLY:
-			System.err.println("audio only");
+//			System.err.println("audio only");
 			break;
 		case CHUNK_INIT_VIDEO:
-			System.err.println("initialize video");
+//			System.err.println("initialize video");
 			break;
 		case CHUNK_VIDEO:
-			System.err.println("video (and audio)");
+//			System.err.println("video (and audio)");
 			break;
 		case CHUNK_SHUTDOWN:
-			System.err.println("shutdown");
+//			System.err.println("shutdown");
 			break;
 		case CHUNK_END:
-			System.err.println("end");
+//			System.err.println("end");
 			break;
 		default:
-			System.err.println("invalid chunk " + chunk_type);
+//			System.err.println("invalid chunk " + chunk_type);
 			chunk_type = CHUNK_BAD;
 			break;
 		}
@@ -256,9 +305,9 @@ public class MVEFile {
 				else
 					audio_type = AV_CODEC_ID_PCM_U8;
 
-				System.err.println("audio: " + audio_bits + " bits, " + audio_sample_rate + " Hz, "
-						+ ((audio_channels == 2) ? "stereo" : "mono") + ", "
-						+ ((audio_type == AV_CODEC_ID_INTERPLAY_DPCM) ? "Interplay audio" : "PCM"));
+//				System.err.println("audio: " + audio_bits + " bits, " + audio_sample_rate + " Hz, "
+//						+ ((audio_channels == 2) ? "stereo" : "mono") + ", "
+//						+ ((audio_type == AV_CODEC_ID_INTERPLAY_DPCM) ? "Interplay audio" : "PCM"));
 				break;
 			case OPCODE_START_STOP_AUDIO:
 //				System.err.println("start/stop audio");
@@ -281,7 +330,15 @@ public class MVEFile {
 				} else {
 					video_bpp = 16;
 				}
-				System.err.println("video resolution: " + width + " x " + height);
+
+				int size = width * height * ((video_bpp == 8) ? 1 : 2);
+
+				buffer = ByteBuffer.allocate(2 * size).order(ByteOrder.LITTLE_ENDIAN);
+				back_buf1 = 0;
+				back_buf2 = size;
+				max_block_offset = (height - 7) * width - 8;
+
+//				System.err.println("video resolution: " + width + " x " + height);
 				break;
 			case OPCODE_INIT_VIDEO_MODE:
 //				System.err.println("initialize video mode");
@@ -378,6 +435,7 @@ public class MVEFile {
 					palette[3 * i + 1] = (byte) (bb.get() * 4);
 					palette[3 * i + 2] = (byte) (bb.get() * 4);
 				}
+
 				hasPalette = true;
 				break;
 
@@ -511,63 +569,787 @@ public class MVEFile {
 
 		return chunk_type;
 	}
+
+	private ByteBuffer decode() {
+		ByteBuffer bb = ByteBuffer.wrap(pkt.video_chunk_data).order(ByteOrder.LITTLE_ENDIAN);
+
+		/*short cur_frame = */bb.getShort();
+		/*short last_frame = */bb.getShort();
+		/*short x_offset = */bb.getShort();
+		/*short y_offset = */bb.getShort();
+		/*short x_size = */bb.getShort();
+		/*short y_size = */bb.getShort();
+		int flags = bb.getShort() & 0xFFFF;
+
+//		System.err.printf("video data hot:%d, cold:%d, xoff:%d, yoff:%d, w:%d, h:%d, flags:%x \n", cur_frame,
+//				last_frame, x_offset, y_offset, x_size, y_size, flags);
+
+		if ((flags & VIDEO_DELTA_FRAME) != 0) {
+			int temp = back_buf1;
+			back_buf1 = back_buf2;
+			back_buf2 = temp;
+		}
+
+		ByteBuffer dec = null;
+		if (video_bpp == 16) {
+//		    dec = ipvideo_decode_frame16 (s, data, len);
+		} else {
+			if (palette == null) {
+				System.err.println("No palette available");
+				return null;
+			}
+			dec = decode_frame8(bb, pkt.video_chunk_size);
+		}
+//		if (dec == null) 
+//			return;
+		
+		return dec;
+		
+//		System.err.println(dec.position());
+//		dec.position(back_buf1);
+//
+//		byte[] data = new byte[buffer.capacity() / 2];
+//
+//		dec.get(data);
+//
+//		System.err.println(cur_frame + " " + last_frame + " " + CRC32.getChecksum(data));
+//
+//		FileResource fil = BuildGdx.compat.open("raw.raw", Path.Game, Mode.Write);
+//		fil.writeBytes(data, data.length);
+//		fil.close();
+	}
+
+	private ByteBuffer decode_frame8(ByteBuffer data, int len) {
+		boolean rc = true;
+		int index = 0;
+		int opcode;
+
+		/* decoding is done in 8x8 blocks */
+		int xx = width >> 3;
+		int yy = height >> 3;
+
+		buffer.position(back_buf1);
+		ByteBuffer frame = buffer;
+
+		int pos = frame.position();
+		for (int y = 0; y < yy; ++y) {
+			for (int x = 0; x < xx; ++x) {
+				/* decoding map contains 4 bits of information per 8x8 block */
+				/* bottom nibble first, then top nibble */
+
+				if ((index & 1) != 0)
+					opcode = (pkt.decode_map_chunk_data[index >> 1] & 0xFF) >> 4;
+				else
+					opcode = pkt.decode_map_chunk_data[index >> 1] & 0x0F;
+				++index;
+
+				switch (opcode) {
+				case 0x00:
+					/* copy a block from the previous frame */
+					rc = copy_block(frame, buffer, pos + (back_buf2 - back_buf1), 0);
+					break;
+				case 0x01:
+					/*
+					 * copy block from 2 frames ago; since we switched the back buffers we don't
+					 * actually have to do anything here
+					 */
+					break;
+				case 0x02:
+					rc = decode_0x2(frame, data);
+					break;
+				case 0x03:
+					rc = decode_0x3(frame, data);
+					break;
+				case 0x04:
+					rc = decode_0x4(frame, data);
+					break;
+				case 0x05:
+					rc = decode_0x5(frame, data);
+					break;
+				case 0x06:
+					/* mystery opcode? skip multiple blocks? */
+					rc = false;
+					break;
+				case 0x07:
+					rc = decode_0x7(frame, data);
+					break;
+				case 0x08:
+					rc = decode_0x8(frame, data);
+					break;
+				case 0x09:
+					rc = decode_0x9(frame, data);
+					break;
+				case 0x0a:
+					rc = decode_0xa(frame, data);
+					break;
+				case 0x0b:
+					rc = decode_0xb(frame, data);
+					break;
+				case 0x0c:
+					rc = decode_0xc(frame, data);
+					break;
+				case 0x0d:
+					rc = decode_0xd(frame, data);
+					break;
+				case 0x0e:
+					rc = decode_0xe(frame, data);
+					break;
+				case 0x0f:
+					rc = decode_0xf(frame, data);
+					break;
+				}
+
+				if (!rc)
+					return null;
+
+				frame.position(pos + 8);
+				pos = frame.position();
+			}
+
+			frame.position(pos + 7 * width);
+			pos = frame.position();
+		}
+
+		return frame;
+	}
+
+	/* copy an 8x8 block from the stream to the frame buffer */
+	private boolean copy_block(ByteBuffer frame, ByteBuffer src, int src_offset, int offset) {
+		long frame_offset = frame.position() - back_buf1 + offset;
+
+		if (frame_offset < 0) {
+			System.err.println("frame offset < 0 (" + frame_offset + ")");
+			return false;
+		} else if (frame_offset > max_block_offset) {
+			System.err.println("frame offset above limit (" + frame_offset + " > " + max_block_offset + ")");
+			return false;
+		}
+
+		for (int i = 0, pos; i < 8; ++i) {
+			pos = frame.position();
+			frame.put(src.array(), src_offset, 8);
+			if (pos + width < frame.capacity())
+				frame.position(pos + width);
+			src_offset += width;
+		}
+
+		return true;
+	}
+
+	private boolean decode_0x2(ByteBuffer frame, ByteBuffer data) {
+		if (!data.hasRemaining())
+			return false;
+
+		int x, y, B = data.get() & 0xFF;
+
+		if (B < 56) {
+			x = 8 + (B % 7);
+			y = B / 7;
+		} else {
+			x = -14 + ((B - 56) % 29);
+			y = 8 + ((B - 56) / 29);
+		}
+		int offset = y * width + x;
+
+		return copy_block(frame, buffer, frame.position() + offset, offset);
+	}
+
+	private boolean decode_0x3(ByteBuffer frame, ByteBuffer data) {
+		if (!data.hasRemaining())
+			return false;
+
+		int x, y, B = data.get() & 0xFF;
+
+		if (B < 56) {
+			x = -(8 + (B % 7));
+			y = -(B / 7);
+		} else {
+			x = -(-14 + ((B - 56) % 29));
+			y = -(8 + ((B - 56) / 29));
+		}
+
+		int offset = y * width + x;
+
+		return copy_block(frame, buffer, frame.position() + offset, offset);
+	}
+
+	private boolean decode_0x4(ByteBuffer frame, ByteBuffer data) {
+		if (!data.hasRemaining())
+			return false;
+
+		int B = data.get() & 0xFF;
+
+		int x = -8 + (B & 0x0F);
+		int y = -8 + ((B >> 4) & 0x0F);
+
+		int offset = y * width + x;
+
+		return copy_block(frame, buffer, frame.position() + (back_buf2 - back_buf1) + offset, offset);
+	}
+
+	private boolean decode_0x5(ByteBuffer frame, ByteBuffer data) {
+		if (data.remaining() < 2)
+			return false;
+
+		int x = data.get();
+		int y = data.get();
+
+		int offset = y * width + x;
+
+		return copy_block(frame, buffer, frame.position() + (back_buf2 - back_buf1) + offset, offset);
+	}
+
+	private boolean decode_0x7(ByteBuffer frame, ByteBuffer data) {
+		if (data.remaining() < 2 + 2)
+			return false;
+
+		byte P0 = data.get();
+		byte P1 = data.get();
+
+		int x, y;
+		int flags;
+		int bitmask;
+
+		if ((P0 & 0xFF) <= (P1 & 0xFF)) {
+			/* need 8 more bytes from the stream */
+			if (data.remaining() < 8 - 2)
+				return false;
+
+			int pos;
+			for (y = 0; y < 8; ++y) {
+				pos = frame.position();
+				flags = data.get() & 0xFF;
+				for (x = 0x01; x <= 0x80; x <<= 1) {
+					if ((flags & x) != 0)
+						frame.put(P1);
+					else frame.put(P0);
+					pos++;
+				}
+				if (pos + width - 8 < frame.capacity())
+					frame.position(pos + width - 8);
+			}
+		} else {
+			/* need 2 more bytes from the stream */
+//			int b1 = data.get() & 0xFF;
+//			int b2 = data.get() & 0xFF;
+//			flags = (b2 << 8) | b1;
+			
+			flags = data.getShort() & 0xFFFF;
+			bitmask = 0x0001;
+
+			int pos;
+			for (y = 0; y < 8; y += 2) {
+				pos = frame.position();
+				for (x = 0; x < 8; x += 2, bitmask <<= 1) {
+					if ((flags & bitmask) != 0) {
+						frame.put(pos + x, P1);
+						frame.put(pos + x + 1, P1);
+						frame.put(pos + x + width, P1);
+						frame.put(pos + x + 1 + width, P1);
+					} else {
+						frame.put(pos + x, P0);
+						frame.put(pos + x + 1, P0);
+						frame.put(pos + x + width, P0);
+						frame.put(pos + x + 1 + width, P0);
+					}
+				}
+				if (pos + width * 2 < frame.capacity())
+					frame.position(pos + width * 2);
+			}
+		}
+
+		return true;
+	}
+
+	private boolean decode_0x8(ByteBuffer frame, ByteBuffer data) {
+		int x, y;
+		byte[] P = new byte[8];
+		byte[] B = new byte[8];
+		int flags = 0;
+		int bitmask = 0;
+		byte P0 = 0, P1 = 0;
+		int lower_half = 0;
+
+		/*
+		 * 2-color encoding for each 4x4 quadrant, or 2-color encoding on either top and
+		 * bottom or left and right halves
+		 */
+		if (data.remaining() < 4 + 8)
+			return false;
+
+		P[0] = data.get();
+		P[1] = data.get();
+		B[0] = data.get();
+		B[1] = data.get();
+
+		int pos;
+		if ((P[0] & 0xFF) <= (P[1] & 0xFF)) {
+
+			/* need 12 more bytes */
+			if (data.remaining() < 12 - 8)
+				return false;
+
+			P[2] = data.get();
+			P[3] = data.get();
+			B[2] = data.get();
+			B[3] = data.get();
+			P[4] = data.get();
+			P[5] = data.get();
+			B[4] = data.get();
+			B[5] = data.get();
+			P[6] = data.get();
+			P[7] = data.get();
+			B[6] = data.get();
+			B[7] = data.get();
+
+			flags = ((B[0] & 0xF0) << 4) | ((B[4] & 0xF0) << 8) | ((B[0] & 0x0F)) | ((B[4] & 0x0F) << 4)
+					| ((B[1] & 0xF0) << 20) | ((B[5] & 0xF0) << 24) | ((B[1] & 0x0F) << 16) | ((B[5] & 0x0F) << 20);
+			bitmask = 0x00000001;
+			lower_half = 0; /* still on top half */
+
+			for (y = 0; y < 8; ++y) {
+				pos = frame.position();
+				
+				/* time to reload flags? */
+				if (y == 4) {
+					flags = ((B[2] & 0xF0) << 4) | ((B[6] & 0xF0) << 8) | ((B[2] & 0x0F)) | ((B[6] & 0x0F) << 4)
+							| ((B[3] & 0xF0) << 20) | ((B[7] & 0xF0) << 24) | ((B[3] & 0x0F) << 16)
+							| ((B[7] & 0x0F) << 20);
+					bitmask = 0x00000001;
+					lower_half = 2;
+				}
+
+				/* get the pixel values ready for this quadrant */
+				P0 = P[lower_half + 0];
+				P1 = P[lower_half + 1];
+
+				for (x = 0; x < 8; ++x, bitmask <<= 1) {
+					if (x == 4) {
+						P0 = P[lower_half + 4];
+						P1 = P[lower_half + 5];
+					}
+
+					if ((flags & bitmask) != 0)
+						frame.put(P1);
+					else
+						frame.put(P0);
+					
+					pos++;
+				}
+
+				if (pos + width - 8 < frame.capacity())
+					frame.position(pos + width - 8);
+			}
+
+		} else {
+			/* need 8 more bytes */
+			B[2] = data.get();
+			B[3] = data.get();
+			P[2] = data.get();
+			P[3] = data.get();
+			B[4] = data.get();
+			B[5] = data.get();
+			B[6] = data.get();
+			B[7] = data.get();
+
+			if ((P[2] & 0xFF) <= (P[3] & 0xFF)) {
+				/* vertical split; left & right halves are 2-color encoded */
+
+				flags = ((B[0] & 0xF0) << 4) | ((B[4] & 0xF0) << 8) | ((B[0] & 0x0F)) | ((B[4] & 0x0F) << 4)
+						| ((B[1] & 0xF0) << 20) | ((B[5] & 0xF0) << 24) | ((B[1] & 0x0F) << 16) | ((B[5] & 0x0F) << 20);
+				bitmask = 0x00000001;
+
+				for (y = 0; y < 8; ++y) {
+					pos = frame.position();
+					/* time to reload flags? */
+					if (y == 4) {
+						flags = ((B[2] & 0xF0) << 4) | ((B[6] & 0xF0) << 8) | ((B[2] & 0x0F)) | ((B[6] & 0x0F) << 4)
+								| ((B[3] & 0xF0) << 20) | ((B[7] & 0xF0) << 24) | ((B[3] & 0x0F) << 16)
+								| ((B[7] & 0x0F) << 20);
+						bitmask = 0x00000001;
+					}
+
+					/* get the pixel values ready for this half */
+					P0 = P[0];
+					P1 = P[1];
+
+					for (x = 0; x < 8; ++x, bitmask <<= 1) {
+						if (x == 4) {
+							P0 = P[2];
+							P1 = P[3];
+						}
+
+						if ((flags & bitmask) != 0)
+							frame.put(P1);
+						else
+							frame.put(P0);
+						
+						pos++;
+					}
+					
+					if (pos + width - 8 < frame.capacity())
+						frame.position(pos + width - 8);
+				}
+
+			} else {
+				/* horizontal split; top & bottom halves are 2-color encoded */
+
+				P0 = P[0];
+				P1 = P[1];
+
+				for (y = 0; y < 8; ++y) {
+					pos = frame.position();
+					flags = B[y] & 0xFF;
+					if (y == 4) {
+						P0 = P[2];
+						P1 = P[3];
+					}
+
+					for (bitmask = 0x01; bitmask <= 0x80; bitmask <<= 1) {
+
+						if ((flags & bitmask) != 0)
+							frame.put(P1);
+						else
+							frame.put(P0);
+						
+						pos++;
+					}
+					if (pos + width - 8 < frame.capacity())
+						frame.position(pos + width - 8);
+				}
+			}
+		}
+		return true;
+	}
+
+	private boolean decode_0x9(ByteBuffer frame, ByteBuffer data) {
+		if (data.remaining() < 4 + 4)
+			return false;
+
+		byte[] P = new byte[4];
+		data.get(P);
+
+		int pos;
+		int flags = 0;
+		int shifter = 0;
+
+		if (((P[0] & 0xFF) <= (P[1] & 0xFF)) && ((P[2] & 0xFF) <= (P[3] & 0xFF))) {
+			/* 1 of 4 colors for each pixel, need 16 more bytes */
+			if (data.remaining() < 16 - 4)
+				return false;
+
+			for (int y = 0, x; y < 8; ++y) {
+				pos = frame.position();
+				/* get the next set of 8 2-bit flags */
+				
+				int b1 = data.get() & 0xFF;
+				int b2 = data.get() & 0xFF;
+				
+				flags = (b2 << 8) | b1;
+				for (x = 0, shifter = 0; x < 8; ++x, shifter += 2) {
+					frame.put(P[(flags >> shifter) & 0x03]);
+					pos++;
+				}
+				if (pos + width - 8 < frame.capacity())
+					frame.position(pos + width - 8);
+			}
+		} else if (((P[0] & 0xFF) <= (P[1] & 0xFF)) && ((P[2] & 0xFF) > (P[3] & 0xFF))) {
+			/* 1 of 4 colors for each 2x2 block, need 4 more bytes */
+//			int b0 = data.get() & 0xFF;
+//			int b1 = data.get() & 0xFF;
+//			int b2 = data.get() & 0xFF;
+//			int b3 = data.get() & 0xFF;
+//			
+//		    flags = (b3 << 24) | (b2 << 16) | (b1 << 8) | b0;
+			
+			flags = data.getInt();
+
+			shifter = 0;
+
+			for (int y = 0, x; y < 8; y += 2) {
+				pos = frame.position();
+				for (x = 0; x < 8; x += 2, shifter += 2) {
+					byte pix = P[(flags >> shifter) & 0x03];
+					frame.put(pos + x, pix);
+					frame.put(pos + x + 1, pix);
+					frame.put(pos + x + width, pix);
+					frame.put(pos + x + 1 + width, pix);
+				}
+				if (pos + width * 2 < frame.capacity())
+					frame.position(pos + width * 2);
+			}
+		} else if (((P[0] & 0xFF) > (P[1] & 0xFF)) && ((P[2] & 0xFF) <= (P[3] & 0xFF))) {
+			/* 1 of 4 colors for each 2x1 block, need 8 more bytes */
+			if (data.remaining() < 8 - 4)
+				return false;
+
+			for (int y = 0, x; y < 8; ++y) {
+				pos = frame.position();
+				/* time to reload flags? */
+				if ((y == 0) || (y == 4)) {
+//					int b0 = data.get() & 0xFF;
+//					int b1 = data.get() & 0xFF;
+//					int b2 = data.get() & 0xFF;
+//					int b3 = data.get() & 0xFF;
+//					
+//				    flags = (b3 << 24) | (b2 << 16) | (b1 << 8) | b0;
+					flags = data.getInt();
+					
+					shifter = 0;
+				}
+				for (x = 0; x < 8; x += 2, shifter += 2) {
+					byte pix = P[(flags >> shifter) & 0x03];
+					frame.put(pos + x, pix);
+					frame.put(pos + x + 1, pix);
+				}
+				if (pos + width < frame.capacity())
+					frame.position(pos + width);
+			}
+		} else {
+			/* 1 of 4 colors for each 1x2 block, need 8 more bytes */
+			if (data.remaining() < 8 - 4)
+				return false;
+
+			for (int y = 0, x; y < 8; y += 2) {
+				pos = frame.position();
+				/* time to reload flags? */
+				if ((y == 0) || (y == 4)) {
+//					int b0 = data.get() & 0xFF;
+//					int b1 = data.get() & 0xFF;
+//					int b2 = data.get() & 0xFF;
+//					int b3 = data.get() & 0xFF;
+//					
+//				    flags = (b3 << 24) | (b2 << 16) | (b1 << 8) | b0;
+					
+					flags = data.getInt();
+					shifter = 0;
+				}
+				for (x = 0; x < 8; ++x, shifter += 2) {
+					byte pix = P[(flags >> shifter) & 0x03];
+					frame.put(pos + x + width, pix);
+					frame.put(pos + x + 1 + width, pix);
+				}
+				if (pos + width * 2 < frame.capacity())
+					frame.position(pos + width * 2);
+			}
+		}
+
+		return true;
+	}
+
+	private boolean decode_0xa(ByteBuffer frame, ByteBuffer data) {
+		int x, y;
+		byte[] P = new byte[16];
+		byte[] B = new byte[16];
+		int flags = 0;
+		int shifter = 0;
+		int index;
+		int split;
+		int lower_half;
+		int pos;
+
+		/*
+		 * 4-color encoding for each 4x4 quadrant, or 4-color encoding on either top and
+		 * bottom or left and right halves
+		 */
+		if (data.remaining() < 8 + 16)
+			return false;
+
+		P[0] = data.get();
+		P[1] = data.get();
+		P[2] = data.get();
+		P[3] = data.get();
+		B[0] = data.get();
+		B[1] = data.get();
+		B[2] = data.get();
+		B[3] = data.get();
+
+		if ((P[0] & 0xFF) <= (P[1] & 0xFF)) {
+			/* 4-color encoding for each quadrant; need 24 more bytes */
+			if (data.remaining() < 24 - 16)
+				return false;
+
+			for (y = 4; y < 16; y += 4) {
+				for (x = y; x < y + 4; ++x)
+					P[x] = data.get();
+				for (x = y; x < y + 4; ++x)
+					B[x] = data.get();
+			}
+
+			for (y = 0; y < 8; ++y) {
+				pos = frame.position();
+				lower_half = (y >= 4) ? 4 : 0;
+				flags = ((B[y + 8] & 0xFF) << 8) | (B[y] & 0xFF);
+
+				for (x = 0, shifter = 0; x < 8; ++x, shifter += 2) {
+					split = (x >= 4) ? 8 : 0;
+					index = split + lower_half + ((flags >> shifter) & 0x03);
+					frame.put(P[index]);
+					pos++;
+				}
+
+				if (pos + width - 8 < frame.capacity())
+					frame.position(pos + width - 8);
+			}
+		} else {
+			/*
+			 * 4-color encoding for either left and right or top and bottom halves; need 16
+			 * more bytes
+			 */
+
+			B[4] = data.get();
+			B[5] = data.get();
+			B[6] = data.get();
+			B[7] = data.get();
+			P[4] = data.get();
+			P[5] = data.get();
+			P[6] = data.get();
+			P[7] = data.get();
+
+			data.get(B, 8, 8);
+
+			if ((P[4] & 0xFF) <= (P[5] & 0xFF)) {
+				/* block is divided into left and right halves */
+				for (y = 0; y < 8; ++y) {
+					pos = frame.position();
+					flags = ((B[y + 8] & 0xFF) << 8) | (B[y] & 0xFF);
+					split = 0;
+
+					for (x = 0, shifter = 0; x < 8; ++x, shifter += 2) {
+						if (x == 4)
+							split = 4;
+						frame.put(P[split + ((flags >> shifter) & 0x03)]);
+						pos++;
+					}
+
+					if (pos + width - 8 < frame.capacity())
+						frame.position(pos + width - 8);
+				}
+			} else {
+				/* block is divided into top and bottom halves */
+				split = 0;
+				for (y = 0; y < 8; ++y) {
+					pos = frame.position();
+					flags = ((B[y * 2 + 1] & 0xFF ) << 8) | (B[y * 2] & 0xFF);
+					if (y == 4)
+						split = 4;
+
+					for (x = 0, shifter = 0; x < 8; ++x, shifter += 2) {
+						frame.put(P[split + ((flags >> shifter) & 0x03)]);
+						pos++;
+					}
+
+					if (pos + width - 8 < frame.capacity())
+						frame.position(pos + width - 8);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private boolean decode_0xb(ByteBuffer frame, ByteBuffer data) {
+		/* 64-color encoding (each pixel in block is a different color) */
+		if (data.remaining() < 64)
+			return false;
+
+		for (int y = 0, pos; y < 8; ++y) {
+			pos = frame.position();
+			frame.put(data.array(), data.position(), 8);
+			if (pos + width < frame.capacity())
+				frame.position(pos + width);
+			data.position(data.position() + 8);
+		}
+		return true;
+	}
+
+	private boolean decode_0xc(ByteBuffer frame, ByteBuffer data) {
+		/* 16-color block encoding: each 2x2 block is a different color */
+		if (data.remaining() < 16)
+			return false;
+
+		byte pix;
+		int pos;
+		for (int y = 0, x; y < 8; y += 2) {
+			pos = frame.position();
+			for (x = 0; x < 8; x += 2) {
+				pix = data.get();
+
+				frame.put(pos + x, pix);
+				frame.put(pos + x + 1, pix);
+				frame.put(pos + x + width, pix);
+				frame.put(pos + x + 1 + width, pix);
+			}
+			if (pos + width * 2 < frame.capacity())
+				frame.position(pos + width * 2);
+		}
+
+		return true;
+	}
+
+	private boolean decode_0xd(ByteBuffer frame, ByteBuffer data) {
+		if (data.remaining() < 4)
+			return false;
+
+		byte[] P = new byte[4];
+		data.get(P);
+
+		int pos, index = 0;
+		for (int y = 0, x; y < 8; ++y) {
+			pos = frame.position();
+			if (y < 4)
+				index = 0;
+			else
+				index = 2;
+
+			for (x = 0; x < 8; ++x) {
+				if (x == 4)
+					++index;
+				frame.put(P[index]);
+				pos++;
+			}
+			if (pos + width - 8 < frame.capacity())
+				frame.position(pos + width - 8);
+		}
+
+		return true;
+	}
+
+	private boolean decode_0xe(ByteBuffer frame, ByteBuffer data) {
+		if (data.remaining() < 1)
+			return false;
+
+		byte pix = data.get();
+		for (int y = 0, x, pos; y < 8; ++y) {
+			pos = frame.position();
+			for (x = 0; x < 8; x++)
+				frame.put(pix);
+
+			if (pos + width < frame.capacity())
+				frame.position(pos + width);
+		}
+
+		return true;
+	}
 	
-	
-	
-	public byte[] decode_frame()
-	{
-//		const uint8_t *buf = avpkt->data;
-//	    int buf_size = avpkt->size;
-//	    IpvideoContext *s = avctx->priv_data;
-//	    AVFrame *frame = data;
-//	    int ret;
-//
-//	    if (av_packet_get_side_data(avpkt, AV_PKT_DATA_PARAM_CHANGE, NULL)) {
-//	        av_frame_unref(s->last_frame);
-//	        av_frame_unref(s->second_last_frame);
-//	    }
-//
-//	    if (buf_size < 2)
-//	        return AVERROR_INVALIDDATA;
-//
-//	    /* decoding map contains 4 bits of information per 8x8 block */
-//	    s->decoding_map_size = AV_RL16(avpkt->data);
-//
-//	    /* compressed buffer needs to be large enough to at least hold an entire
-//	     * decoding map */
-//	    if (buf_size < s->decoding_map_size + 2)
-//	        return buf_size;
-//
-//
-//	    s->decoding_map = buf + 2;
-//	    bytestream2_init(&s->stream_ptr, buf + 2 + s->decoding_map_size,
-//	                     buf_size - s->decoding_map_size);
-//
-//	    if ((ret = ff_get_buffer(avctx, frame, AV_GET_BUFFER_FLAG_REF)) < 0)
-//	        return ret;
-//
-//	    if (!s->is_16bpp) {
-//	        int size;
-//	        const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, &size);
-//	        if (pal && size == AVPALETTE_SIZE) {
-//	            frame->palette_has_changed = 1;
-//	            memcpy(s->pal, pal, AVPALETTE_SIZE);
-//	        } else if (pal) {
-//	            av_log(avctx, AV_LOG_ERROR, "Palette size %d is wrong\n", size);
-//	        }
-//	    }
-//
-//	    ipvideo_decode_opcodes(s, frame);
-//
-//	    *got_frame = 1;
-//
-//	    /* shuffle frames */
-//	    av_frame_unref(s->second_last_frame);
-//	    FFSWAP(AVFrame*, s->second_last_frame, s->last_frame);
-//	    if ((ret = av_frame_ref(s->last_frame, frame)) < 0)
-//	        return ret;
-//
-//	    /* report that the buffer was completely consumed */
-	    return null;
+	private boolean decode_0xf(ByteBuffer frame, ByteBuffer data) {
+		if (data.remaining() < 2)
+			return false;
+		
+		byte[] P = new byte[2];
+		data.get(P);
+
+		for (int y = 0, x, pos; y < 8; ++y) {
+			pos = frame.position();
+			for (x = 0; x < 4; ++x) {
+				frame.put(P[y & 1]);
+				frame.put(P[(y & 1) ^ 1]);
+				pos += 2;
+			}
+			if (pos + width - 8 < frame.capacity())
+				frame.position(pos + width - 8);
+		}
+
+		return true;
 	}
 }

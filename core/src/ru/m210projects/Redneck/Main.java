@@ -30,9 +30,11 @@ import static ru.m210projects.Redneck.Factory.RRMenuHandler.GAME;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.MAIN;
 import static ru.m210projects.Redneck.Gamedef.compilecons;
 import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
+import static ru.m210projects.Redneck.Globals.RRRA;
 import static ru.m210projects.Redneck.Globals.TICRATE;
 import static ru.m210projects.Redneck.Globals.animwall;
 import static ru.m210projects.Redneck.Globals.boardfilename;
+import static ru.m210projects.Redneck.Globals.currentGame;
 import static ru.m210projects.Redneck.Globals.hittype;
 import static ru.m210projects.Redneck.Globals.kGameCrash;
 import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
@@ -92,6 +94,7 @@ import ru.m210projects.Redneck.Screens.DisconnectScreen;
 import ru.m210projects.Redneck.Screens.EndScreen;
 import ru.m210projects.Redneck.Screens.GameScreen;
 import ru.m210projects.Redneck.Screens.LoadingScreen;
+import ru.m210projects.Redneck.Screens.MVEScreen;
 import ru.m210projects.Redneck.Screens.MenuScreen;
 import ru.m210projects.Redneck.Screens.NetScreen;
 import ru.m210projects.Redneck.Screens.PrecacheScreen;
@@ -119,6 +122,7 @@ public class Main extends BuildGame {
 	public static final String appdef = "rrgdx.def";
 
 	public static AnmScreen gAnmScreen;
+	public static MVEScreen gMveScreen;
 	public static MenuScreen gMenuScreen;
 	public static LoadingScreen gLoadingScreen;
 	public static GameScreen gGameScreen;
@@ -157,15 +161,6 @@ public class Main extends BuildGame {
 
 	@Override
 	public boolean init() throws Exception {
-		ResourceData bb = BuildGdx.cache.getData("REDINT.MVE", 0);
-		if(bb != null)
-		{
-			System.err.println("Found");
-			MVEFile mve = new MVEFile(bb.getBuffer());
-
-			mve.decode_frame();
-		}
-		
 		net = (RRNetwork) pNet;
 
 		ConsoleInit();
@@ -240,6 +235,7 @@ public class Main extends BuildGame {
 		menu.mMenus[GAME] = new GameMenu(this);
 
 		gAnmScreen = new AnmScreen(this);
+		gMveScreen = new MVEScreen(this);
 		gMenuScreen = new MenuScreen(this);
 		gLoadingScreen = new LoadingScreen(this);
 		gGameScreen = new GameScreen(this);
@@ -287,8 +283,11 @@ public class Main extends BuildGame {
 		
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
-	
-		if (gAnmScreen.init("rr_intro.anm", 0)) {
+		
+		if(currentGame.getCON().type == RRRA && gMveScreen.init("redint.mve")) {
+			gMveScreen.setCallback(rMenu);
+			setScreen(gMveScreen.escSkipping(true));
+		} else if (gAnmScreen.init("rr_intro.anm", 0)) {
 			gAnmScreen.setCallback(new Runnable() {
 				@Override
 				public void run() {
