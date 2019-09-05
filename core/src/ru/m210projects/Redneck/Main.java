@@ -59,7 +59,6 @@ import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Types.RTS.RTS_Init;
 import static ru.m210projects.Redneck.Types.RTS.numlumps;
 
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -71,7 +70,6 @@ import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.Group;
 import ru.m210projects.Build.FileHandle.GroupResource;
-import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
@@ -100,7 +98,6 @@ import ru.m210projects.Redneck.Screens.NetScreen;
 import ru.m210projects.Redneck.Screens.PrecacheScreen;
 import ru.m210projects.Redneck.Screens.StatisticScreen;
 import ru.m210projects.Redneck.Types.Animwalltype;
-import ru.m210projects.Redneck.Types.MVEFile;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 import ru.m210projects.Redneck.Types.Weaponhit;
@@ -115,10 +112,8 @@ public class Main extends BuildGame {
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 * cd audio from cue
-	 * cutscenes MVE
 	 */
 
-	public static final String sversion = "v1.02";
 	public static final String appdef = "rrgdx.def";
 
 	public static AnmScreen gAnmScreen;

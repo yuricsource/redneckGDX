@@ -264,7 +264,7 @@ public class RRMenuHandler extends MenuHandler {
 		if(!app.pCfg.menuMouse) return;
 		
 		int zoom = scale(0x10000, ydim, 200);
-		int czoom = mulscale(0x10000, mulscale(zoom, app.pCfg.gMouseCursorSize, 16), 16);
+		int czoom = mulscale(0x8000, mulscale(zoom, app.pCfg.gMouseCursorSize, 16), 16);
 		int xoffset = 0; //mulscale(16, czoom, 16);
 		int yoffset = 0; //mulscale(16, czoom, 16);	
 		int ang = 0; //1800;
