@@ -2173,11 +2173,6 @@ public class Actors {
 							if ((engine.krand() & 255) < 32)
 								spawn(j, WATERSPLASH2);
 							
-							if(sectlotag == 1) {
-								if(ps[p].crouch_toggle == 1)
-									ps[p].crouch_toggle = 0;
-	                        }
-
 //							if (sectlotag == 1) GDX 2.10.2018
 //								for (l = 0; l < 9; l++) {
 //									q = spawn(ps[p].i, WATERBUBBLE);

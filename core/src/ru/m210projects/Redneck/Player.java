@@ -770,6 +770,8 @@ public class Player {
 
 		p.ohoriz = p.horiz;
 		p.ohorizoff = p.horizoff;
+		
+		 p.look_ang += sync[snum].carang;
 
 		if (p.OnMotorcycle) {
 			boolean left = (sb_snum & 16) != 0;

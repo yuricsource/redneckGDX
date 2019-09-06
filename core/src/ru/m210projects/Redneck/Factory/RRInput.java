@@ -17,6 +17,7 @@
 package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Build.Engine.getInput;
+import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
@@ -309,8 +310,12 @@ public class RRInput extends BuildControls {
 //	    loc.bits |=   ctrlKeyStatusOnce(Keys.ESCAPE)? 1 << 31 : 0;
 	    
 	    if((loc.bits&2) != 0) p.crouch_toggle = 0;
-	    if(ctrlGetInputKey(RRKeys.Crouch_toggle, true))
-	    	p.crouch_toggle ^= 1;
+	    
+	    boolean CrouchMode = ctrlGetInputKey(RRKeys.Crouch_toggle, sector[p.cursectnum].lotag != 2);
+	    if(sector[p.cursectnum].lotag == 2) {
+	    	p.crouch_toggle = CrouchMode ? (byte) 1 : 0;
+		} else if(CrouchMode) p.crouch_toggle ^= 1;
+	    
 	    if(p.crouch_toggle == 1)
 	    	loc.bits |= 2;
 	    
@@ -566,15 +571,8 @@ public class RRInput extends BuildControls {
 	    loc.avel = angvel;
 	    loc.horz = horiz;
 	    
-//	    if(p.CarSpeed < 80) {
-//		    int dx = Gdx.input.getX() - oldPosX;
-//			
-//			float sensscale = cfg.gSensitivity / 65536.0f;
-//			float xscale = sensscale / 2;
-//			float mousx = dx * xscale;
-//		    p.look_ang += mousx;
-//	    }
-//	    resetMousePos();
+	    if(p.CarSpeed < 80) 
+	    	loc.carang = (byte) BClipRange(ctrlGetMouseTurn(), -127, 127);
 	}
 	
 	public void boatinput(Input loc, PlayerStruct p, int tics)
@@ -721,14 +719,8 @@ public class RRInput extends BuildControls {
 	    loc.avel = angvel;
 	    loc.horz = horiz;
 	    
-//	    if(p.CarSpeed < 80) {
-//		    int dx = Gdx.input.getX() - oldPosX;
-//			
-//			float sensscale = cfg.gSensitivity / 65536.0f;
-//			float xscale = sensscale / 2;
-//			float mousx = dx * xscale;
-//		    p.look_ang += mousx;
-//	    }
-//	    resetMousePos();
+	    if(p.CarSpeed < 80) {
+	    	loc.carang = (byte) BClipRange(ctrlGetMouseTurn(), -127, 127);
+	    }
 	}
 }
