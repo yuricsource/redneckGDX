@@ -252,7 +252,7 @@ public class Config extends BuildConfig {
 			saveString(fil, "[Options]\r\n");	
 				//Options
 			saveInteger(fil, "Size", ud.screen_size);
-			saveInteger(fil, "Crosshair", crosshair);
+			saveInteger(fil, "Crosshair", ud.crosshair);
 			saveInteger(fil, "MessageState", ud.fta_on);
 			saveBoolean(fil, "Autoaim", gAutoAim);
 			saveInteger(fil, "Tilt", ud.screen_tilting);

@@ -88,6 +88,8 @@ public class RRInput extends BuildControls {
 
 	public RRInput(BuildConfig cfg, BuildControllers gpmanager) {
 		super(cfg, gpmanager);
+		
+		GameKeys.Run.setName("Run / Handbrake");
 	}
 	
 	@Override
@@ -472,14 +474,17 @@ public class RRInput extends BuildControls {
 
 	    boolean left = ctrlGetInputKey(GameKeys.Turn_Left, false) || ctrlGetInputKey(GameKeys.Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(GameKeys.Turn_Right, false) || ctrlGetInputKey(GameKeys.Strafe_Right, false);
-	    int bike_turn = 0; 
-	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
-	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
-	    	bike_turn = (int) stick1.x;
-	    }
-	    if ( bike_turn > 0 ) left = true;
-	    if ( bike_turn < 0 ) right = true;
+	    int bike_turn = 0;
 	    
+	    Vector2 stick1 = ctrlGetStick(JoyStick.Turning);
+		Vector2 stick2 = ctrlGetStick(JoyStick.Moving);
+
+	    if ( stick1.x != 0 && stick1.x < 0.5f ) left = true;
+	    if ( stick1.x != 0 && stick1.x > 0.5f ) right = true;
+	    
+	    if ( stick2.y != 0 && stick2.y < 0.5f ) loc.bits |= 1;
+	    if ( stick2.y != 0 && stick2.y > 0.5f ) loc.bits |= 8;
+
 	    if ( p.CarVar1 == 0 )
 	    {
 	    	loc.bits |=   ctrlGetInputKey(GameKeys.Move_Forward, false)?1:0;
@@ -593,12 +598,14 @@ public class RRInput extends BuildControls {
 	    boolean left = ctrlGetInputKey(GameKeys.Turn_Left, false) || ctrlGetInputKey(GameKeys.Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(GameKeys.Turn_Right, false) || ctrlGetInputKey(GameKeys.Strafe_Right, false);
 	    int bike_turn = 0; 
-	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
-	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
-	    	bike_turn = (int) stick1.x;
-	    }
-	    if ( bike_turn > 0 ) left = true;
-	    if ( bike_turn < 0 ) right = true;
+	    Vector2 stick1 = ctrlGetStick(JoyStick.Turning);
+		Vector2 stick2 = ctrlGetStick(JoyStick.Moving);
+
+		if ( stick1.x != 0 && stick1.x < 0.5f ) left = true;
+	    if ( stick1.x != 0 && stick1.x > 0.5f ) right = true;
+	    
+	    if ( stick2.y != 0 && stick2.y < 0.5f ) loc.bits |= 1;
+	    if ( stick2.y != 0 && stick2.y > 0.5f ) loc.bits |= 8;
 	    
 	    if ( p.CarVar1 == 0 )
 	    {

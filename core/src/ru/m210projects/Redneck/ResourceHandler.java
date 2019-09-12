@@ -150,7 +150,7 @@ public class ResourceHandler {
 		Arrays.fill(picanm, 0, kMaxTiles, 0);
 		Arrays.fill(waloff, 0, kMaxTiles, null);
 		
-		if(engine.loadpics("tiles000.art") == 0)
+		if(engine.loadpics() == 0)
 			game.dassert("ART files not found " + new File(Path.Game.getPath() + "TILES###.ART").getAbsolutePath());
 		
 		game.setDefs(game.baseDef);
@@ -313,7 +313,7 @@ public class ResourceHandler {
 		
 		error = 0;
 		//Loading user package files
-		InitGroupResources(BuildGdx.cache.getDinamicResources());
+		InitGroupResources(BuildGdx.cache.getDynamicResources());
 		if(addon.getCON() == null) 
 			addon.setCON(loaduserdef(addon.ConName));
 		

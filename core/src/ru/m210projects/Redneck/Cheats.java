@@ -24,7 +24,6 @@ import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Sector.*;
 import static ru.m210projects.Redneck.Weapons.*;
 import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
 
 import java.util.Arrays;
 
@@ -60,7 +59,7 @@ public class Cheats {
 	{
 		for(int nCheatCode = 0; nCheatCode < kCheatMax; nCheatCode++)
 		{
-			if(Bstrcasecmp(message, cheatCode[nCheatCode]) == 0)
+			if(message.equalsIgnoreCase(cheatCode[nCheatCode]))
 			{
 				switch(nCheatCode)
 				{

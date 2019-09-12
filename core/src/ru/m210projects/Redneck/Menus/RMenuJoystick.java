@@ -25,7 +25,7 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
 public class RMenuJoystick extends MenuJoystick {
 
 	public RMenuJoystick(Main app) {
-		super(app, 20, 50, 280, 12, 15, app.getFont(1), 10);
+		super(app, 20, 50, 280, 12, 15, app.getFont(1), 12);
 		
 		mList.menupal = 15;
 		
@@ -37,8 +37,8 @@ public class RMenuJoystick extends MenuJoystick {
 		mList.fontShadow = true;
 		
 		mText.font = mText2.font = app.getFont(0);
-		mText.y -= 10;
-		mText2.y -= 10;
+		mText.y -= 60;
+		mText2.y -= 60;
 		mText.fontShadow = mText2.fontShadow = true;
 	}
 
