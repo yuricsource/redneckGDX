@@ -170,7 +170,7 @@ public class MVEScreen extends SkippableAdapter {
 		if (game.pInput.ctrlKeyStatus(ANYKEY)) 
 			gCutsClock = totalclock;
 		
-		int shade = 32 + mulscale(32, sintable[(20 * totalclock) & 2047], 16);
+		int shade = 16 + mulscale(64, sintable[(20 * totalclock) & 2047], 16);
 		if (totalclock - gCutsClock < 200 && escSkip) // 2 sec 
 			game.getFont(0).drawText(160, 5, "Press ESC to skip", shade, MAXPALOOKUPS - RESERVEDPALS - 1, TextAlign.Center, 2, true);
 	}
