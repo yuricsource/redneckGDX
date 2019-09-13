@@ -35,7 +35,7 @@ public class OptionsMenu extends BuildMenu {
 		MenuButton bGameSetup = new MenuButton("GAME SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new MenuGameSetup(app), 1, null, 0);
 		MenuButton bHUDSetup = new MenuButton("INTERFACE SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new InterfaceMenu(app), 1, null, 0);
 		MenuButton bSoundSetup = new MenuButton("AUDIO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, menu.mMenus[SOUNDSET], 1, null, 0);
-		MenuButton bVideoSetup = new MenuButton("VIDEO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new RMenuVideoSet(app), 1, null, 0);
+		MenuButton bVideoSetup = new MenuButton("VIDEO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new RMenuVideoMode(app), 1, null, 0);
 		MenuButton bKeySetup = new MenuButton("CONTROL SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0,  new MenuControls(app), 1, null, 0);
 		
 		addItem(bGameSetup, true);

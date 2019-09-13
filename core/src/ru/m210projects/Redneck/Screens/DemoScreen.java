@@ -18,10 +18,6 @@ package ru.m210projects.Redneck.Screens;
 
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
 import static ru.m210projects.Build.Engine.totalclock;
-import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
-import static ru.m210projects.Build.FileHandle.Cache1D.kOpen;
-import static ru.m210projects.Build.FileHandle.Cache1D.kRead;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Gameutils.BClipRange;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
@@ -35,6 +31,8 @@ import static ru.m210projects.Redneck.Player.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Screen.*;
+import static ru.m210projects.Redneck.SoundDefs.THUD;
+import static ru.m210projects.Redneck.Sounds.sound;
 import static ru.m210projects.Redneck.ResourceHandler.*;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
 
@@ -45,9 +43,11 @@ import java.util.List;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
 import ru.m210projects.Build.Pattern.BuildControls;
+import ru.m210projects.Build.Settings.BuildConfig.GameKeys;
 import ru.m210projects.Redneck.Config.RRKeys;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
@@ -115,8 +115,9 @@ public class DemoScreen extends GameScreen {
 			else ps[i].auto_aim = 1;
 		}
 
+		ud.god = false;
 		ud.cashman = ud.eog = ud.showallmap = 0;
-			ud.clipping = ud.scrollmode = false;
+		ud.clipping = ud.scrollmode = false;
 		ud.overhead_on = 0;
 		ud.recstat = 2;
 		
@@ -132,16 +133,24 @@ public class DemoScreen extends GameScreen {
 	}
 	
 	@Override
-	protected void startboard() 
+	protected void startboard(final Runnable startboard) 
 	{
-		super.startboard(); //call faketimehandler
-		pNet.ResetTimers();
-		lockclock = 0;
-		pNet.ready2send = false;
+		gPrecacheScreen.init(false, new Runnable() {
+			@Override
+			public void run() {
+				startboard.run(); //call faketimehandler
+				pNet.ResetTimers(); //reset ototalclock
+				lockclock = 0;
+				pNet.ready2send = false;
+			}
+		});
+		game.changeScreen(gPrecacheScreen);
 	}
 	
 	@Override
 	public void KeyHandler() {
+		pEngine.handleevents();
+		
 		RRMenuHandler menu = game.menu;
 		if (menu.gShowMenu) {
 			menu.mKeyHandler(game.pInput, BuildGdx.graphics.getDeltaTime());
@@ -176,6 +185,25 @@ public class DemoScreen extends GameScreen {
 				changepalette = 1; //if player has other palette
 			}
 		}
+		
+		 if ( input.ctrlGetInputKey(GameKeys.Enlarge_Screen, true) )
+		 {
+			 if(ud.screen_size > 0) {
+				 sound(THUD);
+				 ud.screen_size--;
+				 if(ud.screen_size < 0) ud.screen_size = 0;
+				 vscrn(ud.screen_size);
+			 }
+		 }
+		 if ( input.ctrlGetInputKey(GameKeys.Shrink_Screen, true) )
+		 {
+			 if(ud.screen_size < 4) {
+				 sound(THUD);
+				 ud.screen_size++;
+				 if(ud.screen_size > 5) ud.screen_size = 5;
+				 vscrn(ud.screen_size);
+			 }
+		 }
 	}
 	
 	@Override
@@ -246,6 +274,7 @@ public class DemoScreen extends GameScreen {
 				
 				demfile.rcnt++;
 				engine.updatesmoothticks();
+				game.pInt.clearinterpolations();
 				ProcessFrame(pNet);
 			}
 		} else lockclock = totalclock;
@@ -281,26 +310,26 @@ public class DemoScreen extends GameScreen {
 	
 	public void demoscan() {
 		byte[] buf = new byte[4];
-
-		int fil = -1;
-		for (Iterator<FileEntry> it = cache.getFiles().values().iterator(); it.hasNext();) {
+		
+		Resource fil = null;
+		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.Game).getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
 			if (file.getExtension().equals("dmo")) {
 				String name = file.getFile().getName();
-				if ((fil = kOpen(name, 0)) != -1) {
-					kRead(fil, buf, 4);
-					kRead(fil, buf, 1);
+				if ((fil = BuildGdx.compat.open(file)) != null) {
+					fil.read(buf, 4);
+					fil.read(buf, 1);
 					int version = buf[0] & 0xFF;
 					if (version == BYTEVERSIONRR || version == GDXBYTEVERSION)
 						demofiles.add(name);
-					kClose(fil);
+					fil.close();
 				}
 			}
 		}
 		
 		if(demofiles.size() == 0) //try to find it in redneck.grp
 		{
-			fil = -1;
+			fil = null;
 			int which_demo = 1;
 			do {
 				char[] d = "demo_.dmo".toCharArray();
@@ -308,16 +337,16 @@ public class DemoScreen extends GameScreen {
 			        d[4] = 'x';
 			    else d[4] = (char) ('0' + which_demo);
 			    String name = new String(d);
-			    if ((fil = kOpen(name, 0)) != -1) {
-					kRead(fil, buf, 4);
-					kRead(fil, buf, 1);
+			    if ((fil = BuildGdx.cache.open(name, 0)) != null) {
+			    	fil.read(buf, 4);
+					fil.read(buf, 1);
 					int version = buf[0] & 0xFF;
 					if (version == BYTEVERSIONRR || version == GDXBYTEVERSION)
 						demofiles.add(name);
-					kClose(fil);
+					fil.close();
 				}
 			    which_demo++;
-			} while(fil != -1);
+			} while(fil != null);
 		}
 
 		if (demofiles.size() != 0)

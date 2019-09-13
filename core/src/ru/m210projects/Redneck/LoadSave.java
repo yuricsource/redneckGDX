@@ -18,7 +18,6 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
-import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.View.*;
@@ -40,11 +39,15 @@ import static ru.m210projects.Redneck.Sector.*;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.FileResource;
+import ru.m210projects.Build.FileHandle.FileUtils;
+import ru.m210projects.Build.FileHandle.Compat.Path;
+import ru.m210projects.Build.FileHandle.FileResource.Mode;
+import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
 import ru.m210projects.Build.Pattern.Tools.SaveManager;
 import ru.m210projects.Build.Types.LittleEndian;
@@ -87,26 +90,30 @@ public class LoadSave {
 	{
 		byte[] buf = new byte[SAVENAME];
 		
-		int fil = -1;
-		for (Iterator<FileEntry> it = cache.checkDirectory("<userdir>").getFiles().values().iterator(); it.hasNext();) {
+		FileResource fil = null;
+		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.User).getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
 			
 			if (file.getExtension().equals("sav")) {
-				String name = file.getFile().getName();
-				if ((fil = Bopen(name, "R")) != -1) {
-					Bread(fil, buf, 4);
+				fil = BuildGdx.compat.open(file);
+				if (fil != null) {
+					int len = fil.read(buf, 4);
+					if (len <= 0) {
+						fil.close();
+						continue;
+					}
 					String signature = new String(buf,0,4);
 					if(signature.equals(savsign)) {
-						int nVersion = Bread(fil, 2);
+						int nVersion = fil.readShort();
 						if(nVersion >= gdxSave) {
-							Bread(fil, buf, 8);
+							fil.read(buf, 8);
 							long time = LittleEndian.getLong(buf);
-							Bread(fil, buf, SAVENAME);
+							fil.read(buf, SAVENAME);
 							String savname = new String(buf).trim();
 							game.pSavemgr.add(savname, time, file.getName());
 						}
 					}
-					Bclose(fil);
+					fil.close();
 				}
 			}
 		}
@@ -115,18 +122,15 @@ public class LoadSave {
 	
 	public static int lsReadLoadData(String filename)
 	{
-		int fil = Bopen(FileUserdir+filename, "R");
-		if( fil != -1)
+		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
+		if( fil != null)
 		{
-			byte[] buf = new byte[144];
-			Bread(fil, buf, SAVEHEADER);
-			ByteBuffer bb = ByteBuffer.wrap(buf);
-			bb.order( ByteOrder.LITTLE_ENDIAN);
+			ResourceData bb = fil.getData();
 			
 			if(waloff[SaveManager.Screenshot] == null)
 				engine.allocatepermanenttile(SaveManager.Screenshot, 160, 100);
 			
-			int nVersion = checkSave(bb);
+			int nVersion = checkSave(bb) & 0xFFFF;
 			lsInf.clear();
 			
 			if(nVersion == currentGdxSave)
@@ -136,31 +140,38 @@ public class LoadSave {
 				bb.position(SAVEVERSION + SAVETIME + SAVENAME); //to SAVELEVELINFO
 				
 				lsInf.read(bb);
-
-				if(Bread(fil, waloff[SaveManager.Screenshot], SAVESCREENSHOTSIZE) == -1)
+				if(bb.remaining() <= SAVESCREENSHOTSIZE)
+				{
+					bb.dispose();
+					fil.close();
 					return -1;
+				}
 				
-				int gUserEpisode = Bread(fil, 1); 
+				bb.get(waloff[SaveManager.Screenshot], 0, SAVESCREENSHOTSIZE);
+				int gUserEpisode = bb.get();
+				
 				lsInf.addonfile = null;
 				if(gUserEpisode == 1) {
-					Bread(fil, buf, 144); 
+					byte[] buf = new byte[144];
+					bb.get(buf, 0, 144);
 		
 					String ininame;
 					String fullname = new String(buf).trim();
 					
 					int filenameIndex = -1;
 					if((filenameIndex = fullname.indexOf(":")) != -1) {
-						String ext = BfileExtension(fullname.substring(0, filenameIndex));
-						ininame = ext + ":" + getFilename(fullname.substring(filenameIndex+1));
+						String ext = FileUtils.getExtension(fullname.substring(0, filenameIndex));
+						ininame = ext + ":" + FileUtils.getFullName(fullname.substring(filenameIndex+1));
 					}
-					else ininame = getFilename(fullname);
+					else ininame = FileUtils.getFullName(fullname);
 	
 					if (!ininame.isEmpty() )
 						lsInf.addonfile = "File: " + ininame;
 				}
 
 				engine.invalidatetile(SaveManager.Screenshot, 0, -1);
-				Bclose(fil);
+				bb.dispose();
+				fil.close();
 				return 1;
 			} else 	lsInf.info = "Incompatible ver. " + nVersion + " != " + currentGdxSave;
 		} else lsInf.clear();
@@ -178,7 +189,7 @@ public class LoadSave {
 		return new String(filenum);
 	}
 
-	public static int checkSave(ByteBuffer bb)
+	public static int checkSave(ResourceData bb)
 	{
 		byte[] buf = new byte[4];
 		bb.get(buf);
@@ -198,13 +209,12 @@ public class LoadSave {
 			return -1;
 		}
 		
-		
-		File file = Bcheck(FileUserdir+filename, "R");
+		File file = BuildGdx.compat.checkFile(filename, Path.User);
 		if(file != null)
 			file.delete();
 	
-		int fil = Bopen(FileUserdir+filename, "RW");
-		if(fil != -1) {
+		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Write);
+		if(fil != null) {
 			long time = game.date.getCurrentDate();
 			save(fil, savename, time);
 			game.pSavemgr.add(savename, time, filename);
@@ -218,11 +228,11 @@ public class LoadSave {
 		return -1;
 	}
 	
-	public static void MapSave(int fil)
+	public static void MapSave(FileResource fil)
 	{
 		if(boardfilename != null)
-			Bwrite(fil, boardfilename.toCharArray(), 144);
-		else Bwrite(fil, new byte[144], 144);
+			fil.writeBytes(boardfilename.toCharArray(), 144);
+		else fil.writeBytes(new byte[144], 144);
 		
 		int bufsize = 2 + (numsectors * SECTOR.sizeof) 
 				+ 2 + (numwalls * WALL.sizeof)
@@ -261,10 +271,10 @@ public class LoadSave {
 			bb.put(rortype[i]);
 		}
 
-		Bwrite(fil,bb.array(),bb.capacity());
+		fil.writeBytes(bb.array(),bb.capacity());
 	}
 	
-	public static void StuffSave(int fil)
+	public static void StuffSave(FileResource fil)
 	{
 		int bufsize = 2 + MAXCYCLERS * 6 * 2
 					+ MAXPLAYERS * PlayerStruct.sizeof
@@ -394,10 +404,10 @@ public class LoadSave {
 		bb.putInt(fakebubba_spawn);
 		bb.putInt(dword_119C08);
 
-		Bwrite(fil,bb.array(),bb.capacity());
+		fil.writeBytes(bb.array(),bb.capacity());
 	}
 
-	public static void ConSave(int fil)
+	public static void ConSave(FileResource fil)
 	{
 		int bufsiz = MAXTILES + 4 * MAXSCRIPTSIZE 
 				+ 4 * MAXTILES 
@@ -414,10 +424,10 @@ public class LoadSave {
 		for(int i=0;i<MAXSPRITES;i++) 
 			bb.put(hittype[i].getBytes());
 
-		Bwrite(fil,bb.array(),bb.capacity());
+		fil.writeBytes(bb.array(),bb.capacity());
 	}
 	
-	public static void GameInfoSave(int fil) 
+	public static void GameInfoSave(FileResource fil) 
 	{
 		ByteBuffer bb = ByteBuffer.allocate(1113);
 		bb.order(ByteOrder.LITTLE_ENDIAN); 
@@ -454,48 +464,48 @@ public class LoadSave {
         bb.putInt(engine.getrand());
         bb.putShort(global_random);
         
-        Bwrite(fil,bb.array(),bb.capacity());
+        fil.writeBytes(bb.array(),bb.capacity());
 	}
 	
-	public static void AnimationSave(int fil)
+	public static void AnimationSave(FileResource fil)
 	{
 		for(int i = 0; i < MAXANIMATES; i++) {
-			Bwrite(fil,gAnimationData[i].id, 2);
-			Bwrite(fil,gAnimationData[i].type, 1);
-			Bwrite(fil,gAnimationData[i].goal, 4);
-            Bwrite(fil,gAnimationData[i].vel, 4);
-            Bwrite(fil,gAnimationData[i].sect, 2);
+			fil.writeShort(gAnimationData[i].id);
+			fil.writeByte(gAnimationData[i].type);
+			fil.writeInt(gAnimationData[i].goal);
+			fil.writeInt(gAnimationData[i].vel);
+			fil.writeShort(gAnimationData[i].sect);
 		}	
-		Bwrite(fil,gAnimationCount,4);
+		fil.writeInt(gAnimationCount);
 	}
 	
-	public static void SaveVersion(int fil, int nVersion)
+	public static void SaveVersion(FileResource fil, int nVersion)
 	{
-		Bwrite(fil, savsign.toCharArray(), 4);
-		Bwrite(fil, nVersion, 2);
+		fil.writeBytes(savsign.toCharArray(), 4);
+		fil.writeShort(nVersion);
 	}
 	
-	public static void SaveHeader(int fil, String savename, long time)
+	public static void SaveHeader(FileResource fil, String savename, long time)
 	{
 		SaveVersion(fil, currentGdxSave);
 		
 		byte[] buf = new byte[8];
 		LittleEndian.putLong(buf, 0, time);
-		Bwrite(fil, buf, 8);
-		Bwrite(fil, savename.toCharArray(), SAVENAME);
+		fil.writeBytes(buf, 8);
+		fil.writeBytes(savename.toCharArray(), SAVENAME);
 		
-		Bwrite(fil, ud.multimode, 4);
-		Bwrite(fil, ud.volume_number, 4);
-		Bwrite(fil, ud.level_number, 4); 
-		Bwrite(fil, ud.player_skill, 4); 
+		fil.writeInt(ud.multimode);
+		fil.writeInt(ud.volume_number);
+		fil.writeInt(ud.level_number); 
+		fil.writeInt(ud.player_skill); 
 	}
 	
-	public static void SaveScreenshot(int fil) {
-		Bwrite(fil, gGameScreen.captBuffer, SAVESCREENSHOTSIZE);
+	public static void SaveScreenshot(FileResource fil) {
+		fil.writeBytes(gGameScreen.captBuffer, SAVESCREENSHOTSIZE);
 		gGameScreen.captBuffer = null;
 	}
 	
-	public static void SaveGDXBlock(int fil)
+	public static void SaveGDXBlock(FileResource fil)
 	{
 		SaveScreenshot(fil);
 		
@@ -527,10 +537,10 @@ public class LoadSave {
 			}
 			bb.put(name);
 		}
-		Bwrite(fil, bb.array(), SAVEGDXDATA); 
+		fil.writeBytes(bb.array(), SAVEGDXDATA); 	
 	}
 
-	public static void save(int fil, String savename, long time)
+	public static void save(FileResource fil, String savename, long time)
 	{
 		SaveHeader(fil, savename, time);
 		SaveGDXBlock(fil);
@@ -541,7 +551,7 @@ public class LoadSave {
 		AnimationSave(fil);
 		GameInfoSave(fil);
 		
-		Bclose(fil);
+		fil.close();
 		
 		System.gc();
 	}
@@ -815,7 +825,7 @@ public class LoadSave {
 			resetEpisodeResources();
 	}
 	
-	public static boolean checkfile(ByteBuffer bb)
+	public static boolean checkfile(ResourceData bb)
 	{
 		int nVersion = checkSave(bb);	
 		if(nVersion != currentGdxSave)
@@ -853,32 +863,11 @@ public class LoadSave {
 		if(ps[myconnectindex].fogtype == 2)
 			applyfog(2);
 		else applyfog(0);
-     
-		Arrays.fill(gotpic, (byte)0);
-		clearsoundlocks();
-		cacheit();
 
-		userMusic = null;
-		if(boardfilename != null) {
-			FileEntry file = cache.checkFile(boardfilename);
-			if(file != null) 
-				sndCheckMusic(file);
-		}
-
-		musicvolume = ud.volume_number;
-    	musiclevel = ud.level_number;
-    	sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
-
+		if(ud.rec != null)
+			ud.rec.close();
 		ud.recstat = 0;
 
-		if(ps[myconnectindex].jetpack_on != 0)
-			spritesound(DUKE_JETPACK_IDLE,ps[myconnectindex].i);
-
-		setpal(ps[myconnectindex]);
-		vscrn(ud.screen_size);
-
-		BuildGdx.audio.getSound().setReverb(false, 0);
-	   
 		if(ud.lockout == 0)
 		{
 			for(int x=0;x<numanimwalls;x++)
@@ -916,28 +905,55 @@ public class LoadSave {
 		}
 		
 		fta = 0;
-
 		everyothertime = 0;
 		
-		game.pInput.resetMousePos();
-		game.net.predict.reset();
-		game.gPaused = false;
-		
-		game.nNetMode = NetMode.Single;
+		gPrecacheScreen.init(false, new Runnable() {
+			@Override
+			public void run() {
+				InitSpecialTextures();
+				clearsoundlocks();
 
-		if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
-			setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
+				userMusic = null;
+				if(boardfilename != null) {
+					FileEntry file = BuildGdx.compat.checkFile(boardfilename);
+					if(file != null) 
+						sndCheckMusic(file);
+				}
+				
+				musicvolume = ud.volume_number;
+		    	musiclevel = ud.level_number;
+		    	sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
 
-		game.changeScreen(gGameScreen);
-		game.pNet.ResetTimers();
-		game.pNet.WaitForAllPlayers(0);
-		game.pNet.ready2send = true;
+		    	
 
-		engine.getrender().preload();
-		
-		StopAllSounds();
+				if(ps[myconnectindex].jetpack_on != 0)
+					spritesound(DUKE_JETPACK_IDLE,ps[myconnectindex].i);
 
-		System.gc();
+				setpal(ps[myconnectindex]);
+				vscrn(ud.screen_size);
+
+				BuildGdx.audio.getSound().setReverb(false, 0);
+				
+				game.pInput.resetMousePos();
+				game.net.predict.reset();
+				game.gPaused = false;
+				
+				game.nNetMode = NetMode.Single;
+				
+				if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
+					setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
+
+				game.changeScreen(gGameScreen);
+				game.pNet.ResetTimers();
+				game.pNet.WaitForAllPlayers(0);
+				game.pNet.ready2send = true;
+
+				StopAllSounds();
+
+				System.gc();
+			}
+		});
+		game.changeScreen(gPrecacheScreen);
 	}
 	
 	public static boolean loadgame(String filename) {
@@ -947,15 +963,14 @@ public class LoadSave {
 			return false;
 		}
 		
-		int fil = Bopen(FileUserdir + filename, "R");
-		if (fil != -1) {
-			byte[] data = new byte[Bfilelength(fil)];
-			Bread(fil, data, data.length);
-			ByteBuffer bb = ByteBuffer.wrap(data);
-			bb.order( ByteOrder.LITTLE_ENDIAN);
+		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
+		if (fil != null) {
+			ResourceData bb = fil.getData();
 			
 			boolean status = checkfile(bb);
-			Bclose(fil);
+			fil.close();
+			bb.dispose();
+			
 			if (status) {
 				load();
 				if (lastload == null || lastload.isEmpty())

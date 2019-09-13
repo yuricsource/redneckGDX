@@ -48,7 +48,7 @@ public class InterfaceMenu extends BuildMenu {
 			}
 		};
 
-		MenuSlider sScreenSize = new MenuSlider(app.pSlider, "Screen size:", app.getFont(1), 47, pos += 12, 240, ud.screen_size, 0, 3, 1,
+		MenuSlider sScreenSize = new MenuSlider(app.pSlider, "Screen size:", app.getFont(1), 47, pos += 12, 240, ud.screen_size, 0, 4, 1,
 				new MenuProc() {
 					@Override
 					public void run( MenuHandler handler, MenuItem pItem ) {

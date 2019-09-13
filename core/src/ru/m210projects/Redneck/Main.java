@@ -16,21 +16,48 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Redneck.LoadSave.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
-import static ru.m210projects.Build.FileHandle.Compat.*;
-import static ru.m210projects.Build.Net.Mmulti.*;
-import static ru.m210projects.Build.OnSceenDisplay.Console.*;
-import static ru.m210projects.Redneck.Animate.*;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-import static ru.m210projects.Redneck.Gamedef.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Premap.*;
-import static ru.m210projects.Redneck.Player.*;
-import static ru.m210projects.Redneck.ResourceHandler.*;
-import static ru.m210projects.Redneck.Sounds.*;
-import static ru.m210projects.Redneck.Types.RTS.*;
+import static ru.m210projects.Build.Engine.MAXPLAYERS;
+import static ru.m210projects.Build.Engine.MAXSPRITES;
+import static ru.m210projects.Build.Net.Mmulti.connecthead;
+import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.Net.Mmulti.numplayers;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
+import static ru.m210projects.Build.OnSceenDisplay.Console.osd_argv;
+import static ru.m210projects.Redneck.Animate.initanimations;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.GAME;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.MAIN;
+import static ru.m210projects.Redneck.Gamedef.compilecons;
+import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
+import static ru.m210projects.Redneck.Globals.RRRA;
+import static ru.m210projects.Redneck.Globals.TICRATE;
+import static ru.m210projects.Redneck.Globals.animwall;
+import static ru.m210projects.Redneck.Globals.boardfilename;
+import static ru.m210projects.Redneck.Globals.currentGame;
+import static ru.m210projects.Redneck.Globals.hittype;
+import static ru.m210projects.Redneck.Globals.kGameCrash;
+import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
+import static ru.m210projects.Redneck.Globals.po;
+import static ru.m210projects.Redneck.Globals.ps;
+import static ru.m210projects.Redneck.Globals.uGameFlags;
+import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.LoadSave.FindSaves;
+import static ru.m210projects.Redneck.LoadSave.quickload;
+import static ru.m210projects.Redneck.LoadSave.quicksave;
+import static ru.m210projects.Redneck.Player.InitPlayers;
+import static ru.m210projects.Redneck.Premap.LeaveMap;
+import static ru.m210projects.Redneck.Premap.genspriteremaps;
+import static ru.m210projects.Redneck.Premap.packbuf;
+import static ru.m210projects.Redneck.ResourceHandler.InitSpecialTextures;
+import static ru.m210projects.Redneck.ResourceHandler.loadGdxDef;
+import static ru.m210projects.Redneck.ResourceHandler.resetEpisodeResources;
+import static ru.m210projects.Redneck.ResourceHandler.usecustomarts;
+import static ru.m210projects.Redneck.Sounds.MusicStartup;
+import static ru.m210projects.Redneck.Sounds.SoundStartup;
+import static ru.m210projects.Redneck.Sounds.StopAllSounds;
+import static ru.m210projects.Redneck.Types.RTS.RTS_Init;
+import static ru.m210projects.Redneck.Types.RTS.numlumps;
 
 import java.util.Iterator;
 
@@ -41,18 +68,22 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildMessage.MessageType;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.IResource.RESHANDLE;
+import ru.m210projects.Build.FileHandle.Group;
+import ru.m210projects.Build.FileHandle.GroupResource;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.OnSceenDisplay.OSDCOMMAND;
 import ru.m210projects.Build.OnSceenDisplay.OSDCVARFUNC;
-import ru.m210projects.Build.Pattern.BuildConfig;
 import ru.m210projects.Build.Pattern.BuildFactory;
 import ru.m210projects.Build.Pattern.BuildGame;
+import ru.m210projects.Build.Script.DefScript;
+import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Redneck.Factory.RREngine;
 import ru.m210projects.Redneck.Factory.RRFactory;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
 import ru.m210projects.Redneck.Factory.RRNetwork;
+import ru.m210projects.Redneck.Fonts.GameFont;
+import ru.m210projects.Redneck.Fonts.MenuFont;
 import ru.m210projects.Redneck.Menus.GameMenu;
 import ru.m210projects.Redneck.Menus.MainMenu;
 import ru.m210projects.Redneck.Screens.AnmScreen;
@@ -61,8 +92,10 @@ import ru.m210projects.Redneck.Screens.DisconnectScreen;
 import ru.m210projects.Redneck.Screens.EndScreen;
 import ru.m210projects.Redneck.Screens.GameScreen;
 import ru.m210projects.Redneck.Screens.LoadingScreen;
+import ru.m210projects.Redneck.Screens.MVEScreen;
 import ru.m210projects.Redneck.Screens.MenuScreen;
 import ru.m210projects.Redneck.Screens.NetScreen;
+import ru.m210projects.Redneck.Screens.PrecacheScreen;
 import ru.m210projects.Redneck.Screens.StatisticScreen;
 import ru.m210projects.Redneck.Types.Animwalltype;
 import ru.m210projects.Redneck.Types.PlayerOrig;
@@ -72,28 +105,20 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * v1.01
-	 * Invert mouse fix
-	 * CONfile extract requiring is disabled
-	 * Addon like game.con save fix
-	 * Crash fixes
-	 * 
-	 * 
 	 * TODO:
-	 * hud из новых ресурсов
+	 * 
+	 * 
 	 * cachespritenum
-	 * 1) In level "Gamblin' Boat" in the engineroom you have to turn a wheel which lets the ship explode, it is not possible to activate this wheel, because you cannot enter the metal box in where it is located (no problem in Dosbox)
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 * cd audio from cue
-	 * cutscenes MVE
-	 * загружать ресурсы из отдельных папок(архивов) для юзеркарт
 	 */
 
-	public static final String sversion = "v1.01";
+	public static final String appdef = "rrgdx.def";
 
 	public static AnmScreen gAnmScreen;
+	public static MVEScreen gMveScreen;
 	public static MenuScreen gMenuScreen;
 	public static LoadingScreen gLoadingScreen;
 	public static GameScreen gGameScreen;
@@ -102,6 +127,7 @@ public class Main extends BuildGame {
 	public static EndScreen gEndScreen;
 	public static NetScreen gNetScreen;
 	public static DisconnectScreen gDisconnectScreen;
+	public static PrecacheScreen gPrecacheScreen;
 
 	public static enum UserFlag {
 		None, UserMap, Addon
@@ -113,11 +139,15 @@ public class Main extends BuildGame {
 	public static Config cfg;
 	public RRMenuHandler menu;
 	public RRNetwork net;
-
-	public Main(BuildConfig bcfg, String appname, String sversion, boolean release) {
-		super(bcfg, appname, sversion, release);
+	
+	public Main(BuildConfig dcfg, String appname, String sversion, boolean isDemo, boolean isRelease) {
+		super(dcfg, appname, sversion, isRelease);
 		game = this;
-		cfg = (Config) bcfg;
+		cfg = (Config) dcfg;
+	}
+	
+	public Main(BuildConfig dcfg, String appname, String sversion, boolean isDemo) {
+		this(dcfg, appname, sversion, isDemo, true);
 	}
 
 	@Override
@@ -151,8 +181,6 @@ public class Main extends BuildGame {
 		initanimations();
 		FindSaves();
 
-		LoadUserRes();
-
 		for (int i = 0; i < MAXPLAYERS; i++) {
 			ps[i] = new PlayerStruct();
 			po[i] = new PlayerOrig();
@@ -167,44 +195,43 @@ public class Main extends BuildGame {
 			hittype[i] = new Weaponhit();
 
 		Console.Println("Initializing def-scripts...");
+		baseDef.setEngine(engine);
+		
+		loadGdxDef(baseDef);
+		
 		if (cfg.autoloadFolder) {
 			Console.Println("Initializing autoload folder");
 			DirectoryEntry autoload;
-			if ((autoload = cache.checkDirectory("autoload")) != null) {
+			if((autoload = BuildGdx.compat.checkDirectory("autoload")) != null) {
 				for (Iterator<FileEntry> it = autoload.getFiles().values().iterator(); it.hasNext();) {
 					FileEntry file = it.next();
 					if (file.getExtension().equals("zip")) {
-						String filename = file.getName().substring(0, file.getName().lastIndexOf('.'));
-						int group = initgroupfile(file.getPath());
-						for (RESHANDLE res : kList(group)) {
-							if (res.filename.lastIndexOf('.') == -1)
-								continue;
-
-							String resname = res.filename.substring(0, res.filename.lastIndexOf('.'));
-							if (resname.equals(filename) && res.fileformat.equals("def")) {
-								byte[] buf = res.getBytes();
-								baseDef.loadScript(res.filename, buf);
-								break;
-							}
+						Group group = BuildGdx.cache.add(file.getPath());
+						if(group == null) continue;
+						
+						GroupResource def = group.open(appdef);
+						if(def != null)
+						{
+							byte[] buf = def.getBytes();
+				    		baseDef.loadScript(file.getName(), buf);
+				    		def.close();
 						}
-					}
-
-					if (file.getExtension().equals("def"))
+					} else if (file.getExtension().equals("def"))
 						baseDef.loadScript(file);
 				}
 			}
 		}
 
-		FileEntry mainDef = null;
-		if ((mainDef = cache.checkFile("rrgdx.def")) != null)
-			baseDef.loadScript(mainDef);
-
-		setDefs(baseDef);
+		FileEntry filgdx = BuildGdx.compat.checkFile(appdef);
+		if(filgdx != null)
+			baseDef.loadScript(filgdx);
+		this.setDefs(baseDef);
 
 		menu.mMenus[MAIN] = new MainMenu(this);
 		menu.mMenus[GAME] = new GameMenu(this);
 
 		gAnmScreen = new AnmScreen(this);
+		gMveScreen = new MVEScreen(this);
 		gMenuScreen = new MenuScreen(this);
 		gLoadingScreen = new LoadingScreen(this);
 		gGameScreen = new GameScreen(this);
@@ -213,16 +240,10 @@ public class Main extends BuildGame {
 		gEndScreen = new EndScreen();
 		gNetScreen = new NetScreen(this);
 		gDisconnectScreen = new DisconnectScreen(this);
+		gPrecacheScreen = new PrecacheScreen(this);
 
 		gDemoScreen.demoscan();
-		
-//		ByteBuffer bb = kGetBuffer("REDINT.MVE", 0);
-//		if(bb != null)
-//		{
-//			System.err.println("Found");
-//			new MVEFile(bb);
-//		}
-		
+
 		return true;
 	}
 
@@ -235,15 +256,34 @@ public class Main extends BuildGame {
 
 		return false;
 	}
+	
+	@Override
+	public boolean setDefs(DefScript script)
+	{
+		if(super.setDefs(script))
+		{
+			((GameFont)this.getFont(1)).update();
+			((MenuFont)this.getFont(2)).update();
+			return true;
+		}
+		
+		return false;
+	}
 
 	@Override
 	public void show() {
 		uGameFlags = 0;
 		kGameCrash = false;
+		if(usecustomarts)
+			resetEpisodeResources();
+		
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
-	
-		if (gAnmScreen.init("rr_intro.anm", 0)) {
+		
+		if(currentGame.getCON().type == RRRA && gMveScreen.init("redint.mve")) {
+			gMveScreen.setCallback(rMenu);
+			setScreen(gMveScreen.escSkipping(true));
+		} else if (gAnmScreen.init("rr_intro.anm", 0)) {
 			gAnmScreen.setCallback(new Runnable() {
 				@Override
 				public void run() {
@@ -405,13 +445,13 @@ public class Main extends BuildGame {
 
 	@Override
 	public void dispose() {
-		super.dispose();
 		if (ud.rec != null)
 			ud.rec.close();
+		super.dispose();
 	}
 
 	@Override
-	protected String reportData() {
+	protected byte[] reportData() {
 		String text = "";
 		text += "boardfilename " + boardfilename;
 		text += "\r\n";
@@ -430,6 +470,6 @@ public class Main extends BuildGame {
 		text += "sectnum " + ps[myconnectindex].cursectnum;
 		text += "\r\n";
 
-		return text;
+		return text.getBytes();
 	}
 }

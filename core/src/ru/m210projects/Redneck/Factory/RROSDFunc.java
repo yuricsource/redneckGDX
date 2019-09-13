@@ -38,7 +38,7 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_WHITE;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
 import static ru.m210projects.Build.OnSceenDisplay.Console.PALETTE;
 import static ru.m210projects.Build.OnSceenDisplay.Console.SHADE;
-import static ru.m210projects.Build.Strhandler.Bstrcasecmp;
+import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Redneck.Cheats.IsCheatCode;
 import static ru.m210projects.Redneck.Cheats.cheatCode;
 import static ru.m210projects.Redneck.Main.gGameScreen;
@@ -84,19 +84,19 @@ public class RROSDFunc extends DEFOSDFUNC {
 		if (ptr >= 0 && ptr < osdtext.length) {
 			char[] text = osdtext[ptr];
 			int pos = 0;
-			x += 3;
+			x += mulscale(3, scale, 16);
 			while (text != null && pos < text.length && text[pos] != 0) {
 				pal = ((fmt[ptr][pos]) & ~0xE0);
 				charbuf[0] = text[pos++];
-				engine.printext256(x, (y << 3) + 3, colorswap(pal), -1, charbuf, 0);
-				x += 8;
+				engine.printext256(x, mulscale((y<<3) + 3, scale, 16), colorswap(pal), -1, charbuf, 0, scale / 65536.0f);
+				x += mulscale(8, scale, 16);
 			}
 		}
 	}
 
 	@Override
 	public void drawstr(int x, int y, char[] text, int len, int shade, int pal, int scale) {
-		engine.printext256(4+(x<<3),(y<<3), colorswap(pal), -1, text, 0);
+		engine.printext256(mulscale(4+(x<<3), scale, 16),mulscale(y<<3, scale, 16), colorswap(pal), -1, text, 0, scale / 65536.0f);
 	}
 	
 	private int colorswap(int col)
@@ -211,7 +211,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 
 		boolean isCheat = false;
 		for (int nCheatCode = 0; nCheatCode < cheatCode.length; nCheatCode++)
-			if (Bstrcasecmp(cheat, cheatCode[nCheatCode]) == 0) {
+			if (cheat.equalsIgnoreCase(cheatCode[nCheatCode])) {
 				isCheat = true;
 				break;
 			}

@@ -16,8 +16,7 @@
 
 package ru.m210projects.Redneck.Types;
 
-import java.nio.ByteBuffer;
-
+import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerOrig {
@@ -37,7 +36,7 @@ public class PlayerOrig {
     	return buf;
     }
     
-    public void set(ByteBuffer bb)
+    public void set(ResourceData bb)
     {
     	ox = bb.getInt();
     	oy = bb.getInt();

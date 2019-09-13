@@ -17,10 +17,16 @@
 package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Screen.*;
+
+import com.badlogic.gdx.Screen;
 
 import ru.m210projects.Build.Pattern.BuildEngine;
 import ru.m210projects.Build.Pattern.BuildGame;
+import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
+import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Build.Render.Renderer.RenderType;
 
 public class RREngine extends BuildEngine {
 
@@ -38,5 +44,44 @@ public class RREngine extends BuildEngine {
 		
 		return out;
 	}
+	
+	@Override
+	public int setrendermode(Renderer render) { 
+		if(this.render != null && this.render != render)
+		{
+			if(render.getType() != RenderType.Software)
+			{
+				final Screen screen = game.getScreen();
+				if(screen instanceof GameAdapter) {
+					gPrecacheScreen.init(true, new Runnable() {
+						@Override
+						public void run() {
+							game.changeScreen(screen);
+							if(game.isCurrentScreen(gGameScreen))
+								game.net.ready2send = true;
+						}
+					});
+					game.changeScreen(gPrecacheScreen);
+				}
+			}
+		}
+		
+		return super.setrendermode(render);
+	}
+	
+//	@Override
+//	public void sampletimer() {
+//		if (timerfreq == 0)
+//			return;
+//
+//		long n = (getticks() * timerticspersec / timerfreq) - timerlastsample;
+//		if (n > 0) {
+//			if(game.isCurrentScreen(gDemoScreen)) {
+//				totalclock += 4;
+//			} else totalclock += n;
+//
+//			timerlastsample += n;
+//		}
+//	}
 
 }

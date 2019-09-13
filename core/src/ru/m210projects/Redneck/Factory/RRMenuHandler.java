@@ -23,12 +23,11 @@ import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.SoundDefs.*;
 import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Redneck.ResourceHandler.*;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
 import ru.m210projects.Build.Pattern.BuildGame;
-import ru.m210projects.Build.Pattern.CommonMenus.MenuColorCorr;
+import ru.m210projects.Build.Pattern.CommonMenus.MenuRendererSettings;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuVideoMode;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
@@ -81,9 +80,16 @@ public class RRMenuHandler extends MenuHandler {
 	@Override
 	public void mDrawMenu() {
 		if(screensize != 0) vscrn(0);
-		if(!(app.pMenu.getCurrentMenu() instanceof MenuColorCorr) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
-			engine.setpalettefade(0, 0, 0, 32);
-			engine.showfade();
+		if(!(app.pMenu.getCurrentMenu() instanceof MenuRendererSettings) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
+			int tile = LOADSCREEN;
+			float kt = xdim / (float) ydim;
+			float kv = tilesizx[tile] / (float) tilesizy[tile];
+			float scale;
+			if(kv >= kt)
+	        	scale = (ydim + 1) / (float) tilesizy[tile];
+	        else scale = (xdim + 1) / (float) tilesizx[tile];
+	  
+			engine.rotatesprite(0, 0, (int) (scale * 65536), 0, tile, 127, 4, 8 | 16 | 1, 0, 0, xdim - 1, ydim - 1);
 		}
 
 		super.mDrawMenu();
@@ -93,7 +99,6 @@ public class RRMenuHandler extends MenuHandler {
 	{
 		super.mClose();
 		vscrn(ud.screen_size);
-		engine.setpalettefade(0, 0, 0, 0);
 	}
 	
 	@Override
@@ -259,12 +264,12 @@ public class RRMenuHandler extends MenuHandler {
 		if(!app.pCfg.menuMouse) return;
 		
 		int zoom = scale(0x10000, ydim, 200);
-		int czoom = mulscale(48000, mulscale(zoom, app.pCfg.gMouseCursorSize, 16), 16);
-		int xoffset = mulscale(16, czoom, 16);
-		int yoffset = mulscale(16, czoom, 16);	
-		int ang = 1800;
+		int czoom = mulscale(0x8000, mulscale(zoom, app.pCfg.gMouseCursorSize, 16), 16);
+		int xoffset = 0; //mulscale(16, czoom, 16);
+		int yoffset = 0; //mulscale(16, czoom, 16);	
+		int ang = 0; //1800;
 
-		engine.rotatesprite((x + xoffset) << 16, (y + yoffset) << 16, czoom, ang, 62, 0, 0, 8, 0, 0, xdim-1, ydim-1);
+		engine.rotatesprite((x + xoffset) << 16, (y + yoffset) << 16, czoom, ang, MOUSECURSOR, 0, 0, 8, 0, 0, xdim-1, ydim-1);
 	}
 
 	@Override

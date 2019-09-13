@@ -19,7 +19,6 @@ package ru.m210projects.Redneck.Types;
 import static ru.m210projects.Build.Engine.MAXPSKYTILES;
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
 import static ru.m210projects.Build.Engine.MAXWALLS;
-import static ru.m210projects.Build.FileHandle.Compat.toLowerCase;
 import static ru.m210projects.Build.Engine.MAXSECTORS;
 import static ru.m210projects.Build.Engine.MAXSPRITES;
 import static ru.m210projects.Build.Engine.MAXSTATUS;
@@ -31,8 +30,8 @@ import static ru.m210projects.Redneck.Globals.MAXANIMWALLS;
 import static ru.m210projects.Redneck.Globals.MAXCYCLERS;
 import static ru.m210projects.Redneck.Animate.MAXANIMATES;
 
-import java.nio.ByteBuffer;
-
+import ru.m210projects.Build.Strhandler;
+import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
@@ -204,7 +203,7 @@ public class SafeLoader {
 			wall[i] = new WALL();
 	}
 	
-	public boolean load(ByteBuffer bb)
+	public boolean load(ResourceData bb)
 	{
 		addon = null;
 		addonFileName = null;
@@ -248,7 +247,7 @@ public class SafeLoader {
 		return false;
 	}
 
-	public void AnimationLoad(ByteBuffer bb)
+	public void AnimationLoad(ResourceData bb)
 	{
 		for(int i = 0; i < MAXANIMATES; i++) {
 			short index = bb.getShort();
@@ -263,7 +262,7 @@ public class SafeLoader {
 		gAnimationCount = bb.getInt();
 	}
 	
-	public void ConLoad(ByteBuffer bb)
+	public void ConLoad(ResourceData bb)
 	{
 		for(int i = 0; i < MAXTILES; i++)
 			actortype[i] = (short) (bb.get() & 0xFF);
@@ -275,7 +274,7 @@ public class SafeLoader {
 			hittype[i].set(bb);
 	}
 	
-	public void GameInfoLoad(ByteBuffer bb)
+	public void GameInfoLoad(ResourceData bb)
 	{
 		pskybits = bb.getShort();
 		parallaxyscale = bb.getInt();
@@ -312,7 +311,7 @@ public class SafeLoader {
         global_random = bb.getShort();
 	}
 
-	public void StuffLoad(ByteBuffer bb)
+	public void StuffLoad(ResourceData bb)
 	{
 		numcyclers = bb.getShort();
 		for(int i = 0; i < MAXCYCLERS; i++)
@@ -434,7 +433,7 @@ public class SafeLoader {
 		dword_119C08 = bb.getInt();
 	}
 	
-	public void MapLoad(ByteBuffer bb) throws Exception
+	public void MapLoad(ResourceData bb) throws Exception
 	{
 		byte[] buf = new byte[144];
 		bb.get(buf);
@@ -473,7 +472,7 @@ public class SafeLoader {
 		return message;
 	}
 	
-	public void LoadGDXBlock(ByteBuffer bb)
+	public void LoadGDXBlock(ResourceData bb)
 	{
 		int pos = bb.position();
 		//reserve SAVEGDXDATA bytes for extra data
@@ -483,7 +482,7 @@ public class SafeLoader {
 		if (warp_on == 1) {
 			byte[] buf = new byte[144];
 			bb.get(buf);
-			addonFileName = toLowerCase(new String(buf).trim());
+			addonFileName = Strhandler.toLowerCase(new String(buf).trim());
 		}
 
 		bb.position(pos + SAVEGDXDATA);

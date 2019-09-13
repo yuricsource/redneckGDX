@@ -16,13 +16,17 @@
 
 package ru.m210projects.Redneck.Menus;
 
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.COLORCORR;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Screen.*;
 
-import ru.m210projects.Build.Pattern.BuildConfig;
+import ru.m210projects.Build.Pattern.BuildFont;
 import ru.m210projects.Build.Pattern.BuildGame;
+import ru.m210projects.Build.Pattern.CommonMenus.MenuRendererSettings;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuVideoMode;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Build.Settings.BuildConfig;
+import ru.m210projects.Redneck.Factory.RRMenuHandler;
 
 public class RMenuVideoMode extends MenuVideoMode {
 
@@ -30,6 +34,7 @@ public class RMenuVideoMode extends MenuVideoMode {
 		super(app, 46, 40, 240, 12, app.getFont(1), 10, 180, LOADSCREEN);
 		
 		mApplyChanges.font = app.getFont(2);
+		mSlot.backgroundPal = 4;
 	}
 
 	@Override
@@ -40,6 +45,23 @@ public class RMenuVideoMode extends MenuVideoMode {
 	@Override
 	public void setMode(BuildConfig cfg) {
 		setup3dscreen(choosedMode.xdim, choosedMode.ydim);
+	}
+	
+	@Override
+	public MenuRendererSettings getRenSettingsMenu(BuildGame app, int posx, int posy, int width,
+			int nHeight, BuildFont style) {
+		
+		final RRMenuHandler rmenu = (RRMenuHandler) app.pMenu;
+		
+		MenuRendererSettings menu = new MenuRendererSettings(app, posx, posy - 10, width, nHeight, style) {
+			@Override
+			public MenuTitle getTitle(BuildGame app, String text) {
+				return new RRTitle(text);
+			}
+		};
+		
+		rmenu.mMenus[COLORCORR] = menu;
+		return menu;
 	}
 
 }

@@ -20,7 +20,7 @@ package ru.m210projects.Redneck.Types;
 import static ru.m210projects.Redneck.Globals.RRRA;
 import static ru.m210projects.Redneck.Globals.currentGame;
 
-import java.nio.ByteBuffer;
+import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 
 public class LSInfo {
 	public int skill;
@@ -30,7 +30,7 @@ public class LSInfo {
 	public String date;
 	public String addonfile;
 	
-	public void read(ByteBuffer bb)
+	public void read(ResourceData bb)
 	{
 		bb.getInt(); //ud.multimode
 		episode = bb.getInt() + 1;

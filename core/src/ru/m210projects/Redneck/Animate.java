@@ -96,6 +96,21 @@ public class Animate {
 		return j;
 	}
 	
+	public static int getValue(Object obj, int type)
+	{
+		int j = 0;
+		
+		switch(type)
+		{
+			case WALLX: j = ((WALL)obj).x; break;
+			case WALLY: j = ((WALL)obj).y; break;
+			case FLOORZ: j = ((SECTOR)obj).floorz; break;
+			case CEILZ: j = ((SECTOR)obj).ceilingz; break;
+		}
+		
+		return j;
+	}
+	
 	public static void doanimations()
 	{
 		int j = 0;
@@ -104,11 +119,27 @@ public class Animate {
 			Interpolation gInt = game.pInt;
 			ANIMATION gAnm = gAnimationData[i];
 			Object obj = gAnm.ptr;
+			
+			if ((j = getValue(obj, gAnm.type)) == gAnm.goal)
+			{
+				gAnimationCount--;
+				if (i != gAnimationCount)
+					gAnm.copy(gAnimationData[gAnimationCount]);
+				int dasect = gAnm.sect;
+				if( sector[dasect].lotag == 18 || sector[dasect].lotag == 19 )
+		                if(gAnm.type == CEILZ)
+		                    continue;
+
+		        if( (sector[dasect].lotag&0xff) != 22 )
+		        	callsound(dasect,-1);
+		        
+		        continue;
+			}
+			
 			switch(gAnm.type)
 			{
 				case WALLX:
 					gInt.setwallinterpolate(gAnm.id, (WALL)obj);
-					j = ((WALL)obj).x;
 					if (j < gAnm.goal)
 						((WALL)obj).x = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);
 					else
@@ -116,7 +147,6 @@ public class Animate {
 					break;
 				case WALLY:
 					gInt.setwallinterpolate(gAnm.id, (WALL)obj);
-					j = ((WALL)obj).y;
 					if (j < gAnm.goal)
 						((WALL)obj).y = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);
 					else
@@ -124,13 +154,12 @@ public class Animate {
 					break;
 				case FLOORZ:
 					gInt.setfloorinterpolate(gAnm.id, (SECTOR)obj);
-					j = ((SECTOR)obj).floorz;
-					
+
 					int vel = gAnm.vel*TICSPERFRAME;
 					if (j < gAnm.goal)
-						((SECTOR)obj).floorz = Math.min(j+vel, gAnm.goal);
+						j = Math.min(j+vel, gAnm.goal);
 					else {
-						((SECTOR)obj).floorz = Math.max(j-vel, gAnm.goal);
+						j = Math.max(j-vel, gAnm.goal);
 						vel = -vel;
 					}
 					
@@ -146,7 +175,6 @@ public class Animate {
 		                {
 		                	game.net.predict.z += vel;
 		                	game.net.predict.zvel = 0;
-//		                	game.net.predictFifo[game.net.gPredictTail & kFifoMask].z  = ps[p].posz;
 		                }
 		            }
 
@@ -157,30 +185,17 @@ public class Animate {
 		                    sprite[k].z += vel;
 		                    hittype[k].floorz = sector[dasect].floorz+vel;
 		                }
+		            
+		            ((SECTOR)obj).floorz = j;
 
 					break;
 				case CEILZ:
 					gInt.setceilinterpolate(gAnm.id, (SECTOR)obj);
-					j = ((SECTOR)obj).ceilingz;
 					if (j < gAnm.goal)
 						((SECTOR)obj).ceilingz = Math.min(j+gAnm.vel*TICSPERFRAME, gAnm.goal);
 					else
 						((SECTOR)obj).ceilingz = Math.max(j-gAnm.vel*TICSPERFRAME, gAnm.goal);
 					break;
-			}
-
-			if (j == gAnm.goal)
-			{
-				gAnimationCount--;
-				if (i != gAnimationCount)
-					gAnm.copy(gAnimationData[gAnimationCount]);
-				int dasect = gAnm.sect;
-				if( sector[dasect].lotag == 18 || sector[dasect].lotag == 19 )
-		                if(gAnm.type == CEILZ)
-		                    continue;
-
-		        if( (sector[dasect].lotag&0xff) != 22 )
-		        	callsound(dasect,-1);
 			}
 		}
 	}

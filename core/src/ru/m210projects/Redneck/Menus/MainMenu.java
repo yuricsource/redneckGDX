@@ -49,7 +49,6 @@ public class MainMenu extends BuildMenu {
 		menu.mMenus[LOADGAME] = new RMenuLoad(app);
 		menu.mMenus[SAVEGAME] = new RMenuSave(app);
 		menu.mMenus[SOUNDSET] = new SoundMenu(app);
-		menu.mMenus[COLORCORR] = new RMenuColorCorr(app);
 		menu.mMenus[OPTIONS] = new OptionsMenu(app);
 
 		MenuPicnum bLogo = new MenuPicnum(app.pEngine, 160, 28, INGAMELNRDTHREEDEE, INGAMELNRDTHREEDEE, 65536) {

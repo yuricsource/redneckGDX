@@ -27,8 +27,6 @@ package ru.m210projects.Redneck;
 import static java.lang.Math.max;
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Gameutils.*;
-import static ru.m210projects.Build.Net.Mmulti.connecthead;
-import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
@@ -45,36 +43,37 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 public class Screen {
 	
 	public static int changepalette;
+	public static boolean restorepalette;
 	public static int screensize;
 	public static int gViewXScaled;
 	public static int gViewYScaled;
 	
 	public static void vscrn(int size)
 	{
-	     int i, j, ss, x1, x2, y1, y2;
+	     int ss, x1, x2, y1, y2;
 
 		 if(size < 0) size = 0;
-		 else if(size > 4) size = 4;
+		 else if(size > 5) size = 5;
 
-		 ss = max(size-4,0);
+		 ss = max(size-5,0);
 
 		 x1 = scale(ss,xdim,160);
 		 x2 = xdim-x1;
 
 		 y1 = 5*ss; y2 = 200;
-	     if ( size > 0 && ud.coop != 1 && ud.multimode > 1)
-		 {
-	         j = 0;
-	         for(i=connecthead;i>=0;i=connectpoint2[i])
-	             if(i > j) j = i;
+//	     if ( size > 0 && ud.coop != 1 && ud.multimode > 1)
+//		 {
+//	         j = 0;
+//	         for(i=connecthead;i>=0;i=connectpoint2[i])
+//	             if(i > j) j = i;
+//
+//	         if (j >= 1) y1 += 8;
+//	         if (j >= 4) y1 += 8;
+//	         if (j >= 8) y1 += 8;
+//	         if (j >= 12) y1 += 8;
+//		 }
 
-	         if (j >= 1) y1 += 8;
-	         if (j >= 4) y1 += 8;
-	         if (j >= 8) y1 += 8;
-	         if (j >= 12) y1 += 8;
-		 }
-
-		 if (size >= 4) y2 -= (4*(ss)+41);
+		 if (size >= 5) y2 -= (5*(ss)+41);
 
 		 y1 = scale(y1,ydim,200);
 		 y2 = scale(y2,ydim,200);
@@ -113,15 +112,19 @@ public class Screen {
 	
 	public static void palto(int r, int g, int b, int count)
 	{
-		int fr = 0, fg = 0, fb = 0;
-		if(r > 0) fr = count - 128;
-		if(g > 0) fg = count - 128;
-		if(b > 0) fb = count - 128;
+		if(engine.glrender() != null)
+		{
+			if(count > 0) {
+				int fr = 0, fg = 0, fb = 0;
+				if(r > 0) fr = Math.min(count - 128, r / 2);
+				if(g > 0) fg = Math.min(count - 128, g / 2);
+				if(b > 0) fb = Math.min(count - 128, b / 2);
 
-		if(count > 0) {
-			engine.setpalettefade(fr, fg, fb, 1);
-			engine.showfade();	
-		}
+				engine.setpalettefade(fr, fg, fb, 1);
+				engine.showfade();
+			}
+		} else 
+			engine.setpalettefade(r, g, b, count & 127);
 	}
 	
 	public static void scrReset()
@@ -158,7 +161,7 @@ public class Screen {
 	
 	public static void patchstatusbar(int x1,int y1, int x2, int y2)
 	{
-		if(ud.screen_size > 3)
+		if(ud.screen_size > 4)
 		{
 			int framesx = xdim / tilesizx[BACKGROUND];
 			int framesy = ydim - scale((tilesizy[BOTTOMSTATUSBAR] + tilesizy[1649]) / 2, ydim, 200);
@@ -170,12 +173,16 @@ public class Screen {
 		    }
 		}
 
-//		engine.rotatesprite(0 << 16, 166 << 16, 0x8000, 0, WIDEHUD_PART2, 4, 0, 26 | 256, 0, 0, xdim - 1, ydim - 1);
-//		engine.rotatesprite(320 << 16, 166 << 16, 0x8000, 1024, WIDEHUD_PART2, 4, 0, 4 | 26 | 512, 0, 0, xdim - 1, ydim - 1);
-
-		engine.rotatesprite(0,166 << 16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+16+64, 
+		engine.rotatesprite(160<<16,183<<16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+64, 
 		        scale(x1,xdim,320),scale(y1,ydim,200),                             
-		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);
+		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1); 
+		
+//		engine.rotatesprite(0,166 << 16,0x8000,0,BOTTOMSTATUSBAR,4,0,10+16+64, 
+//		        scale(x1,xdim,320),scale(y1,ydim,200),                             
+//		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);
+		
+		engine.rotatesprite(8 << 16, 183 << 16, 0x8000, 0, WIDEHUD_LEFTSHADOW, 0, 0, 10 | 256, 0, 0, xdim - 1, ydim - 1);
+		engine.rotatesprite(311 << 16, 183 << 16, 0x8000, 0, WIDEHUD_RIGHTSHADOW, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
 	}
 
 	public static void displayinventory(PlayerStruct p)
@@ -196,7 +203,7 @@ public class Screen {
 
 	    j = 0;
 
-	    if(ud.screen_size > 4)
+	    if(ud.screen_size > 5)
 	    {
 	    	y = 140; //160
 	    	if(ud.multimode > 1)
@@ -205,7 +212,7 @@ public class Screen {
 	        	y -=4;
 	    } else y = 180;
 
-	    if(ud.screen_size == 4)
+	    if(ud.screen_size == 5)
 	    	 xoff += 56;
 	    
 	    while( j <= 9 )

@@ -1270,7 +1270,7 @@ public class Weapons {
 					{
 						SPRITE spr = sprite[s.lotag];
 						short ang = engine.getangle(spr.x - s.x, spr.y - s.y);
-						long seekang = ang - s.ang;
+						int seekang = ang - s.ang;
 						if(seekang >= 100)
 						{
 							if(seekang == 100)
@@ -1647,10 +1647,10 @@ public class Weapons {
 
 	    gun_pos -= (p.hard_landing<<3);
 
-	    if(ud.screen_size > 1)
+	    if(ud.screen_size > 2)
 	    	gun_pos += tilesizy[BOTTOMSTATUSBAR] / 4;
 	    	
-	    if(ud.screen_size > 2)
+	    if(ud.screen_size > 3)
 		    gun_pos += tilesizy[1649] / 4;
 
 	    if(p.last_weapon >= 0)

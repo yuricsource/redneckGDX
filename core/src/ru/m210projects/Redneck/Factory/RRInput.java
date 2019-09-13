@@ -17,6 +17,7 @@
 package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Build.Engine.getInput;
+import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
@@ -56,13 +57,13 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Input.GPManager;
+import ru.m210projects.Build.Input.BuildControllers;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildConfig;
-import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
 import ru.m210projects.Build.Pattern.BuildControls;
 import ru.m210projects.Build.Pattern.BuildNet.NetInput;
+import ru.m210projects.Build.Settings.BuildConfig;
+import ru.m210projects.Build.Settings.BuildConfig.GameKeys;
 import ru.m210projects.Redneck.Config.RRKeys;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Types.PlayerStruct;
@@ -85,8 +86,10 @@ public class RRInput extends BuildControls {
 	private short vel, svel;
 	private float horiz, angvel;
 
-	public RRInput(BuildConfig cfg, GPManager gpmanager) {
+	public RRInput(BuildConfig cfg, BuildControllers gpmanager) {
 		super(cfg, gpmanager);
+		
+		GameKeys.Run.setName("Run / Handbrake");
 	}
 	
 	@Override
@@ -138,6 +141,22 @@ public class RRInput extends BuildControls {
 	    	return;
 	    }
 	    
+	    if(ctrlKeyStatus(Keys.SHIFT_LEFT) && ctrlKeyStatusOnce(Keys.F5))
+		{
+			int music_select = 11 * musicvolume + musiclevel;
+			music_select++;
+			if(music_select >= 44) 
+				music_select = 0;
+			
+			musicvolume = music_select / 11;
+			musiclevel = music_select % 11;
+			
+			buildString(currentGame.getCON().fta_quotes[26], 0, "PLAYING ", currentGame.getCON().music_fn[musicvolume][musiclevel]);
+			sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
+            FTA(26, ps[myconnectindex]);
+            return;
+		}
+	    
 	    if(multiflag == 1)
 	    {
 	        loc.bits =   1<<17;
@@ -147,24 +166,8 @@ public class RRInput extends BuildControls {
 	        return;
 	    }
 	    
-	    if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.SHIFT_LEFT))
+	    if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.CONTROL_LEFT))
 		{
-			if(ctrlKeyStatus(Keys.SHIFT_LEFT) && ctrlKeyStatusOnce(Keys.F5))
-			{
-				int music_select = 11 * musicvolume + musiclevel;
-				music_select++;
-				if(music_select >= 44) 
-					music_select = 0;
-				
-				musicvolume = music_select / 11;
-				musiclevel = music_select % 11;
-				
-				buildString(currentGame.getCON().fta_quotes[26], 0, "PLAYING ", currentGame.getCON().music_fn[musicvolume][musiclevel]);
-				sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
-	            FTA(26, ps[myconnectindex]);
-	            return;
-			}
-			
 			if(!cfg.noSound && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && cfg.VoiceToggle)
 			{
 				int fkey = -1;
@@ -214,7 +217,7 @@ public class RRInput extends BuildControls {
 						}
 					}
 					
-					if(ctrlKeyStatus(Keys.SHIFT_LEFT))
+					if(ctrlKeyStatus(Keys.CONTROL_LEFT))
 					{
 						adduserquote(ud.ridecule[fkey]);
 
@@ -309,8 +312,12 @@ public class RRInput extends BuildControls {
 //	    loc.bits |=   ctrlKeyStatusOnce(Keys.ESCAPE)? 1 << 31 : 0;
 	    
 	    if((loc.bits&2) != 0) p.crouch_toggle = 0;
-	    if(ctrlGetInputKey(RRKeys.Crouch_toggle, true))
-	    	p.crouch_toggle ^= 1;
+	    
+	    boolean CrouchMode = ctrlGetInputKey(RRKeys.Crouch_toggle, sector[p.cursectnum].lotag != 2);
+	    if(sector[p.cursectnum].lotag == 2) {
+	    	p.crouch_toggle = CrouchMode ? (byte) 1 : 0;
+		} else if(CrouchMode) p.crouch_toggle ^= 1;
+	    
 	    if(p.crouch_toggle == 1)
 	    	loc.bits |= 2;
 	    
@@ -467,14 +474,17 @@ public class RRInput extends BuildControls {
 
 	    boolean left = ctrlGetInputKey(GameKeys.Turn_Left, false) || ctrlGetInputKey(GameKeys.Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(GameKeys.Turn_Right, false) || ctrlGetInputKey(GameKeys.Strafe_Right, false);
-	    int bike_turn = 0; 
-	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
-	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
-	    	bike_turn = (int) stick1.x;
-	    }
-	    if ( bike_turn > 0 ) left = true;
-	    if ( bike_turn < 0 ) right = true;
+	    int bike_turn = 0;
 	    
+	    Vector2 stick1 = ctrlGetStick(JoyStick.Turning);
+		Vector2 stick2 = ctrlGetStick(JoyStick.Moving);
+
+	    if ( stick1.x != 0 && stick1.x < 0.5f ) left = true;
+	    if ( stick1.x != 0 && stick1.x > 0.5f ) right = true;
+	    
+	    if ( stick2.y != 0 && stick2.y < 0.5f ) loc.bits |= 1;
+	    if ( stick2.y != 0 && stick2.y > 0.5f ) loc.bits |= 8;
+
 	    if ( p.CarVar1 == 0 )
 	    {
 	    	loc.bits |=   ctrlGetInputKey(GameKeys.Move_Forward, false)?1:0;
@@ -566,15 +576,8 @@ public class RRInput extends BuildControls {
 	    loc.avel = angvel;
 	    loc.horz = horiz;
 	    
-//	    if(p.CarSpeed < 80) {
-//		    int dx = Gdx.input.getX() - oldPosX;
-//			
-//			float sensscale = cfg.gSensitivity / 65536.0f;
-//			float xscale = sensscale / 2;
-//			float mousx = dx * xscale;
-//		    p.look_ang += mousx;
-//	    }
-//	    resetMousePos();
+	    if(p.CarSpeed < 80) 
+	    	loc.carang = (byte) BClipRange(ctrlGetMouseTurn(), -127, 127);
 	}
 	
 	public void boatinput(Input loc, PlayerStruct p, int tics)
@@ -595,12 +598,14 @@ public class RRInput extends BuildControls {
 	    boolean left = ctrlGetInputKey(GameKeys.Turn_Left, false) || ctrlGetInputKey(GameKeys.Strafe_Left, false);
 	    boolean right = ctrlGetInputKey(GameKeys.Turn_Right, false) || ctrlGetInputKey(GameKeys.Strafe_Right, false);
 	    int bike_turn = 0; 
-	    if(gpmanager.isValidDevice(cfg.gJoyDevice)) {
-	    	Vector2 stick1 = gpmanager.getStickValue(cfg.gJoyDevice, cfg.gJoyTurnAxis, cfg.gJoyLookAxis);
-	    	bike_turn = (int) stick1.x;
-	    }
-	    if ( bike_turn > 0 ) left = true;
-	    if ( bike_turn < 0 ) right = true;
+	    Vector2 stick1 = ctrlGetStick(JoyStick.Turning);
+		Vector2 stick2 = ctrlGetStick(JoyStick.Moving);
+
+		if ( stick1.x != 0 && stick1.x < 0.5f ) left = true;
+	    if ( stick1.x != 0 && stick1.x > 0.5f ) right = true;
+	    
+	    if ( stick2.y != 0 && stick2.y < 0.5f ) loc.bits |= 1;
+	    if ( stick2.y != 0 && stick2.y > 0.5f ) loc.bits |= 8;
 	    
 	    if ( p.CarVar1 == 0 )
 	    {
@@ -721,14 +726,8 @@ public class RRInput extends BuildControls {
 	    loc.avel = angvel;
 	    loc.horz = horiz;
 	    
-//	    if(p.CarSpeed < 80) {
-//		    int dx = Gdx.input.getX() - oldPosX;
-//			
-//			float sensscale = cfg.gSensitivity / 65536.0f;
-//			float xscale = sensscale / 2;
-//			float mousx = dx * xscale;
-//		    p.look_ang += mousx;
-//	    }
-//	    resetMousePos();
+	    if(p.CarSpeed < 80) {
+	    	loc.carang = (byte) BClipRange(ctrlGetMouseTurn(), -127, 127);
+	    }
 	}
 }

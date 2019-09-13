@@ -18,30 +18,26 @@ package ru.m210projects.Redneck.Types;
 
 import static java.lang.Math.min;
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
-import static ru.m210projects.Build.FileHandle.Cache1D.dfWrite;
-import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
-import static ru.m210projects.Build.FileHandle.Cache1D.kOpen;
-import static ru.m210projects.Build.FileHandle.Cache1D.kRead;
-import static ru.m210projects.Build.FileHandle.Cache1D.kdfRead;
-import static ru.m210projects.Build.FileHandle.Compat.Bclose;
-import static ru.m210projects.Build.FileHandle.Compat.Blseek;
-import static ru.m210projects.Build.FileHandle.Compat.Bopen;
-import static ru.m210projects.Build.FileHandle.Compat.Bwrite;
-import static ru.m210projects.Build.FileHandle.Compat.SEEK_SET;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
-import static ru.m210projects.Build.FileHandle.Compat.toLowerCase;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.mUserFlag;
+import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.ResourceHandler.levelGetEpisode;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import ru.m210projects.Build.Strhandler;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.FileResource;
+import ru.m210projects.Build.FileHandle.LZWDecoder;
+import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.Compat.Path;
+import ru.m210projects.Build.FileHandle.FileResource.Mode;
+import ru.m210projects.Build.FileHandle.Resource.Whence;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Main.UserFlag;
@@ -50,7 +46,10 @@ public class DemoFile {
 
 	public int rcnt = 0;
 	public Input recsync[][];
-	public static int recfilep;
+	public static Resource recfilep;
+	public static LZWDecoder recorder;
+	private boolean unpacked = false; //debug
+	
 	public int reccnt;
 	public int version;
 	public int volume_number, level_number, player_skill;
@@ -68,8 +67,6 @@ public class DemoFile {
 	public int[] aim_mode = new int[MAXPLAYERS], auto_aim = new int[MAXPLAYERS];
 	public GameInfo addon;
 
-	private final boolean unpacked = false; //debug
-	
 	//Record
 	
 	public int totalreccnt;
@@ -80,58 +77,62 @@ public class DemoFile {
 		rcnt = 0;
 		recversion = -1;
 		ud.rec = null;
-		recfilep = kOpen(filename, loadfromgrouponly);
-		if(recfilep == -1) throw new Exception("File not found");
-		reccnt = kRead(recfilep, 4);
-		version = (kRead(recfilep, 1) & 0xFF);
+		recfilep = BuildGdx.cache.open(filename, loadfromgrouponly);
+		if(recfilep == null) throw new Exception("File not found");
+		reccnt = recfilep.readInt();
+		version = recfilep.readByte() & 0xFF;
 		
 		if( version != BYTEVERSIONRR && version != GDXBYTEVERSION)
 		{
-			kClose(recfilep);
+			recfilep.close();
 			throw new Exception("Wrong version!");
 		}
 	     
-		volume_number = kRead(recfilep, 1);
-		level_number = kRead(recfilep, 1);
-		player_skill = kRead(recfilep, 1);
+		volume_number = recfilep.readByte();
+		level_number = recfilep.readByte();
+		player_skill = recfilep.readByte();
 		
-		coop = kRead(recfilep, 1);
-		ffire = kRead(recfilep, 1);
-		multimode = kRead(recfilep, 2);
-		monsters_off = kRead(recfilep, 2)==1;
-		respawn_monsters = kRead(recfilep, 4)==1;
-		respawn_items = kRead(recfilep, 4)==1;
-		respawn_inventory = kRead(recfilep, 4)==1;
-		playerai = kRead(recfilep, 4);
+		coop = recfilep.readByte();
+		ffire = recfilep.readByte();
+		multimode = recfilep.readShort();
+		monsters_off = recfilep.readShort()==1;
+		respawn_monsters = recfilep.readInt()==1;
+		respawn_items = recfilep.readInt()==1;
+		respawn_inventory = recfilep.readInt()==1;
+		playerai = recfilep.readInt();
 		for ( int i = 0; i < MAXPLAYERS; i++ ) {
-			kRead(recfilep, tempbuf, 32);
+			recfilep.read(tempbuf, 32);
 			user_name[i] = new String(tempbuf, 0, 32).trim();
 		}
 
 		if(version >= GDXBYTEVERSION)
 		{
-			kRead(recfilep, tempbuf, 144);
-			String addonName = toLowerCase(new String(tempbuf).trim());
+			recfilep.read(tempbuf, 144);
+			String addonName = Strhandler.toLowerCase(new String(tempbuf).trim());
 			addon = levelGetEpisode(addonName);
 		}
 
 		for(int i=0;i<multimode;i++) {
-			aim_mode[i] = kRead(recfilep, 1);
+			aim_mode[i] = recfilep.readByte();
 			if(version >= GDXBYTEVERSION)
-				auto_aim[i] = kRead(recfilep, 1);
+				auto_aim[i] = recfilep.readByte();
 		}
 
 		recsync = new Input[reccnt][MAXPLAYERS];
 		int dasizeof = Input.sizeof(version)*multimode;
 		byte[] recsyncbuf = new byte[dasizeof * RECSYNCBUFSIZ];
 		
+		LZWDecoder decoder = null;
+		if(!unpacked) 
+			decoder = new LZWDecoder(recfilep, dasizeof);
+		
 		int rccnt = 0;
 		for(int c = 0; c <= reccnt / RECSYNCBUFSIZ; c++)
 		{
 			int l = min(reccnt - rccnt, RECSYNCBUFSIZ);
-			if(!unpacked) 
-				kdfRead(recsyncbuf, dasizeof, l / multimode, recfilep);
-			else kRead(recfilep, recsyncbuf, Input.sizeof(version) * l);
+			if(decoder != null) 
+				decoder.read(recsyncbuf, l / multimode);
+			else recfilep.read(recsyncbuf, Input.sizeof(version) * l);
 
 			ByteBuffer bb = ByteBuffer.wrap(recsyncbuf);
 			bb.order( ByteOrder.LITTLE_ENDIAN);
@@ -142,13 +143,15 @@ public class DemoFile {
 			rccnt += RECSYNCBUFSIZ;
 		}
 		
-		kClose(recfilep);
+		if(decoder != null) 
+			decoder.close();
+		else recfilep.close();
 	}
 	
 	public DemoFile(int nVersion)
 	{
 		if (ud.recstat == 2)
-			kClose(recfilep);
+			recfilep.close();
 		int a, b, c, d, democount = 0;
 		String fn = null;
 		do {
@@ -161,34 +164,36 @@ public class DemoFile {
 			d = (democount % 10);
 
 			fn = "demo" + a + b + c + d + ".dmo";
-			if (cache.checkFile(fn) == null)
+			if (BuildGdx.compat.checkFile(fn) == null)
 				break;
 
 			democount++;
 		} while (true);
 		
-		if (fn == null || (recfilep = Bopen(fn, "rw")) == -1)
+		if (fn == null || (recfilep = BuildGdx.compat.open(fn, Path.Game, Mode.Write)) == null)
 			return;
 
 		Console.Println("Start recording to " + fn);
+		FileResource res = (FileResource) recfilep;
 		
-		Bwrite(recfilep, 0, 4);
-		Bwrite(recfilep, nVersion, 1);
-		Bwrite(recfilep, ud.volume_number, 1);
-		Bwrite(recfilep, ud.level_number, 1);
-		Bwrite(recfilep, ud.player_skill, 1);
-		Bwrite(recfilep, ud.coop, 1);
-		Bwrite(recfilep, ud.ffire, 1);
-		Bwrite(recfilep, ud.multimode, 2);
-		Bwrite(recfilep, ud.monsters_off ? 1 : 0, 2);
-		Bwrite(recfilep, ud.respawn_monsters ? 1 : 0, 4);
-		Bwrite(recfilep, ud.respawn_items ? 1 : 0, 4);
-		Bwrite(recfilep, ud.respawn_inventory ? 1 : 0, 4);
-		Bwrite(recfilep, ud.playerai, 4);
+		res.writeInt(0);
+		res.writeByte(nVersion);
+
+		res.writeByte(ud.volume_number);
+		res.writeByte(ud.level_number);
+		res.writeByte(ud.player_skill);
+		res.writeByte(ud.coop);
+		res.writeByte(ud.ffire);
+		res.writeShort(ud.multimode);
+		res.writeShort(ud.monsters_off ? 1 : 0);
+		res.writeInt(ud.respawn_monsters ? 1 : 0);
+		res.writeInt(ud.respawn_items ? 1 : 0);
+		res.writeInt(ud.respawn_inventory ? 1 : 0);
+		res.writeInt(ud.playerai);
 
 		for (int i = 0; i < MAXPLAYERS; i++) {
 			buildString(buf, 0, ud.user_name[i]);
-			Bwrite(recfilep, buf, 32);
+			res.writeBytes(buf, 32);
 		}
 
 		if(nVersion >= GDXBYTEVERSION) {
@@ -206,20 +211,23 @@ public class DemoFile {
 					System.arraycopy(path.getBytes(), 0, name, 0, Math.min(path.length(), 144));
 				}
 			}
-			Bwrite(recfilep, name, name.length);
+			res.writeBytes(name, name.length);
 		}
 		
 		for (int i = 0; i < ud.multimode; i++) {
-			Bwrite(recfilep, ps[i].aim_mode, 1);
+			res.writeByte(ps[i].aim_mode);
 			if (nVersion >= GDXBYTEVERSION) // JBF 20031126
-				Bwrite(recfilep, ps[i].auto_aim, 1);
+				res.writeByte(ps[i].auto_aim);
 		}
 
 		totalreccnt = 0;
 		reccnt = 0;
 		recversion = nVersion;
 		recbuf = new byte[RECSYNCBUFSIZ * Input.sizeof(BYTEVERSION)];
-//		gDemoScreen.demofiles.add(fn); XXX
+		
+		recorder = new LZWDecoder(res, Input.sizeof(recversion) * ud.multimode);
+		
+		gDemoScreen.demofiles.add(fn);
 	}
 	
 	public void record() {
@@ -230,16 +238,15 @@ public class DemoFile {
 			totalreccnt++;
 
 			if (reccnt >= RECSYNCBUFSIZ) {
-				if (!unpacked) {
-					int dasizeof = len * ud.multimode;
+				if (recorder != null) {
 					try {
-						dfWrite(recbuf, dasizeof, reccnt / ud.multimode, recfilep);
+						recorder.write(recbuf, reccnt / ud.multimode);
 					} catch (Exception e) {
 						Console.Println(e.getMessage(), OSDTEXT_RED);
 						close();
 					}
-				} else
-					Bwrite(recfilep, recbuf, reccnt * len);	
+				} else 
+					((FileResource) recfilep).writeBytes(recbuf, reccnt * len);
 				reccnt = 0;
 			}
 		}
@@ -251,14 +258,13 @@ public class DemoFile {
 			try {
 				if (reccnt > 0) {
 					int len = Input.sizeof(recversion);
-					if (!unpacked) {
-						int dasizeof = len * ud.multimode;
-						dfWrite(recbuf, dasizeof, reccnt / ud.multimode, recfilep);
+					if (recorder != null) {
+						recorder.write(recbuf, reccnt / ud.multimode);
 					} else
-						Bwrite(recfilep, recbuf, reccnt * len);	
+						((FileResource) recfilep).writeBytes(recbuf, reccnt * len);
 				}
-				Blseek(recfilep, SEEK_SET, 0);
-				Bwrite(recfilep, totalreccnt, 4);
+				recfilep.seek(0, Whence.Set);
+				((FileResource) recfilep).writeInt(totalreccnt);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -267,7 +273,10 @@ public class DemoFile {
 			ud.recstat = ud.m_recstat = 0;
 			ud.rec = null;
 			recversion = 0;
-			Bclose(recfilep);
+			
+			if(recorder != null)
+				recorder.close();
+			else recfilep.close();
 		}
 	}
 

@@ -30,12 +30,10 @@ import java.util.Arrays;
 
 import com.badlogic.gdx.utils.IntArray;
 
-
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
-import static ru.m210projects.Build.FileHandle.Compat.*;
 import static ru.m210projects.Build.Gameutils.BClampAngle;
 import static ru.m210projects.Build.Strhandler.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Premap.*;
@@ -51,7 +49,12 @@ import static ru.m210projects.Redneck.View.*;
 import static ru.m210projects.Redneck.Weapons.*;
 import static ru.m210projects.Redneck.Globals.*;
 
-import ru.m210projects.Build.FileHandle.IResource;
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.FileHandle.FileResource;
+import ru.m210projects.Build.FileHandle.Group;
+import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.Compat.Path;
+import ru.m210projects.Build.FileHandle.FileResource.Mode;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
 import ru.m210projects.Build.Types.SPRITE;
@@ -604,9 +607,16 @@ public class Gamedef {
 	        return;
 	    }
 
-	    con.script[scriptptr] = Integer.parseInt(new String(text, textptr, l));
+	    try {
+	    	con.script[scriptptr] = Integer.parseInt(new String(text, textptr, l));
+	    } catch (Exception e) {
+	    	Console.Println("  * ERROR!(L" + line_number + ") Parameter '" + new String(tempbuf, 0, l) + "' is undefined.", OSDTEXT_RED);
+	        error++;
+	        textptr+=l;
+	        return;
+	    }
+	    
 	    scriptptr++;
-
 	    textptr += l;
 	}
 
@@ -616,7 +626,7 @@ public class Gamedef {
 	    char temp_ifelse_check;
 	    short temp_line_number;
 	    int tempscrptr;
-	    int fp;
+	    Resource fp;
 
 	    if( error > 12 || ( text[textptr] == '\0' ) || ( text[textptr+1] == '\0' ) ) return true;
 
@@ -879,15 +889,15 @@ public class Gamedef {
 	            tempbuf[j] = '\0';
 
 	            String name = new String(tempbuf, 0, j).trim();
-	            fp = kOpen(name, loadfromgrouponly);
-	            if(fp == -1)
+	            fp = BuildGdx.cache.open(name, loadfromgrouponly);
+	            if(fp == null)
 	            {
 	                error++;
 	                Console.Println("  * ERROR!(L" + line_number + ") Could not find '" + label[labelcnt<<6] + "'.");
 	                return false;
 	            }
 
-	            j = kFileLength(fp);
+	            j = fp.size();
 	            byte[] buf = new byte[j+1];
 
 	            Console.Println("Including: '" + name + "'.");
@@ -911,8 +921,8 @@ public class Gamedef {
 	            origtptr = textptr;
 	            textptr = 0;
 
-	            kRead(fp,buf,j);
-	            kClose(fp);
+	            fp.read(buf,j);
+	            fp.close();
 	            
 	            last_used_text = new String(buf);
 		        last_used_size = j;
@@ -1630,23 +1640,21 @@ public class Gamedef {
 	
 	public static void copydefaultcons()
 	{
-	    for(int i = 0; i < 3; i++)
-	    {
-	    	byte[] data = kGetBytes(defaultcons[i], 1);
-	        int fpo = Bopen( defaultcons[i], "rw");
+		for(int i = 0; i < 3; i++)
+		{
+	    	byte[] data = BuildGdx.cache.getBytes(defaultcons[i], 1);
+	        FileResource fpo = BuildGdx.compat.open(defaultcons[i], Path.Game, Mode.Write);
 
-	        if(fpo == -1 || data == null)
+	        if(fpo == null || data == null)
 	            continue;
 
-	        Bwrite(fpo, data, data.length);
-	        Bclose(fpo);
+	        fpo.writeBytes(data, data.length);
+	        fpo.close();
 	    }
 	}
 
 	public static Script loadefs(String filenam)
 	{
-	    int fs,fp;
-
 //	    if(cache.checkFile(filenam) == null && loadfromgrouponly == 0)
 //	    {
 //	    	if(game.GameMessage("Missing external con file(s). \n \"COPY INTERNAL DEFAULTS TO DIRECTORY?\"", true))
@@ -1656,30 +1664,30 @@ public class Gamedef {
 //	    	} else loadfromgrouponly = 1;
 //	    }
 
-	    fp = kOpen(filenam,loadfromgrouponly);
-	    if( fp == -1 )
+	    Resource fp = BuildGdx.cache.open(filenam,loadfromgrouponly);
+	    if( fp == null )
 	    {
 //	        if( loadfromgrouponly == 1 )
-	        game.dassert("\nMissing con file(s).");
-	        return null;
+	        game.GameCrash("\nMissing con file(s).");
+	        System.exit(1);
 	    }
-	    else
-	    {
-	    	Console.Println("Compiling: " + filenam + ".");
+	    
+	    
+    	Console.Println("Compiling: " + filenam + ".");
 
-	        fs = kFileLength(fp);
-	        
-	        byte[] buf = new byte[fs+1];
-	        label = new char[131072];
+        int fs = fp.size();
+        
+        byte[] buf = new byte[fs+1];
+        label = new char[131072];
 
-	        kRead(fp,buf,fs);
-	        last_used_text = new String(buf);
-	        last_used_size = fs;
+        fp.read(buf,fs);
+        last_used_text = new String(buf);
+        last_used_size = fs;
 
-	        text = last_used_text.toCharArray();
-	        
-	        kClose(fp);
-	    }
+        text = last_used_text.toCharArray();
+        
+        fp.close();
+	    
 	    
 	    Script con = new Script();
 
@@ -1692,7 +1700,12 @@ public class Gamedef {
 	    error = 0;
 	    line_number = 1;
 	
-	    passone(con); //Tokenize
+	    try {
+	    	passone(con); //Tokenize
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	error = 1;
+	    }
 
 	    if((warning|error) != 0)
 	        Console.Println("Found " + warning + " warning(s), " + error + " error(s).");
@@ -1798,7 +1811,7 @@ public class Gamedef {
 	    if( (g_t[0]&63) != 0 ) return -1;
 
 	    short angincs = 1024; 
-	    if(ud.multimode >= 2 && ud.player_skill >= 3)
+	    if(ud.multimode >= 2 || ud.player_skill >= 3)
 	        angincs = (short) (2048/(1+(engine.krand()&1)));
 
 	    for(int j=ts.ang;j<(2048+ts.ang);j+=(angincs-(engine.krand()&511)))
@@ -3712,8 +3725,8 @@ public class Gamedef {
 //			defGame = new GameInfo(cache.checkFile(confilename), confilename);
 //		else {
 			try {
-				IResource grp = checkgroupfile("redneck.grp");
-				defGame = new GameInfo(grp, cache.checkFile(grp.name), confilename);
+				Group grp = BuildGdx.cache.getGroup("redneck.grp"); //XXX
+				defGame = new GameInfo(grp, BuildGdx.compat.checkFile(grp.name), confilename);
 			} catch (Exception e) {
 				game.ThrowError("Unknown error!", e);
 				return;
@@ -3795,27 +3808,24 @@ public class Gamedef {
 	
 	public static Script loaduserdef(String filenam)
 	{
-		int fp = kOpen(filenam, 0), fs;
-	    if( fp == -1 )
-	        return null;
-	    else
-	    {
-	    	Console.Println("Compiling: " + filenam + ".");
+		Resource fp = BuildGdx.cache.open(filenam, 0);
+	    if( fp == null )
+	    	return null;
 
-	        fs = kFileLength(fp);
-	        
-	        byte[] buf = new byte[fs+1];
-	        label = new char[131072];
+	    int fs = fp.size();
+    	Console.Println("Compiling: " + filenam + ".");
 
-	        kRead(fp,buf,fs);
-	        last_used_text = new String(buf);
-	        last_used_size = fs;
+        byte[] buf = new byte[fs+1];
+        label = new char[131072];
 
-	        textptr = 0;
-	        text = last_used_text.toCharArray();
-	        
-	        kClose(fp);
-	    }
+        fp.read(buf,fs);
+        last_used_text = new String(buf);
+        last_used_size = fs;
+
+        textptr = 0;
+        text = last_used_text.toCharArray();
+        
+        fp.close();
 	    
 	    Script con = new Script();
 

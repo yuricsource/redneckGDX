@@ -19,12 +19,12 @@ package ru.m210projects.Redneck.Menus;
 import static ru.m210projects.Redneck.LoadSave.*;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Build.FileHandle.Compat.Bcheck;
-import static ru.m210projects.Build.FileHandle.Compat.FileUserdir;
 import static ru.m210projects.Redneck.Main.gGameScreen;
 import static ru.m210projects.Redneck.Names.LOADSCREEN;
 
 import ru.m210projects.Build.Engine;
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuLoadSave;
@@ -50,7 +50,7 @@ public class RMenuSave extends MenuLoadSave {
 						if (num > 9999)
 							return;
 						filename = "game" + makeNum(num) + ".sav";
-						if (Bcheck(FileUserdir + filename, "R") == null)
+						if (BuildGdx.compat.checkFile(filename, Path.User) == null)
 							break;
 
 						num++;
@@ -68,6 +68,7 @@ public class RMenuSave extends MenuLoadSave {
 		
 		list.questionFont = app.getFont(1);
 		list.nListOffset = 15;
+		list.backgroundPal = 4;
 	}
 
 	@Override

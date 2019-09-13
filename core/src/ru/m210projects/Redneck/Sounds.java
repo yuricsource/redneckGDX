@@ -16,25 +16,37 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.SoundDefs.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Actors.*;
-import static ru.m210projects.Redneck.View.*;
-import static ru.m210projects.Redneck.Gameutils.*;
-import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.kClose;
-import static ru.m210projects.Build.FileHandle.Cache1D.kFileLength;
-import static ru.m210projects.Build.FileHandle.Cache1D.kGetBytes;
-import static ru.m210projects.Build.FileHandle.Cache1D.kOpen;
-import static ru.m210projects.Build.FileHandle.Cache1D.kRead;
+import static ru.m210projects.Build.Engine.MAXSECTORS;
+import static ru.m210projects.Build.Engine.sector;
+import static ru.m210projects.Build.Engine.sprite;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Pragmas.divscale;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.mulscale;
-import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Redneck.Actors.badguy;
+import static ru.m210projects.Redneck.Gameutils.FindDistance3D;
+import static ru.m210projects.Redneck.Globals.RRRA;
+import static ru.m210projects.Redneck.Globals.Sound;
+import static ru.m210projects.Redneck.Globals.SoundOwner;
+import static ru.m210projects.Redneck.Globals.currentGame;
+import static ru.m210projects.Redneck.Globals.hittype;
+import static ru.m210projects.Redneck.Globals.loadfromgrouponly;
+import static ru.m210projects.Redneck.Globals.ps;
+import static ru.m210projects.Redneck.Globals.screenpeek;
+import static ru.m210projects.Redneck.Globals.soundsiz;
+import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Main.cfg;
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Names.APLAYER;
+import static ru.m210projects.Redneck.Names.BILLYCOCK;
+import static ru.m210projects.Redneck.Names.BILLYRAY;
+import static ru.m210projects.Redneck.Names.COOT;
+import static ru.m210projects.Redneck.Names.MUSICANDSFX;
+import static ru.m210projects.Redneck.SoundDefs.LASERTRIP_EXPLODE;
+import static ru.m210projects.Redneck.SoundDefs.PIPEBOMB_EXPLODE;
+import static ru.m210projects.Redneck.SoundDefs.RPG_EXPLODE;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
@@ -44,6 +56,7 @@ import ru.m210projects.Build.Audio.Sound.SystemType;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.Audio.SourceCallback;
 import ru.m210projects.Build.FileHandle.FileEntry;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Types.Sample;
@@ -238,7 +251,7 @@ public class Sounds {
 	private static void playmusic(String fn) {
 		if (fn == null)
 			return;
-		byte[] pRaw = kGetBytes(fn, 0);
+		byte[] pRaw = BuildGdx.cache.getBytes(fn, 0);
 
 		if (pRaw == null || pRaw.length <= 0)
 			return;
@@ -306,27 +319,26 @@ public class Sounds {
 		if (!BuildGdx.audio.IsInited(Driver.Sound))
 			return 0;
 
-		int fp = -1;
+		Resource fp = null;
 		if (currentGame.getCON().sounds[num] != null)
-			fp = kOpen(currentGame.getCON().sounds[num], loadfromgrouponly);
-		if (fp == -1) {
-			int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
-			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
-			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
-
-			FTA(113, ps[myconnectindex]);
+			fp = BuildGdx.cache.open(currentGame.getCON().sounds[num], loadfromgrouponly);
+		if (fp == null) {
+//			int offs = buildString(currentGame.getCON().fta_quotes[113], 0, "Sound ", currentGame.getCON().sounds[num]);
+//			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
+//			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
+//			FTA(113, ps[myconnectindex]);
+			
+			Console.Println("Sound " + "(" + num + ") not found.");
 			return 0;
 		}
-		int l = kFileLength(fp);
-		soundsiz[num] = l;
+
+		soundsiz[num] = fp.size();
 		Sound[num].lock = 2;
 
-		byte[] tmp = new byte[l];
-		kRead(fp, tmp, l);
-
+		byte[] tmp = fp.getBytes();
 		loadSample(tmp, num);
 
-		kClose(fp);
+		fp.close();
 		return 1;
 	}
 

@@ -27,7 +27,6 @@ import static ru.m210projects.Build.Engine.parallaxyscale;
 import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.sprite;
 import static ru.m210projects.Build.Engine.totalclock;
-import static ru.m210projects.Build.FileHandle.Compat.cache;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
@@ -93,6 +92,7 @@ import static ru.m210projects.Redneck.Globals.earthquaketime;
 import static ru.m210projects.Redneck.Globals.everyothertime;
 import static ru.m210projects.Redneck.Globals.gVisibility;
 import static ru.m210projects.Redneck.Globals.global_random;
+import static ru.m210projects.Redneck.Globals.kGameCrash;
 import static ru.m210projects.Redneck.Globals.lockclock;
 import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Globals.musiclevel;
@@ -117,6 +117,7 @@ import static ru.m210projects.Redneck.Main.gDemoScreen;
 import static ru.m210projects.Redneck.Main.gEndScreen;
 import static ru.m210projects.Redneck.Main.gGameScreen;
 import static ru.m210projects.Redneck.Main.gLoadingScreen;
+import static ru.m210projects.Redneck.Main.gPrecacheScreen;
 import static ru.m210projects.Redneck.Main.gStatisticScreen;
 import static ru.m210projects.Redneck.Main.mUserFlag;
 import static ru.m210projects.Redneck.Names.DYNAMITE;
@@ -125,7 +126,6 @@ import static ru.m210projects.Redneck.Player.checkavailinven;
 import static ru.m210projects.Redneck.Player.processinput;
 import static ru.m210projects.Redneck.Player.quickkill;
 import static ru.m210projects.Redneck.Player.setpal;
-import static ru.m210projects.Redneck.Premap.cacheit;
 import static ru.m210projects.Redneck.Premap.checknextlevel;
 import static ru.m210projects.Redneck.Premap.clearfrags;
 import static ru.m210projects.Redneck.Premap.numtorcheffects;
@@ -187,12 +187,13 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildConfig.GameKeys;
 import ru.m210projects.Build.Pattern.BuildControls;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
 import ru.m210projects.Build.Pattern.BuildNet;
 import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
+import ru.m210projects.Build.Render.GLRenderer;
+import ru.m210projects.Build.Settings.BuildConfig.GameKeys;
 import ru.m210projects.Redneck.Config.RRKeys;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Main;
@@ -302,7 +303,7 @@ public class GameScreen extends GameAdapter {
 	    	if (user_quote_time[i] != 0)
 	    		user_quote_time[i]--;
 	         
-	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 2))
+	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 3))
 	         quotebot += ksgn(quotebotgoal-quotebot);
 	    else quotebot = quotebotgoal;
 
@@ -381,7 +382,14 @@ public class GameScreen extends GameAdapter {
 						});
 						break;
 			    }
-	    	} else game.changeScreen(gStatisticScreen);
+	    	} else {
+	    		Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						game.changeScreen(gStatisticScreen);
+					}
+				});
+	    	}
 	    }
 	}
 
@@ -490,10 +498,10 @@ public class GameScreen extends GameAdapter {
 			 }
 			 if ( input.ctrlGetInputKey(GameKeys.Shrink_Screen, true) )
 			 {
-				 if(ud.screen_size < 3) {
+				 if(ud.screen_size < 4) {
 					 sound(THUD);
 					 ud.screen_size++;
-					 if(ud.screen_size > 4) ud.screen_size = 4;
+					 if(ud.screen_size > 5) ud.screen_size = 5;
 					 vscrn(ud.screen_size);
 				 }
 			 }
@@ -639,8 +647,6 @@ public class GameScreen extends GameAdapter {
 	    	sndStopMusic();
 	    }
 
-	    cacheit();
-	
 	    if(ud.recstat != 2)
 	    {
 	    	musicvolume = ud.volume_number;
@@ -705,7 +711,8 @@ public class GameScreen extends GameAdapter {
 	     game.net.predict.reset();
 	     clearfrags();
 	    
-	     engine.getrender().preload();
+	     GLRenderer gl = engine.glrender();
+	     if(gl != null) gl.preload();
 	     System.err.println("New level " + map);
 	     
 	     if((uGameFlags & MODE_EOL) == MODE_EOL && game.nNetMode == NetMode.Single)
@@ -713,14 +720,14 @@ public class GameScreen extends GameAdapter {
 
 	     uGameFlags &= ~(MODE_EOL | MODE_END);
 
-	     return true;
+	     return !kGameCrash;
 	}
 	
 	protected void makeScreenshot()
 	{
 		String name = "scrxxxx.png";
 		FileEntry map;
-		if(mUserFlag == UserFlag.UserMap && (map = cache.checkFile(boardfilename)) != null) 
+		if(mUserFlag == UserFlag.UserMap && (map = BuildGdx.compat.checkFile(boardfilename)) != null) 
 			name = "scr-" + map.getName() + "-xxxx.png";
 		if(mUserFlag != UserFlag.UserMap && currentGame != null)
 			name = "scr-e" + (ud.volume_number+1) + "m" + (ud.level_number+1) + "[" + currentGame.getFile().getName() + "]-xxxx.png";
@@ -869,6 +876,13 @@ public class GameScreen extends GameAdapter {
 		});
 	}
 	
+	@Override
+	protected void startboard(Runnable startboard) 
+	{
+		gPrecacheScreen.init(false, startboard);
+		game.changeScreen(gPrecacheScreen);
+	}
+	
 	public boolean enterlevel(String title)
 	{
 		if(title == null) return false;
@@ -896,7 +910,7 @@ public class GameScreen extends GameAdapter {
 			}
 		}
 		else {
-			FileEntry file = cache.checkFile(boardfilename);
+			FileEntry file = BuildGdx.compat.checkFile(boardfilename);
 			if(file != null) 
 				title = file.getName();
 			else {
@@ -920,7 +934,7 @@ public class GameScreen extends GameAdapter {
 
 	    i = p.aim_mode;
 	    p.aim_mode = (sb_snum>>23)&1;
-	    if(p.aim_mode < i)
+	    if(p.aim_mode < i && (game.nNetMode != NetMode.Single || !pMenu.gShowMenu))
 	        p.return_to_center = 9;
 	    
 	    if((sb_snum & 1 << 22) != 0 && p.last_pissed_time == 0 && sprite[p.i].extra > 0)

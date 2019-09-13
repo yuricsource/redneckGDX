@@ -770,6 +770,8 @@ public class Player {
 
 		p.ohoriz = p.horiz;
 		p.ohorizoff = p.horizoff;
+		
+		 p.look_ang += sync[snum].carang;
 
 		if (p.OnMotorcycle) {
 			boolean left = (sb_snum & 16) != 0;
@@ -1257,7 +1259,7 @@ public class Player {
 		p.spritebridge = 0;
 
 		shrunk = (s.yrepeat < 8);
-
+		
 		if (s.clipdist == 64)
 			engine.getzrange(p.posx, p.posy, p.posz, psect, 163, CLIPMASK0);
 		else
@@ -1267,9 +1269,8 @@ public class Player {
 		hz = zr_ceilhit;
 		fz = zr_florz;
 		lz = zr_florhit;
-		j = engine.getflorzofslope(psect, p.posx, p.posy);
 
-		p.truefz = j;
+		j = p.truefz = engine.getflorzofslope(psect, p.posx, p.posy);
 		p.truecz = engine.getceilzofslope(psect, p.posx, p.posy);
 
 		truefdist = klabs(p.posz - j);
@@ -1926,6 +1927,7 @@ public class Player {
 						}
 					} else {
 						p.falling_counter = 0;
+
 						if (p.scream_voice != null) {
 							p.scream_voice.dispose();
 							p.scream_voice = null;
@@ -1938,7 +1940,6 @@ public class Player {
 
 						if (i == 40) {
 							// Smooth on the ground
-
 							k = ((fz - (i << 8)) - p.posz) >> 1;
 							if (klabs(k) < 256)
 								k = 0;
@@ -1977,6 +1978,7 @@ public class Player {
 					}
 
 					if (p.jumping_counter != 0) {
+						p.crouch_toggle = 0;
 						if ((sb_snum & 1) == 0 && !p.OnMotorcycle && p.jumping_toggle == 1)
 							p.jumping_toggle = 0;
 
@@ -2221,8 +2223,7 @@ public class Player {
 					p.cursectnum = sect;
 				engine.changespritesect(pi, p.cursectnum);
 			} else {
-				j = engine.clipmove(p.posx, p.posy, p.posz, p.cursectnum, p.posxv, p.posyv, 164, (4 << 8), i,
-						CLIPMASK0);
+				j = engine.clipmove(p.posx, p.posy, p.posz, p.cursectnum, p.posxv, p.posyv, 164, (4 << 8), i, CLIPMASK0);
 
 				if (clipmove_sectnum != -1) {
 					p.posx = clipmove_x;
@@ -2395,12 +2396,12 @@ public class Player {
 
 			if (p.jetpack_on == 0) {
 				if (s.xvel > 16) {
-					if (psectlotag != 1 && psectlotag != 2 && p.on_ground) {
+					if (psectlotag != 1 && psectlotag != 2 && p.on_ground && !p.isSea) {
 						p.pycount += 52;
 						p.pycount &= 2047;
 						p.pyoff = (int) (klabs(s.xvel * sintable[p.pycount]) / 1596);
 					}
-				} else if (psectlotag != 2 && psectlotag != 1)
+				} else if (psectlotag != 2 && psectlotag != 1 && !p.isSea)
 					p.pyoff = 0;
 			}
 

@@ -27,12 +27,13 @@ import ru.m210projects.Build.Types.LittleEndian;
 public class Input implements NetInput {
 	
 	private static final int sizeof = 10;
-	private static final int gdxsizeof = 16;
+	private static final int gdxsizeof = 17;
 	
 	public float avel;
 	public float horz;
 	public short fvel, svel;
 	public int bits;
+	public byte carang;
 	
 	public Input(){}
 	public Input(Object data, int nVersion)
@@ -60,6 +61,7 @@ public class Input implements NetInput {
 		} else {
 			avel = bb.getFloat();
 			horz = bb.getFloat();
+			carang = bb.get();
 		}
 
 		fvel = bb.getShort();
@@ -86,6 +88,7 @@ public class Input implements NetInput {
 		} else {
 			InputBuffer.putFloat(avel);
 			InputBuffer.putFloat(horz);
+			InputBuffer.put(carang);
 		}
 		
 		InputBuffer.putShort(fvel);
@@ -105,17 +108,20 @@ public class Input implements NetInput {
 	
 	@Override
 	public int GetInput(byte[] packbuf, int offset, NetInput oldInput) {
-		int k = packbuf[offset++] & 0xFF;
+		
+		int k = ((packbuf[offset++] & 0xFF) << 8) | packbuf[offset++] & 0xFF;
 		Copy(oldInput);
     
 		if ((k&1) != 0) { fvel = LittleEndian.getShort(packbuf, offset); offset += 2; }
 		if ((k&2) != 0) { svel = LittleEndian.getShort(packbuf, offset); offset += 2; }
         if ((k&4) != 0) { avel = LittleEndian.getFloat(packbuf, offset); offset += 4; }
+        
         if ((k&8) != 0)  { bits = ((bits&0xffffff00)|(packbuf[offset++]&0xFF)); }
         if ((k&16) != 0) { bits = ((bits&0xffff00ff)|(packbuf[offset++]&0xFF)<<8); }
         if ((k&32) != 0) { bits = ((bits&0xff00ffff)|(packbuf[offset++]&0xFF)<<16); }
         if ((k&64) != 0) { bits = ((bits&0x00ffffff)|(packbuf[offset++]&0xFF)<<24); }
         if ((k&128) != 0) { horz = LittleEndian.getFloat(packbuf, offset); offset += 4; }
+        if ((k&256) != 0) { carang = packbuf[offset++]; }
         
 		return offset;
 	}
@@ -124,6 +130,7 @@ public class Input implements NetInput {
 	public int PutInput(byte[] packbuf, int offset, NetInput oldInput) {
 		int syncptr = offset;
 		packbuf[offset++] = 0;
+		packbuf[offset++] = 0;
 		
 		Input osyn = (Input) oldInput;
 
@@ -131,29 +138,33 @@ public class Input implements NetInput {
         {
         	LittleEndian.putShort(packbuf, offset, fvel);
         	offset += 2;
-            packbuf[syncptr] |= 1;
+            packbuf[syncptr + 1] |= 1;
         }
         if (svel != osyn.svel)
         {
         	LittleEndian.putShort(packbuf, offset, svel);
         	offset += 2;
-            packbuf[syncptr] |= 2;
+            packbuf[syncptr + 1] |= 2;
         }
         if (avel != osyn.avel)
         {
         	LittleEndian.putFloat(packbuf, offset, avel);
         	offset += 4;
-            packbuf[syncptr] |= 4;
+            packbuf[syncptr + 1] |= 4;
         }
-        if (((bits^osyn.bits)&0x000000ff) != 0) { packbuf[offset++] = (byte) (bits&255); packbuf[syncptr] |= 8; }
-        if (((bits^osyn.bits)&0x0000ff00) != 0) { packbuf[offset++] = (byte) ((bits>>8)&255); packbuf[syncptr] |= 16; }
-        if (((bits^osyn.bits)&0x00ff0000) != 0) { packbuf[offset++] = (byte) ((bits>>16)&255); packbuf[syncptr] |= 32; }
-        if (((bits^osyn.bits)&0xff000000) != 0) { packbuf[offset++] = (byte) ((bits>>24)&255); packbuf[syncptr] |= 64; }
+        if (((bits^osyn.bits)&0x000000ff) != 0) { packbuf[offset++] = (byte) (bits&255); packbuf[syncptr + 1] |= 8; }
+        if (((bits^osyn.bits)&0x0000ff00) != 0) { packbuf[offset++] = (byte) ((bits>>8)&255); packbuf[syncptr + 1] |= 16; }
+        if (((bits^osyn.bits)&0x00ff0000) != 0) { packbuf[offset++] = (byte) ((bits>>16)&255); packbuf[syncptr + 1] |= 32; }
+        if (((bits^osyn.bits)&0xff000000) != 0) { packbuf[offset++] = (byte) ((bits>>24)&255); packbuf[syncptr + 1] |= 64; }
         if (horz != osyn.horz)
         {
             LittleEndian.putFloat(packbuf, offset, horz);
             offset += 4;
-            packbuf[syncptr] |= 128;
+            packbuf[syncptr + 1] |= 128;
+        }
+        
+        if(carang != osyn.carang) {
+        	packbuf[offset++] = carang; packbuf[syncptr] |= 1;
         }
 
 		return offset;
@@ -166,6 +177,7 @@ public class Input implements NetInput {
 		this.avel = 0;
 		this.bits = 0;
 		this.horz = 0;
+		this.carang = 0;
 	}
 	@Override
 	public NetInput Copy(NetInput netsrc) {
@@ -178,6 +190,7 @@ public class Input implements NetInput {
 		this.avel = src.avel;
 		this.bits = src.bits;
 		this.horz = src.horz;
+		this.carang = src.carang;
 		return this;
 	}
 }

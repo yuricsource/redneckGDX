@@ -27,11 +27,12 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Build.FileHandle.Compat.*;
-import static ru.m210projects.Build.FileHandle.Cache1D.*;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Redneck.Main.game;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.Resource.Whence;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Types.LittleEndian;
 
@@ -67,8 +68,8 @@ public class RTS {
 	
 	public static boolean RTS_AddFile(String filename)
 	{
-		int handle = kOpen(filename, 0);
-		if (handle < 0) {
+		Resource handle = BuildGdx.cache.open(filename, 0);
+		if (handle == null) {
 			Console.Println("RTS file " + filename + " was not found", OSDTEXT_RED);
 			return false;
 		}
@@ -78,7 +79,7 @@ public class RTS {
 		// WAD file
 		Console.Println("    Adding " + filename);
 		byte[] data = new byte[16];
-		kRead( handle, data, 12 );
+		handle.read( data, 12 );
 		//WadInfo header = new WadInfo(data);
 		
 		String identification = new String(data, 0, 4);
@@ -87,17 +88,17 @@ public class RTS {
 		
 		if (!identification.equalsIgnoreCase("IWAD")) {
 			Console.Println("RTS file " + filename + " doesn't have IWAD id", OSDTEXT_RED);
-			kClose(handle);
+			handle.close();
 			return false;
 		}
 
 		numlumps += infonumlumps;
 		lumpinfo = new LumpInfo[infonumlumps];
 		
-		klseek (handle, infotableofs, SEEK_SET);
+		handle.seek(infotableofs, Whence.Set);
 		for (int i=startlump; i < numlumps; i++)
 		{
-			kRead(handle, data, 16); 
+			handle.read(data, 16); 
 			
 			int filepos = LittleEndian.getInt(data);
 			int size = LittleEndian.getInt(data, 4);
@@ -208,8 +209,8 @@ public class RTS {
 			game.dassert("RTS_ReadLump: " + lump + " < 0");
 		LumpInfo l = lumpinfo[lump];
 		
-		klseek (l.handle, l.position, SEEK_SET);
-		kRead(l.handle, dest, l.size);
+		l.handle.seek(l.position, Whence.Set);
+		l.handle.read(dest, l.size);
 	}
 	
 	/*

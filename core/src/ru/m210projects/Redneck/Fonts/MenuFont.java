@@ -18,7 +18,14 @@ package ru.m210projects.Redneck.Fonts;
 
 import static ru.m210projects.Build.Engine.tilesizx;
 import static ru.m210projects.Build.Engine.tilesizy;
-import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Names.BIGALPHANUM;
+import static ru.m210projects.Redneck.Names.BIGAPPOS;
+import static ru.m210projects.Redneck.Names.BIGCOLIN;
+import static ru.m210projects.Redneck.Names.BIGCOMMA;
+import static ru.m210projects.Redneck.Names.BIGPERIOD;
+import static ru.m210projects.Redneck.Names.BIGQ;
+import static ru.m210projects.Redneck.Names.BIGSEMI;
+import static ru.m210projects.Redneck.Names.BIGX;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
@@ -48,6 +55,22 @@ public class MenuFont extends BuildFont {
 		addChar('?', BIGQ, tilesizx[BIGQ] / 2, nScale, 0, 0);
 		addChar(';', BIGSEMI, tilesizx[BIGSEMI] / 2, nScale, 0, 0);
 		addChar(':', BIGCOLIN, tilesizx[BIGCOLIN] / 2, nScale, 0, 0);
+	}
+	
+	public void update()
+	{
+		
+		for(int i = 0; i < 26; i++) {
+			int nTile = i + BIGALPHANUM;
+
+			charInfo[(char) ('A' + i)].nWidth = (short) (tilesizx[nTile] / 2);
+			charInfo[(char) ('a' + i)].nWidth = (short) (tilesizx[nTile] / 2);
+		}
+		
+		for(int i = 0; i < 10; i++) {
+			int nTile = i + BIGALPHANUM - 10;
+			charInfo[(char) ('0' + i)].nWidth = (short) (tilesizx[nTile] / 2);
+		}
 	}
 
 }
