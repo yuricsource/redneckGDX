@@ -123,10 +123,7 @@ public class Gamedef {
 	
 	private static char[] text;
 	private static int textptr = 0;
-	
-	private static char[] origtext;
-	private static int origtptr;
-	
+
 	private static int parsing_actor;
 	
 	public static int insptr;
@@ -917,8 +914,8 @@ public class Gamedef {
 	            temp_ifelse_check = (char) checking_ifelse;
 	            checking_ifelse = 0;
 	            
-	            origtext = text;
-	            origtptr = textptr;
+	            char[] origtext = text;
+	            int origtptr = textptr;
 	            textptr = 0;
 
 	            fp.read(buf,j);
@@ -1681,17 +1678,14 @@ public class Gamedef {
         label = new char[131072];
 
         fp.read(buf,fs);
+        fp.close();
+        
         last_used_text = new String(buf);
         last_used_size = fs;
-
         text = last_used_text.toCharArray();
-        
-        fp.close();
-	    
-	    
-	    Script con = new Script();
+        text[fs] = 0;
 
-	    text[fs - 1] = 0;
+	    Script con = new Script();
 
 	    labelcode.clear();
 	    labelcnt = 0;
@@ -3817,19 +3811,23 @@ public class Gamedef {
 
         byte[] buf = new byte[fs+1];
         label = new char[131072];
-
+        
         fp.read(buf,fs);
+        fp.close();
+        
+        parsing_actor = 0;
+        parsing_state = 0;
+        num_squigilly_brackets = 0;
+        checking_ifelse = 0;
+        killit_flag = 0;
+        
+        textptr = 0;
         last_used_text = new String(buf);
         last_used_size = fs;
-
-        textptr = 0;
         text = last_used_text.toCharArray();
-        
-        fp.close();
-	    
-	    Script con = new Script();
+        text[fs] = 0;
 
-	    text[fs - 1] = 0;
+	    Script con = new Script();
 
 	    Arrays.fill(con.actorscrptr, 0);
 	    Arrays.fill(con.actortype, (short) 0);
