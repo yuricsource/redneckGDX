@@ -25,9 +25,7 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.Gameutils.BClampAngle;
-import static ru.m210projects.Build.Gameutils.BCosAngle;
-import static ru.m210projects.Build.Gameutils.BSinAngle;
+import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.*;
 import static ru.m210projects.Redneck.LoadSave.*;
@@ -1364,7 +1362,7 @@ public class Actors {
 
 			game.pInt.setsprinterpolate(i, s);
 
-			if (IFWITHIN(sprite[i], CRANE, CRANE + 3)) {
+			if (IFWITHIN(s, CRANE, CRANE + 3)) {
 				// t[0] = state
 				// t[1] = checking sector number
 
@@ -1489,8 +1487,10 @@ public class Actors {
 				else if (t[0] == 9)
 					t[0] = 0;
 
-				game.pInt.setsprinterpolate(msy[t[4]+2], sprite[msy[t[4]+2]]);
-				engine.setsprite((short) msy[t[4] + 2], s.x, s.y, s.z - (34 << 8));
+				if(isValidSprite(msy[t[4]+2])) {
+					game.pInt.setsprinterpolate(msy[t[4]+2], sprite[msy[t[4]+2]]);
+					engine.setsprite((short) msy[t[4] + 2], s.x, s.y, s.z - (34 << 8));
+				}
 
 				if (s.owner != -1) {
 					p = findplayer(s);

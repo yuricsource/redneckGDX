@@ -1,5 +1,6 @@
 package ru.m210projects.Redneck.Screens;
 
+import static ru.m210projects.Build.Engine.MAXTILES;
 import static ru.m210projects.Build.Engine.headspritesect;
 import static ru.m210projects.Build.Engine.nextspritesect;
 import static ru.m210projects.Build.Engine.numsectors;
@@ -7,6 +8,7 @@ import static ru.m210projects.Build.Engine.numwalls;
 import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.sprite;
 import static ru.m210projects.Build.Engine.wall;
+import static ru.m210projects.Build.Engine.waloff;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Strhandler.toCharArray;
@@ -166,6 +168,17 @@ public class PrecacheScreen extends PrecacheAdapter {
 				}
 
 				doprecache(1);
+			}
+		});
+		
+		addQueue("Preload other tiles...", new Runnable() {
+			@Override
+			public void run() {
+				for(int i = 0; i < MAXTILES; i++)
+				{
+					if(waloff[i] == null)
+						engine.loadtile(i);
+				}
 			}
 		});
 	}

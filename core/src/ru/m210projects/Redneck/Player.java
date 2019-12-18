@@ -533,8 +533,8 @@ public class Player {
 				if (numplayers < 2) {
 					p.field_290 = 0x4000;
 					sub_64EF0(snum);
-					p.posxv += mulscale(16, sintable[((int) p.ang + 512) & 2047], 16);
-					p.posyv += mulscale(16, sintable[(int) p.ang], 16);
+					p.posxv += mulscale(16, sintable[((int) p.ang + 512) & kAngleMask], 16);
+					p.posyv += mulscale(16, sintable[(int) p.ang & kAngleMask], 16);
 				}
 				p.gut_amount -= 4;
 				if (p.gut_amount < 0)
@@ -767,6 +767,8 @@ public class Player {
 			sb_snum = 0;
 
 		psect = p.cursectnum;
+		if(psect == 1024)
+			return;
 
 		p.ohoriz = p.horiz;
 		p.ohorizoff = p.horizoff;

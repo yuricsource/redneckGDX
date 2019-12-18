@@ -175,7 +175,7 @@ public class RRPolymost extends Polymost {
                         if ((spr.cstat&8) > 0) yoff = -yoff;
 
                         k = spr.ang;
-                        cosang = sintable[(k+512)&2047]; sinang = sintable[k];
+                        cosang = sintable[(k+512)&2047]; sinang = sintable[k&2047];
                         xspan = tilesizx[tilenum]; xrepeat = spr.xrepeat;
                         yspan = tilesizy[tilenum]; yrepeat = spr.yrepeat;
 

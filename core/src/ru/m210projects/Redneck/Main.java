@@ -108,8 +108,6 @@ public class Main extends BuildGame {
 	 * Lose weapons going from Sunny Shores to Gamblin Boat is fixed
 	 * 
 	 * TODO:
-	 * 
-	 * 
 	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 

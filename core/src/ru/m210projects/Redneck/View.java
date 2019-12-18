@@ -1778,7 +1778,7 @@ public class View {
 
 	                t.picnum += (k + ( currentGame.getCON().script[t4] ) + l * t3);
 
-	                if(l > 0) while(tilesizx[t.picnum] == 0 && t.picnum > 0 )
+	                if(l > 0) while(t.picnum > 0 && t.picnum < MAXTILES && tilesizx[t.picnum] == 0)
 	                    t.picnum -= l;       //Hack, for actors
 
 	                if( hittype[i].dispicnum >= 0)
