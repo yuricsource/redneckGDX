@@ -107,9 +107,6 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * Lose weapons going from Sunny Shores to Gamblin Boat is fixed
-	 * 
-	 * 
 	 * TODO:
 	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it
