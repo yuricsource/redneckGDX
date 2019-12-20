@@ -25,27 +25,23 @@ import static ru.m210projects.Build.Gameutils.BClipRange;
 import static ru.m210projects.Build.Gameutils.BCosAngle;
 import static ru.m210projects.Build.Gameutils.BSinAngle;
 import static ru.m210projects.Build.Input.Keymap.KEY_PAUSE;
-import static ru.m210projects.Build.Net.Mmulti.*;
-import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Redneck.Factory.RRNetwork.kPacketMessage;
 import static ru.m210projects.Redneck.Factory.RRNetwork.kPacketSound;
 import static ru.m210projects.Redneck.Globals.MODE_TYPE;
 import static ru.m210projects.Redneck.Globals.TICRATE;
-import static ru.m210projects.Redneck.Globals.currentGame;
 import static ru.m210projects.Redneck.Globals.fricxv;
 import static ru.m210projects.Redneck.Globals.fricyv;
 import static ru.m210projects.Redneck.Globals.gamequit;
 import static ru.m210projects.Redneck.Globals.multiflag;
 import static ru.m210projects.Redneck.Globals.multipos;
 import static ru.m210projects.Redneck.Globals.multiwhat;
-import static ru.m210projects.Redneck.Globals.musiclevel;
-import static ru.m210projects.Redneck.Globals.musicvolume;
 import static ru.m210projects.Redneck.Globals.ps;
 import static ru.m210projects.Redneck.Globals.tempbuf;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Redneck.Main.game;
-import static ru.m210projects.Redneck.Sounds.sndPlayMusic;
 import static ru.m210projects.Redneck.Types.RTS.RTS_GetSound;
 import static ru.m210projects.Redneck.Types.RTS.RTS_NumSounds;
 import static ru.m210projects.Redneck.Types.RTS.rtsplaying;
@@ -140,23 +136,7 @@ public class RRInput extends BuildControls {
 
 	    	return;
 	    }
-	    
-	    if(ctrlKeyStatus(Keys.SHIFT_LEFT) && ctrlKeyStatusOnce(Keys.F5))
-		{
-			int music_select = 11 * musicvolume + musiclevel;
-			music_select++;
-			if(music_select >= 44) 
-				music_select = 0;
-			
-			musicvolume = music_select / 11;
-			musiclevel = music_select % 11;
-			
-			buildString(currentGame.getCON().fta_quotes[26], 0, "PLAYING ", currentGame.getCON().music_fn[musicvolume][musiclevel]);
-			sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
-            FTA(26, ps[myconnectindex]);
-            return;
-		}
-	    
+
 	    if(multiflag == 1)
 	    {
 	        loc.bits =   1<<17;
@@ -166,22 +146,21 @@ public class RRInput extends BuildControls {
 	        return;
 	    }
 	    
-	    if(ctrlKeyStatus(Keys.ALT_LEFT) || ctrlKeyStatus(Keys.CONTROL_LEFT))
+	    if(ctrlKeyStatus(Keys.SHIFT_LEFT) || ctrlKeyStatus(Keys.CONTROL_LEFT))
 		{
+	    	int fkey = -1;
+			for(int i = 0; i < 10; i++)
+			{
+				if(ctrlKeyStatusOnce(i + Keys.F1)) {
+					fkey = i;
+					break;
+				}
+			}
+
 			if(!cfg.noSound && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && cfg.VoiceToggle)
 			{
-				int fkey = -1;
-				for(int i = 0; i < 10; i++)
-				{
-					if(ctrlKeyStatusOnce(i + Keys.NUM_1)) {
-						fkey = i;
-						break;
-					}
-				}
-				if(ctrlKeyStatusOnce(Keys.NUM_0)) fkey = 9;
-
 				if(fkey >= 0) {
-					if(ctrlKeyStatus(Keys.ALT_LEFT)) {
+					if(ctrlKeyStatus(Keys.CONTROL_LEFT)) {
 						byte[] rtsptr = RTS_GetSound(fkey);
 						if(rtsptr != null && rtsptr.length > 0) {
 							if (rtsptr[0] == 'C') {
@@ -217,7 +196,7 @@ public class RRInput extends BuildControls {
 						}
 					}
 					
-					if(ctrlKeyStatus(Keys.CONTROL_LEFT))
+					if(ctrlKeyStatus(Keys.SHIFT_LEFT))
 					{
 						adduserquote(ud.ridecule[fkey]);
 

@@ -24,6 +24,7 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.Pragmas.divscale;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.mulscale;
+import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Redneck.Actors.badguy;
 import static ru.m210projects.Redneck.Gameutils.FindDistance3D;
 import static ru.m210projects.Redneck.Globals.RRRA;
@@ -94,7 +95,7 @@ public class Sounds {
 				if ((currentGame.getCON().soundm[num] & 16) == 0)
 					for (int tempj = 0; tempj < tempk; tempj++) {
 						int tempi = SoundOwner[num][tempj].i;
-						if (sprite[tempi].picnum == MUSICANDSFX && sprite[tempi].sectnum < MAXSECTORS
+						if (sprite[tempi].picnum == MUSICANDSFX && isValidSector(sprite[tempi].sectnum)
 								&& sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999) {
 							hittype[tempi].temp_data[0] = 0;
 							if ((tempj + 1) < tempk) {
@@ -314,7 +315,7 @@ public class Sounds {
 
 	public static int loadsound(int num) {
 
-		if (num >= NUM_SOUNDS || cfg.noSound)
+		if (num < 0 || num >= NUM_SOUNDS || cfg.noSound)
 			return 0;
 		if (!BuildGdx.audio.IsInited(Driver.Sound))
 			return 0;
@@ -346,7 +347,7 @@ public class Sounds {
 		Source voice;
 		int pitch;
 
-		if (num >= NUM_SOUNDS || !BuildGdx.audio.IsInited(Driver.Sound)
+		if (num < 0 || num >= NUM_SOUNDS || !BuildGdx.audio.IsInited(Driver.Sound)
 				|| ((currentGame.getCON().soundm[num] & 8) != 0 && ud.lockout != 0) || cfg.noSound || Sound[num].num > 3
 				|| !BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[num])
 				|| (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26 * 3)
@@ -376,7 +377,7 @@ public class Sounds {
 
 		int sndist = FindDistance3D((cx - x), (cy - y), (cz - z) >> 4);
 
-		if (i >= 0 && (currentGame.getCON().soundm[num] & 16) == 0 && sprite[i].picnum == MUSICANDSFX
+		if (i >= 0 && isValidSector(sprite[i].sectnum) && (currentGame.getCON().soundm[num] & 16) == 0 && sprite[i].picnum == MUSICANDSFX
 				&& sprite[i].lotag < 999 && sector[sprite[i].sectnum].lotag < 9)
 			sndist = (int) divscale(sndist, (sprite[i].hitag + 1), 14);
 
@@ -405,11 +406,11 @@ public class Sounds {
 		case RPG_EXPLODE:
 			if (sndist > (6144))
 				sndist = 6144;
-			if (sector[ps[screenpeek].cursectnum].lotag == 2)
+			if (isValidSector(cs) && sector[cs].lotag == 2)
 				pitch -= 1024;
 			break;
 		default:
-			if (sector[ps[screenpeek].cursectnum].lotag == 2 && (currentGame.getCON().soundm[num] & 4) == 0)
+			if (isValidSector(cs) && sector[cs].lotag == 2 && (currentGame.getCON().soundm[num] & 4) == 0)
 				pitch = -768;
 			if (sndist > 31444 && sprite[i].picnum != MUSICANDSFX)
 				return null;
@@ -476,6 +477,10 @@ public class Sounds {
 			return null;
 		if (cfg.noSound)
 			return null;
+		
+		if(num < 0 || num >= NUM_SOUNDS)
+			return null;
+		
 		if (!cfg.VoiceToggle && (currentGame.getCON().soundm[num] & 4) != 0)
 			return null;
 		if ((currentGame.getCON().soundm[num] & 8) != 0 && ud.lockout != 0)
@@ -553,18 +558,24 @@ public class Sounds {
 	}
 
 	public static Source spritesound(int num, int i) {
-		if (num >= NUM_SOUNDS)
+		if (num < 0 || num >= NUM_SOUNDS)
 			return null;
 		return xyzsound(num, i, sprite[i].x, sprite[i].y, sprite[i].z);
 	}
 
 	public static void stopsound(int num, int i) {
+		if(num < 0 || num >= NUM_SOUNDS)
+			return;
+		
 		if (Sound[num].num > 0 && (i == -1 || i == SoundOwner[num][Sound[num].num - 1].i)) {
 			SoundOwner[num][Sound[num].num - 1].voice.dispose();
 		}
 	}
 
 	public static void stopsound(int num) {
+		if(num < 0 || num >= NUM_SOUNDS)
+			return;
+		
 		if (Sound[num].num > 0) {
 			SoundOwner[num][Sound[num].num - 1].voice.dispose();
 		}
@@ -577,6 +588,9 @@ public class Sounds {
 	}
 
 	public static void stopenvsound(int num, int i) {
+		if(num < 0 || num >= NUM_SOUNDS)
+			return;
+		
 		if (Sound[num].num > 0) {
 			int k = Sound[num].num;
 			for (int j = 0; j < k; j++)

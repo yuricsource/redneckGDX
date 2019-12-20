@@ -211,7 +211,7 @@ public class RUserContent extends BuildMenu {
 							Console.Println("Found addon: " + con);
 							episodes.put(con, addon);
 							blist.addFile(con, type);
-						} else Console.Print(con + " found, but can't be load", OSDTEXT_RED);
+						} else Console.Print(con + " found, but can't be loaded", OSDTEXT_RED);
 					} else {
 						if(addon.isInited) {
 							blist.addFile(con, type);

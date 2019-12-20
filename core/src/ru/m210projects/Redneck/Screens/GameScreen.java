@@ -673,13 +673,13 @@ public class GameScreen extends GameAdapter {
 	        }
 	        
 	        if ( (currentGame.getCON().type == RRRA && ud.level_number == 2 && ud.volume_number == 0) 
-	        		|| ud.level_number == 1 && ud.volume_number == 1)
+	        		|| (currentGame.getCON().type != RRRA && ud.level_number == 1 && ud.volume_number == 1))
 		    {
-	        	 resetweapons(i);
-	        	 ps[i].gotweapon[PISTOL_WEAPON] = false;
-	        	 ps[i].ammo_amount[PISTOL_WEAPON] = 0;
-	        	 ps[i].curr_weapon = KNEE_WEAPON;
-	        	 ps[i].kickback_pic = 0;
+	        	resetweapons(i);
+	        	ps[i].gotweapon[PISTOL_WEAPON] = false;
+	        	ps[i].ammo_amount[PISTOL_WEAPON] = 0;
+	        	ps[i].curr_weapon = KNEE_WEAPON;
+	        	ps[i].kickback_pic = 0;
 		    }
 	    }
 
