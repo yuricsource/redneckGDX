@@ -59,10 +59,12 @@ import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Types.RTS.RTS_Init;
 import static ru.m210projects.Redneck.Types.RTS.numlumps;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.utils.ByteArray;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Architecture.BuildMessage.MessageType;
@@ -452,24 +454,59 @@ public class Main extends BuildGame {
 
 	@Override
 	protected byte[] reportData() {
-		String text = "";
-		text += "boardfilename " + boardfilename;
+		byte[] out = null;
+
+		String text = "Mapname: " + boardfilename;
 		text += "\r\n";
+		text += "UserFlag: " + mUserFlag;
+		text += "\r\n";
+		
+		if (mUserFlag == UserFlag.Addon && currentGame != null) {
+			try {
+				FileEntry addon = currentGame.getFile();
+				if(addon != null  && currentGame.isPackage()) 
+					text += "Episode filename: " + addon.getPath() + ":" + currentGame.ConName;
+				else 
+					text += "Episode filename: " + currentGame.getDirectory().checkFile(currentGame.ConName).getPath();
+				text += "\r\n";
+			} catch(Exception e) {
+				text += "Episode filename get error \r\n";
+			}
+		}
+		
 		text += "volume " + (ud.volume_number + 1);
 		text += "\r\n";
 		text += "level " + (ud.level_number + 1);
 		text += "\r\n";
-		text += "skill " + ud.player_skill;
+		text += "nDifficulty: " + ud.player_skill;
 		text += "\r\n";
-		text += "posx " + ps[myconnectindex].posx;
-		text += "\r\n";
-		text += "posy " + ps[myconnectindex].posy;
-		text += "\r\n";
-		text += "posz " + ps[myconnectindex].posz;
-		text += "\r\n";
-		text += "sectnum " + ps[myconnectindex].cursectnum;
-		text += "\r\n";
+		
+		if (ps != null) {
+			text += "PlayerX: " + ps[myconnectindex].posx;
+			text += "\r\n";
+			text += "PlayerY: " + ps[myconnectindex].posy;
+			text += "\r\n";
+			text += "PlayerZ: " + ps[myconnectindex].posz;
+			text += "\r\n";
+			text += "PlayerAng: " + ps[myconnectindex].ang;
+			text += "\r\n";
+			text += "PlayerSect: " + ps[myconnectindex].cursectnum;
+			text += "\r\n";
+		}
 
-		return text.getBytes();
+		if (mUserFlag == UserFlag.UserMap && boardfilename != null) {
+			ByteArray array = new ByteArray();
+			byte[] data = BuildGdx.cache.getBytes(boardfilename, 0);
+			if (data != null) {
+				text += "\r\n<------Start Map data------->\r\n";
+				array.addAll(text.getBytes());
+				array.addAll(data);
+				array.addAll("\r\n<------End Map data------->\r\n".getBytes());
+
+				out = Arrays.copyOf(array.items, array.size);
+			}
+		} else out = text.getBytes();
+	
+		return out;
 	}
 }
