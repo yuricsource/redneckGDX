@@ -1318,7 +1318,7 @@ public class Premap {
 			palookup[23] = palookup[51];
 			palookup[8] = palookup[54];
 
-			if (BuildGdx.app.getFrameType() == FrameType.GL) {
+			if (BuildGdx.graphics.getFrameType() == FrameType.GL) {
 				palookupfog[0] = palookupfog[50];
 				palookupfog[30] = palookupfog[51];
 				palookupfog[33] = palookupfog[51];
@@ -1334,7 +1334,7 @@ public class Premap {
 			palookup[23] = opalookup[2];
 			palookup[8] = opalookup[1];
 
-			if (BuildGdx.app.getFrameType() == FrameType.GL) {
+			if (BuildGdx.graphics.getFrameType() == FrameType.GL) {
 				palookupfog[0] = opalookupfog[0];
 				palookupfog[30] = opalookupfog[3];
 				palookupfog[33] = opalookupfog[4];

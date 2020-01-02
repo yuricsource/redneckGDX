@@ -36,8 +36,6 @@ import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 import static ru.m210projects.Redneck.Sounds.sound;
 
-import com.badlogic.gdx.Gdx;
-
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Pattern.BuildGame;
@@ -194,7 +192,7 @@ public class AnmScreen extends SkippableAdapter {
 //			if(!checkAnm()) {
 				anmClose();
 				if (callback != null) {
-					Gdx.app.postRunnable(callback);
+					BuildGdx.app.postRunnable(callback);
 					callback = null;
 				}
 //			}

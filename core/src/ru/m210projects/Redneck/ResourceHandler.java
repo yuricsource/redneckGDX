@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
@@ -339,7 +338,7 @@ public class ResourceHandler {
 	
 	public static void loadGdxDef(DefScript baseDef)
 	{
-		FileHandle fil = Gdx.files.internal("rrgdx.dat");
+		FileHandle fil = BuildGdx.files.internal("rrgdx.dat");
 		if(fil != null)
 		{
 			DataResource res = new DataResource(null, fil.name(), -1, fil.readBytes());

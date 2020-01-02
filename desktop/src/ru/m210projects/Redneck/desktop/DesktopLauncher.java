@@ -16,13 +16,13 @@
 
 package ru.m210projects.Redneck.desktop;
 
-import static ru.m210projects.Build.Render.VideoMode.initVideoModes;
 import static ru.m210projects.Build.Render.VideoMode.setFullscreen;
 
 import java.io.File;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-
+import ru.m210projects.Build.Architecture.ApplicationFactory;
+import ru.m210projects.Build.Architecture.BuildApplication;
+import ru.m210projects.Build.Architecture.BuildConfiguration;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
@@ -30,9 +30,7 @@ import ru.m210projects.Build.FileHandle.Cache1D;
 import ru.m210projects.Build.FileHandle.Compat;
 import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.Settings.BuildConfig;
-import ru.m210projects.Build.desktop.BuildApplicationConfiguration;
-import ru.m210projects.Build.desktop.BuildApplicationImpl;
-import ru.m210projects.Build.desktop.DesktopMessage;
+import ru.m210projects.Build.desktop.DesktopFactory;
 import ru.m210projects.Build.desktop.audio.ALAudio;
 import ru.m210projects.Build.desktop.audio.ALSoundDrv;
 import ru.m210projects.Build.desktop.audio.GdxAL;
@@ -48,23 +46,17 @@ public class DesktopLauncher {
 		String filepath = arg[0] + File.separator;
 		BuildGdx.compat = new Compat(filepath, filepath);
 		BuildGdx.cache = new Cache1D(BuildGdx.compat);
-		
-		int midiDevice = 0;
 
 		BuildConfig cfg = new Config(Path.Game.getPath(), appname + ".ini");
-
-		BuildApplicationConfiguration lwjglConfig = new BuildApplicationConfiguration();
-		lwjglConfig.fullscreen = setFullscreen(cfg.ScreenWidth, cfg.ScreenHeight, cfg.fullscreen == 1);
-		lwjglConfig.width = (cfg.ScreenWidth);
-		lwjglConfig.height = (cfg.ScreenHeight);
-		lwjglConfig.resizable = false;
-		lwjglConfig.depth = 16; // z-buffer
-		lwjglConfig.stencil = 8;
-
-		lwjglConfig.backgroundFPS = cfg.fpslimit;
-		lwjglConfig.foregroundFPS = cfg.fpslimit;
-		lwjglConfig.vSyncEnabled = cfg.gVSync;
-		lwjglConfig.borderless = cfg.borderless;
+		BuildConfiguration appcfg = new BuildConfiguration();
+		appcfg.fullscreen = setFullscreen(cfg.ScreenWidth, cfg.ScreenHeight, cfg.fullscreen == 1);
+		appcfg.width = (cfg.ScreenWidth);
+		appcfg.height = (cfg.ScreenHeight);
+		appcfg.backgroundFPS = cfg.fpslimit;
+		appcfg.foregroundFPS = cfg.fpslimit;
+		appcfg.vsync = cfg.gVSync;
+		appcfg.borderless = cfg.borderless;
+		ApplicationFactory factory = new DesktopFactory(appcfg);
 
 		BuildAudio.registerDriver(Driver.Sound, new ALSoundDrv(new ALSoundDrv.DriverCallback() {
 			public ALAudio InitDriver() throws Throwable {
@@ -77,10 +69,10 @@ public class DesktopLauncher {
 				return new GdxAL();
 			}
 		}, "OpenAL 1.18.1"));
-		BuildAudio.registerDriver(Driver.Music, new MidiMusicModule(midiDevice, null));
 		
-		initVideoModes(LwjglApplicationConfiguration.getDisplayModes(), LwjglApplicationConfiguration.getDesktopDisplayMode());
-
-		new BuildApplicationImpl(new Main(cfg, appname, "?.??", false, false), new DesktopMessage(null, false), cfg.renderType, lwjglConfig);
+		int midiDevice = 0;
+		BuildAudio.registerDriver(Driver.Music, new MidiMusicModule(midiDevice, null));
+	
+		new BuildApplication(new Main(cfg, appname, "?.??", false, false), factory, cfg.renderType);
 	}
 }

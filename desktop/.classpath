@@ -5,7 +5,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/RedneckGDX-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BuildGDX-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BuildGDX-desktop"/>
-	<classpathentry kind="lib" path="/BuildGDX-core/libs/gdx-1.9.10.jar"/>
-	<classpathentry kind="lib" path="/BuildGDX-desktop/libs/gdx-backend-lwjgl-1.9.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

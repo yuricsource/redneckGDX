@@ -18,8 +18,6 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 
-import com.badlogic.gdx.Gdx;
-
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.Resource.ResourceData;
 import ru.m210projects.Build.Pattern.BuildGame;
@@ -162,7 +160,7 @@ public class MVEScreen extends SkippableAdapter {
 		if(!anmPlay() && skipCallback != null) {
 			close();
 			if (callback != null) {
-				Gdx.app.postRunnable(callback);
+				BuildGdx.app.postRunnable(callback);
 				callback = null;
 			}
 		}

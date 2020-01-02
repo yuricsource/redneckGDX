@@ -62,7 +62,6 @@ import static ru.m210projects.Redneck.Types.RTS.numlumps;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.utils.ByteArray;
 
@@ -303,7 +302,7 @@ public class Main extends BuildGame {
 			setScreen(gAnmScreen.escSkipping(false));
 		} else {
 			setScreen(gLoadingScreen);
-			Gdx.app.postRunnable(rMenu);
+			BuildGdx.app.postRunnable(rMenu);
 		}
 	}
 
