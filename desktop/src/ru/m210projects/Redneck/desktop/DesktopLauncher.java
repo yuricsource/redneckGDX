@@ -31,10 +31,6 @@ import ru.m210projects.Build.FileHandle.Compat;
 import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.desktop.DesktopFactory;
-import ru.m210projects.Build.desktop.audio.ALAudio;
-import ru.m210projects.Build.desktop.audio.ALSoundDrv;
-import ru.m210projects.Build.desktop.audio.GdxAL;
-import ru.m210projects.Build.desktop.audio.LwjglAL;
 import ru.m210projects.Build.desktop.audio.midi.MidiMusicModule;
 import ru.m210projects.Redneck.Config;
 import ru.m210projects.Redneck.Main;
@@ -58,21 +54,12 @@ public class DesktopLauncher {
 		appcfg.borderless = cfg.borderless;
 		ApplicationFactory factory = new DesktopFactory(appcfg);
 
-		BuildAudio.registerDriver(Driver.Sound, new ALSoundDrv(new ALSoundDrv.DriverCallback() {
-			public ALAudio InitDriver() throws Throwable {
-				return new LwjglAL();
-			}
-		}, "OpenAL 1.15.1"));
-		
-		BuildAudio.registerDriver(Driver.Sound, new ALSoundDrv(new ALSoundDrv.DriverCallback() {
-			public ALAudio InitDriver() throws Throwable {
-				return new GdxAL();
-			}
-		}, "OpenAL 1.18.1"));
+		DesktopFactory.InitSoundDrivers();
 		
 		int midiDevice = 0;
 		BuildAudio.registerDriver(Driver.Music, new MidiMusicModule(midiDevice, null));
 	
+		DesktopFactory.InitVideoModes();
 		new BuildApplication(new Main(cfg, appname, "?.??", false, false), factory, cfg.renderType);
 	}
 }

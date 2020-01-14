@@ -339,7 +339,7 @@ public class ResourceHandler {
 	public static void loadGdxDef(DefScript baseDef)
 	{
 		FileHandle fil = BuildGdx.files.internal("rrgdx.dat");
-		if(fil != null)
+		if(fil != null && fil.exists())
 		{
 			DataResource res = new DataResource(null, fil.name(), -1, fil.readBytes());
 			Group group = BuildGdx.cache.add(res, fil.name());
