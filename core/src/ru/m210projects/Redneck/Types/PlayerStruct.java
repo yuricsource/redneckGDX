@@ -656,7 +656,7 @@ public class PlayerStruct {
 		last_full_weapon = bb.readShort();
 		footprintshade = bb.readShort();
 		boot_amount = bb.readShort();
-		boolean svoice = bb.readByte() == 1;
+		boolean svoice = bb.readBoolean();
 		if(svoice) 
 			scream_voice = spritesound(DUKE_SCREAM, i);
 		on_warping_sector = bb.readByte();
@@ -664,7 +664,7 @@ public class PlayerStruct {
 		hbomb_on = bb.readByte();
 		jumping_toggle = bb.readByte();
 		rapid_fire_hold = bb.readByte();
-		on_ground = bb.readByte() == 1;
+		on_ground = bb.readBoolean();
 		inven_icon  = bb.readByte();	
 		buttonpalette  = bb.readByte();		
 		jetpack_on  = bb.readByte();	
@@ -676,8 +676,8 @@ public class PlayerStruct {
 		holster_weapon = bb.readByte();
 		falling_counter = bb.readByte();	
 		for(int i = 0; i < MAX_WEAPONSRA; i++)
-			gotweapon[i] = bb.readByte() == 1;
-		refresh_inventory = bb.readByte() == 1;
+			gotweapon[i] = bb.readBoolean();
+		refresh_inventory = bb.readBoolean();
 		this.palette = new byte[768];
 		bb.read(this.palette);
 		toggle_key_flag = bb.readByte();	
@@ -723,15 +723,15 @@ public class PlayerStruct {
 		field_count = bb.readShort();
 		
 		//RA
-		OnBoat = bb.readByte() == 1;
-		OnMotorcycle = bb.readByte() == 1;
+		OnBoat = bb.readBoolean();
+		OnMotorcycle = bb.readBoolean();
 		CarSpeed = bb.readShort();
-		CarOnGround = bb.readByte() == 1;
+		CarOnGround = bb.readBoolean();
 		SlotWin = bb.readShort();
 		CarVar6 = bb.readInt();
-		isSwamp = bb.readByte() == 1;
+		isSwamp = bb.readBoolean();
 		CarVar1 = bb.readInt();
-		isSea = bb.readByte() == 1;
+		isSea = bb.readBoolean();
 		field_601 = bb.readInt();
 		chiken_phase = bb.readInt();
 		chiken_pic = bb.readByte();

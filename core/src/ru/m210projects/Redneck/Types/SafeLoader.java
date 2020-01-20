@@ -285,13 +285,13 @@ public class SafeLoader {
 		earthquaketime = bb.readShort();
 		from_bonus = bb.readShort();
 		secretlevel = bb.readShort();
-		respawn_monsters = bb.readByte() == 1;
-		respawn_items = bb.readByte() == 1;
-		respawn_inventory = bb.readByte() == 1;
-		god =  bb.readByte() == 1;
+		respawn_monsters = bb.readBoolean();
+		respawn_items = bb.readBoolean();
+		respawn_inventory = bb.readBoolean();
+		god =  bb.readBoolean();
 		auto_run = (bb.readInt() == 1)?1:0;
 		crosshair = (bb.readInt() == 1)?1:0;
-		monsters_off = bb.readByte() == 1;
+		monsters_off = bb.readBoolean();
 		last_level = bb.readInt();
 		eog = bb.readInt();
 		coop = bb.readInt();
@@ -348,7 +348,7 @@ public class SafeLoader {
 		bb.read(show2dsector);
 		
 		for(int i = 0; i < MAXSECTORS; i++)
-			shadeEffect[i] = bb.readByte() == 1;
+			shadeEffect[i] = bb.readBoolean();
 		
 		numjaildoors = bb.readInt();
 		for(int i = 0; i < MAXJAILDOORS; i++)
@@ -421,7 +421,7 @@ public class SafeLoader {
 		gEndFirstEpisode = bb.readShort();
 		gEndGame = bb.readShort();
 
-		plantProcess = bb.readByte() == 1;
+		plantProcess = bb.readBoolean();
 		
 		
 		BellTime = bb.readShort();
