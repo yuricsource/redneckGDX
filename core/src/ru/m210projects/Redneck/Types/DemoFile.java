@@ -101,14 +101,13 @@ public class DemoFile {
 		respawn_inventory = recfilep.readInt()==1;
 		playerai = recfilep.readInt();
 		for ( int i = 0; i < MAXPLAYERS; i++ ) {
-			recfilep.read(tempbuf, 32);
+			recfilep.read(tempbuf, 0, 32);
 			user_name[i] = new String(tempbuf, 0, 32).trim();
 		}
 
 		if(version >= GDXBYTEVERSION)
 		{
-			recfilep.read(tempbuf, 144);
-			String addonName = Strhandler.toLowerCase(new String(tempbuf).trim());
+			String addonName = Strhandler.toLowerCase(recfilep.readString(144).trim());
 			addon = levelGetEpisode(addonName);
 		}
 
@@ -132,7 +131,7 @@ public class DemoFile {
 			int l = min(reccnt - rccnt, RECSYNCBUFSIZ);
 			if(decoder != null) 
 				decoder.read(recsyncbuf, l / multimode);
-			else recfilep.read(recsyncbuf, Input.sizeof(version) * l);
+			else recfilep.read(recsyncbuf, 0, Input.sizeof(version) * l);
 
 			ByteBuffer bb = ByteBuffer.wrap(recsyncbuf);
 			bb.order( ByteOrder.LITTLE_ENDIAN);

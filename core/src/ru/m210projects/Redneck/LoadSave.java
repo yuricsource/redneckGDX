@@ -45,9 +45,10 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.FileResource;
 import ru.m210projects.Build.FileHandle.FileUtils;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.FileHandle.FileResource.Mode;
-import ru.m210projects.Build.FileHandle.Resource.ResourceData;
+import ru.m210projects.Build.FileHandle.Resource.Whence;
 import ru.m210projects.Build.Pattern.BuildGame.NetMode;
 import ru.m210projects.Build.Pattern.Tools.SaveManager;
 import ru.m210projects.Build.Types.LittleEndian;
@@ -88,8 +89,6 @@ public class LoadSave {
 	
 	public static void FindSaves()
 	{
-		byte[] buf = new byte[SAVENAME];
-		
 		FileResource fil = null;
 		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.User).getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
@@ -97,19 +96,17 @@ public class LoadSave {
 			if (file.getExtension().equals("sav")) {
 				fil = BuildGdx.compat.open(file);
 				if (fil != null) {
-					int len = fil.read(buf, 4);
-					if (len <= 0) {
+					String signature = fil.readString(4);
+					if (signature == null || signature.isEmpty()) {
 						fil.close();
 						continue;
 					}
-					String signature = new String(buf,0,4);
+					
 					if(signature.equals(savsign)) {
 						int nVersion = fil.readShort();
 						if(nVersion >= gdxSave) {
-							fil.read(buf, 8);
-							long time = LittleEndian.getLong(buf);
-							fil.read(buf, SAVENAME);
-							String savname = new String(buf).trim();
+							long time = fil.readLong();
+							String savname = fil.readString(SAVENAME).trim();
 							game.pSavemgr.add(savname, time, file.getName());
 						}
 					}
@@ -125,38 +122,30 @@ public class LoadSave {
 		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
 		if( fil != null)
 		{
-			ResourceData bb = fil.getData();
-			
 			if(waloff[SaveManager.Screenshot] == null)
 				engine.allocatepermanenttile(SaveManager.Screenshot, 160, 100);
 			
-			int nVersion = checkSave(bb) & 0xFFFF;
+			int nVersion = checkSave(fil) & 0xFFFF;
 			lsInf.clear();
 			
 			if(nVersion == currentGdxSave)
 			{
-				bb.position(SAVEVERSION);
-				lsInf.date = game.date.getDate(bb.getLong());
-				bb.position(SAVEVERSION + SAVETIME + SAVENAME); //to SAVELEVELINFO
+				fil.seek(SAVEVERSION, Whence.Set);
+				lsInf.date = game.date.getDate(fil.readLong());
+				fil.seek(SAVEVERSION + SAVETIME + SAVENAME, Whence.Set); //to SAVELEVELINFO
 				
-				lsInf.read(bb);
-				if(bb.remaining() <= SAVESCREENSHOTSIZE)
+				lsInf.read(fil);
+				if(fil.remaining() <= SAVESCREENSHOTSIZE)
 				{
-					bb.dispose();
 					fil.close();
 					return -1;
 				}
 				
-				bb.get(waloff[SaveManager.Screenshot], 0, SAVESCREENSHOTSIZE);
-				int gUserEpisode = bb.get();
-				
+				fil.read(waloff[SaveManager.Screenshot], 0, SAVESCREENSHOTSIZE);
 				lsInf.addonfile = null;
-				if(gUserEpisode == 1) {
-					byte[] buf = new byte[144];
-					bb.get(buf, 0, 144);
-		
+				if(fil.readBoolean()) {
 					String ininame;
-					String fullname = new String(buf).trim();
+					String fullname = fil.readString(144).trim();
 					
 					int filenameIndex = -1;
 					if((filenameIndex = fullname.indexOf(":")) != -1) {
@@ -170,7 +159,6 @@ public class LoadSave {
 				}
 
 				engine.invalidatetile(SaveManager.Screenshot, 0, -1);
-				bb.dispose();
 				fil.close();
 				return 1;
 			} else 	lsInf.info = "Incompatible ver. " + nVersion + " != " + currentGdxSave;
@@ -189,16 +177,14 @@ public class LoadSave {
 		return new String(filenum);
 	}
 
-	public static int checkSave(ResourceData bb)
+	public static int checkSave(Resource bb)
 	{
-		byte[] buf = new byte[4];
-		bb.get(buf);
-		String signature = new String(buf);
+		String signature = bb.readString(4);
 		
-		if(!signature.equals(savsign))
+		if(signature == null || !signature.equals(savsign))
 			return 0;
 
-		return bb.getShort();
+		return bb.readShort();
 	}
 	
 	public static int savegame(String savename, String filename)
@@ -825,7 +811,7 @@ public class LoadSave {
 			resetEpisodeResources();
 	}
 	
-	public static boolean checkfile(ResourceData bb)
+	public static boolean checkfile(Resource bb)
 	{
 		int nVersion = checkSave(bb);	
 		if(nVersion != currentGdxSave)
@@ -965,11 +951,8 @@ public class LoadSave {
 		
 		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
 		if (fil != null) {
-			ResourceData bb = fil.getData();
-			
-			boolean status = checkfile(bb);
+			boolean status = checkfile(fil);
 			fil.close();
-			bb.dispose();
 			
 			if (status) {
 				load();

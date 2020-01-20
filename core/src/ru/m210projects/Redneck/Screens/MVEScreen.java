@@ -19,7 +19,7 @@ import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.FileHandle.Resource.ResourceData;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.ScreenAdapters.SkippableAdapter;
@@ -71,11 +71,11 @@ public class MVEScreen extends SkippableAdapter {
 	{
 		if(anmfil != null) return false;
 		
-		ResourceData dat = BuildGdx.cache.getData(fn, 0);
+		Resource dat = BuildGdx.cache.open(fn, 0);
 		if(dat == null) return false;
 
 	    try {
-	    	anmfil = new MVEFile(dat.getBuffer());
+	    	anmfil = new MVEFile(dat);
 
 		    tilesizx[TILE_ANIM] = (short) anmfil.getHeight();
 		    tilesizy[TILE_ANIM] = (short) anmfil.getWidth();
@@ -179,6 +179,7 @@ public class MVEScreen extends SkippableAdapter {
 	}
 
 	public void close() {
+		anmfil.close();
 		anmfil = null;
 	}
 }

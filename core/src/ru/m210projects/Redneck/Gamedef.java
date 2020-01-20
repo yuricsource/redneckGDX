@@ -918,7 +918,7 @@ public class Gamedef {
 	            int origtptr = textptr;
 	            textptr = 0;
 
-	            fp.read(buf,j);
+	            fp.read(buf,0,j);
 	            fp.close();
 	            
 	            last_used_text = new String(buf);
@@ -1677,7 +1677,7 @@ public class Gamedef {
         byte[] buf = new byte[fs+1];
         label = new char[131072];
 
-        fp.read(buf,fs);
+        fp.read(buf,0,fs);
         fp.close();
         
         last_used_text = new String(buf);
@@ -3812,7 +3812,7 @@ public class Gamedef {
         byte[] buf = new byte[fs+1];
         label = new char[131072];
         
-        fp.read(buf,fs);
+        fp.read(buf,0,fs);
         fp.close();
         
         parsing_actor = 0;

@@ -317,8 +317,8 @@ public class DemoScreen extends GameScreen {
 			if (file.getExtension().equals("dmo")) {
 				String name = file.getFile().getName();
 				if ((fil = BuildGdx.compat.open(file)) != null) {
-					fil.read(buf, 4);
-					fil.read(buf, 1);
+					fil.read(buf, 0, 4);
+					fil.read(buf, 0, 1);
 					int version = buf[0] & 0xFF;
 					if (version == BYTEVERSIONRR || version == GDXBYTEVERSION)
 						demofiles.add(name);
@@ -338,8 +338,8 @@ public class DemoScreen extends GameScreen {
 			    else d[4] = (char) ('0' + which_demo);
 			    String name = new String(d);
 			    if ((fil = BuildGdx.cache.open(name, 0)) != null) {
-			    	fil.read(buf, 4);
-					fil.read(buf, 1);
+			    	fil.read(buf, 0, 4);
+					fil.read(buf, 0, 1);
 					int version = buf[0] & 0xFF;
 					if (version == BYTEVERSIONRR || version == GDXBYTEVERSION)
 						demofiles.add(name);

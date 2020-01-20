@@ -1233,17 +1233,17 @@ public class Premap {
 
 		for (j = 0; j < numl; j++) {
 			look_pos = fp.readByte();
-			fp.read(tempbuf, 256);
+			fp.read(tempbuf, 0, 256);
 			engine.makepalookup(look_pos, tempbuf, 0, 0, 0, 1);
 			if (look_pos == 8)
 				engine.makepalookup(54, tempbuf, 32, 32, 32, 1);
 		}
 
-		fp.read(waterpal, 768);
-		fp.read(slimepal, 768);
-		fp.read(titlepal, 768);
-		fp.read(drealms, 768);
-		fp.read(endingpal, 768);
+		fp.read(waterpal);
+		fp.read(slimepal);
+		fp.read(titlepal);
+		fp.read(drealms);
+		fp.read(endingpal);
 
 		palette[765] = palette[766] = palette[767] = 0;
 		slimepal[765] = slimepal[766] = slimepal[767] = 0;

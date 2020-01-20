@@ -16,7 +16,7 @@
 
 package ru.m210projects.Redneck.Types;
 
-import ru.m210projects.Build.FileHandle.Resource.ResourceData;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class Weaponhit {
@@ -59,29 +59,29 @@ public class Weaponhit {
 		 return buf;
 	}
 	
-	 public void set(ResourceData bb)
+	 public void set(Resource bb)
 	 {
-		 cgg = bb.getShort();
-		 picnum = bb.getInt();
+		 cgg = bb.readShort();
+		 picnum = bb.readInt();
 		 
-		 ang = bb.getInt();
-		 extra = bb.getInt();
-		 owner = bb.getInt();
-		 movflag = bb.getInt();
+		 ang = bb.readInt();
+		 extra = bb.readInt();
+		 owner = bb.readInt();
+		 movflag = bb.readInt();
 		 
-		 tempang = bb.getInt();
-		 actorstayput = bb.getInt();
-		 dispicnum = bb.getInt();
+		 tempang = bb.readInt();
+		 actorstayput = bb.readInt();
+		 dispicnum = bb.readInt();
 		 
-		 timetosleep = bb.getInt();
+		 timetosleep = bb.readInt();
 		 
-		 floorz = bb.getInt();
-		 ceilingz = bb.getInt();
-		 lastvx = bb.getInt();
-		 lastvy = bb.getInt();
+		 floorz = bb.readInt();
+		 ceilingz = bb.readInt();
+		 lastvx = bb.readInt();
+		 lastvy = bb.readInt();
 
 		 for(int i = 0; i < 6; i++) 
-			 temp_data[i] = bb.getInt();
+			 temp_data[i] = bb.readInt();
 	 }
 	 
 	 public void copy(Weaponhit src)

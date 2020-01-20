@@ -16,7 +16,7 @@
 
 package ru.m210projects.Redneck.Types;
 
-import ru.m210projects.Build.FileHandle.Resource.ResourceData;
+import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class PlayerOrig {
@@ -36,13 +36,13 @@ public class PlayerOrig {
     	return buf;
     }
     
-    public void set(ResourceData bb)
+    public void set(Resource bb)
     {
-    	ox = bb.getInt();
-    	oy = bb.getInt();
-    	oz = bb.getInt();
-    	oa = bb.getShort();
-    	os = bb.getShort();
+    	ox = bb.readInt();
+    	oy = bb.readInt();
+    	oz = bb.readInt();
+    	oa = bb.readShort();
+    	os = bb.readShort();
     }
     
     public void copy(PlayerOrig src)
