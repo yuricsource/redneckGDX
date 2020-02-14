@@ -2497,7 +2497,7 @@ public class Spawn {
 	}
 
 	public static void guts(SPRITE s, int gtype, int n, int p) {
-		if(isValidSector(s.sectnum))
+		if(!isValidSector(s.sectnum))
 			return;
 		
 		int gutz, floorz;
