@@ -769,6 +769,16 @@ public class Player {
 		psect = p.cursectnum;
 		if(psect == 1024)
 			return;
+		
+		if(psect == -1)
+	    {
+	        if(s.extra > 0 && !ud.clipping)
+	        {
+	            quickkill(p);
+	            spritesound(SQUISHED,pi);
+	        }
+	        psect = 0;
+	    }
 
 		p.ohoriz = p.horiz;
 		p.ohorizoff = p.horizoff;

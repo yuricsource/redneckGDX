@@ -25,6 +25,7 @@
 package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
+import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
 import static ru.m210projects.Build.Pragmas.klabs;
 import static ru.m210projects.Build.Pragmas.ksgn;
@@ -2496,6 +2497,9 @@ public class Spawn {
 	}
 
 	public static void guts(SPRITE s, int gtype, int n, int p) {
+		if(isValidSector(s.sectnum))
+			return;
+		
 		int gutz, floorz;
 		int i;
 		char sx, sy;
@@ -2524,7 +2528,7 @@ public class Spawn {
 			} else
 			pal = 0;
 		}
-
+		
 		for (int j = 0; j < n; j++) {
 			int a = engine.krand() & 2047;
 			i = EGS(s.sectnum, s.x + (engine.krand() & 255) - 128, s.y
