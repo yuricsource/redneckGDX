@@ -1085,10 +1085,12 @@ public class Actors {
 				}
 			}
 
-			if ((sector[s.sectnum].ceilingstat & 1) != 0)
-				s.shade += (sector[s.sectnum].ceilingshade - s.shade) >> 1;
-			else
-				s.shade += (sector[s.sectnum].floorshade - s.shade) >> 1;
+			if(isValidSector(s.sectnum)) {
+				if ((sector[s.sectnum].ceilingstat & 1) != 0)
+					s.shade += (sector[s.sectnum].ceilingshade - s.shade) >> 1;
+				else
+					s.shade += (sector[s.sectnum].floorshade - s.shade) >> 1;
+			}
 
 			i = nexti;
 		}
