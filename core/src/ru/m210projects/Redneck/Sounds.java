@@ -49,16 +49,18 @@ import static ru.m210projects.Redneck.SoundDefs.LASERTRIP_EXPLODE;
 import static ru.m210projects.Redneck.SoundDefs.PIPEBOMB_EXPLODE;
 import static ru.m210projects.Redneck.SoundDefs.RPG_EXPLODE;
 
+import java.nio.ByteBuffer;
+
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
 import ru.m210projects.Build.Audio.BuildAudio.MusicType;
 import ru.m210projects.Build.Audio.MusicSource;
+import ru.m210projects.Build.Audio.SoundData;
 import ru.m210projects.Build.Audio.Sound.SystemType;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.Audio.SourceCallback;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.Resource;
-import ru.m210projects.Build.Loader.WAVLoader;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Redneck.Types.Sample;
 import ru.m210projects.Redneck.Types.SoundOwner;
@@ -546,14 +548,18 @@ public class Sounds {
 			Sound[num].rate = voc.samplerate;
 			Sound[num].ptr = voc.sampledata;
 		} else {
-			try {
-				WAVLoader wav = new WAVLoader(data);
-				Sound[num].bits = wav.samplebits;
-				Sound[num].rate = wav.samplerate;
-				Sound[num].ptr = wav.sampledata;
-			} catch (Exception e) {
-				Console.Println("Can't load sound[" + num + "] : " + e.getMessage(), OSDTEXT_RED);
-			}
+			SoundData snd = BuildGdx.audio.decodeSound(data);
+			if (snd != null) {
+				Sound[num].bits = snd.bits;
+				Sound[num].rate = snd.rate;
+				Sound[num].ptr = snd.data;
+				return;
+			} else
+				Console.Println("Can't load sound[" + num + "]", OSDTEXT_RED);
+
+			Sound[num].ptr = ByteBuffer.allocateDirect(0); // to avoid of load cycle
+			Sound[num].rate = 0;
+			Sound[num].bits = 8;
 		}
 	}
 
