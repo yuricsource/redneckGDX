@@ -51,6 +51,7 @@ import static ru.m210projects.Redneck.Globals.*;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.FileResource;
+import ru.m210projects.Build.FileHandle.FileUtils;
 import ru.m210projects.Build.FileHandle.Group;
 import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.FileHandle.Compat.Path;
@@ -3748,8 +3749,10 @@ public class Gamedef {
 		for(int i = 0; i < con.nEpisodes; i++) {
 			defGame.episodes[i] = new EpisodeInfo(new String(con.volume_names[i]).trim());
 			defGame.episodes[i].nMaps = con.nMaps[i];
-			for(int j = 0; j < con.nMaps[i]; j++)
-				defGame.episodes[i].gMapInfo[j] = new MapInfo(new String(con.level_file_names[i*11+j]).trim(), new String(con.level_names[i*11+j]).trim(), con.partime[i*11+j], con.designertime[i*11+j]);
+			for(int j = 0; j < con.nMaps[i]; j++) {
+				String path = FileUtils.getCorrectPath(new String(con.level_file_names[i*11+j]).trim());
+				defGame.episodes[i].gMapInfo[j] = new MapInfo(path, new String(con.level_names[i*11+j]).trim(), con.partime[i*11+j], con.designertime[i*11+j]);
+			}
 		}
 		
 		for(int i = 0; i < con.nSkills; i++) 

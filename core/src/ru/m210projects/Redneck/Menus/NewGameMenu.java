@@ -36,14 +36,21 @@ public class NewGameMenu extends BuildMenu {
 		final RRMenuHandler menu = (RRMenuHandler) app.menu;
 
 		addItem(new RRTitle("SELECT AN EPISODE"), false);
+		final GameInfo RR66Game = levelGetEpisode("game66.con");
 		
 		MenuProc newEpProc = new MenuProc() {
 			@Override
 			public void run( MenuHandler handler, MenuItem pItem ) {
 				EpisodeButton but = (EpisodeButton) pItem;
-				DifficultyMenu next = (DifficultyMenu) menu.mMenus[DIFFICULTY];
-				next.setEpisode(but.game, but.specialOpt);
-				menu.mOpen(next, but.nItem);
+				if(RR66Game != null && but.game == RR66Game) {
+					NewAddonMenu next = (NewAddonMenu) app.menu.mMenus[NEWADDON];
+					next.setEpisode(but.game);
+					app.menu.mOpen(next, -1);
+				} else {
+					DifficultyMenu next = (DifficultyMenu) menu.mMenus[DIFFICULTY];
+					next.setEpisode(but.game, but.specialOpt);
+					menu.mOpen(next, but.nItem);
+				}
 			}
 		};
 
@@ -58,7 +65,7 @@ public class NewGameMenu extends BuildMenu {
 			}
 		}
 		
-		final GameInfo RR66Game = levelGetEpisode("game66.con");
+		
 		if(RR66Game != null)
 		{
 			RR66Game.Title = "Route 66";
