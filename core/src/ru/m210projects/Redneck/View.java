@@ -465,7 +465,7 @@ public class View {
  
 		engine.rotatesprite(257 << 16, 181 << 16, 0x8000, p.alcohol_meter, 62, 0, 0, 10 | flags, 0, 0, xdim - 1, ydim - 1);
 		engine.rotatesprite(293 << 16, 181 << 16, 0x8000, p.gut_meter, 62, 0, 0, 10 | flags, 0, 0, xdim - 1, ydim - 1);
-		
+
 		int x, pic;
 		if(p.alcohol_amount >= 0 && p.alcohol_amount <= 30)
 		{
@@ -474,7 +474,7 @@ public class View {
 		}
 		else if(p.alcohol_amount >= 31 && p.alcohol_amount <= 65)
 		{
-			x = 248 << 26;
+			x = 248 << 16;
 			pic = 921;
 		} 
 		else if(p.alcohol_amount >= 66 && p.alcohol_amount <= 87)
