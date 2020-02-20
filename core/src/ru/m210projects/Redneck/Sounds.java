@@ -164,7 +164,7 @@ public class Sounds {
 		currSong = null;
 	}
 
-	public static FileEntry sndCheckMusic(FileEntry map) {
+	public static FileEntry sndCheckMusic(FileEntry map) { //usermap music
 		if (map != null) {
 			String musName = map.getName().substring(0, map.getName().indexOf(map.getExtension()) - 1) + ".ogg";
 			userMusic = map.getParent().checkFile(musName);
@@ -178,8 +178,8 @@ public class Sounds {
 			BuildGdx.audio.setVolume(Driver.Music, cfg.musicVolume);
 		else
 			BuildGdx.audio.setVolume(Driver.Music, 0);
-
-		if (cfg.musicType != 0 && userMusic != null) {
+		
+		if (userMusic != null) {
 			if (currMusic != null && currMusic.isPlaying() && currSong == userMusic.getPath())
 				return;
 
@@ -190,58 +190,55 @@ public class Sounds {
 				return;
 			}
 		}
+		
+		sndPlayTrack(currTrack);
 
-		if (cfg.musicType == 1 && game.currentDef != null) { // music from def file
-			String himus = game.currentDef.audInfo.getDigitalInfo(name);
-			if (himus != null) {
-				if (currMusic != null && currMusic.isPlaying() && currSong == himus)
-					return;
+//		if (cfg.musicType == 1 && game.currentDef != null) { // music from def file
+//			String himus = game.currentDef.audInfo.getDigitalInfo(name);
+//			if (himus != null) {
+//				if (currMusic != null && currMusic.isPlaying() && currSong == himus)
+//					return;
+//
+//				sndStopMusic();
+//				if ((currMusic = BuildGdx.audio.newMusic(MusicType.Digital, himus)) != null) {
+//					currSong = himus;
+//					currMusic.play(true);
+//					return;
+//				}
+//			}
+//		}
 
-				sndStopMusic();
-				if ((currMusic = BuildGdx.audio.newMusic(MusicType.Digital, himus)) != null) {
-					currSong = himus;
-					currMusic.play(true);
-					return;
-				}
-			}
-		}
-
-		if (!sndPlayTrack(currTrack))
-			playmusic(name);
+//		if (!sndPlayTrack(currTrack))
+//			playmusic(name);
 	}
 
 	public static void checkTrack() {
-		if (cfg.musicType == 2) {
-			if (currMusic != null && !currMusic.isPlaying()) {
-				currTrack++;
-				if (currTrack >= track.length)
-					currTrack = 0;
+		if(cfg.muteMusic) return;
+		
+		if (currMusic != null && !currMusic.isPlaying()) {
+			currTrack++;
+			if (currTrack >= track.length)
+				currTrack = 0;
 
-				System.err.println("Change music to" + currTrack);
-				sndPlayTrack(currTrack);
-			} else if (currMusic == null) {
-				if (cfg.musicType == 2) {
-					for (int i = 0; i < track.length; i++)
-						if (sndPlayTrack(i)) {
-							System.err.println("Start music " + i);
-							return;
-						}
-					Console.Println("Music tracks not found!");
-					cfg.musicType = 1;
+			System.err.println("Change music to" + currTrack);
+			sndPlayTrack(currTrack);
+		} else if (currMusic == null) {
+			for (int i = 0; i < track.length; i++)
+				if (sndPlayTrack(i)) {
+					System.err.println("Start music " + i);
+					return;
 				}
-			}
+			Console.Println("Music tracks not found!");
+			cfg.muteMusic = true;
 		}
 	}
 
-	public static boolean sndPlayTrack(int nTrack) {
-		if (cfg.musicType != 2)
-			return false;
-
+	private static boolean sndPlayTrack(int nTrack) {
 		if (currMusic != null && currMusic.isPlaying() && currTrack == nTrack)
 			return true;
 
 		sndStopMusic();
-		if (nTrack >= 0 && nTrack < track.length
+		if (nTrack >= 0 && nTrack < track.length && BuildGdx.cache.contains(track[nTrack], 0)
 				&& (currMusic = BuildGdx.audio.newMusic(MusicType.Digital, track[nTrack])) != null) {
 			currTrack = nTrack;
 			currMusic.play(false);
@@ -251,24 +248,24 @@ public class Sounds {
 		return false;
 	}
 
-	private static void playmusic(String fn) {
-		if (fn == null)
-			return;
-		byte[] pRaw = BuildGdx.cache.getBytes(fn, 0);
-
-		if (pRaw == null || pRaw.length <= 0)
-			return;
-
-		if (currMusic != null && currMusic.isPlaying() && currSong == fn)
-			return;
-
-		sndStopMusic();
-		currMusic = BuildGdx.audio.newMusic(MusicType.Midi, pRaw);
-		if (currMusic != null) {
-			currMusic.play(true);
-			currSong = fn;
-		}
-	}
+//	private static void playmusic(String fn) {
+//		if (fn == null)
+//			return;
+//		byte[] pRaw = BuildGdx.cache.getBytes(fn, 0);
+//
+//		if (pRaw == null || pRaw.length <= 0)
+//			return;
+//
+//		if (currMusic != null && currMusic.isPlaying() && currSong == fn)
+//			return;
+//
+//		sndStopMusic();
+//		currMusic = BuildGdx.audio.newMusic(MusicType.Midi, pRaw);
+//		if (currMusic != null) {
+//			currMusic.play(true);
+//			currSong = fn;
+//		}
+//	}
 
 	public static boolean sndRestart(int nvoices, int resampler) {
 		BuildGdx.audio.getSound().stopAllSounds();

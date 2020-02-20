@@ -284,7 +284,8 @@ public class Config extends BuildConfig {
 		fta_on = 1;
 		pName = "Leonard";
 		gColoredKeys = false;
-
+		musicType = 0;
+		
 		if(!isDefault)
 		{
 			LoadCommon(defkeys, defclassickeys);

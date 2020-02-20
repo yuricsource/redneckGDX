@@ -107,6 +107,7 @@ public class Main extends BuildGame {
 
 	/*
 	 * TODO:
+	 * Добавить 8track player
 	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
