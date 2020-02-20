@@ -107,6 +107,7 @@ public class Main extends BuildGame {
 
 	/*
 	 * TODO:
+	 * Добавить чтобы музыка играла в случайном порядке (shuffle)
 	 * Добавить 8track player
 	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it

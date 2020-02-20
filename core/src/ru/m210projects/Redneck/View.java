@@ -240,7 +240,7 @@ public class View {
                     	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
                     game.getFont(0).drawText(5,a+6, buffer, -128, 0, TextAlign.Left, 2+8+16+256, false);
                     
-                    if ( cfg.gShowStat == 2 ) {
+                    if ( cfg.gShowStat != 0 ) {
                     	int k = 0;
                     	if (ud.screen_size > 0 && ud.multimode > 1)
                     	{
@@ -252,7 +252,7 @@ public class View {
 	               	         else if (j > 8 && j <= 12) k += 40;
 	               	         else if (j > 12) k += 60;
                     	}
-            	    	viewDrawStats(5, 5+k, cfg.gStatSize);
+            	    	viewDrawStats(5, 5+k, cfg.gStatSize, true);
                     }
                 }
 	        }
@@ -276,25 +276,12 @@ public class View {
 	        }
 	    }
 
-	    if ( ud.screen_size > 0 && cfg.gShowStat == 1 ) {
-//	    	int y = 202;
-//	    	if(ud.screen_size == 2) y = 168;
-//	    	if(ud.screen_size == 1) y = 172;
-//	    	if(ud.screen_size >= 3) y = 158;
-//	    	viewDrawStats(10, y, cfg.gStatSize);
-	    	
-	    	int k = 0;
-        	if (ud.screen_size > 0 && ud.multimode > 1)
-        	{
-       	         j = 0; k = 20;
-       	         for(i=connecthead;i>=0;i=connectpoint2[i])
-       	             if (i > j) j = i;
-
-       	         if (j >= 4 && j <= 8) k += 20;
-       	         else if (j > 8 && j <= 12) k += 40;
-       	         else if (j > 12) k += 60;
-        	}
-	    	viewDrawStats(5, 5+k, cfg.gStatSize);
+	    if ( ud.screen_size > 0 && cfg.gShowStat == 1 && ud.overhead_on != 2) {
+	    	int y = 202;
+	    	if(ud.screen_size == 1) y = 162;
+	    	if(ud.screen_size == 2 || ud.screen_size == 3) y = 158;
+	    	if(ud.screen_size >= 4) y = 148;
+	    	viewDrawStats(10, y, cfg.gStatSize, false);
 	    }
 
 	    if(game.isCurrentScreen(gGameScreen) && totalclock < gNameShowTime)
@@ -2219,7 +2206,7 @@ public class View {
 		FTA(122,ps[myconnectindex]);
 	}
 	
-	public static void viewDrawStats(int x, int y, int zoom)  
+	public static void viewDrawStats(int x, int y, int zoom, boolean topAligned)  
 	{ 
 		if(cfg.gShowStat == 0)
 			return;
@@ -2229,30 +2216,35 @@ public class View {
 		buildString(buffer, 0, "kills:   ");
 		int alignx = game.getFont(1).getWidth(buffer);
 
+		if(!topAligned) {
+			int yoffset = (int) (3f * game.getFont(1).getHeight() * viewzoom);
+			y -= yoffset;
+		}
+		
 		int statx = x;
 		int staty = y;
 		
-		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 24 | 256, false);
+		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 10 | 256, false);
 	
 		int offs = Bitoa(ps[connecthead].actors_killed, buffer);
 		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_actors_killed);
-		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 24 | 256, false);	
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);	
 		
 		statx = x;
 		staty = y + (int) (12 * viewzoom);
 		
 		buildString(buffer, 0, "secrets:    ");
-		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 24 | 256, false);
+		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 10 | 256, false);
 		alignx = game.getFont(1).getWidth(buffer);
 		offs = Bitoa(ps[connecthead].secret_rooms, buffer);
 		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_secret_rooms);
-		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 24 | 256, false);	
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);	
 		
 		statx = x;
 		staty = y + (int) (22 * viewzoom);
 		
 		buildString(buffer, 0, "time:    ");
-		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 24 | 256, false);
+		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 10 | 256, false);
 		alignx = game.getFont(1).getWidth(buffer);
 		
 		int minutes = ps[myconnectindex].player_par/(26*60);
@@ -2261,7 +2253,7 @@ public class View {
 		offs = Bitoa(minutes, buffer, 2);
 		offs = buildString(buffer, offs, " :   ", sec, 2);
 		
-		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 24 | 256, false);	
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);	
 	}
 	
 	private static PlayerOrig viewout = new PlayerOrig();
