@@ -24,6 +24,7 @@
 
 package ru.m210projects.Redneck;
 
+import static ru.m210projects.Build.Engine.MAXPALOOKUPS;
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
 import static ru.m210projects.Build.Engine.MAXPSKYTILES;
 import static ru.m210projects.Build.Engine.MAXSECTORS;
@@ -34,6 +35,7 @@ import static ru.m210projects.Build.Engine.headspritestat;
 import static ru.m210projects.Build.Engine.nextspritesect;
 import static ru.m210projects.Build.Engine.nextspritestat;
 import static ru.m210projects.Build.Engine.numsectors;
+import static ru.m210projects.Build.Engine.numshades;
 import static ru.m210projects.Build.Engine.numwalls;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.palookup;
@@ -61,6 +63,7 @@ import static ru.m210projects.Redneck.Actors.UFO_SpawnCount;
 import static ru.m210projects.Redneck.Actors.UFO_SpawnHulk;
 import static ru.m210projects.Redneck.Actors.UFO_SpawnTime;
 import static ru.m210projects.Redneck.Animate.gAnimationCount;
+import static ru.m210projects.Redneck.Globals.ANIM_PAL;
 import static ru.m210projects.Redneck.Globals.BOAT_WEAPON;
 import static ru.m210projects.Redneck.Globals.BellSound;
 import static ru.m210projects.Redneck.Globals.BellTime;
@@ -1282,6 +1285,10 @@ public class Premap {
 		for (int i = 16; i < 32; i++)
 			tempbuf[i] = (byte) (i - 64);
 		engine.makepalookup(35, tempbuf, 0, 0, 0, 1);
+		
+		palookup[ANIM_PAL] = new byte[numshades << 8];
+		for (int i = 0; i < MAXPALOOKUPS; i++)
+			palookup[ANIM_PAL][i] = (byte) i;
 	}
 
 	private static boolean fogInited = false;

@@ -75,6 +75,7 @@ public class Globals {
 	
 	public static final int TILE_ANIM = MAXTILES - 3;
 	public static final int TILE_VIEWSCR = MAXTILES - 4;
+	public static final short ANIM_PAL = (short) (NORMALPAL - 1);
 	
 	public static int VIEWSCR_Lock = 199;
 	public static int[] zofslope = new int[2];

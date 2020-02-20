@@ -27,6 +27,7 @@ import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
 import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Build.Render.Renderer.RenderType;
+import ru.m210projects.Redneck.Fonts.StandartFont;
 
 public class RREngine extends BuildEngine {
 
@@ -51,6 +52,7 @@ public class RREngine extends BuildEngine {
 		{
 			if(render.getType() != RenderType.Software)
 			{
+				((StandartFont) game.getFont(3)).reinit();
 				final Screen screen = game.getScreen();
 				if(screen instanceof GameAdapter) {
 					gPrecacheScreen.init(true, new Runnable() {

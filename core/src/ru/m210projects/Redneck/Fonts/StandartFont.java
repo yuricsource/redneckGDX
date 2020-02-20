@@ -16,8 +16,11 @@
 
 package ru.m210projects.Redneck.Fonts;
 
-import static ru.m210projects.Build.Engine.curpalette;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static ru.m210projects.Build.Engine.numshades;
 import static ru.m210projects.Build.Engine.pTextfont;
+import static ru.m210projects.Build.Engine.palookup;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Gameutils.coordsConvertXScaled;
 import static ru.m210projects.Build.Gameutils.coordsConvertYScaled;
@@ -31,12 +34,15 @@ import ru.m210projects.Build.Types.TileFont;
 public class StandartFont extends BuildFont {
 
 	private TileFont font;
-	byte[] colpal = { (byte)255, (byte)255, (byte)255 };
-	
 	public StandartFont(Engine draw) {
 		super(draw, 4, 32768, 0);
 		
 		font = pTextfont;
+	}
+	
+	public void reinit()
+	{
+		font.atlas = null; //force to init again
 	}
 	
 	public int getWidth(char[] text) {
@@ -77,12 +83,15 @@ public class StandartFont extends BuildFont {
 		int xdim = (4 * ydim) / 3;
 		float scale = ((nScale / 65536.0f) * xdim) / 320.0f;
 		
-		byte[] oldpal = curpalette.getBytes();
-		curpalette.update(colpal, false);
-		for(int i = 0; i < 3; i++)
-			colpal[i] = (byte) (shade * 255 / 48); //48 - max shade (black)
-		draw.getrender().printext(font, x, y, text, 0, shade, Transparent.None, scale);
-		curpalette.update(oldpal, false);
+		shade = (min(max(shade,0),numshades-1));
+		if(palookup[pal] == null)
+			pal = 0;
+		
+		byte dacol = palookup[pal][(shade << 8)];
+		if(shadow)
+			draw.getrender().printext(font, x+1, y+1, text, 96, 0, Transparent.None, scale);
+		draw.getrender().printext(font, x, y, text, dacol & 0xFF, shade, Transparent.None, scale);
+
 		return 0;
 	}
 }
