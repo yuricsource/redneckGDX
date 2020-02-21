@@ -107,6 +107,7 @@ public class Main extends BuildGame {
 
 	/*
 	 * TODO:
+	 * 
 	 * Добавить чтобы музыка играла в случайном порядке (shuffle)
 	 * Добавить 8track player
 	 * cachespritenum
