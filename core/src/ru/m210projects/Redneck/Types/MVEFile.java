@@ -26,6 +26,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.Resource.Whence;
 import ru.m210projects.Build.Types.LittleEndian;
 
 public class MVEFile {
@@ -148,16 +150,16 @@ public class MVEFile {
 
 	private int max_block_offset;
 
-	private ByteBuffer file;
+	private Resource file;
 
-	public MVEFile(ByteBuffer bb) {
+	public MVEFile(Resource bb) {
 		this.file = bb;
 		byte[] data = new byte[20];
-		bb.get(data);
+		bb.read(data);
 		for (int i = 0; i < 20; i++)
 			if (data[i] != signature[i])
 				return;
-		bb.get(data, 0, 6);
+		bb.read(data, 0, 6);
 		for (int i = 0; i < 6; i++)
 			if (data[i] != magic[i])
 				return;
@@ -171,7 +173,9 @@ public class MVEFile {
 		 * peek ahead to the next chunk-- if it is an init audio chunk, process it; if
 		 * it is the first video chunk, this is a silent file
 		 */
-		int chunk_type = bb.getShort(bb.position() + 2);
+		
+		bb.seek(2, Whence.Current);
+		int chunk_type = bb.readShort();
 		if (chunk_type == CHUNK_VIDEO) {
 			audio_type = 0; /* no audio */
 		} else if (process_chunk(bb) != CHUNK_INIT_AUDIO)
@@ -217,15 +221,20 @@ public class MVEFile {
 
 		return frame_pts_inc;
 	}
+	
+	public void close()
+	{
+		file.close();
+	}
 
-	private int process_chunk(ByteBuffer bb) {
+	private int process_chunk(Resource bb) {
 		/* see if there are any pending packets */
 		int chunk_type = load_ipmovie_packet(bb);
 		if (chunk_type != CHUNK_DONE)
 			return chunk_type;
 
-		int chunk_size = bb.getShort();
-		chunk_type = bb.getShort();
+		int chunk_size = bb.readShort();
+		chunk_type = bb.readShort();
 
 		switch (chunk_type) {
 		case CHUNK_INIT_AUDIO:
@@ -253,9 +262,9 @@ public class MVEFile {
 		}
 
 		while ((chunk_size > 0) && (chunk_type != CHUNK_BAD)) {
-			int opcode_size = bb.getShort();
-			int opcode_type = bb.get() & 0xFF;
-			int opcode_version = bb.get() & 0xFF;
+			int opcode_size = bb.readShort();
+			int opcode_type = bb.readByte() & 0xFF;
+			int opcode_version = bb.readByte() & 0xFF;
 
 			chunk_size -= 4;
 			chunk_size -= opcode_size;
@@ -263,11 +272,11 @@ public class MVEFile {
 			switch (opcode_type) {
 			case OPCODE_END_OF_STREAM:
 //				System.err.println("end of stream");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_END_OF_CHUNK:
 //				System.err.println("end of chunk");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_CREATE_TIMER:
 //				System.err.println("create timer");
@@ -277,8 +286,8 @@ public class MVEFile {
 					break;
 				}
 
-				frame_pts_inc = bb.getInt(); // rate
-				frame_pts_inc *= bb.getShort(); // subdivision
+				frame_pts_inc = bb.readInt(); // rate
+				frame_pts_inc *= bb.readShort(); // subdivision
 				break;
 			case OPCODE_INIT_AUDIO_BUFFERS:
 //				System.err.println("initialize audio buffers");
@@ -288,7 +297,7 @@ public class MVEFile {
 					break;
 				}
 				byte[] scratch = new byte[opcode_size];
-				bb.get(scratch);
+				bb.read(scratch);
 
 				audio_sample_rate = LittleEndian.getUShort(scratch, 4);
 				audio_flags = LittleEndian.getUShort(scratch, 2);
@@ -310,7 +319,7 @@ public class MVEFile {
 				break;
 			case OPCODE_START_STOP_AUDIO:
 //				System.err.println("start/stop audio");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_INIT_VIDEO_BUFFERS:
 //				System.err.println("initialize video buffers");
@@ -320,11 +329,11 @@ public class MVEFile {
 					chunk_type = CHUNK_BAD;
 					break;
 				}
-				width = bb.getShort() * 8;
-				height = bb.getShort() * 8;
+				width = bb.readShort() * 8;
+				height = bb.readShort() * 8;
 				if (opcode_version == 2)
-					bb.getShort();
-				if (opcode_version < 2 || bb.getShort() == 0) {
+					bb.readShort();
+				if (opcode_version < 2 || bb.readShort() == 0) {
 					video_bpp = 8;
 				} else {
 					video_bpp = 16;
@@ -342,11 +351,11 @@ public class MVEFile {
 				break;
 			case OPCODE_INIT_VIDEO_MODE:
 //				System.err.println("initialize video mode");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_SEND_BUFFER:
 //				System.err.println("send buffer");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				send_buffer = true;
 				break;
 			case OPCODE_AUDIO_FRAME:
@@ -354,33 +363,33 @@ public class MVEFile {
 				/* log position and move on for now */
 				audio_chunk_offset = bb.position();
 				audio_chunk_size = opcode_size;
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_SILENCE_FRAME:
 //				System.err.println("silence frame");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_CREATE_GRADIENT:
 //				System.err.println("create gradient");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_SET_PALETTE_COMPRESSED:
 //				System.err.println("set palette compressed");
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_SET_SKIP_MAP:
 //				System.err.println("set skip map");
 				/* log position and move on for now */
 				skip_map_chunk_offset = bb.position();
 				skip_map_chunk_size = (short) opcode_size;
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_SET_DECODING_MAP:
 //				System.err.println("set decoding map");
 				/* log position and move on for now */
 				decode_map_chunk_offset = bb.position();
 				decode_map_chunk_size = (short) opcode_size;
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_VIDEO_DATA_06:
 //				System.err.println("set video data format 0x06");
@@ -389,7 +398,7 @@ public class MVEFile {
 				/* log position and move on for now */
 				video_chunk_offset = bb.position();
 				video_chunk_size = (short) opcode_size;
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 
 			case OPCODE_VIDEO_DATA_10:
@@ -399,7 +408,7 @@ public class MVEFile {
 				/* log position and move on for now */
 				video_chunk_offset = bb.position();
 				video_chunk_size = (short) opcode_size;
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 
 			case OPCODE_VIDEO_DATA_11:
@@ -409,7 +418,7 @@ public class MVEFile {
 				/* log position and move on for now */
 				video_chunk_offset = bb.position();
 				video_chunk_size = (short) opcode_size;
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			case OPCODE_SET_PALETTE:
 //				System.err.println("set palette");
@@ -419,8 +428,8 @@ public class MVEFile {
 					break;
 				}
 				/* load the palette into internal data structure */
-				int first_color = bb.getShort() & 0xFF;
-				int last_color = first_color + (bb.getShort() & 0xFF) - 1;
+				int first_color = bb.readShort() & 0xFF;
+				int last_color = first_color + (bb.readShort() & 0xFF) - 1;
 				/* sanity check (since they are 16 bit values) */
 				if ((first_color > 0xFF) || (last_color > 0xFF)
 						|| (last_color - first_color + 1) * 3 + 4 > opcode_size) {
@@ -431,9 +440,9 @@ public class MVEFile {
 				}
 
 				for (int i = first_color; i <= last_color; i++) {
-					palette[3 * i + 0] = (byte) (bb.get() * 4);
-					palette[3 * i + 1] = (byte) (bb.get() * 4);
-					palette[3 * i + 2] = (byte) (bb.get() * 4);
+					palette[3 * i + 0] = (byte) (bb.readByte() * 4);
+					palette[3 * i + 1] = (byte) (bb.readByte() * 4);
+					palette[3 * i + 2] = (byte) (bb.readByte() * 4);
 				}
 
 				hasPalette = true;
@@ -444,7 +453,7 @@ public class MVEFile {
 			case OPCODE_UNKNOWN_14:
 			case OPCODE_UNKNOWN_15:
 //				System.err.println("unknown (but documented) opcode 0x" + Integer.toHexString(opcode_type));
-				bb.position(bb.position() + opcode_size);
+				bb.seek(opcode_size, Whence.Current);
 				break;
 			default:
 //		        System.err.println("*** unknown opcode type 0x" + Integer.toHexString(chunk_type));
@@ -466,7 +475,7 @@ public class MVEFile {
 		return chunk_type;
 	}
 
-	private int load_ipmovie_packet(ByteBuffer bb) {
+	private int load_ipmovie_packet(Resource bb) {
 		int chunk_type;
 		if (audio_chunk_offset != 0 && audio_channels != 0 && audio_bits != 0) {
 			if (audio_type == AV_CODEC_ID_NONE) {
@@ -480,13 +489,13 @@ public class MVEFile {
 				audio_chunk_size -= 6;
 			}
 
-			bb.position(audio_chunk_offset);
+			bb.seek(audio_chunk_offset, Whence.Set);
 			audio_chunk_offset = 0;
 
 			pkt.audio_chunk_data = new byte[audio_chunk_size];
-			if (bb.position() + audio_chunk_size >= bb.capacity())
+			if (bb.position() + audio_chunk_size >= bb.size())
 				return CHUNK_EOF;
-			bb.get(pkt.audio_chunk_data);
+			bb.read(pkt.audio_chunk_data);
 
 //		    pkt.stream_index = audio_stream_index;
 			pkt.pts = audio_frame_count;
@@ -524,31 +533,31 @@ public class MVEFile {
 			send_buffer = false;
 
 			pkt.pos = video_chunk_offset;
-			bb.position(video_chunk_offset);
+			bb.seek(video_chunk_offset, Whence.Set);
 			video_chunk_offset = 0;
 
-			if (bb.position() + video_chunk_size >= bb.capacity())
+			if (bb.position() + video_chunk_size >= bb.size())
 				return CHUNK_EOF;
-			bb.get(pkt.video_chunk_data);
+			bb.read(pkt.video_chunk_data);
 
 			if (decode_map_chunk_size != 0) {
 				pkt.pos = decode_map_chunk_offset;
-				bb.position(decode_map_chunk_offset);
+				bb.seek(decode_map_chunk_offset, Whence.Set);
 				decode_map_chunk_offset = 0;
 
-				if (bb.position() + decode_map_chunk_size >= bb.capacity())
+				if (bb.position() + decode_map_chunk_size >= bb.size())
 					return CHUNK_EOF;
-				bb.get(pkt.decode_map_chunk_data);
+				bb.read(pkt.decode_map_chunk_data);
 			}
 
 			if (skip_map_chunk_size != 0) {
 				pkt.pos = skip_map_chunk_offset;
-				bb.position(skip_map_chunk_offset);
+				bb.seek(skip_map_chunk_offset, Whence.Set);
 				skip_map_chunk_offset = 0;
 
-				if (bb.position() + skip_map_chunk_size >= bb.capacity())
+				if (bb.position() + skip_map_chunk_size >= bb.size())
 					return CHUNK_EOF;
-				bb.get(pkt.skip_map_chunk_data);
+				bb.read(pkt.skip_map_chunk_data);
 			}
 
 			video_chunk_size = 0;
@@ -563,7 +572,7 @@ public class MVEFile {
 
 			chunk_type = CHUNK_VIDEO;
 		} else {
-			bb.position(next_chunk_offset);
+			bb.seek(next_chunk_offset, Whence.Set);
 			chunk_type = CHUNK_DONE;
 		}
 

@@ -35,9 +35,8 @@ import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
 
-import com.badlogic.gdx.Gdx;
-
 import ru.m210projects.Build.Gameutils.ConvertType;
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Screen {
@@ -88,8 +87,8 @@ public class Screen {
 			cfg.fullscreen = 0;
 		fullscreen = cfg.fullscreen;
 		
-		cfg.ScreenWidth = Gdx.graphics.getWidth();
-		cfg.ScreenHeight = Gdx.graphics.getHeight();
+		cfg.ScreenWidth = BuildGdx.graphics.getWidth();
+		cfg.ScreenHeight = BuildGdx.graphics.getHeight();
 		
 		gViewXScaled = (xdim << 16) / 320;
 		gViewYScaled = (ydim << 16) / 200;

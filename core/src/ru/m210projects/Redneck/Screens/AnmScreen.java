@@ -16,8 +16,6 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Build.Engine.MAXPALOOKUPS;
-import static ru.m210projects.Build.Engine.RESERVEDPALS;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.sintable;
 import static ru.m210projects.Build.Engine.tilesizx;
@@ -28,6 +26,7 @@ import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Input.Keymap.ANYKEY;
 import static ru.m210projects.Build.Pragmas.mulscale;
+import static ru.m210projects.Redneck.Globals.ANIM_PAL;
 import static ru.m210projects.Redneck.Globals.RR66;
 import static ru.m210projects.Redneck.Globals.TILE_ANIM;
 import static ru.m210projects.Redneck.Globals.currentGame;
@@ -36,10 +35,8 @@ import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 import static ru.m210projects.Redneck.Sounds.sndStopMusic;
 import static ru.m210projects.Redneck.Sounds.sound;
 
-import com.badlogic.gdx.Gdx;
-
-import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.ScreenAdapters.SkippableAdapter;
 import ru.m210projects.Redneck.Types.AnimFile;
@@ -121,7 +118,7 @@ public class AnmScreen extends SkippableAdapter {
 	            if (j > k) { k = j; white = i; }
 	        }
 		    
-	        int palnum = MAXPALOOKUPS - RESERVEDPALS - 1;
+	        int palnum = ANIM_PAL - 1;
 		    byte[] remapbuf = new byte[768];
 			for(int i = 0; i < 768; i++)
 				remapbuf[i] = (byte) white;	
@@ -162,7 +159,7 @@ public class AnmScreen extends SkippableAdapter {
 			if(anmtime >= tick) {
 				if(frame < anmfil.numFrames()) {
 					waloff[TILE_ANIM] = anmfil.draw(frame);
-					engine.invalidatetile(TILE_ANIM, 0, -1);	// JBF 20031228
+					engine.invalidatetile(TILE_ANIM, ANIM_PAL, -1);	// JBF 20031228
 
 					logoanimsounds(frame, lastanimhack);
 					
@@ -177,7 +174,7 @@ public class AnmScreen extends SkippableAdapter {
 				return false;
 
 			if(waloff[TILE_ANIM] != null) 
-				engine.rotatesprite(0<<16,0<<16,65536,512,TILE_ANIM,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
+				engine.rotatesprite(0<<16,0<<16,65536,512,TILE_ANIM,0,ANIM_PAL,2+4+8+16+64, 0,0,xdim-1,ydim-1);
 			
 			if(frame >= anmfil.numFrames())
 				return false;
@@ -194,7 +191,7 @@ public class AnmScreen extends SkippableAdapter {
 //			if(!checkAnm()) {
 				anmClose();
 				if (callback != null) {
-					Gdx.app.postRunnable(callback);
+					BuildGdx.app.postRunnable(callback);
 					callback = null;
 				}
 //			}
@@ -203,9 +200,9 @@ public class AnmScreen extends SkippableAdapter {
 		if (game.pInput.ctrlKeyStatus(ANYKEY)) 
 			gCutsClock = totalclock;
 		
-		int shade = 32 + mulscale(32, sintable[(20 * totalclock) & 2047], 16);
+		int shade = 8 + mulscale(32, sintable[(20 * totalclock) & 2047], 16);
 		if (totalclock - gCutsClock < 200 && escSkip) // 2 sec 
-			game.getFont(3).drawText(160, 5, "Press ESC to skip", shade, MAXPALOOKUPS - RESERVEDPALS - 1, TextAlign.Center, 2, true);
+			game.getFont(3).drawText(160, 5, "Press ESC to skip", shade, ANIM_PAL - 1, TextAlign.Center, 2, true);
 	}
 	
 	public boolean isInited()

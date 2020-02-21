@@ -20,7 +20,7 @@ package ru.m210projects.Redneck.Types;
 import static ru.m210projects.Redneck.Globals.RRRA;
 import static ru.m210projects.Redneck.Globals.currentGame;
 
-import ru.m210projects.Build.FileHandle.Resource.ResourceData;
+import ru.m210projects.Build.FileHandle.Resource;
 
 public class LSInfo {
 	public int skill;
@@ -30,12 +30,12 @@ public class LSInfo {
 	public String date;
 	public String addonfile;
 	
-	public void read(ResourceData bb)
+	public void read(Resource bb)
 	{
-		bb.getInt(); //ud.multimode
-		episode = bb.getInt() + 1;
-		level = bb.getInt() + 1;
-		skill = bb.getInt();
+		bb.readInt(); //ud.multimode
+		episode = bb.readInt() + 1;
+		level = bb.readInt() + 1;
+		skill = bb.readInt();
 		if(currentGame.getCON().type == RRRA) 
 			skill++;
 		update();

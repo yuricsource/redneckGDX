@@ -957,10 +957,16 @@ public class Sector {
 	            }
 	            else
 	            {
-	                q = sector[engine.nextsectorneighborz(sn,sptr.floorz,1,1)].floorz;
-	                j = setanimation(sn,sn,q,sptr.extra,FLOORZ);
-	                q = sector[engine.nextsectorneighborz(sn,sptr.ceilingz,-1,-1)].ceilingz;
-	                j = setanimation(sn,sn,q,sptr.extra,CEILZ);
+	            	int fsect = engine.nextsectorneighborz(sn,sptr.floorz,1,1);
+	            	if(fsect != -1) {
+		                q = sector[fsect].floorz;
+		                j = setanimation(sn,sn,q,sptr.extra,FLOORZ);
+	            	}
+	            	int csect = engine.nextsectorneighborz(sn,sptr.ceilingz,-1,-1);
+	            	if(csect != -1) {
+		                q = sector[csect].ceilingz;
+		                j = setanimation(sn,sn,q,sptr.extra,CEILZ);
+	            	}
 	            }
 
 	            sptr.lotag ^= 0x8000;

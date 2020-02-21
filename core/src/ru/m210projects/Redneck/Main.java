@@ -62,7 +62,6 @@ import static ru.m210projects.Redneck.Types.RTS.numlumps;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.utils.ByteArray;
 
@@ -107,10 +106,10 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * Lose weapons going from Sunny Shores to Gamblin Boat is fixed
-	 * 
-	 * 
 	 * TODO:
+	 * 
+	 * Добавить чтобы музыка играла в случайном порядке (shuffle)
+	 * Добавить 8track player
 	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
@@ -306,7 +305,7 @@ public class Main extends BuildGame {
 			setScreen(gAnmScreen.escSkipping(false));
 		} else {
 			setScreen(gLoadingScreen);
-			Gdx.app.postRunnable(rMenu);
+			BuildGdx.app.postRunnable(rMenu);
 		}
 	}
 

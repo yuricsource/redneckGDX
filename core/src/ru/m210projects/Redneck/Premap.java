@@ -24,6 +24,7 @@
 
 package ru.m210projects.Redneck;
 
+import static ru.m210projects.Build.Engine.MAXPALOOKUPS;
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
 import static ru.m210projects.Build.Engine.MAXPSKYTILES;
 import static ru.m210projects.Build.Engine.MAXSECTORS;
@@ -34,6 +35,7 @@ import static ru.m210projects.Build.Engine.headspritestat;
 import static ru.m210projects.Build.Engine.nextspritesect;
 import static ru.m210projects.Build.Engine.nextspritestat;
 import static ru.m210projects.Build.Engine.numsectors;
+import static ru.m210projects.Build.Engine.numshades;
 import static ru.m210projects.Build.Engine.numwalls;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.palookup;
@@ -61,6 +63,7 @@ import static ru.m210projects.Redneck.Actors.UFO_SpawnCount;
 import static ru.m210projects.Redneck.Actors.UFO_SpawnHulk;
 import static ru.m210projects.Redneck.Actors.UFO_SpawnTime;
 import static ru.m210projects.Redneck.Animate.gAnimationCount;
+import static ru.m210projects.Redneck.Globals.ANIM_PAL;
 import static ru.m210projects.Redneck.Globals.BOAT_WEAPON;
 import static ru.m210projects.Redneck.Globals.BellSound;
 import static ru.m210projects.Redneck.Globals.BellTime;
@@ -1233,17 +1236,17 @@ public class Premap {
 
 		for (j = 0; j < numl; j++) {
 			look_pos = fp.readByte();
-			fp.read(tempbuf, 256);
+			fp.read(tempbuf, 0, 256);
 			engine.makepalookup(look_pos, tempbuf, 0, 0, 0, 1);
 			if (look_pos == 8)
 				engine.makepalookup(54, tempbuf, 32, 32, 32, 1);
 		}
 
-		fp.read(waterpal, 768);
-		fp.read(slimepal, 768);
-		fp.read(titlepal, 768);
-		fp.read(drealms, 768);
-		fp.read(endingpal, 768);
+		fp.read(waterpal);
+		fp.read(slimepal);
+		fp.read(titlepal);
+		fp.read(drealms);
+		fp.read(endingpal);
 
 		palette[765] = palette[766] = palette[767] = 0;
 		slimepal[765] = slimepal[766] = slimepal[767] = 0;
@@ -1282,6 +1285,10 @@ public class Premap {
 		for (int i = 16; i < 32; i++)
 			tempbuf[i] = (byte) (i - 64);
 		engine.makepalookup(35, tempbuf, 0, 0, 0, 1);
+		
+		palookup[ANIM_PAL] = new byte[numshades << 8];
+		for (int i = 0; i < MAXPALOOKUPS; i++)
+			palookup[ANIM_PAL][i] = (byte) i;
 	}
 
 	private static boolean fogInited = false;
@@ -1318,7 +1325,7 @@ public class Premap {
 			palookup[23] = palookup[51];
 			palookup[8] = palookup[54];
 
-			if (BuildGdx.app.getFrameType() == FrameType.GL) {
+			if (BuildGdx.graphics.getFrameType() == FrameType.GL) {
 				palookupfog[0] = palookupfog[50];
 				palookupfog[30] = palookupfog[51];
 				palookupfog[33] = palookupfog[51];
@@ -1334,7 +1341,7 @@ public class Premap {
 			palookup[23] = opalookup[2];
 			palookup[8] = opalookup[1];
 
-			if (BuildGdx.app.getFrameType() == FrameType.GL) {
+			if (BuildGdx.graphics.getFrameType() == FrameType.GL) {
 				palookupfog[0] = opalookupfog[0];
 				palookupfog[30] = opalookupfog[3];
 				palookupfog[33] = opalookupfog[4];

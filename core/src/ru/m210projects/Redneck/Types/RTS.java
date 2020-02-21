@@ -79,7 +79,7 @@ public class RTS {
 		// WAD file
 		Console.Println("    Adding " + filename);
 		byte[] data = new byte[16];
-		handle.read( data, 12 );
+		handle.read( data, 0, 12 );
 		//WadInfo header = new WadInfo(data);
 		
 		String identification = new String(data, 0, 4);
@@ -98,7 +98,7 @@ public class RTS {
 		handle.seek(infotableofs, Whence.Set);
 		for (int i=startlump; i < numlumps; i++)
 		{
-			handle.read(data, 16); 
+			handle.read(data); 
 			
 			int filepos = LittleEndian.getInt(data);
 			int size = LittleEndian.getInt(data, 4);
@@ -210,7 +210,7 @@ public class RTS {
 		LumpInfo l = lumpinfo[lump];
 		
 		l.handle.seek(l.position, Whence.Set);
-		l.handle.read(dest, l.size);
+		l.handle.read(dest, 0, l.size);
 	}
 	
 	/*

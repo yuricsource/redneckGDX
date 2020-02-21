@@ -181,8 +181,6 @@ import static ru.m210projects.Redneck.Weapons.moveweapons;
 
 import java.util.Arrays;
 
-import com.badlogic.gdx.Gdx;
-
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
@@ -374,7 +372,7 @@ public class GameScreen extends GameAdapter {
 			   		case 0: gEndScreen.episode1(); break;
 					case 1: gEndScreen.episode2(); break;
 					default: 
-						Gdx.app.postRunnable(new Runnable() {
+						BuildGdx.app.postRunnable(new Runnable() {
 							@Override
 							public void run() {
 								game.show();
@@ -383,7 +381,7 @@ public class GameScreen extends GameAdapter {
 						break;
 			    }
 	    	} else {
-	    		Gdx.app.postRunnable(new Runnable() {
+	    		BuildGdx.app.postRunnable(new Runnable() {
 					@Override
 					public void run() {
 						game.changeScreen(gStatisticScreen);

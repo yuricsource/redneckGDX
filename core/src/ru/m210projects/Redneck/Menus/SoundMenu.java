@@ -33,13 +33,26 @@ public class SoundMenu extends MenuAudio {
 		
 		sSoundDrv.listFont = app.getFont(0);
 		sSoundDrv.listShadow = true;
-		sMusicDrv.listFont = app.getFont(0);
-		sMusicDrv.listShadow = true;
+//		sMusicDrv.listFont = app.getFont(0);
+//		sMusicDrv.listShadow = true;
+		int pos = removeItem(sMusicDrv);
+		for(int i = pos; i < m_nItems; i++)
+			m_pItems[i].y -= 10;
+		sMusicDrv = null;
 		sResampler.listFont = app.getFont(0);
 		sResampler.listShadow = true;
 		
 		mApplyChanges.font = app.getFont(2);
 		mApplyChanges.y += 5;
+	}
+	
+	@Override
+	protected char[][] getMusicTypeList()
+	{
+		char[][] list = new char[1][];
+		list[0] = "cd audio".toCharArray();
+		
+		return list;
 	}
 
 	@Override

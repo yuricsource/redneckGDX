@@ -24,9 +24,9 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Sounds.*;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
 
 public class EndScreen extends ScreenAdapter {
@@ -52,7 +52,7 @@ public class EndScreen extends ScreenAdapter {
 			engine.rotatesprite(0, 0, 65536, 0, 8678, 0, 0, 2 + 8 + 16 + 64 + 128, 0, 0, xdim - 1, ydim - 1);
 
 		if (totalclock > 500 && (voice == null || !voice.isPlaying())) {
-			Gdx.app.postRunnable(new Runnable() {
+			BuildGdx.app.postRunnable(new Runnable() {
 				@Override
 				public void run() {
 					game.changeScreen(gStatisticScreen);
@@ -64,7 +64,7 @@ public class EndScreen extends ScreenAdapter {
 	}
 
 	public void episode1() {
-		Gdx.app.postRunnable(new Runnable() {
+		BuildGdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
 				String filename = "turdmov.anm";
@@ -86,7 +86,7 @@ public class EndScreen extends ScreenAdapter {
 	}
 
 	public void episode2() {
-		Gdx.app.postRunnable(new Runnable() {
+		BuildGdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
 				if (currentGame.getCON().type == RRRA)

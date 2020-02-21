@@ -40,7 +40,6 @@ import ru.m210projects.Build.FileHandle.GroupResource;
 import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
-import ru.m210projects.Build.Pattern.MenuItems.BrowserFileType;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuFileBrowser;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
@@ -57,51 +56,46 @@ public class RUserContent extends BuildMenu {
 		this.app = app;
 		MenuTitle title = new RRTitle("User Content");
 
-		final BrowserFileType contype = new BrowserFileType(2) {
-			@Override
-			public void callback(MenuFileBrowser item) {
-				launchEpisode(episodes.get(item.getDirectory().checkFile(item.getFileName()).getPath()));
-			}
-		};
-		
-		final BrowserFileType packtype = new BrowserFileType(2) {
-			@Override
-			public void callback(MenuFileBrowser item) {
-				launchEpisode(episodes.get(item.getFileName()));
-			}
-		};
-		
-		final BrowserFileType maptype = new BrowserFileType(0) {
-			@Override
-			public void callback(MenuFileBrowser item) {
-				launchMap(item.getDirectory().checkFile(item.getFileName()));
-			}
-		};
-		
 		int width = 240;
 		list = new MenuFileBrowser(app, app.getFont(0), app.getFont(1), app.getFont(0), 40, 45, width, 1, 14, LOADSCREEN) {
 			
 			@Override
-			protected void prepareList(DirectoryEntry dir)
+			public void init() {
+				registerExtension("map", 0, 0);
+				registerExtension("grp", 2, 1);
+				registerExtension("zip", 2, 1);
+				registerExtension("con", 2, 1);
+			}
+			
+			@Override
+			public void handleFile(FileEntry fil) {
+				if(fil.getExtension().equals("map"))
+					addFile(fil, fil.getName());
+				else if(fil.getExtension().equals("grp") || fil.getExtension().equals("zip"))
+					buildPackage(this, fil);
+			}
+			
+			@Override
+			public void invoke(Object obj) {
+				if(obj == null) return;
+				
+				if(obj instanceof FileEntry) {
+					FileEntry fil = (FileEntry) obj;
+					if(fil.getExtension().equals("map"))
+						launchMap(fil);
+					else if(fil.getExtension().equals("con")) 
+						launchEpisode(episodes.get(fil.getPath()));
+					else if(fil.getExtension().equals("grp") || fil.getExtension().equals("zip"))
+						launchEpisode(episodes.get(getFileName()));
+				}
+			}
+			
+			@Override
+			public void handleDirectory(DirectoryEntry dir)
 			{
 				if(app.menu.gShowMenu)
 					sound(PISTOL_BODYHIT);
-				buildAddons(this, dir, contype);
-				
-				for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
-					FileEntry file = it.next();
-					if(file.getExtension().equals("grp") || file.getExtension().equals("zip"))
-						buildPackage(this, file, packtype);
-				}
-				sortFiles();
-				
-				for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext(); ) {
-					FileEntry file = it.next();
-					String name = file.getName();
-					if(file.getExtension().equals("map"))
-						addFile(name, maptype);
-				}
-				sortFiles();
+				buildAddons(this, dir);
 			}
 
 			@Override
@@ -127,7 +121,7 @@ public class RUserContent extends BuildMenu {
 		addItem(list, true);
 	}
 	
-	private void buildAddons(MenuFileBrowser blist, DirectoryEntry dir, BrowserFileType contype)
+	private void buildAddons(MenuFileBrowser blist, DirectoryEntry dir)
 	{
 		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
 		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
@@ -156,12 +150,12 @@ public class RUserContent extends BuildMenu {
 					addon.init();
 					if(addon.isInited) {
 						Console.Println("Addon found: " + addon.ConName);
-						blist.addFile(con, contype);
+						blist.addFile(fil, con);
 						episodes.put(fil.getPath(), addon);
 					}
 				} else {
 					if(addon.isInited) 
-						blist.addFile(con, contype);
+						blist.addFile(fil, con);
 				}
 			}
 		}
@@ -170,15 +164,15 @@ public class RUserContent extends BuildMenu {
 			String entry = defGame.getFile().getPath();
 			GameInfo addon = episodes.get(entry);
 			if(addon == null) {
-				blist.addFile(entry, contype);
+				blist.addFile(defGame.getFile(), entry);
 				episodes.put(entry, defGame);
 			} else {
-				blist.addFile(entry, contype);
+				blist.addFile(defGame.getFile(), entry);
 			}
 		}
 	}
 	
-	private void buildPackage(MenuFileBrowser blist, FileEntry file, BrowserFileType type)
+	private void buildPackage(MenuFileBrowser blist, FileEntry file)
 	{
 		if(file.getParent() == BuildGdx.compat.getDirectory(Path.Game) && file.getName().equals("redneck.grp"))
 			return; //show main
@@ -210,11 +204,11 @@ public class RUserContent extends BuildMenu {
 						if(addon.isInited) {
 							Console.Println("Found addon: " + con);
 							episodes.put(con, addon);
-							blist.addFile(con, type);
+							blist.addFile(file, con);
 						} else Console.Print(con + " found, but can't be loaded", OSDTEXT_RED);
 					} else {
 						if(addon.isInited) {
-							blist.addFile(con, type);
+							blist.addFile(file, con);
 						}
 					}
 				}

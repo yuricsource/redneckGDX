@@ -175,7 +175,7 @@ public class RRInput extends BuildControls {
 					    	else {
 								try {
 									WAVLoader wav = new WAVLoader(rtsptr);
-									Source voice = BuildGdx.audio.newSound(wav.sampledata, wav.samplerate, wav.samplebits, 255);
+									Source voice = BuildGdx.audio.newSound(wav.data, wav.rate, wav.bits, 255);
 									if(voice != null)
 									{
 										voice.setGlobal(1);
