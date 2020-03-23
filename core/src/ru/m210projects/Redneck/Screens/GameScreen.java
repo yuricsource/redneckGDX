@@ -1098,8 +1098,8 @@ public class GameScreen extends GameAdapter {
 
 	        j = ( (sb_snum&(15<<8))>>8 ) - 1;
 
-	        if( j != 1 && p.kickback_pic > 0)
-	            p.wantweaponfire = (short) j;
+//	        if( j != 1 && p.kickback_pic > 0)
+//	            p.wantweaponfire = (short) j; //GDX 23.03.2020 Disable random weapon switch
 
 	        if(p.last_pissed_time <= (26*218) 
 	        		&& p.show_empty_weapon == 0 
