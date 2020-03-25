@@ -164,6 +164,8 @@ public class GameInfo {
 		int sum = 0;
 		for(int e = 0; e < nEpisodes; e++)
 		{
+			if(episodes[e] == null)
+				continue; //The episode isn't found
 			if(episodes[e].gMapInfo[0] == null)
 				episodes[e].nMaps = 0;
 			sum += episodes[e].nMaps;
