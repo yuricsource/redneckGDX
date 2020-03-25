@@ -2438,7 +2438,7 @@ public class Player {
 				if (Sound[DUKE_ONWATER].num == 0 && !p.OnBoat && !p.OnMotorcycle && sector[p.cursectnum].hitag != 321)
 					spritesound(DUKE_ONWATER, pi);
 
-			if (p.cursectnum != s.sectnum)
+			if (p.cursectnum != s.sectnum && isValidSector(p.cursectnum))
 				engine.changespritesect(pi, p.cursectnum);
 
 			if (!ud.clipping) {
@@ -2460,7 +2460,7 @@ public class Player {
 
 			if (!ud.clipping) {
 				if (klabs(hittype[pi].floorz - hittype[pi].ceilingz) < (48 << 8) || j != 0) {
-					if ((sector[s.sectnum].lotag & 0x8000) == 0
+					if (isValidSector(s.sectnum) && (sector[s.sectnum].lotag & 0x8000) == 0
 							&& (isanunderoperator(sector[s.sectnum].lotag) || isanearoperator(sector[s.sectnum].lotag)))
 						activatebysector(s.sectnum, snum);
 					if (j != 0) {

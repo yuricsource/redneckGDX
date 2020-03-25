@@ -2444,7 +2444,7 @@ public class Weapons {
 		                    if(psectlotag != 857)
 		                    {
 		                    	p.posxv -= 16 * sintable[((int)p.ang+512)&2047];
-				                p.posyv -= 16 * sintable[(int)p.ang];
+				                p.posyv -= 16 * sintable[(int)p.ang&2047];
 		                    }
 		                }
 		                else if((p.kickback_pic) == 2 && p.ammo_amount[1] <= 0)
@@ -2535,7 +2535,7 @@ public class Weapons {
 		                	if ( psectlotag != 857 )
 		                    {
 		                		p.posxv -= 32 * sintable[((int)p.ang+512)&2047];
-				                p.posyv -= 32 * sintable[(int)p.ang];
+				                p.posyv -= 32 * sintable[(int)p.ang&2047];
 		                    }
 		                }
 		                
@@ -2617,7 +2617,7 @@ public class Weapons {
 			                	if ( psectlotag != 857 )
 			                    {
 			                		p.posxv -= 16 * sintable[((int)p.ang+512)&2047];
-					                p.posyv -= 16 * sintable[(int)p.ang];
+					                p.posyv -= 16 * sintable[(int)p.ang&2047];
 			                    }
 			                	
 		                        checkavailweapon(p);
@@ -2713,7 +2713,7 @@ public class Weapons {
 		            	else if ( p.kickback_pic == 12 )
 		                {
 		            		p.posxv -= 16 * sintable[((int)p.ang+512)&2047];
-			                p.posyv -= 16 * sintable[(int)p.ang];
+			                p.posyv -= 16 * sintable[(int)p.ang&2047];
 			                p.kickback += 20;
 		            		p.horiz += 20;
 		                }
@@ -2766,7 +2766,7 @@ public class Weapons {
 		                    if ( p.kickback_pic < 30 )
 		                    {
 		                    	p.posxv += 16 * sintable[((int)p.ang+512)&2047];
-				                p.posyv += 16 * sintable[(int)p.ang];
+				                p.posyv += 16 * sintable[(int)p.ang&2047];
 		                    }
 		                    
 		                    p.kickback_pic++;

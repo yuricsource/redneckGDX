@@ -383,12 +383,12 @@ public class RRInput extends BuildControls {
 			looky *= -1;
 
 		if (looky != 0) {
-			float k = 1.0f;
+			float k = 8.0f;
 			horiz = BClipRange(horiz - k * looky * cfg.gJoyLookSpeed / 65536f, -(ydim>>1), 100+(ydim>>1));
 		}
 
 		if (lookx != 0) {
-			float k = 1.0f;
+			float k = 8.0f;
 			angvel = BClipRange(angvel + k * lookx * cfg.gJoyTurnSpeed / 65536f, -1024, 1024);
 		}
 
