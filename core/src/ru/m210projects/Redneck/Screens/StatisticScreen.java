@@ -29,6 +29,7 @@ import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Actors.*;
 import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.SoundDefs.BONUS_SPEECH1;
 import static ru.m210projects.Redneck.SoundDefs.BONUS_SPEECH2;
@@ -378,7 +379,7 @@ public class StatisticScreen extends ScreenAdapter {
                     pos = 95;
                     Bitoa(ps[connecthead].actors_killed, bonusbuf);
                     app.getFont(2).drawText(251,pos, bonusbuf, 0, pal, TextAlign.Left, 2, false);
-                    if(ud.player_skill > 3 )
+                    if(isPsychoSkill())
                     {
                     	buildString(bonusbuf, 0, "N/A");
                     	app.getFont(2).drawText(251,pos+=19, "N/A", 0, pal, TextAlign.Left, 2, false);

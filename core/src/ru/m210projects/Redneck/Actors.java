@@ -1030,7 +1030,7 @@ public class Actors {
 	                        p.ang = BClampAngle(p.ang);
 	                    }
 
-						if(currentGame.getCON().type == RRRA || ud.player_skill < 5) {
+						if(!isPsychoSkill()) {
 							if( ud.multimode < 2 && lastload != null && !lastload.isEmpty() && ud.recstat != 2 ) {
 		                    	if(game.pInput.ctrlKeyPressed(Keys.ENTER))
 		                    	{
@@ -6914,5 +6914,9 @@ public class Actors {
 				}
 			}
 		}
+	}
+	
+	public static boolean isPsychoSkill() {
+		 return currentGame.getCON().type != RRRA && ud.player_skill >= 5 || currentGame.getCON().type == RRRA && ud.player_skill >= 4;
 	}
 }

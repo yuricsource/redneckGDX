@@ -268,7 +268,7 @@ public class View {
 	    coolgaugetext(screenpeek);
 	    operatefta();
 	    
-	    if(currentGame.getCON().type == RRRA || ud.player_skill < 5) {
+	    if(!isPsychoSkill()) {
 		    if( fta > 1 && sprite[ps[myconnectindex].i].extra <= 0 && myconnectindex == screenpeek && ud.multimode < 2 
 		    		&& lastload != null && !lastload.isEmpty() && ud.recstat != 2 ) {
 	        	int k = getftacoord();

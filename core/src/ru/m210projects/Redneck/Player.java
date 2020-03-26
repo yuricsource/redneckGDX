@@ -589,7 +589,7 @@ public class Player {
 
 		if (p.moonshine_amount > 0 && p.moonshine_amount < 400) {
 			p.moonshine_amount--;
-			if (p.moonshine_amount == 1) {
+			if (p.moonshine_amount == 0) {
 				checkavailinven(p);
 				p.gut_amount = p.alcohol_amount = p.moonshine_amount;
 				p.gut_meter = p.alcohol_meter = 1647;

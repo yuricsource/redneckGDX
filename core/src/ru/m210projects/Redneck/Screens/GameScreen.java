@@ -36,6 +36,7 @@ import static ru.m210projects.Build.Pragmas.ksgn;
 import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Strhandler.buildString;
 import static ru.m210projects.Build.Strhandler.toCharArray;
+import static ru.m210projects.Redneck.Actors.isPsychoSkill;
 import static ru.m210projects.Redneck.Actors.moveactors;
 import static ru.m210projects.Redneck.Actors.movecyclers;
 import static ru.m210projects.Redneck.Actors.movedummyplayers;
@@ -837,7 +838,7 @@ public class GameScreen extends GameAdapter {
 				        ud.volume_number = nEpisode;
 					}
 
-	                if(ud.player_skill == 4) 
+					if(isPsychoSkill())
 	                	ud.respawn_monsters = true;
 	                else ud.respawn_monsters = false;
 				}
