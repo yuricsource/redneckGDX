@@ -20,8 +20,8 @@ import ru.m210projects.Redneck.Config;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Redneck.Globals.MAX_WEAPONSRA;
-import static ru.m210projects.Redneck.Globals.ud;
 
+import ru.m210projects.Build.Settings.BuildSettings;
 import ru.m210projects.Redneck.Types.DemoFile;
 
 public class UserDefs {
@@ -59,7 +59,7 @@ public class UserDefs {
 		lockout = 0;
 		pwlockout[0] = '\0';
 
-		ud.rtsname = "REDNECK.RTS";
+		rtsname = "REDNECK.RTS";
 
 	    ridecule[0] = "Yer as ugly as mud fence! \0".toCharArray();
 	    ridecule[1] = "Duck you pecker-head! \0".toCharArray();
@@ -88,5 +88,7 @@ public class UserDefs {
 	    screen_tilting = cfg.screen_tilting;
 	    auto_run = cfg.auto_run;
 	    fta_on = cfg.fta_on;
+	    
+	    brightness = BuildSettings.paletteGamma.get() << 2;
 	}
 }

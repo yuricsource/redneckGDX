@@ -189,7 +189,7 @@ public class LoadSave {
 	
 	public static int savegame(String savename, String filename)
 	{
-		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+		if(isPsychoSkill())
 		{
 			FTA(53, ps[myconnectindex]);
 			return -1;
@@ -552,7 +552,7 @@ public class LoadSave {
 	public static void quickload()
 	{
 		if(numplayers > 1 || mFakeMultiplayer) return;
-		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+		if(isPsychoSkill())
 		{
 			FTA(53, ps[myconnectindex]);
 			return;
@@ -943,7 +943,7 @@ public class LoadSave {
 	}
 	
 	public static boolean loadgame(String filename) {
-		if(currentGame.getCON().type != RRRA && ud.player_skill >= 5)
+		if(isPsychoSkill())
 		{
 			FTA(53, ps[myconnectindex]);
 			return false;

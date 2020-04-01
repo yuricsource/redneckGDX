@@ -1,7 +1,5 @@
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Build.Engine.MAXPALOOKUPS;
-import static ru.m210projects.Build.Engine.RESERVEDPALS;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.sintable;
 import static ru.m210projects.Build.Engine.tilesizx;
@@ -13,6 +11,7 @@ import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Input.Keymap.ANYKEY;
 import static ru.m210projects.Build.Pragmas.divscale;
 import static ru.m210projects.Build.Pragmas.mulscale;
+import static ru.m210projects.Redneck.Globals.ANIM_PAL;
 import static ru.m210projects.Redneck.Globals.TILE_ANIM;
 import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Sounds.StopAllSounds;
@@ -96,7 +95,7 @@ public class MVEScreen extends SkippableAdapter {
 	            if (j > k) { k = j; white = i; }
 	        }
 		    
-	        int palnum = MAXPALOOKUPS - RESERVEDPALS - 1;
+	        int palnum = ANIM_PAL - 1;
 		    byte[] remapbuf = new byte[768];
 			for(int i = 0; i < 768; i++)
 				remapbuf[i] = (byte) white;	
@@ -131,7 +130,7 @@ public class MVEScreen extends SkippableAdapter {
 			if(anmtime >= tick) {
 				if(!(isDone = anmfil.process())) {
 					waloff[TILE_ANIM] = anmfil.getFrame();
-					engine.invalidatetile(TILE_ANIM, 0, -1);	// JBF 20031228
+					engine.invalidatetile(TILE_ANIM, ANIM_PAL, -1);	// JBF 20031228
 				} 
 
 				anmtime -= tick;
@@ -143,7 +142,7 @@ public class MVEScreen extends SkippableAdapter {
 
 			if(waloff[TILE_ANIM] != null) {
 				engine.rotatesprite(160 << 16, 100 << 16, (int) divscale(200, tilesizx[TILE_ANIM], 16), 512, TILE_ANIM, 0,
-						0, 2 | 4 | 8 | 64, 0, 0, xdim - 1, ydim - 1);
+						ANIM_PAL, 2 | 4 | 8 | 64, 0, 0, xdim - 1, ydim - 1);
 			}
 	
 			if(isDone)
@@ -170,7 +169,7 @@ public class MVEScreen extends SkippableAdapter {
 		
 		int shade = 16 + mulscale(64, sintable[(20 * totalclock) & 2047], 16);
 		if (totalclock - gCutsClock < 200 && escSkip) // 2 sec 
-			game.getFont(0).drawText(160, 5, "Press ESC to skip", shade, MAXPALOOKUPS - RESERVEDPALS - 1, TextAlign.Center, 2, true);
+			game.getFont(0).drawText(160, 5, "Press ESC to skip", shade, ANIM_PAL - 1, TextAlign.Center, 2, true);
 	}
 	
 	public boolean isInited()
