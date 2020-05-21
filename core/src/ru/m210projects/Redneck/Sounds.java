@@ -82,9 +82,9 @@ public class Sounds {
 		"track05.ogg", "track06.ogg", "track07.ogg", 
 		"track08.ogg", "track09.ogg" };
 
-	private static SourceCallback callback = new SourceCallback() {
+	private static SourceCallback<Integer> callback = new SourceCallback<Integer>() {
 		@Override
-		public void run(int num) {
+		public void run(Integer num) {
 			if (num < 0) {
 //	            if(lumplockbyte[-num] >= 200)
 //	                lumplockbyte[-num]--;
