@@ -203,20 +203,20 @@ public class RRNetwork extends BuildNet {
 			break;
 
 		case kPacketDisconnect:
-			return GetDisconnectPacket(p, ptr, len, nPlayer, new Runnable() {
+			return GetDisconnectPacket(p, ptr, len, nPlayer, new DisconnectCallback() {
 				@Override
-				public void run() {
+				public void invoke(int nDelete) {
 					if (ud.rec != null)
 						ud.rec.close();
 
 					ud.multimode = numplayers - 1;
 
 					if (game.isCurrentScreen(gGameScreen)) {
-						quickkill(ps[nPlayer]);
-						engine.deletesprite(ps[nPlayer].i);
+						quickkill(ps[nDelete]);
+						engine.deletesprite(ps[nDelete].i);
 					}
 
-					buildString(buf, 0, ud.user_name[nPlayer], " is history!");
+					buildString(buf, 0, ud.user_name[nDelete], " is history!");
 
 					vscrn(ud.screen_size);
 
