@@ -20,6 +20,7 @@ import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.Globals.*;
 
+import ru.m210projects.Build.Audio.BuildAudio.Driver;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuAudio;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
@@ -30,6 +31,8 @@ public class SoundMenu extends MenuAudio {
 	public SoundMenu(Main app)
 	{
 		super(app, 20,  30, 280, 12, 8, app.getFont(1));
+		
+		this.setListener(listener);
 		
 		sSoundDrv.listFont = app.getFont(0);
 		sSoundDrv.listShadow = true;
@@ -46,6 +49,27 @@ public class SoundMenu extends MenuAudio {
 		mApplyChanges.y += 5;
 	}
 	
+	private AudioListener listener = new AudioAdapter() {
+		@Override
+		public void PreDrvChange(Driver drv) {
+			StopAllSounds();
+		}
+
+		@Override
+		public void PostDrvChange() {
+			if (game.isCurrentScreen(gGameScreen) || game.isCurrentScreen(gDemoScreen) || game.isCurrentScreen(gMenuScreen)) {
+				sndStopMusic();
+				if(game.isCurrentScreen(gMenuScreen)) { sndPlayMusic(currentGame.getCON().env_music_fn[0]); } 
+				else sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
+			}
+		}
+		
+		@Override
+		public void SoundOff() {
+			StopAllSounds();
+		}
+	};
+	
 	@Override
 	protected char[][] getMusicTypeList()
 	{
@@ -61,41 +85,12 @@ public class SoundMenu extends MenuAudio {
 	}
 
 	@Override
-	public void soundPreDrvChange() {
-		StopAllSounds();
-	}
-
-	@Override
-	public void soundPostDrvChange() {
-		if (game.isCurrentScreen(gGameScreen) || game.isCurrentScreen(gDemoScreen) || game.isCurrentScreen(gMenuScreen)) {
-			sndStopMusic();
-			if(game.isCurrentScreen(gMenuScreen)) { sndPlayMusic(currentGame.getCON().env_music_fn[0]); } 
-			else sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
-		}
-	}
-
-	@Override
-	public boolean soundRestart(int voices, int resampler) {
+	public boolean SoundRestart(int voices, int resampler) {
 		return sndRestart(voices, resampler);
 	}
 
 	@Override
-	public boolean musicRestart() {
+	public boolean MusicRestart() {
 		return midRestart();
-	}
-
-	@Override
-	public void soundVolumeChange() {
-		/* nothing */
-	}
-
-	@Override
-	public void soundOn() {
-		/* nothing */
-	}
-
-	@Override
-	public void soundOff() {
-		StopAllSounds();
 	}
 }
