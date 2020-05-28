@@ -197,7 +197,6 @@ public class Main extends BuildGame {
 			hittype[i] = new Weaponhit();
 
 		Console.Println("Initializing def-scripts...");
-		baseDef.setEngine(engine);
 		
 		loadGdxDef(baseDef);
 		
