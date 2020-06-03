@@ -115,6 +115,7 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Main.cfg;
 import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Main.mUserFlag;
 import static ru.m210projects.Redneck.Names.APLAYER;
 import static ru.m210projects.Redneck.Names.BIGFORCE;
 import static ru.m210projects.Redneck.Names.CYCLER;
@@ -159,6 +160,7 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
+import ru.m210projects.Redneck.Main.UserFlag;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Premap {
@@ -1118,6 +1120,9 @@ public class Premap {
 		}
 
 		uGameFlags |= MODE_EOL;
+		if(mUserFlag != UserFlag.UserMap && (uGameFlags & MODE_END) == 0 && ud.level_number >= currentGame.episodes[ud.volume_number].nMaps)
+			uGameFlags |= MODE_END;
+		
 		if (ud.rec != null)
 			ud.rec.close();
 

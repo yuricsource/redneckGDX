@@ -50,6 +50,7 @@ import java.util.Arrays;
 import com.badlogic.gdx.Input.Keys;
 
 import ru.m210projects.Build.Engine.Point;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
@@ -1031,14 +1032,16 @@ public class Actors {
 	                    }
 
 						if(!isPsychoSkill()) {
-							if( ud.multimode < 2 && lastload != null && !lastload.isEmpty() && ud.recstat != 2 ) {
+							if( ud.multimode < 2 && lastload != null && !lastload.isEmpty() && ud.recstat != 2 && BuildGdx.compat.checkFile(lastload, Path.User) != null) {
 		                    	if(game.pInput.ctrlKeyPressed(Keys.ENTER))
 		                    	{
 		                    		game.changeScreen(gLoadingScreen.setTitle(lastload));
 		        					gLoadingScreen.init(new Runnable() {
 		        						public void run() {
-		        							if(!loadgame(lastload)) 
+		        							if(!loadgame(lastload)) {
 		        								game.GameMessage("Can't load game!");
+		        								game.show();
+		        							}
 		        						}
 		        					});
 		                    		return;

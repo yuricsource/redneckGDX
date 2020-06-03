@@ -16,23 +16,33 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Build.Engine.*;
+import static ru.m210projects.Build.Engine.picanm;
+import static ru.m210projects.Build.Engine.tilesizx;
+import static ru.m210projects.Build.Engine.tilesizy;
+import static ru.m210projects.Build.Engine.waloff;
 import static ru.m210projects.Redneck.Actors.BowlReset;
-import static ru.m210projects.Redneck.Gamedef.*;
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Sounds.*;
+import static ru.m210projects.Redneck.Gamedef.error;
+import static ru.m210projects.Redneck.Gamedef.loaduserdef;
+import static ru.m210projects.Redneck.Globals.Sound;
+import static ru.m210projects.Redneck.Globals.currentGame;
+import static ru.m210projects.Redneck.Globals.defGame;
+import static ru.m210projects.Redneck.Globals.episodes;
+import static ru.m210projects.Redneck.Globals.kMaxTiles;
+import static ru.m210projects.Redneck.Main.appdef;
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Names.GRID;
+import static ru.m210projects.Redneck.Names.MIRROR;
+import static ru.m210projects.Redneck.Sounds.NUM_SOUNDS;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.badlogic.gdx.files.FileHandle;
-
 import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.FileHandle.DataResource;
+import ru.m210projects.Build.FileHandle.Cache1D.PackageType;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.FileHandle.DirectoryEntry;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.Group;
@@ -41,8 +51,6 @@ import ru.m210projects.Build.FileHandle.PackedZipGroup;
 import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.FileHandle.UserGroup;
 import ru.m210projects.Build.FileHandle.ZipGroup;
-import ru.m210projects.Build.FileHandle.Cache1D.PackageType;
-import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Redneck.Types.GameInfo;
 
@@ -335,51 +343,4 @@ public class ResourceHandler {
 	    tilesizx[13] = 0;
 	    waloff[13] = null;
 	}
-	
-	public static void loadGdxDef(DefScript baseDef)
-	{
-		FileHandle fil = BuildGdx.files.internal("rrgdx.dat");
-		if(fil != null && fil.exists())
-		{
-			DataResource res = new DataResource(null, fil.name(), -1, fil.readBytes());
-			Group group = BuildGdx.cache.add(res, fil.name());
-			
-			GroupResource def = group.open(appdef);
-			if(def != null)
-			{
-	    		baseDef.loadScript(fil.name(), def.getBytes());
-	    		def.close();
-			}
-		}
-	}
-	
-//	public static void ReplaceUserTiles()
-//	{
-//		CRC32 tilecrc32 = new CRC32();
-//		for(int i = 0; i < replace.length; i++)
-//		{
-//			int tilenume = replace[i][0];
-//			int newtile = replace[i][1];
-//			long crc32 = replace[i][2] & 0xFFFFFFFFL;
-//			
-//			if(game.currentDef != null && game.currentDef.texInfo.isHighTile(tilenume))
-//				continue;
-//	
-//			if(waloff[tilenume] == null)
-//				if(engine.loadtile(tilenume) == null)
-//					continue; //nothing replace
-//			
-//			tilecrc32.reset();
-//			tilecrc32.update(waloff[tilenume]);
-//			if(tilecrc32.getValue() != crc32)
-//				continue;
-//			
-//			waloff[tilenume] = new byte[tilesizx[newtile] * tilesizy[newtile]];
-//			System.arraycopy(waloff[newtile], 0, waloff[tilenume], 0, waloff[tilenume].length);
-//			tilesizx[tilenume] = tilesizx[newtile];
-//			tilesizy[tilenume] = tilesizy[newtile];
-//			picanm[tilenume] = picanm[newtile];
-//		}
-//	}
-
 }

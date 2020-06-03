@@ -62,6 +62,8 @@ import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.Sector.ldist;
 import static ru.m210projects.Redneck.Actors.*;
 
+import ru.m210projects.Build.Architecture.BuildGdx;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
@@ -270,7 +272,7 @@ public class View {
 	    
 	    if(!isPsychoSkill()) {
 		    if( fta > 1 && sprite[ps[myconnectindex].i].extra <= 0 && myconnectindex == screenpeek && ud.multimode < 2 
-		    		&& lastload != null && !lastload.isEmpty() && ud.recstat != 2 ) {
+		    		&& lastload != null && !lastload.isEmpty() && ud.recstat != 2 && BuildGdx.compat.checkFile(lastload, Path.User) != null) {
 	        	int k = getftacoord();
 	        	game.getFont(1).drawText(320>>1,k + 10, deathMessage, 0, 0, TextAlign.Center, 2+8+16, false);
 	        }

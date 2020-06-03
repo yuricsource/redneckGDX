@@ -50,8 +50,11 @@ public class Spawn {
 			game.dassert("Wrong sector! " + whatsect);
 		
 	    short i = engine.insertsprite(whatsect,s_ss);
-	    if( i < 0 )
-	    	game.dassert(" Too many sprites spawned.");
+	    if( i < 0 ) {
+	    	game.GameMessage(" Too many sprites spawned.");
+			game.show();
+			return 0;
+		 }
 
 	    SPRITE s = sprite[i];
 

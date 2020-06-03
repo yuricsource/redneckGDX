@@ -30,6 +30,7 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.SliderDrawable;
 import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Build.Render.Renderer.RenderType;
+import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Fonts.GameFont;
 import ru.m210projects.Redneck.Fonts.MenuFont;
@@ -61,7 +62,12 @@ public class RRFactory extends BuildFactory {
 			return new RRSoftware(app.pEngine);
 		else return new RRPolymost(app.pEngine);
 	}
-
+	
+	@Override
+	public DefScript getBaseDef(BuildEngine engine) {
+		return new DefScript(engine, false);
+	}
+	
 	@Override
 	public BuildControls input(BuildControllers gpmanager) {
 		return new RRInput(app.pCfg, gpmanager);
