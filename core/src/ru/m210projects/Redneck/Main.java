@@ -18,6 +18,7 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
 import static ru.m210projects.Build.Engine.MAXSPRITES;
+import static ru.m210projects.Build.Gameutils.loadGdxDef;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
@@ -50,7 +51,6 @@ import static ru.m210projects.Redneck.Premap.LeaveMap;
 import static ru.m210projects.Redneck.Premap.genspriteremaps;
 import static ru.m210projects.Redneck.Premap.packbuf;
 import static ru.m210projects.Redneck.ResourceHandler.InitSpecialTextures;
-import static ru.m210projects.Redneck.ResourceHandler.loadGdxDef;
 import static ru.m210projects.Redneck.ResourceHandler.resetEpisodeResources;
 import static ru.m210projects.Redneck.ResourceHandler.usecustomarts;
 import static ru.m210projects.Redneck.Sounds.MusicStartup;
@@ -198,7 +198,7 @@ public class Main extends BuildGame {
 
 		Console.Println("Initializing def-scripts...");
 		
-		loadGdxDef(baseDef);
+		loadGdxDef(baseDef, appdef, "rrgdx.dat");
 		
 		if (cfg.autoloadFolder) {
 			Console.Println("Initializing autoload folder");

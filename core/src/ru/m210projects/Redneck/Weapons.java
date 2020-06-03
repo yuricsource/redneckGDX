@@ -1633,7 +1633,7 @@ public class Weapons {
 	        gs = 16;
 	    if(gs > 24) gs = 24;
 
-	    if(p.newowner >= 0 || ud.camerasprite >= 0 || (sprite[p.i].pal != 1 && sprite[p.i].extra <= 0) )
+	    if(p.newowner >= 0 || ud.camerasprite >= 0 || over_shoulder_on > 0 || (sprite[p.i].pal != 1 && sprite[p.i].extra <= 0) )
 	        return;
 
 	    gun_pos = 80-p.weapon_pos*p.weapon_pos;
