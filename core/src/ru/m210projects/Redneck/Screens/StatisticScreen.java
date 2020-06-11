@@ -46,6 +46,7 @@ import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
+import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Types.MapInfo;
 
@@ -66,7 +67,7 @@ public class StatisticScreen extends ScreenAdapter {
 	
 	@Override
 	public void show() {
-		engine.setbrightness(ud.brightness>>2, palette, 2);
+		engine.setbrightness(ud.brightness>>2, palette, GLInvalidateFlag.All);
 		totalclock = 0;
 		
 		for(int s = 0; s < checkSound.length; s++) {

@@ -67,6 +67,7 @@ import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.OnSceenDisplay.Console;
 import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
+import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Menus.InterfaceMenu;
@@ -125,7 +126,7 @@ public class View {
 	    
 	    if( changepalette != 0 )
 	    {
-	    	setgamepalette(pp,pp.palette, 2);
+	    	setgamepalette(pp,pp.palette, GLInvalidateFlag.All);
 	        changepalette = 0;
 	    }
 
@@ -142,7 +143,7 @@ public class View {
 	    }
 	    else if( restorepalette )
 	    {
-	    	setgamepalette(pp, pp.palette, 0);
+	    	setgamepalette(pp, pp.palette, GLInvalidateFlag.All);
 
 			dotint = true;
 			cr = cg = cb = 0;

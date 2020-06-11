@@ -36,6 +36,7 @@ import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Names.*;
 
 import ru.m210projects.Build.Gameutils.ConvertType;
+import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
@@ -93,10 +94,10 @@ public class Screen {
 		gViewXScaled = (xdim << 16) / 320;
 		gViewYScaled = (ydim << 16) / 200;
 		
-		engine.setbrightness(ud.brightness>>2, ps[myconnectindex].palette, 2);
+		engine.setbrightness(ud.brightness>>2, ps[myconnectindex].palette, GLInvalidateFlag.All);
 	}
 	
-	public static void setgamepalette(PlayerStruct player, byte[] pal, int set)
+	public static void setgamepalette(PlayerStruct player, byte[] pal, GLInvalidateFlag set)
 	{
 		if (player != ps[screenpeek]) {
 			// another head
@@ -104,7 +105,7 @@ public class Screen {
 			return;
 		}
 		
-		engine.setbrightness(ud.brightness>>2, pal, set | 2);
+		engine.setbrightness(ud.brightness>>2, pal, set);
 		player.palette = pal;
 		engine.setpalettefade(0,0,0,0);
 	}
@@ -129,7 +130,7 @@ public class Screen {
 	public static void scrReset()
 	{
 		engine.setpalettefade(0, 0, 0, 1);
-		setgamepalette(ps[myconnectindex], palette, 2);
+		setgamepalette(ps[myconnectindex], palette, GLInvalidateFlag.All);
 	}
 
 	public static void myospal(int x, int y, int scale, int tilenum, int shade, int orientation, int p)
