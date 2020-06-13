@@ -32,8 +32,7 @@ import ru.m210projects.Redneck.Fonts.StandartFont;
 public class RREngine extends BuildEngine {
 
 	public RREngine(BuildGame game) throws Exception {
-		super(game, TICSPERFRAME, true);
-		compatibleMode = true;
+		super(game, TICSPERFRAME);
 	}
 	
 	@Override

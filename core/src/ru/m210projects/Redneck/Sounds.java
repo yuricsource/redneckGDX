@@ -50,6 +50,9 @@ import static ru.m210projects.Redneck.SoundDefs.PIPEBOMB_EXPLODE;
 import static ru.m210projects.Redneck.SoundDefs.RPG_EXPLODE;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.BuildAudio.Driver;
@@ -61,7 +64,9 @@ import ru.m210projects.Build.Audio.Source;
 import ru.m210projects.Build.Audio.SourceCallback;
 import ru.m210projects.Build.FileHandle.FileEntry;
 import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.FileHandle.Compat.Path;
 import ru.m210projects.Build.OnSceenDisplay.Console;
+import ru.m210projects.Build.Script.CueScript;
 import ru.m210projects.Redneck.Types.Sample;
 import ru.m210projects.Redneck.Types.SoundOwner;
 import ru.m210projects.Redneck.Types.VOC;
@@ -77,10 +82,49 @@ public class Sounds {
 	public static MusicSource currMusic;
 	public static String currSong;
 
-	public static final String track[] = { 
-		"track02.ogg", "track03.ogg", "track04.ogg", 
-		"track05.ogg", "track06.ogg", "track07.ogg", 
-		"track08.ogg", "track09.ogg" };
+	public static String[] cdtracks;
+	public static void searchCDtracks()
+	{
+		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.Game).getFiles().values().iterator(); it.hasNext();) {
+			FileEntry file = it.next();
+			if(file.getExtension().equals("cue"))
+			{
+				CueScript cdTracks = new CueScript(file);
+				cdtracks = cdTracks.getTracks();
+
+				int numtracks = cdtracks.length;
+				for(int i = 0; i < cdtracks.length; i++) {
+					if(!BuildGdx.cache.contains(cdtracks[i], 0)) {
+						cdtracks[i] = null;
+						numtracks--;
+					}
+				}
+				Console.Println(numtracks + " cd tracks found...");
+				return;
+			}
+		}
+		
+		List<FileEntry> tracks = new ArrayList<FileEntry>();
+		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.Game).getFiles().values().iterator(); it.hasNext();) {
+			FileEntry file = it.next();
+			if(file.getExtension().equals("ogg"))
+				tracks.add(file);
+		}
+		
+		if(tracks.size() != 0)
+		{
+			int numtracks = tracks.size();
+			cdtracks = new String[numtracks];
+			for(int i = 0; i < numtracks; i++) {
+				cdtracks[i] = tracks.get(i).getPath();
+			}
+			Console.Println(numtracks + " cd tracks found...");
+			return;
+		}
+		
+		cdtracks = new String[0];
+		Console.Println("Cd tracks not found.");
+	}
 
 	private static SourceCallback<Integer> callback = new SourceCallback<Integer>() {
 		@Override
@@ -159,7 +203,7 @@ public class Sounds {
 
 		currMusic = null;
 		currTrack++;
-		if (currTrack >= track.length)
+		if (currTrack >= cdtracks.length)
 			currTrack = 0;
 		currSong = null;
 	}
@@ -217,13 +261,13 @@ public class Sounds {
 		
 		if (currMusic != null && !currMusic.isPlaying()) {
 			currTrack++;
-			if (currTrack >= track.length)
+			if (currTrack >= cdtracks.length)
 				currTrack = 0;
 
 			System.err.println("Change music to" + currTrack);
 			sndPlayTrack(currTrack);
 		} else if (currMusic == null) {
-			for (int i = 0; i < track.length; i++)
+			for (int i = 0; i < cdtracks.length; i++)
 				if (sndPlayTrack(i)) {
 					System.err.println("Start music " + i);
 					return;
@@ -238,8 +282,8 @@ public class Sounds {
 			return true;
 
 		sndStopMusic();
-		if (nTrack >= 0 && nTrack < track.length && BuildGdx.cache.contains(track[nTrack], 0)
-				&& (currMusic = BuildGdx.audio.newMusic(MusicType.Digital, track[nTrack])) != null) {
+		if (nTrack >= 0 && nTrack < cdtracks.length && BuildGdx.cache.contains(cdtracks[nTrack], 0)
+				&& (currMusic = BuildGdx.audio.newMusic(MusicType.Digital, cdtracks[nTrack])) != null) {
 			currTrack = nTrack;
 			currMusic.play(false);
 			return true;
@@ -247,25 +291,6 @@ public class Sounds {
 
 		return false;
 	}
-
-//	private static void playmusic(String fn) {
-//		if (fn == null)
-//			return;
-//		byte[] pRaw = BuildGdx.cache.getBytes(fn, 0);
-//
-//		if (pRaw == null || pRaw.length <= 0)
-//			return;
-//
-//		if (currMusic != null && currMusic.isPlaying() && currSong == fn)
-//			return;
-//
-//		sndStopMusic();
-//		currMusic = BuildGdx.audio.newMusic(MusicType.Midi, pRaw);
-//		if (currMusic != null) {
-//			currMusic.play(true);
-//			currSong = fn;
-//		}
-//	}
 
 	public static boolean sndRestart(int nvoices, int resampler) {
 		BuildGdx.audio.getSound().stopAllSounds();

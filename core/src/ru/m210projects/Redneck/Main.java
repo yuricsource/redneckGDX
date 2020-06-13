@@ -56,6 +56,7 @@ import static ru.m210projects.Redneck.ResourceHandler.usecustomarts;
 import static ru.m210projects.Redneck.Sounds.MusicStartup;
 import static ru.m210projects.Redneck.Sounds.SoundStartup;
 import static ru.m210projects.Redneck.Sounds.StopAllSounds;
+import static ru.m210projects.Redneck.Sounds.searchCDtracks;
 import static ru.m210projects.Redneck.Types.RTS.RTS_Init;
 import static ru.m210projects.Redneck.Types.RTS.numlumps;
 
@@ -114,7 +115,6 @@ public class Main extends BuildGame {
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
-	 * cd audio from cue
 	 */
 
 	public static final String appdef = "rrgdx.def";
@@ -179,6 +179,7 @@ public class Main extends BuildGame {
 
 		SoundStartup();
 		MusicStartup();
+		searchCDtracks();
 
 		initanimations();
 		FindSaves();

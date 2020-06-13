@@ -180,6 +180,7 @@ import static ru.m210projects.Redneck.View.zoom;
 import static ru.m210projects.Redneck.Weapons.addweapon;
 import static ru.m210projects.Redneck.Weapons.moveweapons;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
@@ -193,6 +194,8 @@ import ru.m210projects.Build.Pattern.BuildNet;
 import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
 import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Build.Settings.BuildConfig.GameKeys;
+import ru.m210projects.Build.Types.BuildPos;
+import ru.m210projects.Build.Types.InvalidVersionException;
 import ru.m210projects.Redneck.Config.RRKeys;
 import ru.m210projects.Redneck.Input;
 import ru.m210projects.Redneck.Main;
@@ -205,8 +208,6 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class GameScreen extends GameAdapter {
 
-	private int[] posx = new int[1], posy = new int[1], posz = new int[1];
-	private short[] sect = new short[1], ang = new short[1];
 	private int nonsharedtimer;
 	
 	private Main game;
@@ -609,23 +610,20 @@ public class GameScreen extends GameAdapter {
 
 	    if( GameScreen.this != gDemoScreen && ud.recstat == 2)
 	        ud.recstat = 0;
-
-	    int out = engine.loadboard( map, posx, posy, posz, ang, sect );
-		switch(out)
-		{
-		case -1:
-			game.GameCrash("Map " + map + " not found!");
-			return false;
-		case -2:
-			game.GameCrash(map + ": Invalid map version!");
+	    
+	    BuildPos out = null;
+		try {
+			out = engine.loadboard(map);
+		} catch (FileNotFoundException | InvalidVersionException | RuntimeException e) {
+			game.GameMessage(e.getMessage());
 			return false;
 		}
 		
-		ps[0].posx = posx[0];
-	    ps[0].posy = posy[0];
-	    ps[0].posz = posz[0];
-	    ps[0].ang = ang[0];
-	    ps[0].cursectnum = sect[0];
+		ps[0].posx = out.x;
+	    ps[0].posy = out.y;
+	    ps[0].posz = out.z;
+	    ps[0].ang = out.ang;
+	    ps[0].cursectnum = out.sectnum;
 
 	    Arrays.fill(gotpic, (byte)0);
 	    Arrays.fill(rorsector, (short) -1);

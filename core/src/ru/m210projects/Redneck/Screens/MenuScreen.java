@@ -24,6 +24,7 @@ import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.View.*;
 
 import ru.m210projects.Build.Pattern.ScreenAdapters.MenuAdapter;
+import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
 
@@ -37,7 +38,7 @@ public class MenuScreen extends MenuAdapter {
 
 	@Override
 	public void show() {
-		engine.setbrightness(ud.brightness>>2, palette, 3);
+		engine.setbrightness(ud.brightness>>2, palette, GLInvalidateFlag.All);
 		if(!menu.gShowMenu)
 			menu.mOpen(menu.mMenus[MAIN], -1);
 	}

@@ -28,6 +28,7 @@ import com.badlogic.gdx.ScreenAdapter;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.Audio.Source;
+import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
 
 public class EndScreen extends ScreenAdapter {
 
@@ -35,7 +36,7 @@ public class EndScreen extends ScreenAdapter {
 	
 	@Override
 	public void show() {
-		engine.setbrightness(ud.brightness >> 2, palette, 2);
+		engine.setbrightness(ud.brightness >> 2, palette, GLInvalidateFlag.All);
 		totalclock = 0;
 		StopAllSounds();
 		voice = sound(35);
