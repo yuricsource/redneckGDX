@@ -170,6 +170,8 @@ public class LoadSave {
 				fil.close();
 				return 1;
 			} else 	lsInf.info = "Incompatible ver. " + nVersion + " != " + currentGdxSave;
+			if(!fil.isClosed())
+				fil.close();
 		} else lsInf.clear();
 		return -1;
 	}
