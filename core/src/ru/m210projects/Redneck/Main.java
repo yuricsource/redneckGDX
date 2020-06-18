@@ -26,6 +26,7 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
 import static ru.m210projects.Build.OnSceenDisplay.Console.osd_argv;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.CORRUPTLOAD;
 import static ru.m210projects.Redneck.Animate.initanimations;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.GAME;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.MAIN;
@@ -80,6 +81,7 @@ import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.Types.LittleEndian;
+import ru.m210projects.Redneck.Menus.MenuCorruptGame;
 import ru.m210projects.Redneck.Factory.RREngine;
 import ru.m210projects.Redneck.Factory.RRFactory;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
@@ -110,7 +112,7 @@ public class Main extends BuildGame {
 	 * TODO:
 	 * 
 	 * Добавить чтобы музыка играла в случайном порядке (shuffle)
-	 * Добавить 8track player
+	 * Добавить 8track player (тайл 370)
 	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
@@ -231,6 +233,7 @@ public class Main extends BuildGame {
 
 		menu.mMenus[MAIN] = new MainMenu(this);
 		menu.mMenus[GAME] = new GameMenu(this);
+		menu.mMenus[CORRUPTLOAD] = new MenuCorruptGame(this);
 
 		gAnmScreen = new AnmScreen(this);
 		gMveScreen = new MVEScreen(this);

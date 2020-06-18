@@ -65,6 +65,7 @@ public class RRMenuHandler extends MenuHandler {
 	public static final int NEWADDON = 14;
 	public static final int OPTIONS = 15;
 	public static final int USERCONTENT = 16;
+	public static final int CORRUPTLOAD = 17;
 
 	public BuildMenu[] mMenus;
 	private Engine engine;
@@ -72,7 +73,7 @@ public class RRMenuHandler extends MenuHandler {
 	
 	public RRMenuHandler(BuildGame app)
 	{
-		mMenus = new BuildMenu[18];
+		mMenus = new BuildMenu[19];
 		this.engine = app.pEngine;
 		this.app = app;
 	}

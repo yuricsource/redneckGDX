@@ -99,7 +99,9 @@ public class AnimFile {
 	{
 		int pagenumber = findpage(framenumber);
 		int offset = loadpage(pagenumber);
-		renderframe(framenumber, offset);
+		try {
+			renderframe(framenumber, offset);
+		} catch (Throwable t) {}
 	}
 	
 	private int findpage(int framenumber)

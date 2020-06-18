@@ -18,6 +18,13 @@ package ru.m210projects.Redneck;
 
 import static ru.m210projects.Build.Engine.*;
 import static ru.m210projects.Build.Net.Mmulti.*;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.CORRUPTLOAD;
+import static ru.m210projects.Redneck.Globals.defGame;
+import static ru.m210projects.Redneck.Globals.nMaxEpisodes;
+import static ru.m210projects.Redneck.Globals.nMaxMaps;
+import static ru.m210projects.Redneck.Globals.nMaxSkills;
+import static ru.m210projects.Redneck.Main.gGameScreen;
+import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.View.*;
@@ -55,6 +62,7 @@ import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.WALL;
+import ru.m210projects.Redneck.Menus.MenuCorruptGame;
 import ru.m210projects.Redneck.Types.ANIMATION;
 import ru.m210projects.Redneck.Types.GameInfo;
 import ru.m210projects.Redneck.Types.LSInfo;
@@ -549,6 +557,38 @@ public class LoadSave {
 		}
 	}
 	
+	public static boolean canLoad(String filename) {
+		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
+		if (fil != null) {
+			int nVersion = checkSave(fil) & 0xFFFF;	
+			
+			if(nVersion != currentGdxSave) {
+				if(nVersion >= gdxSave) {
+					final GameInfo addon = loader.LoadGDXHeader(fil);
+					
+					if(loader.level_number <= nMaxMaps && loader.volume_number < nMaxEpisodes && loader.player_skill >= 0 && loader.player_skill < nMaxSkills && loader.warp_on != 2) {
+						MenuCorruptGame menu = (MenuCorruptGame) game.menu.mMenus[CORRUPTLOAD];
+						menu.setRunnable(new Runnable() {
+							@Override
+							public void run() {
+								GameInfo game = addon != null ? addon : defGame;
+								int nEpisode = loader.volume_number;
+								int nLevel = loader.level_number;
+								int nSkill = loader.player_skill - 1;
+								gGameScreen.newgame(false, game, nEpisode, nLevel, nSkill);
+							}
+						});
+						game.menu.mOpen(menu, -1);	
+					}
+				}
+			}
+			
+			fil.close();
+			return nVersion == currentGdxSave;
+		}
+		return false;
+	}
+	
 	public static void quickload()
 	{
 		if(numplayers > 1 || mFakeMultiplayer) return;
@@ -559,13 +599,15 @@ public class LoadSave {
 		}
 		final String loadname = game.pSavemgr.getLast();
 		if (loadname != null) {
-			game.changeScreen(gLoadingScreen.setTitle(loadname));
-			gLoadingScreen.init(new Runnable() {
-				public void run() {
-					if(!loadgame(loadname)) 
-						game.setPrevScreen();
-				}
-			});
+			if(canLoad(loadname)) {
+				game.changeScreen(gLoadingScreen.setTitle(loadname));
+				gLoadingScreen.init(new Runnable() {
+					public void run() {
+						if(!loadgame(loadname)) 
+							game.setPrevScreen();
+					}
+				});
+			}
 		}
 	}
 	
