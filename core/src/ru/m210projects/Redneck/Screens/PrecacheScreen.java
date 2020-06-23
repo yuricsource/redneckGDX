@@ -23,7 +23,7 @@ import static ru.m210projects.Redneck.Names.ACCESS_ICON;
 import static ru.m210projects.Redneck.Names.AMMOBOX;
 import static ru.m210projects.Redneck.Names.APLAYER;
 import static ru.m210projects.Redneck.Names.ARROW;
-import static ru.m210projects.Redneck.Names.BEER_ICON;
+import static ru.m210projects.Redneck.Names.*;
 import static ru.m210projects.Redneck.Names.BIGALPHANUM;
 import static ru.m210projects.Redneck.Names.BLOOD;
 import static ru.m210projects.Redneck.Names.BOOT_ICON;
@@ -84,6 +84,7 @@ import ru.m210projects.Redneck.Main.UserFlag;
 public class PrecacheScreen extends PrecacheAdapter {
 
 	private Main app;
+
 	public PrecacheScreen(Main app) {
 		super(app);
 		this.app = app;
@@ -170,13 +171,12 @@ public class PrecacheScreen extends PrecacheAdapter {
 				doprecache(1);
 			}
 		});
-		
+
 		addQueue("Preload other tiles...", new Runnable() {
 			@Override
 			public void run() {
-				for(int i = 0; i < MAXTILES; i++)
-				{
-					if(waloff[i] == null)
+				for (int i = 0; i < MAXTILES; i++) {
+					if (waloff[i] == null)
 						engine.loadtile(i);
 				}
 			}
@@ -231,6 +231,133 @@ public class PrecacheScreen extends PrecacheAdapter {
 					addTile(j);
 			}
 			break;
+		case 2121:
+		case 2122:
+			maxc = 1;
+			break;
+		case BILLYRAY:
+			for (j = BILLYWALK; j < BILLYJIBB + 4; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case DOGRUN:
+			for (j = DOGATTACK; j <= 4095; j++)
+				addTile(j);
+			for (j = DOGRUN; j <= 4340; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case LTH:
+			for (j = LTH; j < 4457; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case BUBBASTAND:
+			for (j = BUBBASCRATCH; j < 4511; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case HULK:
+			for (j = (short) (sprite[i].picnum - 41); j < sprite[i].picnum - 1; j++)
+				addTile(j);
+			for (j = HULKJIBA; j <= HULKJIBC + 4; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case 4770: // BUBBAELVIS
+			for (j = 4770; j <= 4799; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case BIKERRIDE:
+		case BIKERRIDE + 1:
+			for (j = BIKERRIDE; j <= 5994; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case BIKERSTAND:
+			for (j = BIKERSTAND; j <= 6111; j++)
+				addTile(j);
+			for (j = 6145; j <= 6249; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case BIKERRIDEDAISY:
+			for (j = BIKERRIDEDAISY; j <= 6484; j++)
+				addTile(j);
+			for (j = 6558; j <= 6641; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case DAISYMAE:
+		case DAISYMAE + 1:
+			for (j = DAISYMAE; j <= 6702; j++)
+				addTile(j);
+			for (j = 6705; j <= 6916; j++)
+				addTile(j);
+			for (j = 6920; j <= 6992; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case BANJOCOOTER:
+			for (j = BANJOCOOTER; j <= 7034; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case GUITARBILLY:
+			for (j = GUITARBILLY; j <= 7037; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case JACKOLOPE:
+			for (j = 7280; j <= 7334; j++)
+				addTile(j);
+			for (j = 7336; j <= 7385; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case MAMAJACKOLOPE:
+			for (j = 8705; j <= 8783; j++)
+				addTile(j);
+			for (j = 8785; j <= 8792; j++)
+				addTile(j);
+			for (j = 8795; j <= 8889; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case MINION:
+			for (j = sprite[i].picnum; j < sprite[i].picnum + 141; j++)
+				addTile(j);
+			for (j = MINJIBA; j <= MINJIBC + 4; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case 5317: // TCOW:
+			maxc = 56;
+			break;
+		case COOT:
+			for (j = COOT; j <= 8783; j++)
+				addTile(j);
+			for (j = COOTJIBA; j < 5620; j++)
+				addTile(j);
+			maxc = 0;
+			break;
+		case ECLAIRHEALTH:
+			maxc = 14;
+			break;
+		case VIXEN:
+			maxc = 214;
+			break;
+		case MOSQUITO:
+			maxc = 6;
+			break;
+		case HEN:
+			maxc = 34;
+			break;
+		case PIG:
+		case PIGSTAYPUT:
+			maxc = 68;
+			break;
 		case FORCERIPPLE:
 			maxc = 9;
 			break;
@@ -239,7 +366,7 @@ public class PrecacheScreen extends PrecacheAdapter {
 			maxc = 3;
 			break;
 		case TORNADO:
-			maxc = 4;
+			maxc = 7;
 			break;
 		case UFO1:
 		case UFO2:
@@ -284,10 +411,10 @@ public class PrecacheScreen extends PrecacheAdapter {
 		addTile(CROSSHAIR);
 		addTile(FRAGBAR - 1);
 
-//	    	for(i=920;i<924;i++)
-//		    	addTile(i);
-//	    	for(i=930;i<939;i++)
-//		    	addTile(i);
+		for (i = 920; i < 924; i++)
+			addTile(i);
+		for (i = 930; i < 939; i++)
+			addTile(i);
 
 		// FONTS
 		for (i = STARTALPHANUM; i < ENDALPHANUM + 1; i++)
@@ -297,43 +424,43 @@ public class PrecacheScreen extends PrecacheAdapter {
 		for (i = MINIFONT; i < MINIFONT + 63; i++)
 			addTile(i);
 
-//		    WEAPONS
-//		    for( i = NEWCROWBAR; i < NEWCROWBAR+8; i++ )
-//		    	addTile(i);
-//		    for( i = NEWPISTOL; i < NEWPISTOL+11; i++ )
-//		    	addTile(i);
-//		    for( i = NEWSHOTGUN; i < NEWSHOTGUN+9 ; i++ )
-//		    	addTile(i);
-//		    for( i = 3370; i < 3373; i++ )
-//		    	addTile(i);
-//		    for( i = RIFLE; i < RIFLE+3 ; i++ )
-//		    	addTile(i);
-//		    for( i = SHELL; i < SHELL+2 ; i++ ) //Dynamite
-//		    	addTile(i);
-//		    for( i = 1752; i < 1757 ; i++ ) //Dynamite
-//		    	addTile(i);
-//		    for( i = NEWDYNAMITE; i < NEWDYNAMITE+7; i++ )
-//		    	addTile(i);
-//		    for( i = CIRCLESTUCK-5; i < CIRCLESTUCK; i++ )
-//		    	addTile(i);
-//		    for( i = BUZSAW; i < BUZSAW+3; i++ )
-//		    	addTile(i);
-//		    for( i = 3415; i < 3419; i++ )
-//		    	addTile(i);
-//		    for( i = 3427; i < 2429; i++ )
-//		    	addTile(i);
-//		    addTile(3438);
-//		    for( i = 3445; i < 3448; i++ )
-//		    	addTile(i);
-//		    for( i = 3452; i < 3459; i++ )
-//		    	addTile(i);
-//		    
-//		    //PICKUPS
-//		    for( i = FIRSTGUNSPRITE; i <= ALIENARMGUN; i++ )
-//		    	addTile(i);
-//		    for( i = AMMO; i <= BOOTS+1; i++ )
-//		    	addTile(i);
-//		    addTile(TEATAMMO);
+		// WEAPONS
+		for (i = NEWCROWBAR; i < NEWCROWBAR + 8; i++)
+			addTile(i);
+		for (i = NEWPISTOL; i < NEWPISTOL + 11; i++)
+			addTile(i);
+		for (i = NEWSHOTGUN; i < NEWSHOTGUN + 9; i++)
+			addTile(i);
+		for (i = 3370; i < 3373; i++)
+			addTile(i);
+		for (i = RIFLE; i < RIFLE + 3; i++)
+			addTile(i);
+		for (i = SHELL; i < SHELL + 2; i++) // Dynamite
+			addTile(i);
+		for (i = 1752; i < 1757; i++) // Dynamite
+			addTile(i);
+		for (i = NEWDYNAMITE; i < NEWDYNAMITE + 7; i++)
+			addTile(i);
+		for (i = CIRCLESTUCK - 5; i < CIRCLESTUCK; i++)
+			addTile(i);
+		for (i = BUZSAW; i < BUZSAW + 3; i++)
+			addTile(i);
+		for (i = 3415; i < 3419; i++)
+			addTile(i);
+		for (i = 3427; i < 2429; i++)
+			addTile(i);
+		addTile(3438);
+		for (i = 3445; i < 3448; i++)
+			addTile(i);
+		for (i = 3452; i < 3459; i++)
+			addTile(i);
+
+		// PICKUPS
+		for (i = FIRSTGUNSPRITE; i <= ALIENARMGUN; i++)
+			addTile(i);
+		for (i = AMMO; i <= BOOTS + 1; i++)
+			addTile(i);
+		addTile(TEATAMMO);
 
 		for (i = SHOTSPARK1; i <= SHOTSPARK1 + 3; i++)
 			addTile(i);

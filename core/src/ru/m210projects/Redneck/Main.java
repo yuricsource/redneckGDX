@@ -113,12 +113,11 @@ public class Main extends BuildGame {
 	 * Changelog:
 	 * 8 Track player
 	 * Shuffle music option
+	 * Dead cows don't block your shots
 	 * 
 	 * TODO:
-	 * cachespritenum
 	 * as I said once, you cannot pickup a weapon if you already have it
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
-	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 */
 
 	public static final String appdef = "rrgdx.def";
