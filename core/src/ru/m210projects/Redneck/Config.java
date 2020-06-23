@@ -244,6 +244,7 @@ public class Config extends BuildConfig {
 	public int auto_run = 1;
 	public int fta_on = 1;
 	public boolean gColoredKeys;
+	public boolean gShuffleMusic = false;
 	
 	@Override
 	public void SaveConfig(FileResource fil) {
@@ -264,6 +265,7 @@ public class Config extends BuildConfig {
 			saveInteger(fil, "showMapInfo", showMapInfo);
 			saveInteger(fil, "DemoSequence", gDemoSeq);
 			saveBoolean(fil, "Colored_keys", gColoredKeys);
+			saveBoolean(fil, "ShuffleMusic", gShuffleMusic);
 		}
 	}
 
@@ -283,11 +285,8 @@ public class Config extends BuildConfig {
 		auto_run = 1;
 		fta_on = 1;
 		pName = "Leonard";
-		gColoredKeys = false;
-		musicType = 0;
-		
-		if(!isDefault)
-		{
+
+		if(!isDefault) {
 			LoadCommon(defkeys, defclassickeys);
 			if(set("Options")) {
 				int value = GetKeyInt("Size");
@@ -318,6 +317,7 @@ public class Config extends BuildConfig {
 				value = GetKeyInt("DemoSequence");
 				if(value != -1) gDemoSeq = value;
 				gColoredKeys = GetKeyInt("Colored_keys") == 1;
+				gShuffleMusic = GetKeyInt("ShuffleMusic") == 1;
 			}
 			close();
 		} 
@@ -351,6 +351,7 @@ public class Config extends BuildConfig {
 			mousekeys[GameKeys.Previous_Weapon.getNum()] = MOUSE_WHELLDN;
 		}
 		
+		middrv = musicType = 0;
 		return true;
 	}
 

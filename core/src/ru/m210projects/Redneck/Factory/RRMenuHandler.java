@@ -66,6 +66,7 @@ public class RRMenuHandler extends MenuHandler {
 	public static final int OPTIONS = 15;
 	public static final int USERCONTENT = 16;
 	public static final int CORRUPTLOAD = 17;
+	public static final int TRACKPLAYER = 18;
 
 	public BuildMenu[] mMenus;
 	private Engine engine;
