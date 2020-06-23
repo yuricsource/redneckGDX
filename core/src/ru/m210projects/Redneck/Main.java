@@ -114,9 +114,10 @@ public class Main extends BuildGame {
 	 * 8 Track player
 	 * Shuffle music option
 	 * Dead cows don't block your shots
+	 * Quick weapon switch without waiting fully raised
 	 * 
 	 * TODO:
-	 * as I said once, you cannot pickup a weapon if you already have it
+	 * as I said once, you cannot pickup a weapon if you already have it (in MP?)
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
 	 */
 

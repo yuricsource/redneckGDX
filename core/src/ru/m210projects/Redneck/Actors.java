@@ -825,8 +825,7 @@ public class Actors {
 					p = npc.yvel;
 					j = hittype[sn].owner;
 
-					if (j >= 0 && sprite[j].picnum == APLAYER && ud.coop == 1
-							&& ud.ffire == 0)
+					if (j >= 0 && sprite[j].picnum == APLAYER && ud.coop == 1 && ud.ffire == 0)
 						return -1;
 
 					npc.extra -= hittype[sn].extra;

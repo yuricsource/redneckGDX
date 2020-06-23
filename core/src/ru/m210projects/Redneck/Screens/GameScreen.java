@@ -1103,7 +1103,7 @@ public class GameScreen extends GameAdapter {
 	        		&& p.kickback_pic == 0 
 	        		&& p.quick_kick == 0 && sprite[p.i].xrepeat > 8 && p.access_incs == 0 && p.knee_incs == 0 )
 	        {
-	            if(  ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) )
+	            if(!IsOriginalGame() || ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) ) //quick weapon switch
 	            {
 	            	if(j == 12) //last used weapon
 	            	{
