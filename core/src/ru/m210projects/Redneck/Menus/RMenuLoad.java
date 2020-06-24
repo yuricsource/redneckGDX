@@ -41,17 +41,19 @@ public class RMenuLoad extends MenuLoadSave {
 			@Override
 			public void run(MenuHandler handler, MenuItem pItem) {
 				final MenuSlotList item = (MenuSlotList) pItem;
-				app.changeScreen(gLoadingScreen);
-				gLoadingScreen.init(new Runnable() {
-					public void run() {
-						if(!loadgame(item.FileName())) {
-							app.setPrevScreen();
-							if(app.isCurrentScreen(gGameScreen)) {
-								app.pNet.ready2send = true;
+				if(canLoad(item.FileName())) {
+					app.changeScreen(gLoadingScreen);
+					gLoadingScreen.init(new Runnable() {
+						public void run() {
+							if(!loadgame(item.FileName())) {
+								app.setPrevScreen();
+								if(app.isCurrentScreen(gGameScreen)) {
+									app.pNet.ready2send = true;
+								}
 							}
 						}
-					}
-				});
+					});
+				}
 			}
 			
 		}, false);

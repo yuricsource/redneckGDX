@@ -471,6 +471,34 @@ public class SafeLoader {
 		return message;
 	}
 	
+	public GameInfo LoadGDXHeader(Resource fil) {
+		volume_number = -1;
+		level_number = -1;
+		player_skill = -1;
+		warp_on = 0;
+		addon = null;
+		addonFileName = null;
+		
+		try {
+			fil.seek(SAVEHEADER - SAVELEVELINFO, Whence.Set);
+
+			multimode = fil.readInt();
+			volume_number = fil.readInt();
+			level_number = fil.readInt();
+			player_skill = fil.readInt();
+			
+			fil.seek(SAVEHEADER + SAVESCREENSHOTSIZE, Whence.Set);
+			
+			LoadGDXBlock(fil);
+			if (warp_on == 1) // try to find addon
+				addon = levelGetEpisode(addonFileName);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return addon;
+	}
+	
 	public void LoadGDXBlock(Resource bb)
 	{
 		int pos = bb.position();

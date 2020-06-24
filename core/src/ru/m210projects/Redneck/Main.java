@@ -26,6 +26,7 @@ import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_RED;
 import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_YELLOW;
 import static ru.m210projects.Build.OnSceenDisplay.Console.osd_argv;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
 import static ru.m210projects.Redneck.Animate.initanimations;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.GAME;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.MAIN;
@@ -80,6 +81,8 @@ import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Build.Settings.BuildConfig;
 import ru.m210projects.Build.Types.LittleEndian;
+import ru.m210projects.Redneck.Menus.MenuCorruptGame;
+import ru.m210projects.Redneck.Menus.TrackPlayerMenu;
 import ru.m210projects.Redneck.Factory.RREngine;
 import ru.m210projects.Redneck.Factory.RRFactory;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
@@ -107,14 +110,15 @@ import ru.m210projects.Redneck.Types.Weaponhit;
 public class Main extends BuildGame {
 
 	/*
-	 * TODO:
+	 * Changelog:
+	 * 8 Track player
+	 * Shuffle music option
+	 * Dead cows don't block your shots
+	 * Quick weapon switch without waiting fully raised
 	 * 
-	 * Добавить чтобы музыка играла в случайном порядке (shuffle)
-	 * Добавить 8track player
-	 * cachespritenum
-	 * as I said once, you cannot pickup a weapon if you already have it
+	 * TODO:
+	 * as I said once, you cannot pickup a weapon if you already have it (in MP?)
 	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
-	 * Также, если начинаются моды, убедитесь, что куры и коровы не привлекают автоматическую цель и имеют правильные удары. Мертвые коровы, создающие невидимую стену, блокирующую пули над своим трупом, действительно плохи. 
 	 */
 
 	public static final String appdef = "rrgdx.def";
@@ -229,8 +233,10 @@ public class Main extends BuildGame {
 			baseDef.loadScript(filgdx);
 		this.setDefs(baseDef);
 
+		menu.mMenus[TRACKPLAYER] = new TrackPlayerMenu();
 		menu.mMenus[MAIN] = new MainMenu(this);
 		menu.mMenus[GAME] = new GameMenu(this);
+		menu.mMenus[CORRUPTLOAD] = new MenuCorruptGame(this);
 
 		gAnmScreen = new AnmScreen(this);
 		gMveScreen = new MVEScreen(this);

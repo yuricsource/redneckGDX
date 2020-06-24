@@ -152,7 +152,6 @@ import static ru.m210projects.Redneck.SoundDefs.GENERIC_AMBIENCE17;
 import static ru.m210projects.Redneck.SoundDefs.THUD;
 import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
 import static ru.m210projects.Redneck.Sounds.currMusic;
-import static ru.m210projects.Redneck.Sounds.currTrack;
 import static ru.m210projects.Redneck.Sounds.pan3dsound;
 import static ru.m210projects.Redneck.Sounds.sndPlayMusic;
 import static ru.m210projects.Redneck.Sounds.sndStopMusic;
@@ -840,8 +839,7 @@ public class GameScreen extends GameAdapter {
 	                	ud.respawn_monsters = true;
 	                else ud.respawn_monsters = false;
 				}
-                
-				currTrack = 0;
+
                 uGameFlags = 0;
         	    ud.secretlevel = 0;
         	    ud.from_bonus = 0;
@@ -1105,7 +1103,7 @@ public class GameScreen extends GameAdapter {
 	        		&& p.kickback_pic == 0 
 	        		&& p.quick_kick == 0 && sprite[p.i].xrepeat > 8 && p.access_incs == 0 && p.knee_incs == 0 )
 	        {
-	            if(  ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) )
+	            if(!IsOriginalGame() || ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) ) //quick weapon switch
 	            {
 	            	if(j == 12) //last used weapon
 	            	{

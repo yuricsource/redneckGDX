@@ -30,6 +30,9 @@ public class VOC {
 	
 	public VOC(byte[] data)
 	{
+		if(data == null)
+			return;
+		
 		getInfo(data);
 		boolean eightbit = samplesize == 8;
 		byte[] buf = convertData(data, datalen, eightbit);

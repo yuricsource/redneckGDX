@@ -172,24 +172,24 @@ public class Actors {
 		    	return true;
 		    	
 		    case 1147: //RA
-		    case 1344:
+		    case RAT:
 		    case 4249:
 		    case 4770:
 		    case MINIONUFO:
-		    case 5890:
-		    case 5891:
-		    case 5995:
+		    case BIKERRIDE:
+		    case BIKERRIDE + 1:
+		    case BIKERSTAND:
 		    case 6225:
-		    case 6401:
-		    case 6658:
-		    case 6659:
-		    case 7030:
-		    case 7035:
-		    case 7192:
-		    case 7199:
-		    case 7206:
-		    case 7280:
-		    case 8705:
+		    case BIKERRIDEDAISY:
+		    case DAISYMAE:
+		    case DAISYMAE + 1:
+		    case BANJOCOOTER:
+		    case GUITARBILLY:
+		    case MINIONAIRBOAT:
+		    case HULKAIRBOAT:
+		    case DAISYAIRBOAT:
+		    case JACKOLOPE:
+		    case MAMAJACKOLOPE:
 		    	if(currentGame.getCON().type == RRRA)
 		    		return true;
                 break;
@@ -825,8 +825,7 @@ public class Actors {
 					p = npc.yvel;
 					j = hittype[sn].owner;
 
-					if (j >= 0 && sprite[j].picnum == APLAYER && ud.coop == 1
-							&& ud.ffire == 0)
+					if (j >= 0 && sprite[j].picnum == APLAYER && ud.coop == 1 && ud.ffire == 0)
 						return -1;
 
 					npc.extra -= hittype[sn].extra;
@@ -3463,8 +3462,10 @@ public class Actors {
 					t[1]++;
 
 					t[4] = s.z;
-					s.z = sector[sect].floorz
-							- (engine.krand() % (sector[sect].floorz - sector[sect].ceilingz));
+					s.z = sector[sect].floorz;
+					int dz = sector[sect].floorz - sector[sect].ceilingz;
+					if(dz != 0)
+						s.z -= (engine.krand() % dz);
 
 					switch (t[1]) {
 					case 3:
@@ -3910,6 +3911,9 @@ public class Actors {
 			x = player_dist;
 
 			execute(currentGame.getCON(), i, p, x);
+			
+			if(!IsOriginalDemo() && s.picnum == COW && s.extra <= 0 && (s.cstat & 256) != 0) 
+				s.cstat &= ~256;
 		}
 
 	}

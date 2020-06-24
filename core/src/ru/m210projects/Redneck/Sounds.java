@@ -235,6 +235,8 @@ public class Sounds {
 			}
 		}
 		
+		if(cfg.gShuffleMusic)
+			currTrack = (int) (Math.random() * (cdtracks.length - 1));
 		sndPlayTrack(currTrack);
 
 //		if (cfg.musicType == 1 && game.currentDef != null) { // music from def file
@@ -260,14 +262,21 @@ public class Sounds {
 		if(cfg.muteMusic) return;
 		
 		if (currMusic != null && !currMusic.isPlaying()) {
-			currTrack++;
-			if (currTrack >= cdtracks.length)
+			if(cfg.gShuffleMusic)
+				currTrack = (int) (Math.random() * (cdtracks.length - 1));
+			else currTrack++;
+
+			if (currTrack < 0 || currTrack >= cdtracks.length)
 				currTrack = 0;
 
 			System.err.println("Change music to" + currTrack);
 			sndPlayTrack(currTrack);
 		} else if (currMusic == null) {
-			for (int i = 0; i < cdtracks.length; i++)
+			int i = 0;
+			if(cfg.gShuffleMusic)
+				i = (int) (Math.random() * (cdtracks.length - 1));
+			
+			for (; i < cdtracks.length; i++)
 				if (sndPlayTrack(i)) {
 					System.err.println("Start music " + i);
 					return;
@@ -277,7 +286,7 @@ public class Sounds {
 		}
 	}
 
-	private static boolean sndPlayTrack(int nTrack) {
+	public static boolean sndPlayTrack(int nTrack) {
 		if (currMusic != null && currMusic.isPlaying() && currTrack == nTrack)
 			return true;
 

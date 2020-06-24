@@ -70,6 +70,11 @@ public class DemoScreen extends GameScreen {
 		lastload = null;
 	}
 	
+	@Override
+	public void hide() {
+		ud.user_name[myconnectindex] = cfg.pName;
+	}
+	
 	public boolean showDemo(String name, String ini)
 	{
 		demfile = null;
