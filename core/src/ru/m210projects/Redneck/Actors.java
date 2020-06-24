@@ -3462,8 +3462,10 @@ public class Actors {
 					t[1]++;
 
 					t[4] = s.z;
-					s.z = sector[sect].floorz
-							- (engine.krand() % (sector[sect].floorz - sector[sect].ceilingz));
+					s.z = sector[sect].floorz;
+					int dz = sector[sect].floorz - sector[sect].ceilingz;
+					if(dz != 0)
+						s.z -= (engine.krand() % dz);
 
 					switch (t[1]) {
 					case 3:
