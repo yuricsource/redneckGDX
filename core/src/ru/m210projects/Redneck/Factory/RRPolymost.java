@@ -45,7 +45,7 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Names.APLAYERTOP;
 
 import ru.m210projects.Build.Engine;
-import ru.m210projects.Build.Render.Polymost;
+import ru.m210projects.Build.Render.Polymost.Polymost;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Build.Types.WALL;
