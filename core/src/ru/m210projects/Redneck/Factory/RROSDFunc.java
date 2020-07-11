@@ -125,7 +125,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 		// fix for TCs like Layre which don't have the BGTILE for
 		// some reason
 		// most of this is copied from my dummytile stuff in defs.c
-		if (engine.getTile(BGTILE).hasSize())
+		if (!engine.getTile(BGTILE).hasSize())
 			engine.allocatepermanenttile(BGTILE, BGTILE_SIZEX,
 					BGTILE_SIZEY);
 
