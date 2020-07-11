@@ -49,8 +49,6 @@ import static ru.m210projects.Build.Engine.show2dsector;
 import static ru.m210projects.Build.Engine.show2dsprite;
 import static ru.m210projects.Build.Engine.show2dwall;
 import static ru.m210projects.Build.Engine.sprite;
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Engine.visibility;
 import static ru.m210projects.Build.Engine.wall;
 import static ru.m210projects.Build.Engine.zeropskyoff;
@@ -159,6 +157,7 @@ import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.Resource;
 import ru.m210projects.Build.Types.SPRITE;
+import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Main.UserFlag;
 import ru.m210projects.Redneck.Types.PlayerStruct;
@@ -249,7 +248,8 @@ public class Premap {
 	}
 
 	public static void xyzmirror(int i, int wn) {
-		engine.setviewtotile(wn, tilesizy[wn], tilesizx[wn]);
+		Tile pic = engine.getTile(wn);
+		engine.setviewtotile(wn, pic.getHeight(), pic.getWidth());
 
 		engine.drawrooms(sprite[i].x, sprite[i].y, sprite[i].z, sprite[i].ang, 100 + sprite[i].shade,
 				sprite[i].sectnum);
@@ -1122,7 +1122,7 @@ public class Premap {
 		uGameFlags |= MODE_EOL;
 		if(mUserFlag != UserFlag.UserMap && (uGameFlags & MODE_END) == 0 && ud.level_number >= currentGame.episodes[ud.volume_number].nMaps)
 			uGameFlags |= MODE_END;
-		
+
 		if (ud.rec != null)
 			ud.rec.close();
 
@@ -1290,7 +1290,7 @@ public class Premap {
 		for (int i = 16; i < 32; i++)
 			tempbuf[i] = (byte) (i - 64);
 		engine.makepalookup(35, tempbuf, 0, 0, 0, 1);
-		
+
 		palookup[ANIM_PAL] = new byte[numshades << 8];
 		for (int i = 0; i < MAXPALOOKUPS; i++)
 			palookup[ANIM_PAL][i] = (byte) i;

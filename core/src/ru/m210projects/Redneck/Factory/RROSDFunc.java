@@ -16,8 +16,6 @@
 
 package ru.m210projects.Redneck.Factory;
 
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Net.Mmulti.numplayers;
 import static ru.m210projects.Build.OnSceenDisplay.Console.BGCTILE;
 import static ru.m210projects.Build.OnSceenDisplay.Console.BGTILE;
@@ -43,7 +41,9 @@ import static ru.m210projects.Redneck.Cheats.IsCheatCode;
 import static ru.m210projects.Redneck.Cheats.cheatCode;
 import static ru.m210projects.Redneck.Main.gGameScreen;
 import static ru.m210projects.Redneck.Main.game;
-import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Names.BACKGROUND;
+import static ru.m210projects.Redneck.Names.INGAMELNRDTHREEDEE;
+import static ru.m210projects.Redneck.Names.VIEWBORDER;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Architecture.BuildGdx;
@@ -55,14 +55,14 @@ public class RROSDFunc extends DEFOSDFUNC {
 
 	public RROSDFunc(Engine engine) {
 		super(engine);
-		
+
 		BGTILE = BACKGROUND;
 		BGCTILE = INGAMELNRDTHREEDEE;
 		BORDTILE = VIEWBORDER;
 
 		BITSTH = 1+8+16;
 		BITSTL = 1+8+16+32;
-		BITS = 8+16+64+4;	
+		BITS = 8+16+64+4;
 		BORDERANG = 512;
 		SHADE = 20;
 		PALETTE = 0;
@@ -76,7 +76,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 		OSDTEXT_GREEN	 = 7;
 		OSDTEXT_GREY     = 8;
 	}
-	
+
 	@Override
 	public void drawosdstr(int x, int y, int ptr, int len, int shade, int pal, int scale) {
 		char[][] osdtext = Console.getTextPtr();
@@ -98,7 +98,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 	public void drawstr(int x, int y, char[] text, int len, int shade, int pal, int scale) {
 		engine.printext256(mulscale(4+(x<<3), scale, 16),mulscale(y<<3, scale, 16), colorswap(pal), -1, text, 0, scale / 65536.0f);
 	}
-	
+
 	private int colorswap(int col)
 	{
 		switch(col) {
@@ -125,12 +125,12 @@ public class RROSDFunc extends DEFOSDFUNC {
 		// fix for TCs like Layre which don't have the BGTILE for
 		// some reason
 		// most of this is copied from my dummytile stuff in defs.c
-		if (tilesizx[BGTILE] == 0 || tilesizy[BGTILE] == 0)
+		if (engine.getTile(BGTILE).hasSize())
 			engine.allocatepermanenttile(BGTILE, BGTILE_SIZEX,
 					BGTILE_SIZEY);
 
 		if(game.pMenu == null) return; //not ready to show
-		
+
 		if (!game.pMenu.gShowMenu && !(game.getScreen() instanceof InitScreen)) {
 			BuildGdx.input.setCursorCatched(shown == 0);
 			game.pInput.resetMousePos();
@@ -139,9 +139,9 @@ public class RROSDFunc extends DEFOSDFUNC {
 
 	@Override
 	public boolean textHandler(String message) {
-		if ( numplayers > 1 ) 
+		if ( numplayers > 1 )
 			return false;
-		
+
 		char[] lockeybuf = message.toCharArray();
 		int i = 0;
 		while (i < lockeybuf.length && lockeybuf[i] != 0)
@@ -151,7 +151,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 		int ep = -1, lvl = -1;
 		boolean wrap1 = false;
 		boolean wrap2 = false;
-		
+
 //		System.err.println("/*" + cheatnum++ + "*/" + "\"" + cheat + "\", // " + message);
 
 		boolean IsSkillCheat = cheat.startsWith(cheatCode[7]);
@@ -170,7 +170,7 @@ public class RROSDFunc extends DEFOSDFUNC {
 					&& message.charAt(i) != ' ')
 				i++;
 
-			if (i <= message.length()) 
+			if (i <= message.length())
 			{
 				String nEpisode = message.substring(startpos, i);
 				nEpisode = nEpisode.replaceAll("[^0-9]", "");
@@ -198,10 +198,10 @@ public class RROSDFunc extends DEFOSDFUNC {
 				} else bad = true;
 			} else bad = true;
 
-			
+
 			if(bad)
 			{
-				if(IsSkipMapCheat) 
+				if(IsSkipMapCheat)
 					Console.Println("rdmeadow [episode] [level]");
 				else if(IsSkillCheat)
 					Console.Println("rdskill [skill]");

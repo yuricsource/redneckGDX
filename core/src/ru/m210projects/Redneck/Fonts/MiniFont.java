@@ -16,9 +16,7 @@
 
 package ru.m210projects.Redneck.Fonts;
 
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
-import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Names.MINIFONT;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
@@ -26,24 +24,24 @@ import ru.m210projects.Build.Pattern.BuildFont;
 public class MiniFont extends BuildFont {
 
 	public MiniFont(Engine draw) {
-		super(draw, (tilesizy[MINIFONT] + 2) / 2, 32768, 8 | 16);
+		super(draw, (draw.getTile(MINIFONT).getHeight() + 2) / 2, 32768, 8 | 16);
 
 		this.addChar(' ', nSpace, 5, nScale, 0, 0);
 		int nTile = MINIFONT;
 
 		for(int i = 0; i < 64; i++) {
 			char symbol = (char) (i + '!');
-			if(tilesizx[nTile + i] != 0) 
+			if(draw.getTile(nTile + i).getWidth() != 0)
 				this.addChar(symbol, nTile + i, 4, nScale, 0, 0);
 		}
 		for(int i = 64; i < 90; i++) {
 			char symbol = (char) (i + '!');
-			if(tilesizx[nTile + i - 32] != 0) 
+			if(draw.getTile(nTile + i - 32).getWidth() != 0)
 				this.addChar(symbol, nTile + i - 32, 4, nScale, 0, 0);
 		}
 		for(int i = 90; i < 95; i++) {
 			char symbol = (char) (i + '!');
-			if(tilesizx[nTile + i] != 0) 
+			if(draw.getTile(nTile + i).getWidth() != 0)
 				this.addChar(symbol, nTile + i, 4, nScale, 0, 0);
 		}
 	}

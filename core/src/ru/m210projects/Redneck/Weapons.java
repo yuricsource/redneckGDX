@@ -75,16 +75,16 @@ import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Weapons {
-	
-	public static final short weapon_sprites[] = { 
-			3340, 
-			FIRSTGUNSPRITE, 
+
+	public static final short weapon_sprites[] = {
+			3340,
+			FIRSTGUNSPRITE,
 			SHOTGUNSPRITE,
-			22, 
-			26, 
-			23, 
-			25, 
-			29, 
+			22,
+			26,
+			23,
+			25,
+			29,
 			27,
 			24,
 			1409,
@@ -98,8 +98,8 @@ public class Weapons {
 	    int i, j;
 	    int xv, yv;
 	    int a = s.ang;
-	    
-	    if(s.picnum == APLAYER && (ps[s.yvel].auto_aim == 0 
+
+	    if(s.picnum == APLAYER && (ps[s.yvel].auto_aim == 0
 	    		&& ps[s.yvel].curr_weapon != CHICKENBOW_WEAPON
 	    		&& ps[s.yvel].curr_weapon != MOTO_WEAPON
 	    		&& ps[s.yvel].curr_weapon != BOAT_WEAPON)) return -1;
@@ -129,7 +129,7 @@ public class Weapons {
 	                {
 		                xv = (sprite[i].x-s.x);
 		                yv = (sprite[i].y-s.y);
-	
+
 		                if( (dy1*xv) <= (dx1*yv) )
 		                    if( ( dy2*xv ) >= (dx2*yv) )
 		                {
@@ -185,8 +185,8 @@ public class Weapons {
 	          }
 		 }
 	}
-	
-	public static void addammo(int weapon, PlayerStruct p, int amount) 
+
+	public static void addammo(int weapon, PlayerStruct p, int amount)
 	{
 		p.ammo_amount[weapon] += amount;
 
@@ -195,7 +195,7 @@ public class Weapons {
 	}
 
 	public static void addweapon(PlayerStruct p, int weapon) {
-		
+
 		if ( p.OnMotorcycle || p.OnBoat )
 		{
 			p.gotweapon[KNEE_WEAPON] = true;
@@ -216,7 +216,7 @@ public class Weapons {
 		    }
 			return;
 		}
-		
+
 		if (!p.gotweapon[weapon]) {
 			p.gotweapon[weapon] = true;
 			if (weapon == THROWSAW_WEAPON) {
@@ -252,7 +252,7 @@ public class Weapons {
 		p.kickback_pic = 0;
 		if(p.last_used_weapon != p.curr_weapon && p.curr_weapon != weapon)
 			p.last_used_weapon = (byte) p.curr_weapon;
-		
+
 		p.curr_weapon = (short) weapon;
 
 		switch (weapon) {
@@ -273,7 +273,7 @@ public class Weapons {
 			break;
 		}
 	}
-	
+
 	public static void checkweapons(PlayerStruct p)
 	{
 	    short cw = p.curr_weapon;
@@ -291,7 +291,7 @@ public class Weapons {
 //	                spawn(p.i,EXPLOSION2);
 //	                break;
 //	        }
-	        
+
 //	        for(int i = 0; i < 5; i++)
 //	        {
 //	        	if ( p.gotkey[i] != 0 )
@@ -308,7 +308,7 @@ public class Weapons {
 //	        }
 	    }
 	}
-	
+
 	public static void shoot(int i,int atwith)
 	{
 	    short sect, l, sa, p, j, k, scount;
@@ -316,11 +316,11 @@ public class Weapons {
 	    short sizx,sizy;
 	    int hitx, hity, hitz;
 	    short hitsect, hitsprite, hitwall;
-	    
+
 	    SPRITE s = sprite[i];
 	    sect = s.sectnum;
 	    zvel = 0;
-	    
+
 	    if(sect < 0 || sect >= MAXSECTORS) return;
 
 	    if( s.picnum == APLAYER )
@@ -341,14 +341,14 @@ public class Weapons {
 	        sa = s.ang;
 	        sx = s.x;
 	        sy = s.y;
-	        sz = s.z-((s.yrepeat*tilesizy[s.picnum])<<1);
+	        sz = s.z-((s.yrepeat*engine.getTile(s.picnum).getHeight())<<1);
             sz -= (3<<8);
             if(badguy(s))
             {
                 sx += (sintable[(sa+1024+96)&2047]>>7);
                 sy += (sintable[(sa+512+96)&2047]>>7);
             }
-	        
+
 	    }
 
 	    switch(atwith)
@@ -384,7 +384,7 @@ public class Weapons {
 	                    j = ps[findplayer(s)].i;
 	                    x = player_dist;
 	                    zvel = ( (sprite[j].z-sz)<<8 ) / (x+1);
-	                    sa = (short) engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
+	                    sa = engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
 	                }
 	            }
 
@@ -392,14 +392,14 @@ public class Weapons {
 	                sintable[(sa+512)&2047],
 	                sintable[sa&2047],zvel<<6,
 	                pHitInfo,CLIPMASK1);
-	            
+
 	            hitsect = pHitInfo.hitsect;
 	            hitsprite = pHitInfo.hitsprite;
 	            hitwall = pHitInfo.hitwall;
-	            hitx = pHitInfo.hitx; 
-	            hity = pHitInfo.hity;  
-	            hitz = pHitInfo.hitz; 
-	            
+	            hitx = pHitInfo.hitx;
+	            hity = pHitInfo.hity;
+	            hitz = pHitInfo.hitz;
+
 	            if ( (hitsect != -1 && (sector[hitsect].lotag == 160 && zvel > 0 || sector[hitsect].lotag == 161 && zvel < 0))
                     && hitsprite == -1
                     && hitwall == -1 )
@@ -411,7 +411,7 @@ public class Weapons {
 	            			int z = sector[sprite[sprite[si].owner].sectnum].ceilingz;
 	            			if ( sector[hitsect].lotag == 161 )
 	            				z = sector[sprite[sprite[si].owner].sectnum].floorz;
-	    
+
 	            			engine.hitscan(
 	            					sprite[sprite[si].owner].x + sprite[si].x + hitx,
 	            					sprite[sprite[si].owner].y + sprite[si].y + hity,
@@ -420,13 +420,13 @@ public class Weapons {
 	            	                sintable[(sa+512)&2047],
 	            	                sintable[sa&2047],zvel<<6,
 	            	                pHitInfo,CLIPMASK1);
-	            	            
+
             	            hitsect = pHitInfo.hitsect;
             	            hitsprite = pHitInfo.hitsprite;
             	            hitwall = pHitInfo.hitwall;
-            	            hitx = pHitInfo.hitx; 
-            	            hity = pHitInfo.hity;  
-            	            hitz = pHitInfo.hitz; 	
+            	            hitx = pHitInfo.hitx;
+            	            hity = pHitInfo.hity;
+            	            hitz = pHitInfo.hitz;
             	            break;
 	                    }
 	            	}
@@ -553,9 +553,9 @@ public class Weapons {
 	                j = (short) aim( s, AUTO_AIM_ANGLE );
 	                if(j >= 0)
 	                {
-	                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)+(5<<8);
+	                    dal = ((sprite[j].xrepeat*engine.getTile(sprite[j].picnum).getHeight())<<1)+(5<<8);
 	                    zvel = ( ( sprite[j].z-sz-dal )<<8 ) / ldist(sprite[ps[p].i], sprite[j]) ;
-	                    sa = (short) engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
+	                    sa = engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
 	                }
 
 	                if(atwith == SHOTSPARK1)
@@ -600,18 +600,18 @@ public class Weapons {
 	                sintable[(sa+512)&2047],
 	                sintable[sa&2047],
 	                zvel<<6,pHitInfo,CLIPMASK1);
-	            
+
 	            hitsect = pHitInfo.hitsect;
 	            hitsprite = pHitInfo.hitsprite;
 	            hitwall = pHitInfo.hitwall;
-	            hitx = pHitInfo.hitx; 
-	            hity = pHitInfo.hity;  
-	            hitz = pHitInfo.hitz; 
-	            
+	            hitx = pHitInfo.hitx;
+	            hity = pHitInfo.hity;
+	            hitz = pHitInfo.hitz;
+
 	            s.cstat |= 257;
 
 	            if(hitsect < 0) return;
-	            
+
 	            if ( atwith == NEWSHOTGUN && sector[hitsect].lotag == 1 && (engine.krand() & 1) == 0)
 	            	return;
 
@@ -694,10 +694,10 @@ public class Weapons {
 		                        checkhitswitch(p,hitwall,0);
 		                        return;
 		                    }
-	
+
 		                    if(wall[hitwall].hitag != 0 || ( wall[hitwall].nextwall >= 0 && wall[wall[hitwall].nextwall].hitag != 0 ) )
 		                        break SKIPBULLETHOLE;
-	
+
 		                    if( hitsect >= 0 && sector[hitsect].lotag == 0 )
 		                        if( wall[hitwall].overpicnum != BIGFORCE )
 		                            if( (wall[hitwall].nextsector >= 0 && sector[wall[hitwall].nextsector].lotag == 0 ) ||
@@ -714,7 +714,7 @@ public class Weapons {
 		                                l = nextspritesect[l];
 		                            }
 		                        }
-	
+
 		                        l = headspritestat[5];
 		                        while(l >= 0)
 		                        {
@@ -742,7 +742,7 @@ public class Weapons {
 	            else
 	            {
 	                k = EGS(hitsect,hitx,hity,hitz,SHOTSPARK1,-15,24,24,sa,0,0,i,(short)4);
-	                sprite[k].extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[atwith]]; 
+	                sprite[k].extra = (short) currentGame.getCON().script[currentGame.getCON().actorscrptr[atwith]];
 
 	                if( hitsprite >= 0 )
 	                {
@@ -759,24 +759,24 @@ public class Weapons {
 	                xyzsound(PISTOL_RICOCHET,k,hitx,hity,hitz);
 
 	            return;
-	            
+
 	        case OWHIP:
 	        case UWHIP:
 
 	            if( s.extra >= 0 ) s.shade = -96;
 
 	            scount = 1;
-	            if(atwith == OWHIP) 
+	            if(atwith == OWHIP)
 	            {
 	            	sz -= 3840;
 	                vel = 300;
-	            } 
-	            else if(atwith == UWHIP) 
+	            }
+	            else if(atwith == UWHIP)
 	            {
 	            	sz += 1024;
 	                vel = 300;
-	            } 
-	           
+	            }
+
 
 	            if(p >= 0)
 	            {
@@ -785,11 +785,11 @@ public class Weapons {
                     sy += sintable[(s.ang+160)&2047]>>6;
 	                if(j >= 0)
 	                {
-	                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)-(12<<8);
+	                    dal = ((sprite[j].xrepeat*engine.getTile(sprite[j].picnum).getHeight())<<1)-(12<<8);
 	                    zvel = ((sprite[j].z-sz-dal)*vel ) / ldist(sprite[ps[p].i], sprite[j]) ;
-	                    sa = (short) engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
+	                    sa = engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
 	                }
-	                else 
+	                else
 	                    zvel = (100-(int)ps[p].horiz-ps[p].horizoff)*98;
 	            }
 	            else
@@ -805,7 +805,7 @@ public class Weapons {
 	            }
 
 	            oldzvel = zvel;
-	            
+
 	            if(p >= 0)
 	            {
 	            	sizx = 7;
@@ -829,7 +829,7 @@ public class Weapons {
 	            }
 
 	            return;
-	            
+
 	        case FIRELASER:
 	        case SHITBALL:
 	        case DILDO:
@@ -837,13 +837,13 @@ public class Weapons {
 	            if( s.extra >= 0 ) s.shade = -96;
 
 	            scount = 1;
-	            if(atwith == SHITBALL) 
+	            if(atwith == SHITBALL)
 	            	vel = 400;
 	            else
 	            {
 	            	vel = 840;
 	                sz -= (4<<7);
-	                
+
 	                if(s.picnum == HULK) {
 	                	sx += sintable[(sa+768)&2047]>>6;
                         sy += sintable[(sa+256)&2047]>>6;
@@ -860,19 +860,19 @@ public class Weapons {
                     sy += sintable[(s.ang+160)&2047]>>6;
 	                if(j >= 0)
 	                {
-	                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)-(12<<8);
+	                    dal = ((sprite[j].xrepeat*engine.getTile(sprite[j].picnum).getHeight())<<1)-(12<<8);
 	                    zvel = ((sprite[j].z-sz-dal)*vel ) / ldist(sprite[ps[p].i], sprite[j]) ;
-	                    sa = (short) engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
+	                    sa = engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
 	                }
-	                else 
+	                else
 	                    zvel = (100-(int)ps[p].horiz-ps[p].horizoff)*98;
 	            }
 	            else
 	            {
 	                j = (short) findplayer(s);
 	                x = player_dist;
-	                
-	                if(s.picnum == HULK) 
+
+	                if(s.picnum == HULK)
 	                	sa -= engine.krand()&31;
 	                else if ( s.picnum == VIXEN )
 	                	sa -= engine.krand()&16;
@@ -883,13 +883,13 @@ public class Weapons {
 
 	            oldzvel = zvel;
 
-	            if(atwith == SHITBALL) 
-	            { 
-	            	sizx = 18; 
-	            	sizy = 18; 
+	            if(atwith == SHITBALL)
+	            {
+	            	sizx = 18;
+	            	sizy = 18;
 	            	if ( s.picnum == 8705 )
-	            		sz -= (20<<8); 
-	            	else sz -= (10<<8); 
+	            		sz -= (20<<8);
+	            	else sz -= (10<<8);
 	            }
 	            else
 	            {
@@ -897,12 +897,12 @@ public class Weapons {
 	            	{
 	            		sizx = 8;
                         sizy = 8;
-	            	} 
+	            	}
 	            	else if( atwith == FIRELASER )
 	                {
 	                    if(p >= 0)
 	                    {
-	                        
+
 	                        sizx = 34;
 	                        sizy = 34;
 	                    }
@@ -966,10 +966,10 @@ public class Weapons {
 	                		if ( sprite[j].picnum == 4861 && sprite[j].picnum == 4862 )
 	                			id = ps[myconnectindex].i;
 	                    }
-	                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)+(8<<8);
+	                    dal = ((sprite[j].xrepeat*engine.getTile(sprite[j].picnum).getHeight())<<1)+(8<<8);
 	                    zvel = ( (sprite[j].z-sz-dal)*vel ) / ldist(sprite[ps[p].i], sprite[j]);
 	                    if( sprite[j].picnum != 4989 )
-	                        sa = (short) engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
+	                        sa = engine.getangle(sprite[j].x-sx,sprite[j].y-sy);
 	                }
 	                else zvel = (100-(int)ps[p].horiz-ps[p].horizoff)*81;
 
@@ -984,7 +984,7 @@ public class Weapons {
 	            {
 	                j = (short) findplayer(s);
 	                x = player_dist;
-	                sa = (short) engine.getangle(ps[j].oposx-sx,ps[j].oposy-sy);
+	                sa = engine.getangle(ps[j].oposx-sx,ps[j].oposy-sy);
 	                if(sprite[i].picnum == 4607)
 	                    sz -= (32<<8);
 	                else if(sprite[i].picnum == 4557)
@@ -1009,12 +1009,12 @@ public class Weapons {
 	            	zvel = -2560;
 	            	vel *= 2;
 	            }
-	            
+
 	            j = EGS(sect,
 	                sx+(sintable[(348+sa+512)&2047]/448),
 	                sy+(sintable[(sa+348)&2047]/448),
 	                sz-(1<<8),atwith,0,14,14,sa,vel,zvel,i,(short)4);
-	            
+
 	            if ( atwith == 1790 )
 	            {
 	            	sprite[j].extra = 10;
@@ -1026,7 +1026,7 @@ public class Weapons {
 	            	sprite[j].hitag = 0;
 	            	lotsofmoney(sprite[j], (engine.krand() & 3) + 1);
 	            }
-	            
+
 	            sprite[j].extra += (engine.krand()&7);
 	            if(atwith != ALIENBLAST)
 	                sprite[j].yvel = l;
@@ -1096,7 +1096,7 @@ public class Weapons {
 	            if(zvel < -4096)
 	                zvel = -2048;
 	            vel = x>>4;
-	            
+
 	            int sizex = 32;
 	            int sizey = 32;
 	            if(atwith == 3464)
@@ -1118,35 +1118,35 @@ public class Weapons {
             	break;
 	    }
 	}
-	
+
 	public static final int rake_x[] = { 580,676,310,491,356,210,310,614,0,0 };
 	public static final int rake_y[] = { 369,363,300,323,371,400,300,440,0,0 };
-	
+
 	public static final byte crowbar_frames[] = {0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7};
 	public static final int crowbar_x[] = { 310,342,364,418,350,316,282,288,0,0 };
 	public static final int crowbar_y[] = { 300,362,320,268,248,248,277,420,0,0 };
-	
+
 	public static final byte pistol_frames[] = {0,0,1,1,2,2,3,3,4,4,6,6,6,6,5,5,4,4,3,3,0,0};
 	public static final int pistol_x[] = { 194,190,185,208,215,215,216,216,201,170 };
 	public static final int pistol_y[] = { 256,249,248,238,228,218,208,256,245,258 };
-	
+
 	public static final byte rpistol_frames[] = {0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,};
 	public static final int rpistol_x[] = { 244, 244, 244 };
 	public static final int rpistol_y[] = { 256, 249, 248 };
-	
+
 	public static final byte shotgun_frames[] = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 0, 0,20,20,21,21,21,21,20,20,20,20, 0, 0, };
 	public static final byte shotgun_frames2[] = { 0,0,1,1,2,2,5,5,6,6,7,7,8,8,0,0,0,0,0,0,0 };
 	public static final byte shotgun_frames3[] = { 0,0,3,3,4,4,5,5,6,6,7,7,8,8,0,0,20,20,21,21,21,21,20,20,20,20,0,0 };
-	
+
 	public static final short shotgun_x[] = { 300,300,300,300,300,330,320,310,305,306,302 };
 	public static final short shotgun_y[] = { 315,300,302,305,302,302,303,306,302,404,384, };
-	
-	
+
+
 	public static final byte dynamite_flames[] = { 1,1,1,1,1,2,2,2,2,3,3,3,4,4,4,5,5,5,5,5,6,6,6,0};
 	public static final byte weap5_frames[] = { 0,1,1,2,2,3,2,3,2,3,2,2,2,2,2,2,2,2,2,4,4,4,4,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7 };
 	public static final byte weap7_frames[] = { 0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 	public static final byte weap8_frames[] = { 1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0 };
-	
+
 	public static void moveweapons() {
 		int j, k, p, q;
 		int dax, day, daz, x, ll;
@@ -1193,7 +1193,7 @@ public class Weapons {
 					q = EGS(s.sectnum,
 							s.x + ((k * sintable[(s.ang + 512) & 2047]) >> 9),
 							s.y + ((k * sintable[s.ang & 2047]) >> 9),
-							(int) (s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 12))),
+							s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 12)),
 							TONGUE, -40 + (k << 1), 8, 8, 0, 0, 0, i, (short)5);
 					sprite[q].cstat = 128;
 					sprite[q].pal = 8;
@@ -1201,7 +1201,7 @@ public class Weapons {
 				q = EGS(s.sectnum,
 						s.x + ((k * sintable[(s.ang + 512) & 2047]) >> 9),
 						s.y + ((k * sintable[s.ang & 2047]) >> 9),
-						(int) (s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 12))),
+						s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 12)),
 						INNERJAW, -40, 32, 32, 0, 0, 0, i, (short)5);
 				sprite[q].cstat = 128;
 				if (hittype[i].temp_data[1] > 512
@@ -1265,8 +1265,8 @@ public class Weapons {
 					}
 					if ( sprite[s.lotag].extra <= 0 )
 						s.lotag = 0;
-					
-					if ( s.lotag != 0 && s.hitag > 5 )  
+
+					if ( s.lotag != 0 && s.hitag > 5 )
 					{
 						SPRITE spr = sprite[s.lotag];
 						short ang = engine.getangle(spr.x - s.x, spr.y - s.y);
@@ -1281,9 +1281,9 @@ public class Weapons {
 						} else if(klabs(seekang) <= 1023)
 							s.ang -= 51;
 						else s.ang += 51;
-						
+
 						if ( s.hitag > 180 && s.zvel <= 0 )
-					          s.zvel += 200;	
+					          s.zvel += 200;
 					}
 					break;
 				case 1790:
@@ -1294,7 +1294,7 @@ public class Weapons {
 				        s.extra--;
 					}
 					else makeitfall(currentGame.getCON(), i);
-					
+
 					if ( s.xrepeat >= 10 && sector[s.sectnum].lotag != 2 )
 					{
 				        j = spawn(i, SMALLSMOKE);
@@ -1329,7 +1329,7 @@ public class Weapons {
 					engine.deletesprite(i);
 					continue;
 				} else if ((j & kHitTypeMask) != kHitSprite)
-					
+
 					if (s.picnum != ALIENBLAST) {
 						if (s.z < hittype[i].ceilingz) {
 							j = kHitSector | (s.sectnum);
@@ -1349,7 +1349,7 @@ public class Weapons {
 								s.x
 										+ ((k * sintable[(s.ang + 512) & 2047]) >> 9),
 								s.y + ((k * sintable[s.ang & 2047]) >> 9),
-								(int) (s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 24))),
+								s.z + ((k * ksgn(s.zvel)) * klabs(s.zvel / 24)),
 								FIRELASER, shade, s.xrepeat, s.yrepeat, 0, 0,
 								0, s.owner, (short)5);
 
@@ -1385,7 +1385,7 @@ public class Weapons {
 									sprite[j].pal = 1;
 									sprite[j].xrepeat = 32;
 									sprite[j].yrepeat = 32;
-	
+
 									engine.deletesprite(i);
 									continue;
 								}
@@ -1406,7 +1406,7 @@ public class Weapons {
 					            }
 								ps[p].horiz += 32;
 								ps[p].return_to_center = 8;
-									
+
 								if (ps[p].loogcnt == 0) {
 									if (Sound[DUKE_LONGTERM_PAIN].num < 1)
 										spritesound(DUKE_LONGTERM_PAIN, ps[p].i);
@@ -1433,7 +1433,7 @@ public class Weapons {
 							guts(s, 7392, 2, myconnectindex);
 							guts(s, 7397, 2, myconnectindex);
 			            }
-						
+
 
 						if (s.picnum != CROSSBOW
 								&& s.picnum != CHIKENCROSSBOW
@@ -1445,7 +1445,7 @@ public class Weapons {
 									- wall[j].x, wall[wall[j].point2].y
 									- wall[j].y);
 							s.ang = (short) (((k << 1) - s.ang) & 2047);
-							s.owner = (short) i;
+							s.owner = i;
 							spawn(i, TRANSPORTERSTAR);
 							continue;
 						} else {
@@ -1463,7 +1463,7 @@ public class Weapons {
 										if (s.yrepeat > 8)
 											s.yrepeat -= 2;
 									}
-	
+
 									k = engine.getangle(wall[wall[j].point2].x
 											- wall[j].x, wall[wall[j].point2].y
 											- wall[j].y);
@@ -1492,7 +1492,7 @@ public class Weapons {
 											sprite[nspawn].yrepeat = 8;
 											sprite[nspawn].cstat = 16;
 											sprite[nspawn].ang = (short) ((sprite[i].ang + 512) & 0x7FF);
-											sprite[nspawn].clipdist = mulscale(tilesizx[s.picnum], s.xrepeat, 7);
+											sprite[nspawn].clipdist = mulscale(engine.getTile(s.picnum).getWidth(), s.xrepeat, 7);
 										}
 										engine.deletesprite(i);
 									}
@@ -1510,7 +1510,7 @@ public class Weapons {
 							guts(s, 7392, 2, myconnectindex);
 							guts(s, 7397, 2, myconnectindex);
 			            }
-						
+
 						if (s.zvel < 0) {
 							if ((sector[s.sectnum].ceilingstat & 1) != 0)
 								if (sector[s.sectnum].ceilingpal == 0) {
@@ -1558,7 +1558,7 @@ public class Weapons {
 						default:
 							if (s.picnum != CIRCLESAW
 								&& s.picnum != ALIENBLAST
-								&& s.picnum != FIRELASER) 
+								&& s.picnum != FIRELASER)
 							{
 								k = spawn(i, EXPLOSION2);
 								sprite[k].xrepeat = sprite[k].yrepeat = (short) (s.xrepeat >> 1);
@@ -1571,12 +1571,12 @@ public class Weapons {
 							}
 							break;
 						}
-						
+
 						switch(s.picnum)
 						{
 						case CROSSBOW:
 						case CHIKENCROSSBOW:
-						case 1790:	
+						case 1790:
 							if(s.picnum != CHIKENCROSSBOW)
 								spritesound(RPG_EXPLODE, i);
 							else spritesound(247, i);
@@ -1597,10 +1597,10 @@ public class Weapons {
 							break;
 						}
 					}
-					
+
 					engine.deletesprite(i);
 					continue;
-					
+
 				}
 				if ((s.picnum == CROSSBOW || s.picnum == CHIKENCROSSBOW) && sector[s.sectnum].lotag == 2
 						&& s.xrepeat >= 10 && rnd(140))
@@ -1613,7 +1613,7 @@ public class Weapons {
 			}
 		}
 	}
-	
+
 	public static short fistsign;
 	public static void displayweapon(int snum)
 	{
@@ -1624,9 +1624,9 @@ public class Weapons {
 
 	    PlayerStruct p = ps[snum];
 	    short kb = p.kickback_pic;
-	
+
 	    o = 0;
-	    looking_arc = (int) (klabs(p.look_ang)/9);
+	    looking_arc = klabs(p.look_ang)/9;
 
 	    gs = sprite[p.i].shade;
 	    if ( shadeEffect[p.cursectnum] )
@@ -1648,15 +1648,15 @@ public class Weapons {
 	    gun_pos -= (p.hard_landing<<3);
 
 	    if(ud.screen_size > 2)
-	    	gun_pos += tilesizy[BOTTOMSTATUSBAR] / 4;
-	    	
+	    	gun_pos += engine.getTile(BOTTOMSTATUSBAR).getHeight() / 4;
+
 	    if(ud.screen_size > 3)
-		    gun_pos += tilesizy[1649] / 4;
+		    gun_pos += engine.getTile(1649).getHeight() / 4;
 
 	    if(p.last_weapon >= 0)
 	        cw = p.last_weapon;
 	    else cw = p.curr_weapon;
-	    
+
 	    if( sprite[p.i].xrepeat < 8 )
 	    {
 	        if(p.jetpack_on == 0 )
@@ -1668,15 +1668,15 @@ public class Weapons {
 	        cw = weapon_xoffset;
 	        weapon_xoffset += sintable[(fistsign)&2047]>>10;
 	        myos(weapon_xoffset+250-(p.look_ang>>1),
-	             (int) (looking_arc+258-(klabs(sintable[(fistsign)&2047]>>8))),
+	             looking_arc+258-(klabs(sintable[(fistsign)&2047]>>8)),
 	             1408,gs,o);
 	        weapon_xoffset = cw;
 	        weapon_xoffset -= sintable[(fistsign)&2047]>>10;
 	        myos(weapon_xoffset+40-(p.look_ang>>1),
-	        	 (int) (looking_arc+200+(klabs(sintable[(fistsign)&2047]>>8))),
+	        	 looking_arc+200+(klabs(sintable[(fistsign)&2047]>>8)),
 	        	 1408,gs,o|4);
 	    }
-	    else if(p.OnMotorcycle) 
+	    else if(p.OnMotorcycle)
 	    {
 	    	if(over_shoulder_on != 0)
 	    		return;
@@ -1700,9 +1700,9 @@ public class Weapons {
 	    				else
 	    					pic = 7174;
 	    			}
-	    		} 
-	    	} 
-	    	else 
+	    		}
+	    	}
+	    	else
 	    	{
 	    		if(kb != 0)
 	    		{
@@ -1727,7 +1727,7 @@ public class Weapons {
 	    	        }
 	    		}
 	    	}
-	    	
+
 	    	if(sprite[p.i].pal == 1)
                 pal = 1;
             else
@@ -1736,12 +1736,12 @@ public class Weapons {
                 if(pal == 0)
                     pal = p.palookup;
             }
-	    	
+
 	    	if ( p.TiltStatus < 0 )
 	    		engine.rotatesprite((160-(p.look_ang>>1))<<16,174<<16,0x8800, 5 * p.TiltStatus + 2047,pic,gs,pal,10,windowx1,windowy1,windowx2,windowy2);
 	        else
 	        	engine.rotatesprite((160-(p.look_ang>>1))<<16,174<<16,0x8800, 5 * p.TiltStatus,pic,gs,pal,10,windowx1,windowy1,windowx2,windowy2);
-	    } 
+	    }
 	    else if(p.OnBoat)
 	    {
 	    	if(over_shoulder_on != 0)
@@ -1797,8 +1797,8 @@ public class Weapons {
 					gs = -96;
 				}
 	    	} else pic = 7176;
-	    	
-	    	
+
+
 	    	if(sprite[p.i].pal == 1)
                 pal = 1;
             else
@@ -1806,18 +1806,18 @@ public class Weapons {
                 pal = sector[p.cursectnum].floorpal;
                 if(pal == 0) pal = p.palookup;
             }
-	    	
+
 	    	posy = 170;
 	    	if ( p.NotOnWater == 0 )
 	            posy = (kb >> 2) + 170;
-	    	
+
 	    	if ( p.TiltStatus < 0 )
 	    		engine.rotatesprite((160-(p.look_ang>>1))<<16,posy<<16,0x10200, p.TiltStatus + 2047,pic,gs,pal,10,windowx1,windowy1,windowx2,windowy2);
 	        else
 	        	engine.rotatesprite((160-(p.look_ang>>1))<<16,posy<<16,0x10200, p.TiltStatus,pic,gs,pal,10,windowx1,windowy1,windowx2,windowy2);
-	    	
-	    } 
-	    else switch(cw) 
+
+	    }
+	    else switch(cw)
 	    {
 	        case KNEE_WEAPON:
 	        case RATE_WEAPON:
@@ -1829,14 +1829,14 @@ public class Weapons {
                     if(pal == 0)
                         pal = p.palookup;
                 }
-                
+
                 if(cw == RATE_WEAPON)
-                	myospal(((rake_x[crowbar_frames[kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1) + 20, 
+                	myospal(((rake_x[crowbar_frames[kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1) + 20,
                     		looking_arc+210-(244 - rake_y[crowbar_frames[kb]]) - gun_pos - 80, 32768, 3510+crowbar_frames[kb],gs,o,pal);
                 else
                 	myospal(((crowbar_x[
                 	                    crowbar_frames[
-                	                                   kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1), 
+                	                                   kb]]>>1) - 12 + weapon_xoffset)-(p.look_ang>>1),
                 			looking_arc+200-(244 - crowbar_y[crowbar_frames[kb]]) - gun_pos, 32768, 3340+crowbar_frames[kb],gs,o,pal);
 	            break;
 
@@ -1849,10 +1849,10 @@ public class Weapons {
 
 	            posx = weapon_xoffset + 170;
 	            posy = looking_arc + 214 - gun_pos;
-	            
+
 	            weapon_xoffset += 8;
 	            gun_pos -= 10;
-	            
+
 	            if(cw == 12)
 	            {
 	            	if ( p.ammo_amount[12] != 0 )
@@ -1860,8 +1860,8 @@ public class Weapons {
 	            		myospal(posx - (p.look_ang>>1), posy + 11 + ((kb)<<3), 32768, 3428, gs, o, pal);
 	            		return;
 	                }
-	            } 
-	            else if ( p.ammo_amount[POWDERKEG_WEAPON] != 0 ) 
+	            }
+	            else if ( p.ammo_amount[POWDERKEG_WEAPON] != 0 )
 	            {
 	            	myospal(weapon_xoffset + 180 - (p.look_ang>>1), posy + ((kb)<<3), 36700, 3438, gs, o, pal);
 	            	myospal(weapon_xoffset + 90 - (p.look_ang>>1), posy + ((kb)<<3), 36700, 3438, gs, o | 4, pal);
@@ -1869,7 +1869,7 @@ public class Weapons {
 	            }
 	            myospal(posx - (p.look_ang>>1), posy + 11, 36700, 3365, gs, o, pal);
 	            break;
-	            
+
 	        case CROSSBOW_WEAPON:
 	        case CHICKENBOW_WEAPON:
 	            if(sprite[p.i].pal == 1)
@@ -1879,11 +1879,11 @@ public class Weapons {
 
 	            posx = weapon_xoffset + 210;
 	            posy = looking_arc + 255 - gun_pos;
-	            
+
 	            if(cw == CROSSBOW_WEAPON) {
 		            if(kb != 0) {
 			            switch(weap5_frames[kb])
-			            {	
+			            {
 			            	case 2:
 			            		myospal( posx - (p.look_ang>>1) - 3, posy - 5, 36700, weap5_frames[kb] + 3452,gs,o, pal);
 			            		break;
@@ -1899,12 +1899,12 @@ public class Weapons {
 			            }
 		            } else myospal(posx - (p.look_ang>>1), posy, 36700, 3452, gs, o, pal);
 	            }
-	            
+
 	            if(cw == CHICKENBOW_WEAPON) {
 	            	posy -= 40;
 		            if(kb != 0) {
 			            switch(weap5_frames[kb])
-			            {	
+			            {
 			            	case 2:
 			            		myospal( posx - (p.look_ang>>1) - 10, posy + 33, 36700, weap5_frames[kb] + 3482,gs,o, pal);
 			            		break;
@@ -1929,19 +1929,19 @@ public class Weapons {
 		            			myospal(posx - (p.look_ang>>1), posy - 3, 36700, 3489, gs, o, pal);
 		            			p.chiken_phase = 6;
 		            			spritesound(327, p.i);
-		            		} else 
+		            		} else
 		            			myospal(posx - (p.look_ang>>1), posy, 36700, 3482, gs, o, pal);
 		            	}
 		            }
 	            }
 	        	break;
-	        
+
 	        case SHOTGUN_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
 	            else
 	                pal = sector[p.cursectnum].floorpal;
-	            
+
 	            if ( p.shotgun_splitshot != 0 )
 	            {
 	            	if ( kb >= 26 ) //reload
@@ -1961,12 +1961,12 @@ public class Weapons {
                      		posy += 60;
                      	if ( kb == 24 )
                      		posy += 30;
-                        
+
                      	myospal(posx + 64 - (p.look_ang>>1), looking_arc + posy - gun_pos, 32768, shotgun_frames[kb] + 3350, gs, 0, pal);
                      	if ( shotgun_frames[kb] == 21 )
                      		myospal(posx + 96 - (p.look_ang>>1), looking_arc + posy - gun_pos, 32768, 3372, gs, 0, pal);
 	                }
-	            	else	
+	            	else
 	                {
 	            		if ( shotgun_frames[kb] == 3 || shotgun_frames[kb] == 4 )
 	            			gs = 0;
@@ -1976,7 +1976,7 @@ public class Weapons {
 	                    		looking_arc + posy - gun_pos, 32768,
 	                    		shotgun_frames[kb] + 3350, gs, 0, pal);
 	                }
-	            } 
+	            }
 	            else
 	            {
 	            	if ( kb >= 16 ) //reload
@@ -2022,7 +2022,7 @@ public class Weapons {
 	                }
 	            }
 	            break;
-	            
+
 	        case RIFLEGUN_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
@@ -2049,7 +2049,7 @@ public class Weapons {
 	                    break;
 	            }
 	            break;
-	            
+
             case PISTOL_WEAPON:
             	if(sprite[p.i].pal == 1)
             		pal = 1;
@@ -2088,12 +2088,12 @@ public class Weapons {
             				xoffset = 25;
             				break;
             		}
-            		myospal(rpistol_x[rpistol_frames[kb-22]] - (p.look_ang>>1) - xoffset, 
+            		myospal(rpistol_x[rpistol_frames[kb-22]] - (p.look_ang>>1) - xoffset,
             				looking_arc + (244 - (244 - rpistol_y[rpistol_frames[kb-22]])) - gun_pos + yoffset,
             				36700, rpistol_frames[kb-22] + 3336, gs, 0, pal);
             	}
             	break;
-	            
+
 	        case DYNAMITE_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
@@ -2114,14 +2114,14 @@ public class Weapons {
 	        		posy = looking_arc + 258 - gun_pos - 64;
 	        		if(kb == 0 || kb < 5 )
 	        			myospal(posx - (p.look_ang>>1) - 25, posy + p.detonate_count - 20, 36700, 1752, 0, o, pal);
-	        		
+
 	        		if ( kb != 0 )
 	        			myospal(posx - (p.look_ang>>1), looking_arc + 258 - gun_pos - 20, dynamite_flames[kb] + 3360, gs, o, pal);
 	        		else
 	        			myospal(posx - (p.look_ang>>1), looking_arc + 258 - gun_pos - 20, 36700, 3361, gs, o, pal);
 	        	}
 	        	break;
-	        	
+
 	        case TIT_WEAPON:
 	        	if(sprite[p.i].pal == 1)
 	                pal = 1;
@@ -2132,8 +2132,8 @@ public class Weapons {
 	                myospal( (weapon_xoffset >> 1) + 150-(p.look_ang>>1),(looking_arc >> 1) + 266 - gun_pos,3446,gs,o,pal);
 	            else myospal( (weapon_xoffset >> 1) + 150-(p.look_ang>>1),(looking_arc >> 1) + 266 - gun_pos,3445,0,o,pal);
 
-	            break;	
-	        	
+	            break;
+
 	        case ALIENBLASTER_WEAPON:
 	            if(sprite[p.i].pal == 1)
 	                pal = 1;
@@ -2142,14 +2142,14 @@ public class Weapons {
 
 	            posx = weapon_xoffset + 260;
 	            posy = looking_arc + 215 - gun_pos;
-	            
+
 	            if(kb != 0)
 	            	myospal(posx - (p.look_ang>>1), posy, 36700, weap7_frames[kb] + 3415, -32, o, pal);
 	            else
 	            	myospal(posx - (p.look_ang>>1), posy, 36700, 3415, gs, o, pal);
 	            break;
 
-	        
+
 
 	        case THROWSAW_WEAPON:
 	        case BUZSAW_WEAPON:
@@ -2191,7 +2191,7 @@ public class Weapons {
 	        	return;
 	    }
 	}
-	
+
 	public static void weaponprocess(int snum)
 	{
 		PlayerStruct p = ps[snum];
@@ -2200,16 +2200,16 @@ public class Weapons {
 		boolean shrunk = (s.yrepeat < 8);
 		int sb_snum = 0;
 		if(p.cheat_phase <= 0) sb_snum = sync[snum].bits;
-		
+
 		int j, i, k;
-		
+
 		int psectlotag = sector[p.cursectnum].lotag;
-		
+
 		 if( p.curr_weapon == THROWSAW_WEAPON || p.curr_weapon == BUZSAW_WEAPON )
 		        p.random_club_frame += 64; // Glowing
 		    if ( p.curr_weapon == 8 || p.curr_weapon == 12 )
 		        p.random_club_frame += 64;
-		        
+
 		    if(p.rapid_fire_hold == 1)
 		    {
 		        if( (sb_snum&(1<<2)) != 0 ) return;
@@ -2343,10 +2343,10 @@ public class Weapons {
 		                (p.kickback_pic)++;
 		                if( (p.kickback_pic) == 1 )
 		                	sound(401);
-		                
+
 		                if( (p.kickback_pic) == 6 && (sb_snum&(1<<2)) != 0 )
 		                    p.rapid_fire_hold = 1;
-		                
+
 		                if( (p.kickback_pic) > 19 )
 		                {
 		                	p.kickback_pic = 0;
@@ -2369,7 +2369,7 @@ public class Weapons {
 		                	p.field_290 = 0x2000;
 		                	sub_64EF0(snum);
 		                }
-		                
+
 		                if((p.kickback_pic)==12)
 		                {
 		                    p.ammo_amount[4]--;
@@ -2411,7 +2411,7 @@ public class Weapons {
 
 		                } else if( (p.kickback_pic) < 12 && (sb_snum&(1<<2)) != 0)
 		                    p.hbomb_hold_delay++;
-		                
+
 		                if( (p.kickback_pic) == 40 )
 		                {
 		                    (p.kickback_pic) = 0;
@@ -2426,9 +2426,9 @@ public class Weapons {
 		                    addweapon(p, 4);
 		                    p.weapon_pos = -9;
 		                }
-		                
+
 		                break;
-		                
+
 			        case PISTOL_WEAPON:
 		                if( (p.kickback_pic)==1)
 		                {
@@ -2440,7 +2440,7 @@ public class Weapons {
 		                    	gVisibility = 0;
 		                    p.field_290 = 0x2000;
 		                    sub_64EF0(snum);
-		                    
+
 		                    if(psectlotag != 857)
 		                    {
 		                    	p.posxv -= 16 * sintable[((int)p.ang+512)&2047];
@@ -2485,14 +2485,14 @@ public class Weapons {
 		                    (p.kickback_pic) = 0;
 		                    checkavailweapon(p);
 		                }
-		                break; 
-		                
+		                break;
+
 			        case SHOTGUN_WEAPON:
 
 		                (p.kickback_pic)++;
 		                if ( p.kickback_pic == 6 && p.shotgunstatus == 0 && p.ammo_amount[2] > 1 && (sb_snum&(1<<2)) != 0 )
 		                    p.shotgun_splitshot = 1;
-		                    
+
 		                if(p.kickback_pic == 4)
 		                {
 		                    shoot(pi,NEWSHOTGUN);
@@ -2512,7 +2512,7 @@ public class Weapons {
 		                    if(snum == screenpeek)
 		                    	gVisibility = 0;
 		                }
-		                
+
 		                if ( p.kickback_pic == 7 )
 		                {
 		                	if ( p.shotgun_splitshot != 0 )
@@ -2538,7 +2538,7 @@ public class Weapons {
 				                p.posyv -= 32 * sintable[(int)p.ang&2047];
 		                    }
 		                }
-		                
+
 		                if ( p.shotgunstatus != 0 )
 		                {
 		                	switch(p.kickback_pic)
@@ -2589,7 +2589,7 @@ public class Weapons {
 		                (p.kickback_pic)++;
 		                p.horiz++;
 		                p.kickback++;
-		                
+
 		                if( p.kickback_pic <= 12 )
 		                {
 		                    if( ((p.kickback_pic)%3) == 0 )
@@ -2619,7 +2619,7 @@ public class Weapons {
 			                		p.posxv -= 16 * sintable[((int)p.ang+512)&2047];
 					                p.posyv -= 16 * sintable[(int)p.ang&2047];
 			                    }
-			                	
+
 		                        checkavailweapon(p);
 
 		                        if( ( sb_snum&(1<<2) ) == 0 )
@@ -2635,8 +2635,8 @@ public class Weapons {
 		                    else p.kickback_pic = 0;
 		                }
 
-		                break;     
-		                
+		                break;
+
 			        case THROWSAW_WEAPON:
 		            case BUZSAW_WEAPON:
 
@@ -2660,14 +2660,14 @@ public class Weapons {
 		                        shoot(pi,CIRCLESAW);
 		                        checkavailweapon(p);
 		                    }
-		                  
-		                    	
+
+
 		                    (p.kickback_pic)++;
 		                    if( (p.kickback_pic) > 20)
 		                    	p.kickback_pic = 0;
 		                }
-		                break;   
-		                
+		                break;
+
 		            case TIT_WEAPON:
 		            	(p.kickback_pic)++;
 		            	if( (p.kickback_pic) == 2 || (p.kickback_pic) == 4 )
@@ -2690,8 +2690,8 @@ public class Weapons {
 		            		p.kickback_pic = 1;
 		            	if( (sb_snum&(1<<2)) == 0)
 		            		p.kickback_pic = 0;
-		            	break;	
-		            	
+		            	break;
+
 		            case ALIENBLASTER_WEAPON:
 		            	(p.kickback_pic)++;
 		            	if ( p.kickback_pic >= 7 && p.kickback_pic <= 11 )
@@ -2719,7 +2719,7 @@ public class Weapons {
 		                }
 		                if ( p.kickback_pic > 20 )
 		                	p.kickback_pic = 0;
-		                break;	
+		                break;
 		            case POWDERKEG_WEAPON:
 		            case BOWLING_WEAPON:
 		            	if ( p.curr_weapon == POWDERKEG_WEAPON )
@@ -2728,7 +2728,7 @@ public class Weapons {
 		            		{
 		            			p.gotweapon[POWDERKEG_WEAPON] = false;
 		            			p.ammo_amount[POWDERKEG_WEAPON]--;
-		            			 
+
 		            			if(p.on_ground && (sb_snum&2) != 0 )
 		            			{
 		            				k = 15;
@@ -2739,7 +2739,7 @@ public class Weapons {
 		            				k = 32;
 		            				i = (int)(-512-((p.horiz+p.horizoff-100)*20));
 		            			}
-		            			 
+
 		            			j = EGS(p.cursectnum,
 		     	                        p.posx+(sintable[((int)p.ang+512)&2047]>>6),
 		     	                        p.posy+(sintable[(int)p.ang&2047]>>6),
@@ -2750,7 +2750,7 @@ public class Weapons {
 		            		if((p.kickback_pic) > 20)
 		 	                {
 		            			 p.kickback_pic = 0;
-		            			 checkavailweapon(p); 
+		            			 checkavailweapon(p);
 		 	                }
 		            	}
 		            	else
@@ -2768,7 +2768,7 @@ public class Weapons {
 		                    	p.posxv += 16 * sintable[((int)p.ang+512)&2047];
 				                p.posyv += 16 * sintable[(int)p.ang&2047];
 		                    }
-		                    
+
 		                    p.kickback_pic++;
 		                    if ( p.kickback_pic > 40 )
 		                    {
@@ -2781,7 +2781,7 @@ public class Weapons {
 		            case KNEE_WEAPON:
 		                (p.kickback_pic)++;
 
-		                if( (p.kickback_pic) == 3) 
+		                if( (p.kickback_pic) == 3)
 		                	spritesound(426, pi);
 		                else if( (p.kickback_pic) == 12)
 		                {
@@ -2795,11 +2795,11 @@ public class Weapons {
 		                if(p.wantweaponfire >= 0)
 		                    checkavailweapon(p);
 		                break;
-		                
+
 		            case RATE_WEAPON:
 		                (p.kickback_pic)++;
 
-		                if( (p.kickback_pic) == 3) 
+		                if( (p.kickback_pic) == 3)
 		                	spritesound(252, pi);
 		                else if( (p.kickback_pic) == 8)
 		                {
@@ -2828,11 +2828,11 @@ public class Weapons {
 		            			p.ammo_amount[CHICKENBOW_WEAPON]--;
 		            			shoot(pi, CHIKENCROSSBOW);
 		            		}
-		                    
+
 		                    lastvisinc = totalclock + 32;
 		                    if(snum == screenpeek)
 		                    	gVisibility = 0;
-		                    
+
 		                    p.field_290 = 0x8000;
 		                    sub_64EF0(snum);
 		                    checkavailweapon(p);
@@ -2885,9 +2885,9 @@ public class Weapons {
 	            		if((p.kickback_pic) > 20)
 	 	                {
 	            			 p.kickback_pic = 0;
-	            			 checkavailweapon(p); 
+	            			 checkavailweapon(p);
 	 	                }
-	            		
+
 	            		if( p.ammo_amount[BOAT_WEAPON] <= 0 )
 	            			p.kickback_pic = 0;
 	                    else checkavailweapon(p);
