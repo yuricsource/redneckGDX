@@ -853,7 +853,7 @@ public class LoadSave {
 			GameInfo ini = loader.addon;
 			checkEpisodeResources(ini);
 		} else
-			resetEpisodeResources();
+			resetEpisodeResources(true);
 	}
 
 	public static boolean checkfile(Resource bb)

@@ -208,7 +208,7 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 public class GameScreen extends GameAdapter {
 
 	private int nonsharedtimer;
-	
+
 	private Main game;
 	public GameScreen(Main game) {
 		super(game, gLoadingScreen);
@@ -216,7 +216,7 @@ public class GameScreen extends GameAdapter {
 		for(int i = 0; i < MAXPLAYERS; i++)
 	    	sync[i] = new Input();
 	}
-	
+
 	@Override
 	public void PostFrame(BuildNet net) {
 		if (gQuickSaving) {
@@ -241,7 +241,7 @@ public class GameScreen extends GameAdapter {
 		ud.camerasprite = -1;
 	    everyothertime++;
 
-	    for(int i=connecthead;i>=0;i=connectpoint2[i]) 
+	    for(int i=connecthead;i>=0;i=connectpoint2[i])
 	    	sync[i].Copy(net.gFifoInput[net.gNetFifoTail & 0xFF][i]);
 	    net.gNetFifoTail++;
 
@@ -254,7 +254,7 @@ public class GameScreen extends GameAdapter {
 	          if(ud.rec != null)
 	        	  ud.rec.close();
 
-	          if (i == myconnectindex) 
+	          if (i == myconnectindex)
 	        	  game.gExit = true;
 	          if (screenpeek == i)
 	          {
@@ -284,24 +284,24 @@ public class GameScreen extends GameAdapter {
 	        	  game.show();
 	        	  Console.Println( " \nThe 'MASTER/First player' just quit the game.  All\nplayers are returned from the game.");
 	        	  return;
-	          } 
+	          }
 	    }
 
 	    net.CalcChecksum();
 
 	    lockclock += TICSPERFRAME;
-	    if( game.gPaused || ud.recstat != 2 && ud.multimode < 2 && GameScreen.this != gDemoScreen && (game.menu.gShowMenu || Console.IsShown())) 
+	    if( game.gPaused || ud.recstat != 2 && ud.multimode < 2 && GameScreen.this != gDemoScreen && (game.menu.gShowMenu || Console.IsShown()))
 	    	return;
 
 	    if(ud.recstat == 1 && ud.rec != null) ud.rec.record();
-	    
+
 	    if(earthquaketime > 0) earthquaketime--;
 	    if(rtsplaying > 0) rtsplaying--;
 
 	    for(int i=0;i < MAXUSERQUOTES;i++)
 	    	if (user_quote_time[i] != 0)
 	    		user_quote_time[i]--;
-	         
+
 	    if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 3))
 	         quotebot += ksgn(quotebotgoal-quotebot);
 	    else quotebot = quotebotgoal;
@@ -311,7 +311,7 @@ public class GameScreen extends GameAdapter {
 	        fta--;
 	        if(fta == 0) ftq = 0;
 	    }
-	    
+
 	    if ( ps[screenpeek].fogtype == 0 ) {
 		    if (totalclock < lastvisinc)
 		    {
@@ -323,10 +323,10 @@ public class GameScreen extends GameAdapter {
 
 	    global_random = (short) engine.krand();
 	    movedummyplayers();//ST 13
-	    
+
 	    for(int i=connecthead;i>=0;i=connectpoint2[i])
 	    {
-	    	ps[i].UpdatePlayerLoc(); 
+	    	ps[i].UpdatePlayerLoc();
 	        processinput(i);
 	        checksectors(i);
 	    }
@@ -357,13 +357,13 @@ public class GameScreen extends GameAdapter {
 	        movecyclers();
 	        pan3dsound();
 	    }
-	   
+
 	    if((uGameFlags & MODE_EOL) == MODE_EOL)
 	    {
 	    	game.pNet.ready2send = false;
 	    	if(GameScreen.this == gDemoScreen)
 				return;
-	    	
+
 	    	if(ud.eog == 1)
 	    	{
 	    		ud.eog = 0;
@@ -372,7 +372,7 @@ public class GameScreen extends GameAdapter {
 			    {
 			   		case 0: gEndScreen.episode1(); break;
 					case 1: gEndScreen.episode2(); break;
-					default: 
+					default:
 						BuildGdx.app.postRunnable(new Runnable() {
 							@Override
 							public void run() {
@@ -400,7 +400,7 @@ public class GameScreen extends GameAdapter {
 	@Override
 	public void DrawHud(float smooth) {
 		displayrest((int) smooth);
-		
+
 		if (game.net.bOutOfSync) {
 			game.getFont(1).drawText(160, 20, toCharArray("Out of sync!"),  0, 12, TextAlign.Center, 2, false);
 
@@ -425,16 +425,16 @@ public class GameScreen extends GameAdapter {
 			menu.mKeyHandler(game.pInput, BuildGdx.graphics.getDeltaTime());
 			return;
 		}
-		
+
 		if(Console.IsShown() || MODE_TYPE) return;
-		
+
 		BuildControls input = game.pInput;
-		if (input.ctrlGetInputKey(GameKeys.Menu_Toggle, true)) 
+		if (input.ctrlGetInputKey(GameKeys.Menu_Toggle, true))
 			menu.mOpen(menu.mMenus[GAME], -1);
 
 		if (input.ctrlGetInputKey(RRKeys.Show_Help, true))
 			menu.mOpen(menu.mMenus[HELP], -1);
-		
+
 		if (input.ctrlGetInputKey(RRKeys.Show_Savemenu, true)) {
 			if(numplayers > 1 || mFakeMultiplayer) return;
 			if (sprite[ps[myconnectindex].i].extra > 0) {
@@ -447,7 +447,7 @@ public class GameScreen extends GameAdapter {
 			if(numplayers > 1 || mFakeMultiplayer) return;
 			menu.mOpen(menu.mMenus[LOADGAME], -1);
 		}
-		
+
 		if ( input.ctrlGetInputKey(RRKeys.See_Chase_View, true) )
 		{
 			if( over_shoulder_on != 0 )
@@ -460,7 +460,7 @@ public class GameScreen extends GameAdapter {
             }
             FTA(109+over_shoulder_on,ps[myconnectindex]);
 		}
-		
+
 		if( ud.overhead_on != 0)
 		{
             int j = totalclock-nonsharedtimer; nonsharedtimer += j;
@@ -473,17 +473,17 @@ public class GameScreen extends GameAdapter {
                 zoom = 2048;
             if( (zoom < 48) )
             	zoom = 48;
-            
+
             if( input.ctrlGetInputKey(RRKeys.Map_Follow_Mode, true) ) {
 	   	    	 ud.scrollmode = !ud.scrollmode;
-	   	    	 
+
 	   	    	 if(ud.scrollmode)
 	   	         {
 	   	             ud.folx = ps[myconnectindex].oposx;
 	   	             ud.foly = ps[myconnectindex].oposy;
 	   	             ud.fola = (int) ps[myconnectindex].oang;
 	   	         }
-	   	    	 FTA(83+(ud.scrollmode?1:0),ps[myconnectindex]); 
+	   	    	 FTA(83+(ud.scrollmode?1:0),ps[myconnectindex]);
             }
 		} else {
 			 if ( input.ctrlGetInputKey(GameKeys.Enlarge_Screen, true) )
@@ -505,7 +505,7 @@ public class GameScreen extends GameAdapter {
 				 }
 			 }
 		}
-		
+
 		if( input.ctrlGetInputKey(GameKeys.Map_Toggle, true) )
 	    {
 	        if( ud.last_overhead != ud.overhead_on && ud.last_overhead != 0)
@@ -520,31 +520,31 @@ public class GameScreen extends GameAdapter {
 	            ud.last_overhead = ud.overhead_on;
 	        }
 	    }
-		
+
 		if( input.ctrlGetInputKey(RRKeys.AutoRun, true)  )
 	    {
 	        ud.auto_run ^= 1;
 	        FTA(85+ud.auto_run, ps[myconnectindex]);
 	    }
-		
+
 		if( input.ctrlGetInputKey(RRKeys.Toggle_Crosshair, true)  )
 	    {
 			ud.crosshair ^= 1;
 	        FTA(21-ud.crosshair,ps[myconnectindex]);
 	    }
-		
+
 		if( input.ctrlGetInputKey(RRKeys.Show_Opp_Weapon, true)  )
 	    {
 			ud.showweapons ^= 1;
 	        FTA(82-ud.showweapons,ps[myconnectindex]);
 	    }
-		
+
 		if (input.ctrlGetInputKey(RRKeys.Show_Sounds, true))
 			menu.mOpen(menu.mMenus[SOUNDSET], -1);
 
 		if (input.ctrlGetInputKey(RRKeys.Show_Options, true))
 			menu.mOpen(menu.mMenus[OPTIONS], -1);
-		
+
 		if (input.ctrlGetInputKey(RRKeys.Gamma, true))
 			openGamma(menu);
 
@@ -562,7 +562,7 @@ public class GameScreen extends GameAdapter {
 				ud.fta_on = 0;
 			}
 		}
-		
+
 		if(input.ctrlGetInputKey(GameKeys.Send_Message, false))
     	{
 			MODE_TYPE = true;
@@ -572,25 +572,25 @@ public class GameScreen extends GameAdapter {
 		if (input.ctrlGetInputKey(RRKeys.Quickload, true)) { // quick load
 			quickload();
 		}
-		
-		if(input.ctrlGetInputKey(RRKeys.See_Coop_View, true)) 
+
+		if(input.ctrlGetInputKey(RRKeys.See_Coop_View, true))
 		{
 			if(ud.coop == 1 || mFakeMultiplayer)
 			{
 				screenpeek = connectpoint2[screenpeek];
 				if (screenpeek < 0) screenpeek = connecthead;
-				
+
 				changepalette = 1; //if player has other palette
 			}
 		}
 
 		if (input.ctrlGetInputKey(RRKeys.Quit, true))
 			menu.mOpen(menu.mMenus[QUIT], -1);
-		
-		if (input.ctrlGetInputKey(RRKeys.Screenshot, true)) 
+
+		if (input.ctrlGetInputKey(RRKeys.Screenshot, true))
 			makeScreenshot();
 	}
-	
+
 	protected void openGamma(RRMenuHandler menu)
 	{
 		menu.mOpen(menu.mMenus[COLORCORR], -1);
@@ -609,7 +609,7 @@ public class GameScreen extends GameAdapter {
 
 	    if( GameScreen.this != gDemoScreen && ud.recstat == 2)
 	        ud.recstat = 0;
-	    
+
 	    BuildPos out = null;
 		try {
 			out = engine.loadboard(map);
@@ -617,7 +617,7 @@ public class GameScreen extends GameAdapter {
 			game.GameMessage(e.getMessage());
 			return false;
 		}
-		
+
 		ps[0].posx = out.x;
 	    ps[0].posy = out.y;
 	    ps[0].posz = out.z;
@@ -630,7 +630,7 @@ public class GameScreen extends GameAdapter {
 	    rorcnt = 0;
 
 	    prelevel();
-	    allignwarpelevators(); 
+	    allignwarpelevators();
 	    resetpspritevars();
 
 	    automapping = 0;
@@ -649,7 +649,7 @@ public class GameScreen extends GameAdapter {
 	    	musiclevel = ud.level_number;
 	    	sndPlayMusic(currentGame.getCON().music_fn[musicvolume][musiclevel]);
 	    }
-	    
+
 	    if( ud.recstat == 1 )
 	    	ud.rec = new DemoFile(GDXBYTEVERSION);
 
@@ -667,8 +667,8 @@ public class GameScreen extends GameAdapter {
 	                ps[i].kickback_pic = 0;
 	                break;
 	        }
-	        
-	        if ( (currentGame.getCON().type == RRRA && ud.level_number == 2 && ud.volume_number == 0) 
+
+	        if ( (currentGame.getCON().type == RRRA && ud.level_number == 2 && ud.volume_number == 0)
 	        		|| (currentGame.getCON().type != RRRA && ud.level_number == 1 && ud.volume_number == 1))
 		    {
 	        	resetweapons(i);
@@ -701,16 +701,16 @@ public class GameScreen extends GameAdapter {
 	     engine.clearview(0);
 
 	     over_shoulder_on = 0;
-	     
-	     Arrays.fill(user_quote_time, (short) 0); 
+
+	     Arrays.fill(user_quote_time, (short) 0);
 
 	     game.net.predict.reset();
 	     clearfrags();
-	    
+
 	     GLRenderer gl = engine.glrender();
 	     if(gl != null) gl.preload();
 	     System.err.println("New level " + map);
-	     
+
 	     if((uGameFlags & MODE_EOL) == MODE_EOL && game.nNetMode == NetMode.Single)
 	    	 gAutosaveRequest = true;
 
@@ -718,12 +718,12 @@ public class GameScreen extends GameAdapter {
 
 	     return !kGameCrash;
 	}
-	
+
 	protected void makeScreenshot()
 	{
 		String name = "scrxxxx.png";
 		FileEntry map;
-		if(mUserFlag == UserFlag.UserMap && (map = BuildGdx.compat.checkFile(boardfilename)) != null) 
+		if(mUserFlag == UserFlag.UserMap && (map = BuildGdx.compat.checkFile(boardfilename)) != null)
 			name = "scr-" + map.getName() + "-xxxx.png";
 		if(mUserFlag != UserFlag.UserMap && currentGame != null)
 			name = "scr-e" + (ud.volume_number+1) + "m" + (ud.level_number+1) + "[" + currentGame.getFile().getName() + "]-xxxx.png";
@@ -734,13 +734,13 @@ public class GameScreen extends GameAdapter {
 		else buildString(currentGame.getCON().fta_quotes[103], 0, "Screenshot not saved. Access denied!");
 		FTA(103,ps[myconnectindex]);
 	}
-	
+
 	/**
 	 * @param item should be GameInfo or FileEntry (map)
 	 */
 	public void newgame(final boolean isMultiplayer, final Object item, final int nEpisode, final int nLevel, final int nDifficulty)
 	{
-		if (ud.recstat == 1 && ud.rec != null) 
+		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
 
 		pNet.ready2send = false;
@@ -758,7 +758,7 @@ public class GameScreen extends GameAdapter {
 	               	ud.respawn_monsters = false;
 	                ud.respawn_items = false;
 	                ud.respawn_inventory = false;
-	                
+
 	                connecthead = 0;
         	        connectpoint2[0] = -1;
 
@@ -767,18 +767,18 @@ public class GameScreen extends GameAdapter {
 					if(mFakeMultiplayer) {
 						ud.multimode = nFakePlayers;
 						connecthead = 0;
-	        	       	for(short i=0;i<MAXPLAYERS;i++) 
+	        	       	for(short i=0;i<MAXPLAYERS;i++)
 	        	       		connectpoint2[i] = (short) (i+1);
 	        	       	connectpoint2[ud.multimode-1] = -1;
 					}
 					else ud.multimode = numplayers;
-					
+
 					if(GameScreen.this != gDemoScreen) {
 						ud.coop = pNetInfo.nGameType;
 						ud.monsters_off = pNetInfo.nMonsters == 1;
 						ud.respawn_monsters = false;
 						ud.respawn_inventory = true;
-						if(ud.coop == 0) 
+						if(ud.coop == 0)
 							ud.respawn_items = true;
 						else ud.respawn_items = false;
 		                ud.marker = pNetInfo.nMarkers;
@@ -787,22 +787,22 @@ public class GameScreen extends GameAdapter {
 
 	                ud.god = false;
 					game.nNetMode = NetMode.Multiplayer;
-					
+
 					for(int c=connecthead;c>=0;c=connectpoint2[c])
 	                {
 	                    resetweapons(c);
 	                    resetinventory(c);
 					}
 				}
-				
+
 				UserFlag flag = UserFlag.None;
 				if(item instanceof GameInfo && !item.equals(defGame)) {
 					flag = UserFlag.Addon;
 					GameInfo game = (GameInfo)item;
 					checkEpisodeResources(game);
 					Console.Println("Start user episode: " + game.Title);
-				} else resetEpisodeResources();
-				
+				} else resetEpisodeResources(true);
+
 				if(item instanceof FileEntry) {
 					flag = UserFlag.UserMap;
 					boardfilename = ((FileEntry)item).getPath();
@@ -813,10 +813,10 @@ public class GameScreen extends GameAdapter {
 				mUserFlag = flag;
 
 				if(GameScreen.this != gDemoScreen) {
-					if(currentGame.getCON().type != RRRA) 
+					if(currentGame.getCON().type != RRRA)
 						ud.player_skill = nDifficulty + 1;
 					else ud.player_skill = nDifficulty;
-					
+
 					if(!isMultiplayer) {
 						Source skillvoice = null;
 						switch(nDifficulty) {
@@ -826,10 +826,10 @@ public class GameScreen extends GameAdapter {
 				            case 3: skillvoice = sound(195);break;
 				            case 4: skillvoice = sound(197);break;
 						}
-						
+
 						while(skillvoice != null && skillvoice.isActive());
 					}
-					 
+
 					if(mUserFlag != UserFlag.UserMap) {
 						ud.level_number = nLevel;
 				        ud.volume_number = nEpisode;
@@ -856,7 +856,7 @@ public class GameScreen extends GameAdapter {
 	        	        p.gotweapon[KNEE_WEAPON] = true;
 	        	        p.ammo_amount[PISTOL_WEAPON] = 48;
 	        	        p.gotweapon[HANDREMOTE_WEAPON] = true;
-	        	        if(currentGame.getCON().type == RRRA) 
+	        	        if(currentGame.getCON().type == RRRA)
 	        		        p.gotweapon[RATE_WEAPON] = true;
 	        	        p.last_weapon = -1;
 	        	    }
@@ -870,14 +870,14 @@ public class GameScreen extends GameAdapter {
 			}
 		});
 	}
-	
+
 	@Override
-	protected void startboard(Runnable startboard) 
+	protected void startboard(Runnable startboard)
 	{
 		gPrecacheScreen.init(false, startboard);
 		game.changeScreen(gPrecacheScreen);
 	}
-	
+
 	public boolean enterlevel(String title)
 	{
 		if(title == null) return false;
@@ -885,7 +885,7 @@ public class GameScreen extends GameAdapter {
 		if(mUserFlag == UserFlag.UserMap)
 			map = boardfilename;
 		else map = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].path;
-		
+
 		if(GameScreen.this != gDemoScreen)
 			ud.recstat = ud.m_recstat;
 
@@ -906,7 +906,7 @@ public class GameScreen extends GameAdapter {
 		}
 		else {
 			FileEntry file = BuildGdx.compat.checkFile(boardfilename);
-			if(file != null) 
+			if(file != null)
 				title = file.getName();
 			else {
 				game.GameCrash("Map " + boardfilename + " not found!");
@@ -931,13 +931,13 @@ public class GameScreen extends GameAdapter {
 	    p.aim_mode = (sb_snum>>23)&1;
 	    if(p.aim_mode < i && (game.nNetMode != NetMode.Single || !pMenu.gShowMenu))
 	        p.return_to_center = 9;
-	    
+
 	    if((sb_snum & 1 << 22) != 0 && p.last_pissed_time == 0 && sprite[p.i].extra > 0)
 	    {
 	    	p.last_pissed_time = 4000;
 	    	if(ud.lockout == 0)
 	    		spritesound(437, p.i);
-	
+
 	    	if ( sprite[p.i].extra > currentGame.getCON().max_player_health - currentGame.getCON().max_player_health / 10 )
 	  	   	{
 	  	        if ( sprite[p.i].extra < currentGame.getCON().max_player_health )
@@ -969,13 +969,13 @@ public class GameScreen extends GameAdapter {
 	            }
 	            else
 	            {
-	                if(!cfg.muteMusic && currMusic != null) 
+	                if(!cfg.muteMusic && currMusic != null)
 	                	currMusic.resume();
 	            }
 	        }
 
 	        if(game.gPaused) return;
-	        
+
 	        if(sprite[p.i].extra <= 0) return;
 
 	        if( (sb_snum&(1<<30)) != 0 && p.newowner == -1 )
@@ -1014,7 +1014,7 @@ public class GameScreen extends GameAdapter {
 	            dainv = (short) p.inven_icon;
 
 	            i = 0;
-	            
+
 	            boolean CHECKINV;
 	            do
 	            {
@@ -1022,7 +1022,7 @@ public class GameScreen extends GameAdapter {
 		            if(i < 9)
 		            {
 		                i++;
-	
+
 		                switch(dainv)
 		                {
 		                    case 4:
@@ -1080,7 +1080,7 @@ public class GameScreen extends GameAdapter {
 		            else dainv = 0;
 		            p.inven_icon = dainv;
 	            } while(CHECKINV);
-	            
+
 	            switch(dainv)
 	            {
 	                case 1: FTA(3,p);break;
@@ -1098,9 +1098,9 @@ public class GameScreen extends GameAdapter {
 //	        if( j != 1 && p.kickback_pic > 0)
 //	            p.wantweaponfire = (short) j; //GDX 23.03.2020 Disable random weapon switch
 
-	        if(p.last_pissed_time <= (26*218) 
-	        		&& p.show_empty_weapon == 0 
-	        		&& p.kickback_pic == 0 
+	        if(p.last_pissed_time <= (26*218)
+	        		&& p.show_empty_weapon == 0
+	        		&& p.kickback_pic == 0
 	        		&& p.quick_kick == 0 && sprite[p.i].xrepeat > 8 && p.access_incs == 0 && p.knee_incs == 0 )
 	        {
 	            if(!IsOriginalGame() || ( p.weapon_pos == 0 || ( p.holster_weapon != 0 && p.weapon_pos == -9 ) ) ) //quick weapon switch
@@ -1113,7 +1113,7 @@ public class GameScreen extends GameAdapter {
 	            		else if( p.gotweapon[p.last_used_weapon] && p.ammo_amount[p.last_used_weapon] > 0 )
                             j = p.last_used_weapon;
 	            	}
-	            	
+
 	                if(j == 10 || j == 11) //next prev weapon
 	                {
 	                    k = p.curr_weapon;
@@ -1129,14 +1129,14 @@ public class GameScreen extends GameAdapter {
 	                        k = KNEE_WEAPON;
 	                        break;
 	                    }
-	                    
+
 	                    j = ( j == 10 ? -1 : 1 );
 	                    i = 0;
 
 	                    while( ( k >= 0 && k < 10 ) /*|| ( k == BUZSAW_WEAPON && (p.subweapon&(1<<BUZSAW_WEAPON) ) != 0 )*/ )
 	                    {
 	                    	k += j;
-	                    	
+
 	                        if(k == -1) k = 9;
 	                        else if(k == 10) k = 0;
 
@@ -1171,10 +1171,10 @@ public class GameScreen extends GameAdapter {
 	                        k = nextspritestat[k];
 	                    }
 	                }
-	                
+
 	                if(currentGame.getCON().type == RRRA && j == CROSSBOW_WEAPON)
 	                {
-	                    if( p.curr_weapon != CROSSBOW_WEAPON && p.ammo_amount[CROSSBOW_WEAPON] != 0) 
+	                    if( p.curr_weapon != CROSSBOW_WEAPON && p.ammo_amount[CROSSBOW_WEAPON] != 0)
 	                    {
                             if( (p.subweapon&4) != 0 || p.ammo_amount[CHICKENBOW_WEAPON] == 0 )
                             {
@@ -1182,7 +1182,7 @@ public class GameScreen extends GameAdapter {
                                 p.subweapon = 0;
                             }
 	                    }
-	                    else 
+	                    else
 	                    {
 	                        p.subweapon = 4;
 	                        j = CHICKENBOW_WEAPON;
@@ -1199,16 +1199,16 @@ public class GameScreen extends GameAdapter {
                                 p.subweapon = 0;
                             }
 	                    }
-	                    else 
+	                    else
 	                    {
 	                        p.subweapon = (1<<BUZSAW_WEAPON);
 	                        j = BUZSAW_WEAPON;
 	                    }
 	                }
-	                
+
 	                if(j == POWDERKEG_WEAPON)
 	                {
-	                	
+
 	                	if ( p.curr_weapon != POWDERKEG_WEAPON && p.ammo_amount[POWDERKEG_WEAPON] != 0 )
 	                	{
 	                		if ( (p.subweapon&(1<<BOWLING_WEAPON)) != 0 || p.ammo_amount[BOWLING_WEAPON] == 0 )
@@ -1223,10 +1223,10 @@ public class GameScreen extends GameAdapter {
 	                    	p.subweapon = (1<<BOWLING_WEAPON);
 	                    }
 	                }
-	                
+
 	                if(currentGame.getCON().type == RRRA && j == KNEE_WEAPON)
 	                {
-	                	
+
 	                	if ( p.curr_weapon != KNEE_WEAPON )
 	                	{
 	                		if ( (p.subweapon & 2) != 0 )
@@ -1241,7 +1241,7 @@ public class GameScreen extends GameAdapter {
 	                    	p.subweapon = 2;
 	                    }
 	                }
-	                
+
 
 	                if(p.holster_weapon != 0)
 	                {
@@ -1382,7 +1382,7 @@ public class GameScreen extends GameAdapter {
 	            if ( p.alcohol_amount < 99 && Sound[425].num == 0)
 	                  spritesound(425, p.i);
 	        }
-	        
+
 	        if( (sb_snum&(1<<15)) != 0 )
 	        {
 	        	if( p.newowner == -1 && p.field_count == 0 )
@@ -1426,7 +1426,7 @@ public class GameScreen extends GameAdapter {
 	                }
 	                if(sprite[p.i].extra > currentGame.getCON().max_player_health)
                     	sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
-	               
+
 	                p.alcohol_amount += 10;
 	                if ( p.alcohol_amount <= 100 && Sound[DUKE_USEMEDKIT].num == 0)
 	                	 spritesound(DUKE_USEMEDKIT,p.i);
@@ -1443,7 +1443,7 @@ public class GameScreen extends GameAdapter {
 	        				spritesound(429, p.i);
 	        			p.cowpie_amount -= 100;
 	        			if ( p.alcohol_amount > 0 )
-	        			{   
+	        			{
 	        				p.alcohol_amount -= 5;
 	        				if(p.alcohol_amount < 0)
 	        					p.alcohol_amount = 0;
@@ -1454,7 +1454,7 @@ public class GameScreen extends GameAdapter {
 	        				if ( p.gut_amount > 100 )
 	        					p.gut_amount = 100;
 	        			}
-	                
+
 	        			sprite[p.i].extra += 5;
 	        			if(sprite[p.i].extra > currentGame.getCON().max_player_health)
 	        				sprite[p.i].extra = (short) currentGame.getCON().max_player_health;
@@ -1469,7 +1469,7 @@ public class GameScreen extends GameAdapter {
 	            p.one_eighty_count = -1024;
 	    }
 	}
-	
+
 	public boolean IsOriginalGame() {
 		return ud.recstat == 1 && ud.rec != null && ud.rec.recversion <= BYTEVERSIONRR;
 	}

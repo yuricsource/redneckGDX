@@ -131,7 +131,7 @@ public class ResourceHandler {
 //		}
 //	}
 
-	public static void resetEpisodeResources()
+	public static void resetEpisodeResources(boolean setDef)
 	{
 		BuildGdx.cache.clearDynamicResources();
 
@@ -142,7 +142,8 @@ public class ResourceHandler {
 			Sound[i].ptr = null;
 
 		if(!usecustomarts) {
-			game.setDefs(game.baseDef);
+			if(setDef)
+				game.setDefs(game.baseDef);
 			return;
 		}
 
@@ -153,7 +154,8 @@ public class ResourceHandler {
 		if(engine.loadpics() == 0)
 			game.dassert("ART files not found " + new File(Path.Game.getPath() + "TILES###.ART").getAbsolutePath());
 
-		game.setDefs(game.baseDef);
+		if(setDef)
+			game.setDefs(game.baseDef);
 
 		InitSpecialTextures();
 		BowlReset();
@@ -272,7 +274,7 @@ public class ResourceHandler {
 
 	public static void checkEpisodeResources(GameInfo addon)
 	{
-		resetEpisodeResources();
+		resetEpisodeResources(false);
 
 		DefScript addonScript = new DefScript(game.baseDef, addon.getFile());
 		if(addon.isPackage())
