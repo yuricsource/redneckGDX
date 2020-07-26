@@ -59,11 +59,11 @@ import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class Actors {
 	public static int actor_tog = 0;
-	
+
 	public static int UFO_SpawnCount;
 	public static int UFO_SpawnTime;
 	public static int UFO_SpawnHulk;
-	
+
 	public static boolean checkaddkills(SPRITE s)
 	{
 		switch(s.picnum)
@@ -99,7 +99,7 @@ public class Actors {
 			case 5501:
 			case VIXEN:
 				return true;
-				
+
 			case 5890: //RA
 			case 5891:
 			case 5995:
@@ -122,7 +122,7 @@ public class Actors {
 		}
 		return false;
 	}
-	
+
 	public static int LocateTheLocator(int n,int sn)
 	{
 	    short i;
@@ -136,7 +136,7 @@ public class Actors {
 	    }
 	    return -1;
 	}
-	
+
 	public static boolean badguy(SPRITE s)
 	{
 	    switch(s.picnum)
@@ -170,7 +170,7 @@ public class Actors {
 		    case 5501:
 		    case VIXEN:
 		    	return true;
-		    	
+
 		    case 1147: //RA
 		    case RAT:
 		    case 4249:
@@ -194,13 +194,13 @@ public class Actors {
 		    		return true;
                 break;
 	    }
-	    
-	    if( currentGame.getCON().actortype[s.picnum] != 0 ) 
+
+	    if( currentGame.getCON().actortype[s.picnum] != 0 )
 	    	return true;
 
 	    return false;
 	}
-	
+
 	public static boolean badguypic(int pn) //Redneck
 	{
 	    switch(pn)
@@ -236,7 +236,7 @@ public class Actors {
 		    case 5501:
 		    case VIXEN:
 		    	return true;
-		    	
+
 		    	//RA
 		    case 4770:
 		    case MINIONUFO:
@@ -319,14 +319,14 @@ public class Actors {
 			do {
 				dasect = tempshort[sectcnt++];
 				if (((sector[dasect].ceilingz - s.z) >> 8) < r) {
-					d = (int) (klabs(wall[sector[dasect].wallptr].x - s.x) + klabs(wall[sector[dasect].wallptr].y
-							- s.y));
+					d = klabs(wall[sector[dasect].wallptr].x - s.x) + klabs(wall[sector[dasect].wallptr].y
+							- s.y);
 					if (d < r)
 						checkhitceiling(dasect);
 					else {
-						d = (int) (klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].x
+						d = klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].x
 								- s.x) + klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].y
-								- s.y));
+								- s.y);
 						if (d < r)
 							checkhitceiling(dasect);
 					}
@@ -401,7 +401,7 @@ public class Actors {
 
 					if(sprite[j].picnum == MINION && sprite[j].pal == 19)
 						continue;
-						
+
 						if (s.picnum == CROSSBOW && sj.extra > 0)
 							hittype[j].picnum = CROSSBOW;
 						else
@@ -498,7 +498,7 @@ public class Actors {
 		short dasectnum = sprite[spritenum].sectnum;
 
 		int daz = sprite[spritenum].z;
-		int h = ((tilesizy[sprite[spritenum].picnum] * sprite[spritenum].yrepeat) << 1);
+		int h = ((engine.getTile(sprite[spritenum].picnum).getHeight() * sprite[spritenum].yrepeat) << 1);
 		daz -= h;
 
 		if (bg) {
@@ -669,7 +669,7 @@ public class Actors {
 									}
 								}
 							}
-							
+
 							if(currentGame.getCON().type == RRRA) {
 								if(s.pal == 33 || s.picnum == COOT
 								          || s.picnum == COOTSTAYPUT
@@ -688,7 +688,7 @@ public class Actors {
 								          || s.picnum == GUITARBILLY
 								          || s.picnum == 6225
 								          || s.picnum == MAMAJACKOLOPE
-								          || (s.picnum == MINION && s.pal == 8) ) 
+								          || (s.picnum == MINION && s.pal == 8) )
 								{
 									int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 									int cz2 = s.z - (engine.krand() % (52 << 8));
@@ -769,7 +769,7 @@ public class Actors {
 			i = nexti;
 		}
 	}
-	
+
 	public static void sub_64EF0(int snum)
 	{
 		PlayerStruct p = ps[snum];
@@ -777,12 +777,12 @@ public class Actors {
 		p.field_X = p.posx;
 		p.field_Y = p.posy;
 	}
-	
+
 	public static boolean sub_64F28(int nSprite, int nPlayer)
 	{
 		PlayerStruct p = ps[nPlayer];
 		SPRITE pSprite = sprite[nSprite];
-		
+
 		if ( p.field_28E != 0 )
 		{
 			int pal = pSprite.pal;
@@ -1036,7 +1036,8 @@ public class Actors {
 		                    	{
 		                    		game.changeScreen(gLoadingScreen.setTitle(lastload));
 		        					gLoadingScreen.init(new Runnable() {
-		        						public void run() {
+		        						@Override
+										public void run() {
 		        							if(!loadgame(lastload)) {
 		        								game.GameMessage("Can't load game!");
 		        								game.show();
@@ -1143,9 +1144,9 @@ public class Actors {
 							sprite[i].extra = 53;
 							sprite[j].pal = 0;
 						}
-						else 
+						else
 							engine.deletesprite(i);
-					} else 
+					} else
 						engine.deletesprite(i);
 				} else if (sprite[i].extra > (66 - 13))
 					sprite[i].extra++;
@@ -1436,10 +1437,10 @@ public class Actors {
 						p = checkcursectnums(t[1]);
 						if (p >= 0 && ps[p].on_ground) {
 							s.owner = -2;
-							ps[p].on_crane = (short) i;
+							ps[p].on_crane = i;
 							spritesound(390, ps[p].i);
 							ps[p].ang = (short) (s.ang + 1024);
-							
+
 							ps[p].posxv = 0;
 		                	ps[p].posyv = 0;
 		                	ps[p].poszv = 0;
@@ -1513,7 +1514,7 @@ public class Actors {
 						engine.setsprite(s.owner, s.x, s.y, s.z);
 						s.zvel = 0;
 					} else if (s.owner == -2) {
-						
+
 						ps[p].oposx = ps[p].posx;
 	                	ps[p].oposy = ps[p].posy;
 	                	ps[p].oposz = ps[p].posz;
@@ -1760,7 +1761,7 @@ public class Actors {
 						sector[sect].ceilingshade = 20;
 						continue BOLT;
 					}
-				
+
 					if ((s.xrepeat | s.yrepeat) == 0) {
 						s.xrepeat = (short) t[0];
 						s.yrepeat = (short) t[1];
@@ -1831,7 +1832,7 @@ public class Actors {
 				continue;
 
 			case DOORSHOCK:
-				j = (int) (klabs(sector[sect].ceilingz - sector[sect].floorz) >> 9);
+				j = klabs(sector[sect].ceilingz - sector[sect].floorz) >> 9;
 				s.yrepeat = (short) (j + 4);
 				s.xrepeat = 16;
 				s.z = sector[sect].floorz;
@@ -1969,7 +1970,7 @@ public class Actors {
 		k = xvect * dax + yvect * day + zvect * daz;
 		l = dax * dax + day * day + daz * daz;
 		if ((klabs(k) >> 14) < l) {
-			k = (int) divscale(k, l, 17);
+			k = divscale(k, l, 17);
 			xvect -= mulscale(dax, k, 16);
 			yvect -= mulscale(day, k, 16);
 			zvect -= mulscale(daz, k, 16);
@@ -1977,7 +1978,7 @@ public class Actors {
 
 		s.zvel = (short) zvect;
 		s.xvel = (short) engine.ksqrt(dmulscale(xvect, xvect, yvect, yvect, 8));
-		s.ang = (short) engine.getangle(xvect, yvect);
+		s.ang = engine.getangle(xvect, yvect);
 	}
 
 	public static void movetransports() {
@@ -2043,11 +2044,11 @@ public class Actors {
 								ps[p].bobposx = ps[p].oposx = ps[p].posx = sprite[sprite[i].owner].x;
 								ps[p].bobposy = ps[p].oposy = ps[p].posy = sprite[sprite[i].owner].y;
 								ps[p].oposz = ps[p].posz = sprite[sprite[i].owner].z - PHEIGHT;
-								
+
 								game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
                                 ps[p].UpdatePlayerLoc();
 
-								engine.changespritesect((short)j,
+								engine.changespritesect(j,
 										sprite[sprite[i].owner].sectnum);
 								ps[p].cursectnum = sprite[j].sectnum;
 
@@ -2059,7 +2060,7 @@ public class Actors {
 							}
 						}
 						else // if (!(sectlotag == 1 && ps[p].on_ground)) GDX 2.10.18
-							break; 
+							break;
 
 						if (onfloorz == 0
 								&& klabs(sprite[i].z - ps[p].posz) < 6144)
@@ -2097,7 +2098,7 @@ public class Actors {
 								k = 2;
 								ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].ceilingz + 1792;
 							}
-							
+
 							if (onfloorz != 0
 									&& sectlotag == 161
 									&& ps[p].posz < (sector[sect].ceilingz + 1536))
@@ -2108,7 +2109,7 @@ public class Actors {
 								ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].floorz - 12544;
 							}
 						}
-	
+
 						if ((onfloorz != 0
 								&& sectlotag == 1
 								//&& ps[p].on_ground 		GDX
@@ -2127,10 +2128,10 @@ public class Actors {
 							ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].ceilingz + (7 << 8);
 							if ( ps[p].OnMotorcycle )
 		                        ps[p].CarVar1 = 1;
-							
+
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
                             ps[p].UpdatePlayerLoc();
-							
+
 //							ps[p].posxv = 4096 - (engine.krand() & 8192); GDX
 //							ps[p].posyv = 4096 - (engine.krand() & 8192);
 
@@ -2152,14 +2153,14 @@ public class Actors {
 
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
                             ps[p].UpdatePlayerLoc();
-							
+
 //							ps[p].jumping_toggle = 1; GDX 2.10.2018
 //							ps[p].jumping_counter = 0;
 						}
 
 						if (k == 1) {
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-							
+
 							ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x - sprite[i].x;
 							ps[p].oposy = ps[p].posy += sprite[sprite[i].owner].y - sprite[i].y;
 
@@ -2167,7 +2168,7 @@ public class Actors {
 								ps[p].transporter_hold = -2;
 							ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
 
-							engine.changespritesect((short)j,
+							engine.changespritesect(j,
 									sprite[sprite[i].owner].sectnum);
 //							engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy,
 //									ps[p].posz + PHEIGHT); GDX 2.10.2018
@@ -2176,27 +2177,27 @@ public class Actors {
 
 							if ((engine.krand() & 255) < 32)
 								spawn(j, WATERSPLASH2);
-							
+
 //							if (sectlotag == 1) GDX 2.10.2018
 //								for (l = 0; l < 9; l++) {
 //									q = spawn(ps[p].i, WATERBUBBLE);
 //									sprite[q].z += engine.krand() & 16383;
 //								}
-							
+
 							ps[p].UpdatePlayerLoc();
-						} 
+						}
 						else if ( k == 2 )
 	                    {
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-							
+
 							ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x - sprite[i].x;
 							ps[p].oposy = ps[p].posy += sprite[sprite[i].owner].y - sprite[i].y;
 
 							if (sprite[sprite[i].owner].owner != sprite[i].owner)
 								ps[p].transporter_hold = -2;
 							ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
-							engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
-							
+							engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+
 							ps[p].UpdatePlayerLoc();
 	                    }
 					}
@@ -2229,7 +2230,7 @@ public class Actors {
 				case 12:
 				case 13:
 
-					ll = (int) klabs(sprite[j].zvel);
+					ll = klabs(sprite[j].zvel);
 
 					{
 						warpspriteto = 0;
@@ -2243,12 +2244,12 @@ public class Actors {
 								&& sprite[j].picnum != HULKAIRBOAT
 								&& sprite[j].picnum != MINIONAIRBOAT)
 							warpspriteto = 1;
-						
+
 						if(currentGame.getCON().type == RRRA) {
 							if ( ll != 0 && sectlotag == 161 && sprite[j].z < (sector[sect].ceilingz + ll) && sprite[j].zvel < 0 )
 					        {
 								warpspriteto = 1;
-								zz = (int) (ll - klabs(sprite[j].z - sector[sect].ceilingz));
+								zz = ll - klabs(sprite[j].z - sector[sect].ceilingz);
 					        }
 					        else if ( sectlotag == 161 )
 					        {
@@ -2261,7 +2262,7 @@ public class Actors {
 							if ( ll != 0 && sectlotag == 160 && sprite[j].z > (sector[sect].floorz - ll) && sprite[j].zvel >= 0  )
 					        {
 								warpspriteto = 1;
-								zz = (int) (ll - klabs(sector[sect].floorz - sprite[j].z));
+								zz = ll - klabs(sector[sect].floorz - sprite[j].z);
 					        }
 					        else if ( sectlotag == 160 )
 					        {
@@ -2326,7 +2327,7 @@ public class Actors {
 											if (sprite[j].statnum == 4
 													|| (checkcursectnums(sect) == -1 && checkcursectnums(sprite[sprite[i].owner].sectnum) == -1)) {
 												game.pInt.setsprinterpolate(j, sprite[j]);
-												
+
 												sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 												sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 												sprite[j].z -= sprite[i].z
@@ -2350,53 +2351,53 @@ public class Actors {
 												}
 
 												engine.changespritesect(
-														(short)j,
+														j,
 														sprite[sprite[i].owner].sectnum);
 											}
 										} else {
 											game.pInt.setsprinterpolate(j, sprite[j]);
-											
+
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 											sprite[j].z = sprite[sprite[i].owner].z + 4096;
 
 											engine.changespritesect(
-													(short)j,
+													j,
 													sprite[sprite[i].owner].sectnum);
 										}
 										break;
 									case 1:
 										game.pInt.setsprinterpolate(j, sprite[j]);
-										
+
 										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].ceilingz + ll;
 
-										engine.changespritesect((short)j,
+										engine.changespritesect(j,
 												sprite[sprite[i].owner].sectnum);
 
 										break;
 									case 2:
 										game.pInt.setsprinterpolate(j, sprite[j]);
-										
+
 										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - ll;
 
-										engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
+										engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 
 										break;
 									case 160:
 										if(currentGame.getCON().type == RRRA) {
 											game.pInt.setsprinterpolate(j, sprite[j]);
-											
+
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 											sprite[j].z = zz + sector[sprite[sprite[i].owner].sectnum].ceilingz;
-			
-											engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
-											
-											movesprite((short)j,
+
+											engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+
+											movesprite(j,
 													(sprite[j].xvel * (sintable[(sprite[j].ang + 512) & 2047])) >> 14,
 													(sprite[j].xvel * (sintable[sprite[j].ang & 2047])) >> 14, 0,
 													CLIPMASK1);
@@ -2405,14 +2406,14 @@ public class Actors {
 									case 161:
 										if(currentGame.getCON().type == RRRA) {
 											game.pInt.setsprinterpolate(j, sprite[j]);
-											
+
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
 											sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - zz;
-				
-											engine.changespritesect((short)j, sprite[sprite[i].owner].sectnum);
-											
-											movesprite((short)j,
+
+											engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+
+											movesprite(j,
 													(sprite[j].xvel * (sintable[(sprite[j].ang + 512) & 2047])) >> 14,
 													(sprite[j].xvel * (sintable[sprite[j].ang & 2047])) >> 14, 0,
 													CLIPMASK1);
@@ -2441,7 +2442,7 @@ public class Actors {
 			movejails();
 		if (numminecart != 0)
 			movecarts();
-		
+
 		for (int i = headspritestat[115]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( sprite[i].extra != 0)
 			{
@@ -2548,7 +2549,7 @@ public class Actors {
 				sprite[i].hitag = 2;
 				sprite[i].extra = -100;
 			}
-			
+
 			if ( sprite[i].hitag != 0 )
 		    {
 				if ( sprite[i].hitag == 1 )
@@ -2569,10 +2570,10 @@ public class Actors {
 		    }
 		    else if ( ++sprite[i].extra >= 30 )
 		    	sprite[i].hitag = 1;
-		    
+
 			movesprite(i, 0, 0, 2 * sprite[i].extra, CLIPMASK0);
 		}
-		
+
 		for (short i = headspritestat[118]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( sprite[i].hitag > 1 )
 				sprite[i].hitag = 0;
@@ -2587,16 +2588,16 @@ public class Actors {
 			}
 			else if ( ++sprite[i].extra >= 20 )
 				sprite[i].hitag = 1;
-			
+
 			movesprite(i, 0, 0, sprite[i].extra, CLIPMASK0);
 		}
-		
+
 		if ( ps[connecthead].MamaEnd > 0 && --ps[connecthead].MamaEnd == 0 )
 		{
 			LeaveMap();
 		    ud.eog = 1;
 		}
-		
+
 		if ( ps[connecthead].field_607 > 0 )
 		{
 			for(j = 0; j < MAXSPRITES; j++)
@@ -2643,20 +2644,20 @@ public class Actors {
 						{
 					        sprite[j].xrepeat <<= 1;
 					        sprite[j].yrepeat <<= 1;
-					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
+					        sprite[j].clipdist = engine.getTile(sprite[j].picnum).getWidth() * sprite[j].xrepeat >> 7;
 						}
 						else if ( ps[connecthead].field_607 == 2 )
 						{
 							sprite[j].xrepeat >>= 1;
 					        sprite[j].yrepeat >>= 1;
-					        sprite[j].clipdist = tilesizx[sprite[j].picnum] * sprite[j].xrepeat >> 7;
+					        sprite[j].clipdist = engine.getTile(sprite[j].picnum).getWidth() * sprite[j].xrepeat >> 7;
 						}
 					 break;
 				}
 			}
 			ps[connecthead].field_607 = 0;
 		}
-		
+
 		for (int i = headspritestat[119]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( sprite[i].hitag > 0 )
 		    {
@@ -2668,9 +2669,9 @@ public class Actors {
 					sprite[i].extra = 150;
 					spawn(i, 7280);
 				}
-		    }		
+		    }
 		}
-				
+
 		for (short i = headspritestat[121]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( ++sprite[i].extra >= 100 )
 			{
@@ -2680,7 +2681,7 @@ public class Actors {
 					sprite[i].extra = 1;
 					sprite[i].picnum = 4956;
 					spawn(i, 1398);
-				} 
+				}
 			} else {
 				if ( sprite[i].extra == 90 )
 				{
@@ -2688,7 +2689,7 @@ public class Actors {
 						sprite[i].picnum = 4952;
 					sprite[i].extra = 1;
 				}
-			    
+
 				movesprite(i, 0, 0, -300, CLIPMASK0);
 			    if ( sector[sprite[i].sectnum].ceilingz + 1024 > sprite[i].z )
 			    {
@@ -2697,7 +2698,7 @@ public class Actors {
 			    }
 			}
 		}
-		
+
 		for (int i = headspritestat[122]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( sprite[i].extra != 0)
 			{
@@ -2759,7 +2760,7 @@ public class Actors {
 				}
 		    }
 		}
-		
+
 		for (int i = headspritestat[123]; i >= 0; i = nextspritestat[i]) { //RA
 			if ( sprite[i].lotag == 5 && Sound[WITNESSSTAND].num == 0 )
 			      spritesound(WITNESSSTAND, i);
@@ -2910,10 +2911,10 @@ public class Actors {
 							engine.changespritesect(ps[p].i, s.sectnum);
 							ps[p].cursectnum = sprite[p].sectnum;
 							spritesound(TELEPORTER, j);
-							
+
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
 	                        ps[p].UpdatePlayerLoc();
-	                        
+
 	                        if (ud.multimode < 2)
 	                        	engine.deletesprite((short)j);
 	                        else {
@@ -3006,7 +3007,7 @@ public class Actors {
 						s.x = clipmove_x;
 						s.y = clipmove_y;
 						s.z = clipmove_z;
-						s.sectnum = (short) clipmove_sectnum;
+						s.sectnum = clipmove_sectnum;
 					}
 
 					int nHitObject = j & kHitTypeMask;
@@ -3136,7 +3137,7 @@ public class Actors {
 							&& s.yvel < 3) {
 						if (s.yvel > 0 || (s.yvel == 0 && hittype[i].floorz == sector[sect].floorz && s.picnum != 3464))
 							spritesound(PIPEBOMB_BOUNCE, i);
-						
+
 						if ( s.picnum != 3464 )
 						{
 							s.zvel = (short) -((4 - s.yvel) << 8);
@@ -3343,7 +3344,7 @@ public class Actors {
 							sprite[k].ang = (short) j;
 							sprite[k].zvel = (short) (sintable[l & 2047] >> 5);
 							sprite[k].xvel = (short) (sintable[(l + 512) & 2047] >> 9);
-							sprite[k].owner = (short) i;
+							sprite[k].owner = i;
 						}
 				}
 
@@ -3598,7 +3599,7 @@ public class Actors {
 			case BROASTEDTILE:
 			case BONELESSTILE:
 			case HEAD1TILE:
-				
+
 				if (!plantProcess) {
 					engine.deletesprite(i);
 					continue;
@@ -3611,9 +3612,9 @@ public class Actors {
 						CLIPMASK0);
 				if(s.picnum == HEAD1TILE) {
 					if ((sector[s.sectnum].floorz - 2048) <= s.z) {
-						if (sector[s.sectnum].lotag == 1) 
+						if (sector[s.sectnum].lotag == 1)
 							sprite[spawn(i, WATERSPLASH2)].z = sector[s.sectnum].floorz;
-						
+
 						engine.deletesprite(i);
 						continue;
 					}
@@ -3639,7 +3640,7 @@ public class Actors {
 			case CHICKENATILE:
 			case CHICKENBTILE:
 			case CHICKENCTILE:
-				
+
 				if (!plantProcess) {
 					engine.deletesprite(i);
 					continue;
@@ -3693,7 +3694,7 @@ public class Actors {
 			case UFO4:
 			case UFO5:
 			case MINIONUFO: //RA
-				
+
 				getglobalz(i);
 
 				if ((sector[s.sectnum].ceilingstat & 1) != 0)
@@ -3911,8 +3912,8 @@ public class Actors {
 			x = player_dist;
 
 			execute(currentGame.getCON(), i, p, x);
-			
-			if(!IsOriginalDemo() && s.picnum == COW && s.extra <= 0 && (s.cstat & 256) != 0) 
+
+			if(!IsOriginalDemo() && s.picnum == COW && s.extra <= 0 && (s.cstat & 256) != 0)
 				s.cstat &= ~256;
 		}
 
@@ -4220,8 +4221,8 @@ public class Actors {
 					sect = s.sectnum;
 				}
 
-				l = engine.getflorzofslope((short) sect, s.x, s.y);
-				x = engine.getceilzofslope((short) sect, s.x, s.y);
+				l = engine.getflorzofslope(sect, s.x, s.y);
+				x = engine.getceilzofslope(sect, s.x, s.y);
 				if (x == l || sect < 0 || sect >= MAXSECTORS) {
 					engine.deletesprite(i);
 					continue;
@@ -4273,7 +4274,7 @@ public class Actors {
 						engine.deletesprite(i);
 						continue;
 		            }
-					
+
 					if (t[2] == 0) {
 						if (s.sectnum == -1) {
 							engine.deletesprite(i);
@@ -4474,7 +4475,7 @@ public class Actors {
 				continue;
 			}
 
-			if (IFWITHIN(s, SCRAP6, SCRAP5 + 3)) 
+			if (IFWITHIN(s, SCRAP6, SCRAP5 + 3))
 			{
 				if (s.xvel > 0)
 					s.xvel--;
@@ -4661,7 +4662,7 @@ public class Actors {
 
 							m = out.getX();
 							x = out.getY();
-							
+
 							ps[p].bobposx += m - ps[p].posx;
 							ps[p].bobposy += x - ps[p].posy;
 
@@ -4684,13 +4685,13 @@ public class Actors {
 								p = nextspritesect[p];
 								continue;
 							}
-							
+
 							game.pInt.setsprinterpolate(p, sprite[p]);
 
 							sprite[p].ang += (l * q);
 							sprite[p].ang &= 2047;
 							sprite[p].z += zchange;
-	
+
 							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y,
 									sprite[p].x, sprite[p].y, (short) (q * l));
 							sprite[p].x = out.getX();
@@ -4706,7 +4707,7 @@ public class Actors {
 			case 1: // Nothing for now used as the pivot
 				if (s.owner == -1) // Init
 				{
-					s.owner = (short) i;
+					s.owner = i;
 
 					j = headspritestat[3];
 					while (j >= 0) {
@@ -4847,7 +4848,7 @@ public class Actors {
 							x = player_dist;
 							if (x < 20480) {
 								j = s.ang;
-								s.ang = (short) engine.getangle(s.x
+								s.ang = engine.getangle(s.x
 										- ps[p].posx, s.y - ps[p].posy);
 								shoot(i, CROSSBOW);
 								s.ang = (short) j;
@@ -4920,7 +4921,7 @@ public class Actors {
 								&& sprite[j].picnum != LOCATORS) {
 							Point out = engine.rotatepoint(s.x, s.y, sprite[j].x,
 									sprite[j].y, (short) q);
-							
+
 							game.pInt.setsprinterpolate(j, sprite[j]);
 
 							sprite[j].x = out.getX();
@@ -4983,7 +4984,7 @@ public class Actors {
 				break;
 			case 30:
 				if (s.owner == -1) {
-					t[3] ^= 1; 
+					t[3] ^= 1;
 					s.owner = (short) LocateTheLocator(t[3], t[0]);
 				} else {
 
@@ -5077,7 +5078,7 @@ public class Actors {
 								&& sprite[j].picnum != LOCATORS) {
 
 							game.pInt.setsprinterpolate(j, sprite[j]);
-							
+
 							sprite[j].x += l;
 							sprite[j].y += x;
 
@@ -5298,7 +5299,7 @@ public class Actors {
 				x = player_dist;
 				if (x < 8192) {
 					j = s.ang;
-					s.ang = (short) engine.getangle(s.x - ps[p].posx, s.y
+					s.ang = engine.getangle(s.x - ps[p].posx, s.y
 							- ps[p].posy);
 					shoot(i, FIRELASER);
 					s.ang = (short) j;
@@ -5334,7 +5335,7 @@ public class Actors {
 				if (ldist(sprite[s.owner], s) < 1024) {
 					short ta;
 					ta = s.ang;
-					s.ang = (short) engine.getangle(ps[p].posx - s.x,
+					s.ang = engine.getangle(ps[p].posx - s.x,
 							ps[p].posy - s.y);
 					s.ang = ta;
 					s.owner = -1;
@@ -5582,7 +5583,7 @@ public class Actors {
 						continue;
 					}
 				}
-				
+
 				if (t[0] == 1) // Lights flickering on
 				{
 					if(st != 48) {
@@ -5606,13 +5607,13 @@ public class Actors {
 							}
 						} else
 							t[0] = 2;
-					} 
+					}
 					else
 					{
 						if (sc.ceilingshade > s.shade) {
 							sc.ceilingpal = s.pal;
 							sc.ceilingshade -= 2;
-							
+
 							startwall = sc.wallptr;
 							endwall = startwall + sc.wallnum;
 
@@ -5626,7 +5627,7 @@ public class Actors {
 						} else
 							t[0] = 2;
 					}
-					
+
 					j = headspritesect[sprite[i].sectnum];
 					while (j >= 0) {
 						if ((sprite[j].cstat & 16) != 0) {
@@ -5639,7 +5640,7 @@ public class Actors {
 					}
 				}
 				break;
-			
+
 			case 13:
 				if (t[2] != 0) {
 					j = (sprite[i].yvel << 5) | 1;
@@ -5856,7 +5857,7 @@ public class Actors {
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
 							engine.changespritesect(k, sprite[j].sectnum);
 							ps[p].cursectnum = sprite[j].sectnum;
-							
+
 							ps[p].UpdatePlayerLoc();
 						} else if (sprite[k].statnum != 3) {
 							game.pInt.setsprinterpolate(k, sprite[k]);
@@ -6023,7 +6024,7 @@ public class Actors {
 																		// them
 																		// all
 																		// on
-										sprite[l].owner = (short) i;
+										sprite[l].owner = i;
 									}
 
 								break;
@@ -6373,7 +6374,7 @@ public class Actors {
 
 							}
 						} else {
-							s.ang = (short) engine.getangle(ps[p].posx - s.x,
+							s.ang = engine.getangle(ps[p].posx - s.x,
 									ps[p].posy - s.y);
 
 							if (t[0] == 999) {
@@ -6669,7 +6670,7 @@ public class Actors {
 					sector[wal.nextsector].floorz);
 		}
 	}
-	
+
 	public static boolean BowlOpen(int sectorid)
 	{
 		if ( getanimationgoal(sector[sectorid], CEILZ) == -1 )
@@ -6682,7 +6683,7 @@ public class Actors {
 
 		return false;
 	}
-	
+
 	private static boolean pinstay[] = new boolean[10];
 	public static int BowlCheck(int nSprite)
 	{
@@ -6752,10 +6753,10 @@ public class Actors {
 			}
 			engine.invalidatetile(bowline + 2024, 0, 1<<4);
 		}
-		
+
 		return pinums;
 	}
-	
+
 	public static void BowlReset()
 	{
 		for(int i = 0; i < 4; i++)
@@ -6812,7 +6813,7 @@ public class Actors {
 			engine.invalidatetile(i + 2025, 0, 1<<4);
 		}
 	}
-	
+
 	public static void BowlUpdate(int nSprite)
 	{
 		for (short i = headspritesect[nSprite], nexti; i >= 0; i = nexti) {
@@ -6820,7 +6821,7 @@ public class Actors {
 			if(sprite[i].picnum == 3440) //pin sprite
 				engine.deletesprite(i);
 		}
-		
+
 		int bowline = 0;
 		for (int i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
 			if(sprite[i].picnum == 283) //pinid sprite
@@ -6834,15 +6835,15 @@ public class Actors {
 					engine.krand();
 					sprite[spawnid].clipdist = 48;
 				}
-				
+
 				int rand = engine.krand();
 				sprite[spawnid].ang -= ((rand & 0x20) - (engine.krand() & 0x40)) & kAngleMask;
 			}
-			
+
 			if(sprite[i].picnum == 280)
 				bowline = sprite[i].hitag;
 		}
-		
+
 		if(bowline != -1)
 		{
 			engine.copytilepiece(2024, 0, 0, 128, 64, bowline + 2024, 0, 0);
@@ -6897,7 +6898,7 @@ public class Actors {
 			engine.invalidatetile(bowline + 2024, 0, 1<<4);
 		}
 	}
-	
+
 	public static void BowlClose(int nSprite)
 	{
 		for (int i = headspritestat[105]; i >= 0; i = nextspritestat[i]) {
@@ -6906,7 +6907,7 @@ public class Actors {
 				for (int j = headspritestat[105]; j >= 0; j = nextspritestat[j]) {
 		            if ( sprite[j].picnum == 282 && sprite[i].hitag == sprite[j].hitag )
 		            	spawn(j, 3437);
-		            
+
 		            if ( sprite[j].picnum == 280
 			              && sprite[j].hitag == sprite[i].hitag
 			              && sprite[j].lotag == 0 )
@@ -6922,7 +6923,7 @@ public class Actors {
 			}
 		}
 	}
-	
+
 	public static boolean isPsychoSkill() {
 		 return currentGame.getCON().type != RRRA && ud.player_skill >= 5 || currentGame.getCON().type == RRRA && ud.player_skill >= 4;
 	}

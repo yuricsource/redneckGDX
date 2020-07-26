@@ -16,7 +16,6 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
@@ -99,7 +98,7 @@ public class TrackPlayerMenu extends BuildMenu {
 			}
 
 			if (isFocused())
-				engine.rotatesprite(x - 50 << 16, (y + tilesizy[BIGFNTCURSOR] - 20) << 16, 8192, 0,
+				engine.rotatesprite(x - 50 << 16, (y + engine.getTile(BIGFNTCURSOR).getHeight() - 20) << 16, 8192, 0,
 						SPINNINGNUKEICON + ((totalclock >> 3) & 15), 8 - (totalclock & 0x3F), 0, 2 | 8, 0, 0, xdim - 1,
 						ydim - 1);
 		}
@@ -180,7 +179,7 @@ public class TrackPlayerMenu extends BuildMenu {
 			}
 
 			if (isFocused())
-				engine.rotatesprite(x - 136 << 16, (y + tilesizy[BIGFNTCURSOR] - 40) << 16, 8192, 0,
+				engine.rotatesprite(x - 136 << 16, (y + engine.getTile(BIGFNTCURSOR).getHeight() - 40) << 16, 8192, 0,
 						SPINNINGNUKEICON + ((totalclock >> 3) & 15), 8 - (totalclock & 0x3F), 0, 2 | 8, 0, 0, xdim - 1,
 						ydim - 1);
 		}

@@ -65,7 +65,7 @@ import ru.m210projects.Redneck.Types.MapInfo;
 import ru.m210projects.Redneck.Types.Script;
 
 public class Gamedef {
-	
+
 	public static final int[] params = new int[35];
 	public static String confilename = "GAME.CON";
 	public static int conweigth = 0;
@@ -88,8 +88,8 @@ public class Gamedef {
 	public static final int justjump1 = 256;
 	public static final int justjump2 = 8192;
 	public static final int windang = 16384;
-	public static final int antifaceplayerslow = 32768; 
-	
+	public static final int antifaceplayerslow = 32768;
+
 	// Some misc public static final ints;
 	public static final int NO       = 0;
 	public static final int YES      = 1;
@@ -117,19 +117,19 @@ public class Gamedef {
 	public static final int palive = 16384;
 	public static final int pdead = 32768;
 	public static final int pfacing = 65536;
-		
+
 	public static final int MAXSCRIPTSIZE = 20460;
 	public static final int NUMKEYWORDS = 147;
 	private static char[] tempbuf = new char[2048];
-	
+
 	private static char[] text;
 	private static int textptr = 0;
 
 	private static int parsing_actor;
-	
+
 	public static int insptr;
 	public static int scriptptr, error, warning, killit_flag;
-	
+
 	public static IntArray labelcode = new IntArray();
 	public static char[] label;
 	public static int labelcnt;
@@ -140,31 +140,31 @@ public class Gamedef {
 	    "USER.CON",
 	    "DEFS.CON"
 	};
-	
+
 	public static final char[][] keyw = {
 		"definelevelname".toCharArray(),  	// 0
-	    "actor".toCharArray(),            	// 1    [#]  
+	    "actor".toCharArray(),            	// 1    [#]
 	    "addammo".toCharArray(),   			// 2    [#]
 	    "ifrnd".toCharArray(),            	// 3    [C]
-	    "enda".toCharArray(),            	// 4    [:]  
-	    "ifcansee".toCharArray(),         	// 5    [C]  
+	    "enda".toCharArray(),            	// 4    [:]
+	    "ifcansee".toCharArray(),         	// 5    [C]
 	    "ifhitweapon".toCharArray(),      	// 6    [#]
 	    "action".toCharArray(),           	// 7    [#]
-	    "ifpdistl".toCharArray(),         	// 8    [#]  
+	    "ifpdistl".toCharArray(),         	// 8    [#]
 	    "ifpdistg".toCharArray(),         	// 9    [#]
-	    "else".toCharArray(),             	// 10   [#]	 
+	    "else".toCharArray(),             	// 10   [#]
 	    "strength".toCharArray(),         	// 11   [#]
 	    "break".toCharArray(),            	// 12   [#]
 	    "shoot".toCharArray(),            	// 13   [#]
 	    "palfrom".toCharArray(),          	// 14   [#]
 	    "sound".toCharArray(),            	// 15   [filename.voc]
-	    "fall".toCharArray(),             	// 16   []  
-	    "state".toCharArray(),            	// 17	
-	    "ends".toCharArray(),             	// 18		
+	    "fall".toCharArray(),             	// 16   []
+	    "state".toCharArray(),            	// 17
+	    "ends".toCharArray(),             	// 18
 	    "define".toCharArray(),           	// 19
 	    "//".toCharArray(),               	// 20
-	    "ifai".toCharArray(),             	// 21		
-	    "killit".toCharArray(),           	// 22		
+	    "ifai".toCharArray(),             	// 21
+	    "killit".toCharArray(),           	// 22
 	    "addweapon".toCharArray(),        	// 23
 	    "ai".toCharArray(),               	// 24
 	    "addphealth".toCharArray(),       	// 25
@@ -197,7 +197,7 @@ public class Gamedef {
 	    "count".toCharArray(),            	// 52
 	    "ifactor".toCharArray(),          	// 53
 	    "music".toCharArray(),            	// 54
-	    "include".toCharArray(),          	// 55	
+	    "include".toCharArray(),          	// 55
 	    "ifstrength".toCharArray(),       	// 56
 	    "definesound".toCharArray(),      	// 57
 	    "guts".toCharArray(),             	// 58
@@ -205,7 +205,7 @@ public class Gamedef {
 	    "gamestartup".toCharArray(),      	// 60
 	    "wackplayer".toCharArray(),       	// 61
 	    "ifgapzl".toCharArray(),          	// 62
-	    "ifhitspace".toCharArray(),       	// 63	
+	    "ifhitspace".toCharArray(),       	// 63
 	    "ifoutside".toCharArray(),        	// 64
 	    "ifmultiplayer".toCharArray(),    	// 65
 	    "operate".toCharArray(),          	// 66
@@ -214,12 +214,12 @@ public class Gamedef {
 	    "endofgame".toCharArray(),        	// 69
 	    "ifbulletnear".toCharArray(),     	// 70
 	    "ifrespawn".toCharArray(),        	// 71
-	    "iffloordistl".toCharArray(),     	// 72	
+	    "iffloordistl".toCharArray(),     	// 72
 	    "ifceilingdistl".toCharArray(),   	// 73
 	    "spritepal".toCharArray(),        	// 74
 	    "ifpinventory".toCharArray(),     	// 75
 	    "betaname".toCharArray(),         	// 76
-	    "cactor".toCharArray(),           	// 77	
+	    "cactor".toCharArray(),           	// 77
 	    "ifphealthl".toCharArray(),       	// 78
 	    "definequote".toCharArray(),      	// 79
 	    "quote".toCharArray(),            	// 80
@@ -241,7 +241,7 @@ public class Gamedef {
 	    "pkick".toCharArray(),  			// 96
 	    "mikesnd".toCharArray(), 			// 97
 	    "useractor".toCharArray(),  		// 98
-	    "sizeat".toCharArray(),  			// 99		
+	    "sizeat".toCharArray(),  			// 99
 	    "addstrength".toCharArray(), 		// 100   [#]
 	    "cstator".toCharArray(), 			// 101
 	    "mail".toCharArray(), 				// 102
@@ -252,7 +252,7 @@ public class Gamedef {
 	    "definevolumename".toCharArray(), 	// 107
 	    "defineskillname".toCharArray(), 	// 108
 	    "ifnosounds".toCharArray(), 		// 109
-	    
+
 	    //REDNECK RAMPAGE CMDS
 	    "ifnocover".toCharArray(),			// 110 --no
 	    "ifhittruck".toCharArray(),			// 111 COOT
@@ -275,7 +275,7 @@ public class Gamedef {
 	    "ifsounddist".toCharArray(),		// 128 Crickets
 	    "ifonmud".toCharArray(),			// 129 GAME
 	    "ifcoop".toCharArray(),				// 130 BUBBA
-	    
+
 	    //RR RIDES AGAIN CMDS
 	    "ifmotofast".toCharArray(),			//131 GAME
 	    "ifwind".toCharArray(),				//132 --no
@@ -323,7 +323,7 @@ public class Gamedef {
 	        return (na-a);
 	    }
 	}
-	
+
 	public static int getincangle(int a, int na)
 	{
 	    a &= 2047;
@@ -341,7 +341,7 @@ public class Gamedef {
 	        return (na-a);
 	    }
 	}
-	
+
 	public static boolean ispecial(char c)
 	{
 	    if(c == 0x0a)
@@ -355,17 +355,17 @@ public class Gamedef {
 
 	    return false;
 	}
-	
+
 	public static boolean isaltok(char c)
 	{
 	    return ( isalnum(c) || c == '{' || c == '}' || c == '/' || c == '*' || c == '-' || c == '_' || c == '.' );
 	}
-	
+
 	public static boolean isaltok(byte c)
 	{
 	    return ( Character.isLetterOrDigit(c) || c == '{' || c == '}' || c == '/' || c == '*' || c == '-' || c == '_' || c == '.' );
 	}
-	
+
 	public static boolean isalnum(char c)
 	{
 		return Character.isLetterOrDigit(c);
@@ -425,7 +425,7 @@ public class Gamedef {
 	{
 	    SPRITE s = sprite[i];
 	    int c;
-	
+
 	    if( floorspace(s.sectnum) )
 	        c = 0;
 	    else
@@ -434,7 +434,7 @@ public class Gamedef {
 	            c = con.gc / 6;
 	        else c = con.gc;
 	    }
-	
+
 	    if( ( s.statnum == 1 || s.statnum == 10 || s.statnum == 2 || s.statnum == 6 ) ) {
 	        engine.getzrange(s.x,s.y,s.z-(FOURSLEIGHT),s.sectnum,127,CLIPMASK0);
 	        hittype[i].ceilingz = zr_ceilz;
@@ -445,7 +445,7 @@ public class Gamedef {
 	        hittype[i].ceilingz = sector[s.sectnum].ceilingz;
 	        hittype[i].floorz   = sector[s.sectnum].floorz;
 	    }
-	
+
 	    if( s.z < hittype[i].floorz-(FOURSLEIGHT) )
 	    {
 	        if( sector[s.sectnum].lotag == 2 && s.zvel > 3122 )
@@ -474,7 +474,7 @@ public class Gamedef {
 
 	    int len = 0;
 	    while( !ispecial(text[textptr + ++len]) );
-	    
+
 	    if(label.length <= (labelcnt<<6) + len) // resize
 	    {
 	    	char[] newItems = new char[(labelcnt<<6) + len + 1];
@@ -486,11 +486,11 @@ public class Gamedef {
 	    label[(labelcnt<<6)+len] = 0;
 	    textptr += len;
 	}
-	
+
 	public static int keyword()
 	{
 		int temptextptr = textptr;
-		 
+
 	    while( !isaltok(text[temptextptr]) )
 	    {
 	    	temptextptr++;
@@ -576,7 +576,7 @@ public class Gamedef {
 	        tempbuf[l] = text[textptr + l];
 	        l++;
 	    }
-	    
+
 	    tempbuf[l] = 0;
 	    for(int i=0;i<NUMKEYWORDS;i++)
 	        if( Bstrcmp( label, (labelcnt<<6), keyw[i], 0) == 0 )
@@ -613,7 +613,7 @@ public class Gamedef {
 	        textptr+=l;
 	        return;
 	    }
-	    
+
 	    scriptptr++;
 	    textptr += l;
 	}
@@ -652,7 +652,7 @@ public class Gamedef {
 	            while( text[textptr] != '*' || text[textptr + 1] != '/' );
 	            textptr+=2;
 	            return false;
-	            
+
 	        case 17:
 	        	if( parsing_actor == 0 && parsing_state == 0 )
 	            {
@@ -705,7 +705,7 @@ public class Gamedef {
 	                Console.Println("  * ERROR!(L" + line_number + ") Found 'ends' with no 'state'.");
 	                error++;
 	            }
-	            
+
                 if( num_squigilly_brackets > 0 )
                 {
 	                Console.Println("  * ERROR!(L" + line_number + ") Found more '{' than '}' before 'ends'.");
@@ -717,7 +717,7 @@ public class Gamedef {
                     error++;
                 }
                 parsing_state = 0;
-	            
+
 	        	return false;
 	        case 19:
 	        	getlabel();
@@ -742,7 +742,7 @@ public class Gamedef {
 	            transnum(con);
 	            if(i == labelcnt) {
 	            	labelcode.add(con.script[scriptptr-1]);
-	            	labelcnt = labelcode.size; 
+	            	labelcnt = labelcode.size;
 	            }
 //	                labelcode[labelcnt++] = script[scriptptr-1];
 	            scriptptr -= 2;
@@ -820,7 +820,7 @@ public class Gamedef {
 	                scriptptr--;
 	                transnum(con); // Volume Number (0/4)
 	                scriptptr--;
-	
+
 	                k = con.script[scriptptr] - 1;
 	                if(k >= 0) // if it's background music
 	                {
@@ -837,7 +837,7 @@ public class Gamedef {
 	                        j = 0;
 	                        while( isaltok(text[textptr+j]) )
 	                            j++;
-	                        
+
 	                        con.music_fn[k][i] = new String(text, startptr, j);
 	                        textptr += j;
 	                        if(i > 9) break;
@@ -862,7 +862,7 @@ public class Gamedef {
 	                            j++;
 	                        }
 	                        con.env_music_fn[i] = new String(text, startptr, j);
-	
+
 	                        textptr += j;
 	                        if(i > 9) break;
 	                        i++;
@@ -899,11 +899,11 @@ public class Gamedef {
 	            byte[] buf = new byte[j+1];
 
 	            Console.Println("Including: '" + name + "'.");
-	            if(name.equalsIgnoreCase("gator66.con") 
-	            		|| name.equalsIgnoreCase("pig66.con") 
+	            if(name.equalsIgnoreCase("gator66.con")
+	            		|| name.equalsIgnoreCase("pig66.con")
 	            		|| name.equalsIgnoreCase("bubba66.con"))
 	            	conweigth += 1;
-	            
+
 	            if(conweigth == 3 && con.type != RRRA )
 	            {
 	            	con.type = RR66;
@@ -914,19 +914,19 @@ public class Gamedef {
 	            line_number = 1;
 	            temp_ifelse_check = (char) checking_ifelse;
 	            checking_ifelse = 0;
-	            
+
 	            char[] origtext = text;
 	            int origtptr = textptr;
 	            textptr = 0;
 
 	            fp.read(buf,0,j);
 	            fp.close();
-	            
+
 	            last_used_text = new String(buf);
 		        last_used_size = j;
 
 		        text = last_used_text.toCharArray();
-		        
+
 		        text[j] = 0;
 
 	            boolean done = false;
@@ -1150,7 +1150,7 @@ public class Gamedef {
 
 	            checking_ifelse = 0;
 	            return false;
-	            
+
 	        case 11:
 	        case 13:
 	        case 25:
@@ -1171,7 +1171,7 @@ public class Gamedef {
 	        case 105:
 	        case 113:
 	        case 114:
-	        	
+
 	        case 140: //RA
 	        case 142:
 	            transnum(con);
@@ -1198,7 +1198,7 @@ public class Gamedef {
 	            if( checking_ifelse != 0 )
 	            {
 	                checking_ifelse--;
-	                tempscrptr = scriptptr; 
+	                tempscrptr = scriptptr;
 	                scriptptr++; //Leave a spot for the fail location
 	                parsecommand(con);
 
@@ -1263,13 +1263,13 @@ public class Gamedef {
 	        case 112:
 	        case 129:
 	        case 130:
-	        
+
 	        case 131: //RA
 	        case 132:
 	        case 134:
 	        case 135:
 	        case 145:
-	        
+
 	            if(tw == 51)
 	            {
 	                j = 0;
@@ -1328,7 +1328,7 @@ public class Gamedef {
 	                textptr++;
 
 	            return false;
-	            
+
 	        case 107:
 	            scriptptr--;
 	            transnum(con);
@@ -1483,7 +1483,7 @@ public class Gamedef {
 	            int soundptr = textptr;
 	            while( text[textptr] != ' ' )
 	            {
-	                textptr++; 
+	                textptr++;
 	                i++;
 	                if(i >= 13)
 	                {
@@ -1495,7 +1495,7 @@ public class Gamedef {
 	                }
 	            }
 	            con.sounds[k] = new String(text, soundptr, i);
-	            
+
 	            transnum(con);
 	            con.soundps[k] = (short) con.script[scriptptr-1];
 	            scriptptr--;
@@ -1517,8 +1517,8 @@ public class Gamedef {
 	            {
 	                Console.Println("  * ERROR!(L" + line_number + ") Found 'enda' without defining 'actor'.");
 	                error++;
-	            } 
-	            
+	            }
+
                 if( num_squigilly_brackets > 0 )
                 {
                     Console.Println("  * ERROR!(L" + line_number + ") Found more '{' than '}' before 'enda'.");
@@ -1553,7 +1553,7 @@ public class Gamedef {
 	        case 124:
 	        case 125:
 	        case 126:
-	        	
+
 	        case 133: //RA
 	        case 136:
 	        case 137:
@@ -1570,11 +1570,11 @@ public class Gamedef {
 	        		 transnum(con);
 	        		 scriptptr--;
 	        		 params[j] = con.script[scriptptr];
-	        		 
+
 	        		 if (j != 30) continue;
-	        		 
+
 	        		 if(error > 0) return false;
-	        		 
+
 	        		 if (keyword() != -1) {
 	        			 con.type = RR;
 	        			 break;
@@ -1582,7 +1582,7 @@ public class Gamedef {
 	        			 con.type = RRRA;
 	        		 }
 	        	}
-	        	
+
 	        	j = 0;
 	    		con.const_visibility = params[j++];
 	    		con.impact_damage = params[j++];
@@ -1615,7 +1615,7 @@ public class Gamedef {
 	    		con.freezerhurtowner = (char)params[j++];
 	    		con.spriteqamount = (short)ClipRange(params[j++], 0, 1024);
 	    		con.dildoblase = (char)params[j++];
-    			
+
     			if(con.type == RRRA)
     			{
     				con.max_ammo_amount[MOTO_WEAPON] = params[j++];
@@ -1628,14 +1628,14 @@ public class Gamedef {
 	    }
 	    return false;
 	}
-	
+
 	public static void passone(Script con)
 	{
 	    while( !parsecommand(con) );
 	    if( (error+warning) > 12)
 	    	Console.Println(  "  * ERROR! Too many warnings or errors.");
 	}
-	
+
 	public static void copydefaultcons()
 	{
 		for(int i = 0; i < 3; i++)
@@ -1669,18 +1669,18 @@ public class Gamedef {
 	        game.GameCrash("\nMissing con file(s).");
 	        System.exit(1);
 	    }
-	    
-	    
+
+
     	Console.Println("Compiling: " + filenam + ".");
 
         int fs = fp.size();
-        
+
         byte[] buf = new byte[fs+1];
         label = new char[131072];
 
         fp.read(buf,0,fs);
         fp.close();
-        
+
         last_used_text = new String(buf);
         last_used_size = fs;
         text = last_used_text.toCharArray();
@@ -1694,7 +1694,7 @@ public class Gamedef {
 	    warning = 0;
 	    error = 0;
 	    line_number = 1;
-	
+
 	    try {
 	    	passone(con); //Tokenize
 	    } catch (Exception e) {
@@ -1729,7 +1729,7 @@ public class Gamedef {
 	    {
 	        Console.Println("Code Size:" + (((scriptptr)<<2)-4) + " bytes(" + labelcnt + " labels).");
 	    }
-	    
+
 	    return con;
 	}
 
@@ -1793,19 +1793,19 @@ public class Gamedef {
 	    }
 	    return (short) (furthest_angle&2047);
 	}
-	
+
 	public static int furthest_x, furthest_y;
 	public static int furthestcanseepoint(int i, SPRITE ts, int dax, int day)
 	{
 	    long d, da;
 	    SPRITE s = sprite[i];
-	    
+
 	    furthest_x = dax;
 	    furthest_y = day;
 
 	    if( (g_t[0]&63) != 0 ) return -1;
 
-	    short angincs = 1024; 
+	    short angincs = 1024;
 	    if(ud.multimode >= 2 || ud.player_skill >= 3)
 	        angincs = (short) (2048/(1+(engine.krand()&1)));
 
@@ -1820,7 +1820,7 @@ public class Gamedef {
 	        da = klabs(pHitInfo.hitx-s.x)+klabs(pHitInfo.hity-s.y);
 
 	        if( d < da )
-	            if(engine.cansee(pHitInfo.hitx,pHitInfo.hity,pHitInfo.hitz,(short)pHitInfo.hitsect,s.x,s.y,s.z-(16<<8),s.sectnum) )
+	            if(engine.cansee(pHitInfo.hitx,pHitInfo.hity,pHitInfo.hitz,pHitInfo.hitsect,s.x,s.y,s.z-(16<<8),s.sectnum) )
 	        {
 	            furthest_x = pHitInfo.hitx;
 	            furthest_y = pHitInfo.hity;
@@ -1950,7 +1950,7 @@ public class Gamedef {
 
 	    if((a&jumptoplayer) == jumptoplayer)
 	    {
-	    	if ( g_sp.picnum == DAISYMAE )	
+	    	if ( g_sp.picnum == DAISYMAE )
 	    	{
 	    		if(g_t[0] < 16)
 		            g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 40);
@@ -1959,7 +1959,7 @@ public class Gamedef {
 		            g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047]>>5);
 	    	}
 	    }
-	    
+
 	    if ( (a & justjump1) != 0 )
 	    {
 	    	if ( g_sp.picnum == JACKOLOPE )
@@ -1970,7 +1970,7 @@ public class Gamedef {
 	    	else if ( g_sp.picnum == MAMAJACKOLOPE && g_t[0] < 8 )
 	    		g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 35);
 	    }
-	    
+
 	    if((a & justjump2) != 0) {
 	    	if ( g_sp.picnum == JACKOLOPE )
 	    	{
@@ -1980,7 +1980,7 @@ public class Gamedef {
 	    	else if ( g_sp.picnum == MAMAJACKOLOPE && g_t[0] < 8 )
 	    		g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 28);
 	    }
-	    
+
 	    if((a & windang) != 0) {
 	    	if ( g_t[0] < 8 )
     			g_sp.zvel -= (sintable[(512+(g_t[0]<<4))&2047] / 24);
@@ -2010,9 +2010,9 @@ public class Gamedef {
 
 	    if((a&geth) != 0) g_sp.xvel += (con.script[g_t[1]]-g_sp.xvel)>>1;
 	    if((a&getv) != 0) g_sp.zvel += ((con.script[g_t[1]+1]<<4)-g_sp.zvel)>>1;
-	    
-	  
-	    
+
+
+
 	    if((a&dodgebullet) != 0)
 	        dodge(g_sp);
 
@@ -2043,7 +2043,7 @@ public class Gamedef {
                     }
                 }
             }
-            
+
             if(g_sp.zvel > 0 && hittype[g_i].floorz < g_sp.z)
                 g_sp.z = hittype[g_i].floorz;
             if( g_sp.zvel < 0)
@@ -2055,7 +2055,7 @@ public class Gamedef {
                     g_sp.zvel >>= 1;
                 }
             }
-	
+
 	        if(g_sp.picnum == APLAYER)
 	            if( (g_sp.z-hittype[g_i].ceilingz) < (32<<8) )
 	                g_sp.z = hittype[g_i].ceilingz+(32<<8);
@@ -2081,13 +2081,13 @@ public class Gamedef {
 	                    ps[g_p].posyv = mulscale(ps[g_p].posyv,con.dukefriction-0x2000,16);
 	                }
 	            }
-	            else if(g_sp.picnum != MOSQUITO 
-            		&& g_sp.picnum != 5501 
-            		&& g_sp.picnum != UFO1 
-            		&& g_sp.picnum != UFO2 
-            		&& g_sp.picnum != UFO3 
-            		&& g_sp.picnum != UFO4 
-            		&& g_sp.picnum != UFO5 
+	            else if(g_sp.picnum != MOSQUITO
+            		&& g_sp.picnum != 5501
+            		&& g_sp.picnum != UFO1
+            		&& g_sp.picnum != UFO2
+            		&& g_sp.picnum != UFO3
+            		&& g_sp.picnum != UFO4
+            		&& g_sp.picnum != UFO5
             		&& g_sp.picnum != MINIONUFO)
 	            {
 	            	ILoc oldLoc = game.pInt.getsprinterpolate(g_i);
@@ -2103,7 +2103,7 @@ public class Gamedef {
 	                }
 	            }
 	        }
-	        
+
 	        if ( sector[g_sp.sectnum].lotag == 1 )
 	        {
 	        	if(currentGame.getCON().type == RRRA) {
@@ -2118,7 +2118,7 @@ public class Gamedef {
 	        	}
 	        } else {
 	        	switch(g_sp.picnum)
-	        	{	
+	        	{
 		        	case MINIONAIRBOAT:
 		        	case HULKAIRBOAT:
 		        	case DAISYAIRBOAT:
@@ -2146,7 +2146,7 @@ public class Gamedef {
 	           engine.deletesprite(g_i);
 	   }
 	}
-	
+
 	private static void parseifelse(Script con, boolean condition)
 	{
 	    if( condition)
@@ -2164,7 +2164,7 @@ public class Gamedef {
 	        }
 	    }
 	}
-	
+
 	private static boolean parse(Script con)
 	{
 		int j, l;
@@ -2280,7 +2280,7 @@ public class Gamedef {
 	                if( !cans )
 	                {
 	                    j = furthestcanseepoint(g_i,spr, hittype[g_i].lastvx, hittype[g_i].lastvy);
-	                    
+
 	                    hittype[g_i].lastvx = furthest_x;
 	                    hittype[g_i].lastvy = furthest_y;
 
@@ -2418,7 +2418,7 @@ public class Gamedef {
 
 	            insptr++;
 
-	            if( ( g_sp.picnum == APLAYER && g_sp.yrepeat < 36 ) || con.script[insptr] < g_sp.yrepeat || ((g_sp.yrepeat*(tilesizy[g_sp.picnum]+8))<<2) < (hittype[g_i].floorz - hittype[g_i].ceilingz) )
+	            if( ( g_sp.picnum == APLAYER && g_sp.yrepeat < 36 ) || con.script[insptr] < g_sp.yrepeat || ((g_sp.yrepeat*(engine.getTile(g_sp.picnum).getHeight()+8))<<2) < (hittype[g_i].floorz - hittype[g_i].ceilingz) )
 	            {
 	                j = ((con.script[insptr])-g_sp.yrepeat)<<1;
 	                if( klabs(j) != 0 ) g_sp.yrepeat += ksgn(j);
@@ -2439,7 +2439,7 @@ public class Gamedef {
 	            shoot(g_i, con.script[insptr]);
 	            insptr++;
 	            break;
-	        case 127: 
+	        case 127:
 	        	insptr++;
 	            parseifelse(con, ambienttype[g_sp.ang] == con.script[insptr]);
 	        	break;
@@ -2486,7 +2486,7 @@ public class Gamedef {
 	        case 119:
 	        	insptr++;
 	            parseifelse(con, g_sp.extra > con.script[insptr]);
-	        	break;	
+	        	break;
 	        case 120:
 	        	insptr++;
 	            parseifelse(con, g_sp.extra < con.script[insptr]);
@@ -2503,7 +2503,7 @@ public class Gamedef {
 	        case 112:
 	        case 111:
 	        	int d = g_sp.detail;
-	        	if(d == 1) 
+	        	if(d == 1)
 	        		g_sp.detail++;
 	        	parseifelse(con, d == 1);
 	        	break;
@@ -2524,7 +2524,7 @@ public class Gamedef {
 	            insptr++;
 	            g_sp.xoffset = 0;
 	            g_sp.yoffset = 0;
-	            
+
 	            if ( sector[g_sp.sectnum].lotag == 800 )
 	            {
 	            	if(g_sp.picnum == AMMO)
@@ -2532,14 +2532,14 @@ public class Gamedef {
 	            		engine.deletesprite(g_i);
 	                    break;
 	            	}
-	            	
+
 	            	if(g_sp.picnum != APLAYER && (badguy(g_sp) || g_sp.picnum == HEN || g_sp.picnum == COW || g_sp.picnum == PIG || g_sp.picnum == DOGRUN) && g_sp.detail < 128 )
 	            	{
 	                    g_sp.zvel = 8000;
 	                    g_sp.extra = 0;
 	                    g_sp.z = hittype[g_i].floorz - 256;
 	                    g_sp.detail++;
-	            	} 
+	            	}
 	            	else if ( g_sp.picnum != APLAYER )
 	                {
 	                    if ( g_sp.detail != 0 )
@@ -2591,7 +2591,7 @@ public class Gamedef {
 		                                guts(g_sp,JIBS6,15,g_p);
 		                                spritesound(SQUISHED,g_i);
 		                                spawn(g_i,BLOODPOOL);
-	                                } 
+	                                }
 	                            }
 
 	                            hittype[g_i].picnum = SHOTSPARK1;
@@ -2602,7 +2602,7 @@ public class Gamedef {
 	                        {
 	                        	short pushsect = g_sp.sectnum;
 	                            engine.pushmove(g_sp.x,g_sp.y,g_sp.z,pushsect,128,(4<<8),(4<<8),CLIPMASK0);
-	                            
+
 	                            g_sp.x = pushmove_x;
 	                            g_sp.y = pushmove_y;
 	                            g_sp.z = pushmove_z;
@@ -2720,12 +2720,12 @@ public class Gamedef {
 	        	int extra = sprite[ps[g_p].i].extra;
 	        	if(extra != 0)
 	        		extra += con.script[insptr];
-	        	
+
 	        	if ( 2 * con.max_player_health < extra )
 	        		extra = (2 * con.max_player_health);
 	        	if ( extra < 0 )
 	        		extra = 0;
-	        	
+
 	        	 if ( !ud.god )
 	             {
 	        		 if ( con.script[insptr] > 0 )
@@ -2736,7 +2736,7 @@ public class Gamedef {
 	        		 }
 	        		 sprite[ps[g_p].i].extra = (short) extra;
 	             }
-	        	 
+
 	        	 if ( ps[g_p].alcohol_amount > 100 )
 	        		 ps[g_p].alcohol_amount = 100;
 
@@ -2769,7 +2769,7 @@ public class Gamedef {
 	        	int sect = g_sp.sectnum;
 	        	int hitag = 0;
 	        	int lotag = 0;
-	        	
+
 	        	j = headspritesect[sect];
 		        while(j >= 0)
 		        {
@@ -2781,7 +2781,7 @@ public class Gamedef {
 		            }
 		            j = nextspritesect[j];
 		        }
-		        
+
 		        j = headspritestat[100];
                 while(j >= 0)
                 {
@@ -2795,11 +2795,11 @@ public class Gamedef {
             		    	{
             		    		hittype[s].picnum = SHOTSPARK1;
             	                hittype[s].extra = 1;
-            		    	}   
+            		    	}
             		    	s = nextspritesect[s];
             		    }
                     }
-                    
+
                     if(sp.sectnum != g_sp.sectnum)
                     {
                     	if ( lotag == sp.lotag )
@@ -2853,11 +2853,11 @@ public class Gamedef {
     		    while(s >= 0)
     		    {
     		    	short next = nextspritesect[s];
-    		    	if(sprite[s].picnum != 63 
+    		    	if(sprite[s].picnum != 63
     		    			&& sprite[s].picnum != DESTRUCTO
-    		    			&& sprite[s].picnum != COOT 
-    		    			&& sprite[s].picnum != TORNADO 
-    		    			&& sprite[s].picnum != APLAYER) 
+    		    			&& sprite[s].picnum != COOT
+    		    			&& sprite[s].picnum != TORNADO
+    		    			&& sprite[s].picnum != APLAYER)
     		    		engine.deletesprite(s);
 
     		    	s = next;
@@ -2867,12 +2867,12 @@ public class Gamedef {
 	        	insptr++;
 	        	ps[g_p].gut_amount += con.script[insptr];
 	        	ps[g_p].alcohol_amount -= con.script[insptr];
-	        	if(ps[g_p].gut_amount > 100) 
+	        	if(ps[g_p].gut_amount > 100)
 	        		ps[g_p].gut_amount = 100;
-	        	
-	        	if ( ps[g_p].alcohol_amount < 0 ) 
+
+	        	if ( ps[g_p].alcohol_amount < 0 )
 	        		ps[g_p].alcohol_amount = 0;
-	        	
+
 	        	extra = sprite[ps[g_p].i].extra;
 	        	if ( g_sp.picnum == ECLAIRHEALTH )
 	        	{
@@ -2881,7 +2881,7 @@ public class Gamedef {
 	        		if ( 2 * con.max_player_health < extra )
 	        			extra = (2 * con.max_player_health);
 	        	}
-	        	else 
+	        	else
 	        	{
 	        		if ( extra > con.max_player_health && con.script[insptr] > 0 )
 	        		{
@@ -3041,7 +3041,7 @@ public class Gamedef {
 	                    int sz = g_sp.z-(8<<8)-(engine.krand()&8191);
 	                    int sy = g_sp.y+(engine.krand()&255)-128;
 	                    int sx = g_sp.x+(engine.krand()&255)-128;
-	                    
+
 	                    l = EGS(g_sp.sectnum,sx,sy,sz,dnum+s,g_sp.shade,vx,vy,va,ve, vz,g_i,(short)5);
 	                    if(dnum == SCRAP1)
 	                        sprite[l].yvel = weaponsandammosprites[j%14];
@@ -3500,7 +3500,7 @@ public class Gamedef {
 	                    break;
 
 	            parseifelse(con,  j == NUM_SOUNDS );
-	            break; 
+	            break;
 	        case 131: //ifmotofast
 	        	parseifelse(con, ps[g_p].CarSpeed > 60);
 	        	break;
@@ -3515,7 +3515,7 @@ public class Gamedef {
 	        	insptr++;
 	        	break;
 	        case 134: //ifonmoto
-	        	parseifelse(con, ps[g_p].OnMotorcycle); 
+	        	parseifelse(con, ps[g_p].OnMotorcycle);
 	        	break;
 	        case 135: //ifonboat
 	        	parseifelse(con, ps[g_p].OnBoat);
@@ -3538,7 +3538,7 @@ public class Gamedef {
         			operateactivators(666, ps[g_p].i);
         			break;
         		}
-  
+
 	        	insptr++;
 	        	break;
 	        case 137: //mamatrigger
@@ -3580,7 +3580,7 @@ public class Gamedef {
 	              if ( Sound[BellSound].num == 0 )
 	                spritesound(BellSound, g_i);
 	            }
-	        	else 
+	        	else
 	            {
 	        		switch((engine.krand() & 3) + 1)
 	        		{
@@ -3621,7 +3621,7 @@ public class Gamedef {
 	    }
 		return false;
 	}
-	
+
 	public static void execute(Script con, int i,int p,int x)
 	{
 	    boolean done;
@@ -3711,7 +3711,7 @@ public class Gamedef {
 	            }
 	    }
 	}
-	
+
 	public static void compilecons()
 	{
 		conweigth = 0;
@@ -3754,8 +3754,8 @@ public class Gamedef {
 				defGame.episodes[i].gMapInfo[j] = new MapInfo(path, new String(con.level_names[i*11+j]).trim(), con.partime[i*11+j], con.designertime[i*11+j]);
 			}
 		}
-		
-		for(int i = 0; i < con.nSkills; i++) 
+
+		for(int i = 0; i < con.nSkills; i++)
 			defGame.skillnames[i] = new String(con.skill_names[i]).trim();
 
 		if(defGame.episodes[1] != null && con.type != RRRA) {
@@ -3764,16 +3764,16 @@ public class Gamedef {
 		}
 		defGame.isInited = true;
 		currentGame = defGame;
-		
+
 		episodes.put(defGame.getFile().getPath(), defGame);
 	}
-	
+
 	//For user episodes
 
 	public static byte[] preparescript(byte[] buf)
 	{
 		if(buf == null) return null;
-		
+
         int index = -1;
         while( (index = indexOf("//", buf, index+1)) != -1)
         {
@@ -3785,7 +3785,7 @@ public class Gamedef {
                 	return buf;
         	}
         }
-        
+
         index = -1;
         while( (index = indexOf("/*", buf, index+1)) != -1)
         {
@@ -3802,7 +3802,7 @@ public class Gamedef {
 
         return buf;
 	}
-	
+
 	public static Script loaduserdef(String filenam)
 	{
 		Resource fp = BuildGdx.cache.open(filenam, 0);
@@ -3814,16 +3814,16 @@ public class Gamedef {
 
         byte[] buf = new byte[fs+1];
         label = new char[131072];
-        
+
         fp.read(buf,0,fs);
         fp.close();
-        
+
         parsing_actor = 0;
         parsing_state = 0;
         num_squigilly_brackets = 0;
         checking_ifelse = 0;
         killit_flag = 0;
-        
+
         textptr = 0;
         last_used_text = new String(buf);
         last_used_size = fs;
@@ -3842,7 +3842,7 @@ public class Gamedef {
 	    warning = 0;
 	    error = 0;
 	    line_number = 1;
-	
+
 	    try {
 	    	passone(con); //Tokenize
 	    } catch (Exception e) {
@@ -3850,7 +3850,7 @@ public class Gamedef {
 	    	error = 1;
 	    	return null;
 	    }
-	    
+
 	    switch(con.type)
 		{
 			case RR:
@@ -3871,7 +3871,7 @@ public class Gamedef {
 	    	return null;
 	    else
 	        Console.Println("Code Size:" + (((scriptptr)<<2)-4) + " bytes(" + labelcnt + " labels).");
-	    
+
 	    return con;
 	}
 }

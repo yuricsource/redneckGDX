@@ -26,8 +26,44 @@ package ru.m210projects.Redneck;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.Gameutils.*;
+import static ru.m210projects.Build.Engine.CEIL;
+import static ru.m210projects.Build.Engine.CLIPMASK1;
+import static ru.m210projects.Build.Engine.FLOOR;
+import static ru.m210projects.Build.Engine.MAXSECTORS;
+import static ru.m210projects.Build.Engine.MAXSPRITESONSCREEN;
+import static ru.m210projects.Build.Engine.MAXSTATUS;
+import static ru.m210projects.Build.Engine.MAXTILES;
+import static ru.m210projects.Build.Engine.getInput;
+import static ru.m210projects.Build.Engine.gotpic;
+import static ru.m210projects.Build.Engine.headspritesect;
+import static ru.m210projects.Build.Engine.headspritestat;
+import static ru.m210projects.Build.Engine.mirrorang;
+import static ru.m210projects.Build.Engine.mirrorx;
+import static ru.m210projects.Build.Engine.mirrory;
+import static ru.m210projects.Build.Engine.nextspritesect;
+import static ru.m210projects.Build.Engine.nextspritestat;
+import static ru.m210projects.Build.Engine.pHitInfo;
+import static ru.m210projects.Build.Engine.sector;
+import static ru.m210projects.Build.Engine.show2dsector;
+import static ru.m210projects.Build.Engine.sintable;
+import static ru.m210projects.Build.Engine.sprite;
+import static ru.m210projects.Build.Engine.spritesortcnt;
+import static ru.m210projects.Build.Engine.totalclock;
+import static ru.m210projects.Build.Engine.tsprite;
+import static ru.m210projects.Build.Engine.viewingrange;
+import static ru.m210projects.Build.Engine.visibility;
+import static ru.m210projects.Build.Engine.wall;
+import static ru.m210projects.Build.Engine.windowx1;
+import static ru.m210projects.Build.Engine.windowx2;
+import static ru.m210projects.Build.Engine.windowy1;
+import static ru.m210projects.Build.Engine.windowy2;
+import static ru.m210projects.Build.Engine.xdim;
+import static ru.m210projects.Build.Engine.ydim;
+import static ru.m210projects.Build.Engine.yxaspect;
+import static ru.m210projects.Build.Gameutils.BClampAngle;
+import static ru.m210projects.Build.Gameutils.BCosAngle;
+import static ru.m210projects.Build.Gameutils.BSinAngle;
+import static ru.m210projects.Build.Gameutils.isValidSector;
 import static ru.m210projects.Build.Net.Mmulti.connecthead;
 import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
@@ -38,17 +74,124 @@ import static ru.m210projects.Build.Pragmas.mulscale;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
 import static ru.m210projects.Build.Strhandler.buildString;
-import static ru.m210projects.Redneck.LoadSave.lastload;
+import static ru.m210projects.Redneck.Actors.badguy;
+import static ru.m210projects.Redneck.Actors.isPsychoSkill;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.HELP;
-import static ru.m210projects.Redneck.Gamedef.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Weapons.*;
-
-import java.io.File;
-import java.util.Arrays;
-
-import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Redneck.Gamedef.getincangle;
+import static ru.m210projects.Redneck.Globals.CHICKENBOW_WEAPON;
+import static ru.m210projects.Redneck.Globals.CROSSBOW_WEAPON;
+import static ru.m210projects.Redneck.Globals.GUTSMETTER;
+import static ru.m210projects.Redneck.Globals.HANDREMOTE_WEAPON;
+import static ru.m210projects.Redneck.Globals.KEYSIGN;
+import static ru.m210projects.Redneck.Globals.KILLSSIGN;
+import static ru.m210projects.Redneck.Globals.KNEE_WEAPON;
+import static ru.m210projects.Redneck.Globals.MODE_TYPE;
+import static ru.m210projects.Redneck.Globals.WIDEHUD_PART1;
+import static ru.m210projects.Redneck.Globals.WIDEHUD_PART2;
+import static ru.m210projects.Redneck.Globals.boardfilename;
+import static ru.m210projects.Redneck.Globals.buf;
+import static ru.m210projects.Redneck.Globals.currentGame;
+import static ru.m210projects.Redneck.Globals.display_mirror;
+import static ru.m210projects.Redneck.Globals.earthquaketime;
+import static ru.m210projects.Redneck.Globals.gVisibility;
+import static ru.m210projects.Redneck.Globals.global_random;
+import static ru.m210projects.Redneck.Globals.hittype;
+import static ru.m210projects.Redneck.Globals.kAngleMask;
+import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
+import static ru.m210projects.Redneck.Globals.mirrorcnt;
+import static ru.m210projects.Redneck.Globals.mirrorsector;
+import static ru.m210projects.Redneck.Globals.mirrorwall;
+import static ru.m210projects.Redneck.Globals.nMaxEpisodes;
+import static ru.m210projects.Redneck.Globals.ps;
+import static ru.m210projects.Redneck.Globals.screenpeek;
+import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Globals.zofslope;
+import static ru.m210projects.Redneck.LoadSave.lastload;
+import static ru.m210projects.Redneck.Main.cfg;
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.gGameScreen;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Main.mUserFlag;
+import static ru.m210projects.Redneck.Names.AMMOBOX;
+import static ru.m210projects.Redneck.Names.APLAYER;
+import static ru.m210projects.Redneck.Names.ARROW;
+import static ru.m210projects.Redneck.Names.BEER_ICON;
+import static ru.m210projects.Redneck.Names.BIKERSTAND;
+import static ru.m210projects.Redneck.Names.BILLYRAY;
+import static ru.m210projects.Redneck.Names.BILLYRAYSTAYPUT;
+import static ru.m210projects.Redneck.Names.BLOODPOOL;
+import static ru.m210projects.Redneck.Names.BLOODSPLAT1;
+import static ru.m210projects.Redneck.Names.BLOODSPLAT2;
+import static ru.m210projects.Redneck.Names.BLOODSPLAT3;
+import static ru.m210projects.Redneck.Names.BLOODSPLAT4;
+import static ru.m210projects.Redneck.Names.BOOT_ICON;
+import static ru.m210projects.Redneck.Names.BOTTOMSTATUSBAR;
+import static ru.m210projects.Redneck.Names.BULLETHOLE;
+import static ru.m210projects.Redneck.Names.BURNING;
+import static ru.m210projects.Redneck.Names.CAMERA1;
+import static ru.m210projects.Redneck.Names.CHIKENCROSSBOW;
+import static ru.m210projects.Redneck.Names.CIRCLESAW;
+import static ru.m210projects.Redneck.Names.COWPIE_ICON;
+import static ru.m210projects.Redneck.Names.CRACK1;
+import static ru.m210projects.Redneck.Names.CRACK2;
+import static ru.m210projects.Redneck.Names.CRACK3;
+import static ru.m210projects.Redneck.Names.CRACK4;
+import static ru.m210projects.Redneck.Names.CROSSBOW;
+import static ru.m210projects.Redneck.Names.CROSSHAIR;
+import static ru.m210projects.Redneck.Names.DAISYMAE;
+import static ru.m210projects.Redneck.Names.DOORKEY;
+import static ru.m210projects.Redneck.Names.ECLAIRHEALTH;
+import static ru.m210projects.Redneck.Names.EMPTY_ICON;
+import static ru.m210projects.Redneck.Names.EXPLOSION2;
+import static ru.m210projects.Redneck.Names.EXPLOSION3;
+import static ru.m210projects.Redneck.Names.FEATHERS;
+import static ru.m210projects.Redneck.Names.FIRE;
+import static ru.m210projects.Redneck.Names.FIRELASER;
+import static ru.m210projects.Redneck.Names.FLOORSLIME;
+import static ru.m210projects.Redneck.Names.FOOTPRINTS;
+import static ru.m210projects.Redneck.Names.FOOTPRINTS2;
+import static ru.m210projects.Redneck.Names.FOOTPRINTS3;
+import static ru.m210projects.Redneck.Names.FOOTPRINTS4;
+import static ru.m210projects.Redneck.Names.FORCESPHERE;
+import static ru.m210projects.Redneck.Names.FRAGBAR;
+import static ru.m210projects.Redneck.Names.FRAMEEFFECT1;
+import static ru.m210projects.Redneck.Names.HEALTHBOX;
+import static ru.m210projects.Redneck.Names.INVENTORYBOX;
+import static ru.m210projects.Redneck.Names.JIBS1;
+import static ru.m210projects.Redneck.Names.JIBS2;
+import static ru.m210projects.Redneck.Names.JIBS3;
+import static ru.m210projects.Redneck.Names.JIBS4;
+import static ru.m210projects.Redneck.Names.JIBS5;
+import static ru.m210projects.Redneck.Names.JIBS6;
+import static ru.m210projects.Redneck.Names.KILLSICON;
+import static ru.m210projects.Redneck.Names.LNRDLYINGDEAD;
+import static ru.m210projects.Redneck.Names.MINION;
+import static ru.m210projects.Redneck.Names.MIRROR;
+import static ru.m210projects.Redneck.Names.MOONSHINE_ICON;
+import static ru.m210projects.Redneck.Names.MOSQUITO;
+import static ru.m210projects.Redneck.Names.MOTORCYCLE;
+import static ru.m210projects.Redneck.Names.MUD;
+import static ru.m210projects.Redneck.Names.PLAYERONWATER;
+import static ru.m210projects.Redneck.Names.RAT;
+import static ru.m210projects.Redneck.Names.RESPAWNMARKERRED;
+import static ru.m210projects.Redneck.Names.SCRAP1;
+import static ru.m210projects.Redneck.Names.SCRAP2;
+import static ru.m210projects.Redneck.Names.SCRAP3;
+import static ru.m210projects.Redneck.Names.SCRAP4;
+import static ru.m210projects.Redneck.Names.SCRAP5;
+import static ru.m210projects.Redneck.Names.SCRAP6;
+import static ru.m210projects.Redneck.Names.SECTOREFFECTOR;
+import static ru.m210projects.Redneck.Names.SHELL;
+import static ru.m210projects.Redneck.Names.SHITBALL;
+import static ru.m210projects.Redneck.Names.SHOTGUNSHELL;
+import static ru.m210projects.Redneck.Names.SNORKLE_ICON;
+import static ru.m210projects.Redneck.Names.SPINNINGNUKEICON;
+import static ru.m210projects.Redneck.Names.SWAMPBUGGY;
+import static ru.m210projects.Redneck.Names.TORNADO;
+import static ru.m210projects.Redneck.Names.UFOBEAM;
+import static ru.m210projects.Redneck.Names.WATERBUBBLE;
+import static ru.m210projects.Redneck.Names.WATERSPLASH2;
+import static ru.m210projects.Redneck.Names.WHISHKEY_ICON;
 import static ru.m210projects.Redneck.Premap.geoms1;
 import static ru.m210projects.Redneck.Premap.geoms2;
 import static ru.m210projects.Redneck.Premap.geomsector;
@@ -58,9 +201,19 @@ import static ru.m210projects.Redneck.Premap.geomy1;
 import static ru.m210projects.Redneck.Premap.geomy2;
 import static ru.m210projects.Redneck.Premap.numgeomeffects;
 import static ru.m210projects.Redneck.Premap.shadeEffect;
-import static ru.m210projects.Redneck.Screen.*;
+import static ru.m210projects.Redneck.Screen.changepalette;
+import static ru.m210projects.Redneck.Screen.digitalnumber;
+import static ru.m210projects.Redneck.Screen.invennum;
+import static ru.m210projects.Redneck.Screen.palto;
+import static ru.m210projects.Redneck.Screen.patchstatusbar;
+import static ru.m210projects.Redneck.Screen.restorepalette;
+import static ru.m210projects.Redneck.Screen.setgamepalette;
+import static ru.m210projects.Redneck.Screen.vscrn;
 import static ru.m210projects.Redneck.Sector.ldist;
-import static ru.m210projects.Redneck.Actors.*;
+import static ru.m210projects.Redneck.Weapons.displayweapon;
+
+import java.io.File;
+import java.util.Arrays;
 
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.Compat.Path;
@@ -69,27 +222,28 @@ import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.Tools.Interpolation.ILoc;
 import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
 import ru.m210projects.Build.Types.SPRITE;
+import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Build.Types.WALL;
-import ru.m210projects.Redneck.Menus.InterfaceMenu;
-import ru.m210projects.Redneck.Factory.RRNetwork;
 import ru.m210projects.Redneck.Main.UserFlag;
+import ru.m210projects.Redneck.Factory.RRNetwork;
+import ru.m210projects.Redneck.Menus.InterfaceMenu;
 import ru.m210projects.Redneck.Types.PlayerOrig;
 import ru.m210projects.Redneck.Types.PlayerStruct;
 
 public class View {
-	
+
 	public static final String deathMessage = "or \"ENTER\" to load last saved game";
-	
+
 	public static int oyrepeat=-1;
 	private static final char[] buffer = new char[256];
-	
+
 	public static int gPlayerIndex = -1;
-	
+
 	public static final int MAXUSERQUOTES = 4;
 	public static int quotebot, quotebotgoal;
 	public static short user_quote_time[] = new short[MAXUSERQUOTES];
 	public static char user_quote[][] = new char[MAXUSERQUOTES][80];
-	
+
 	public static short fta,ftq, zoom, over_shoulder_on;
 	public static int loogiex[] = new int[64],loogiey[] = new int[64];
 
@@ -108,7 +262,7 @@ public class View {
 
 	    user_quote_time[0] = 180;
 	}
-	
+
 	public static void displayrest(int smoothratio)
 	{
 	    int a, i, j;
@@ -123,7 +277,7 @@ public class View {
 
 //	    if(pp.newowner < 0)
 //			return;
-	    
+
 	    if( changepalette != 0 )
 	    {
 	    	setgamepalette(pp,pp.palette, GLInvalidateFlag.All);
@@ -137,7 +291,7 @@ public class View {
 	    	cg = pp.pals[1];
 	    	cb = pp.pals[2];
 	    	cf = pp.pals_time;
-	    	
+
 	    	if(engine.glrender() == null) //software render
 	    		restorepalette = true;
 	    }
@@ -151,7 +305,7 @@ public class View {
 	        restorepalette = false;
 	    }
 
-	    if (dotint && !game.menu.gShowMenu) 
+	    if (dotint && !game.menu.gShowMenu)
 		    palto(cr,cg,cb,cf|128);
 
 	    i = pp.cursectnum;
@@ -161,7 +315,7 @@ public class View {
 
 		    int startwall = sector[i].wallptr;
 		    int endwall = startwall + sector[i].wallnum;
-		    
+
 		    for(j = startwall; j < endwall; j++)
 		    {
 		    	WALL wal = wall[j];
@@ -242,7 +396,7 @@ public class View {
                     if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
                     	buildString(buffer, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
                     game.getFont(0).drawText(5,a+6, buffer, -128, 0, TextAlign.Left, 2+8+16+256, false);
-                    
+
                     if ( cfg.gShowStat != 0 ) {
                     	int k = 0;
                     	if (ud.screen_size > 0 && ud.multimode > 1)
@@ -260,19 +414,19 @@ public class View {
                 }
 	        }
 	    }
-	    
+
 	    if(game.menu.gShowMenu && !(game.menu.getCurrentMenu() instanceof InterfaceMenu))
-    		return; 
-	    
+    		return;
+
 	    if(ps[myconnectindex].newowner == -1 && ud.overhead_on == 0 && ud.crosshair != 0 && ud.camerasprite == -1) {
 	    	engine.rotatesprite((160-(ps[myconnectindex].look_ang>>1))<<16,100<<16,cfg.gCrossSize,0,CROSSHAIR,0,0,2+1,0,0,xdim,ydim);
 	    }
 
 	    coolgaugetext(screenpeek);
 	    operatefta();
-	    
+
 	    if(!isPsychoSkill()) {
-		    if( fta > 1 && sprite[ps[myconnectindex].i].extra <= 0 && myconnectindex == screenpeek && ud.multimode < 2 
+		    if( fta > 1 && sprite[ps[myconnectindex].i].extra <= 0 && myconnectindex == screenpeek && ud.multimode < 2
 		    		&& lastload != null && !lastload.isEmpty() && ud.recstat != 2 && BuildGdx.compat.checkFile(lastload, Path.User) != null) {
 	        	int k = getftacoord();
 	        	game.getFont(1).drawText(320>>1,k + 10, deathMessage, 0, 0, TextAlign.Center, 2+8+16, false);
@@ -292,11 +446,11 @@ public class View {
 	    	int transp = 0;
 			if(totalclock > gNameShowTime - 20) transp = 1;
 			if(totalclock > gNameShowTime - 10) transp = 33;
-		
+
 			if(cfg.showMapInfo != 0 && !game.menu.gShowMenu)
-			{	
+			{
 				if(mUserFlag != UserFlag.UserMap || boardfilename == null) {
-					if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null && currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title != null)
+					if(ud.volume_number < nMaxEpisodes && currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null && currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title != null)
 						game.getFont(2).drawText(160,114, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title, -128, 0, TextAlign.Center, 2 | transp, false);
 				}
 				else {
@@ -307,15 +461,15 @@ public class View {
 				}
 			}
 		}
-	    
+
 	    if(MODE_TYPE)
 	    	typemode();
-	    
+
 	    if( game.gPaused && !game.menu.gShowMenu )
 	    {
 	    	game.getFont(2).drawText(160, 100, "GAME PAUSED", 0, 0, TextAlign.Center, 2+8+16, false);
 	    }
-	    
+
 	    if(gPlayerIndex != -1 && gPlayerIndex != myconnectindex)
 	    {
 	    	int len = 0;
@@ -328,7 +482,7 @@ public class View {
 
         	int y = scale(windowy1, 200, ydim)+100;
         	if(ud.screen_size <= 4) //XXX
-        		y += (tilesizy[BOTTOMSTATUSBAR] + tilesizy[1649]) / 4;
+        		y += (engine.getTile(BOTTOMSTATUSBAR).getHeight() + engine.getTile(1649).getHeight()) / 4;
 
         	game.getFont(1).drawText(160,y, buf, shade, 0, TextAlign.Center, 2+8+16, false);
 	    }
@@ -340,11 +494,11 @@ public class View {
 	public static void typemode()
 	{
 		if(Console.IsShown()) return;
-		
+
 		int j = 200-63;
 		if(ud.screen_size <= 2) j = 200-20;
 		else if(ud.screen_size == 3) j = 200-55;
-		
+
 		char[] buf = getInput().getMessageBuffer();
 		int len = getInput().getMessageLength() + 1;
 		if(len < buf.length)
@@ -352,11 +506,11 @@ public class View {
 		int alignx = game.getFont(1).drawText(320>>1,j, getInput().getMessageBuffer(), 0, 0, TextAlign.Center, 2+8+16, false);
 		engine.rotatesprite((((320+alignx+16)>>1))<<16,(j+6)<<16,4096,0,SPINNINGNUKEICON+(((totalclock>>3))&15),0,0,10,0,0,xdim-1,ydim-1);
 	}
-	
+
 	public static int getftacoord()
 	{
 		int k = 0;
-		
+
 		 if (ud.screen_size > 0 && ud.multimode > 1)
 	     {
 	         int j = 0; k = 8;
@@ -379,10 +533,10 @@ public class View {
 	         }
 	         k -= 4;
 	     }
-	     
+
 	     return k;
 	}
-	
+
 	public static void operatefta()
 	{
 	     int i, j, k;
@@ -390,7 +544,7 @@ public class View {
 	     if(ud.screen_size <= 2) j = 200-20;
 	     else if(ud.screen_size == 3) j = 200-55;
 	     else j = 200-63;
-	     
+
 	     quotebot = Math.min(quotebot,j);
 	     quotebotgoal = Math.min(quotebotgoal,j);
 	     if(MODE_TYPE) j -= 10;
@@ -412,47 +566,47 @@ public class View {
 	     j = fta;
 	     if (j > 4)
 	    	 game.getFont(1).drawText(320>>1,k, currentGame.getCON().fta_quotes[ftq], 0, 0, TextAlign.Center, 2+8+16, false);
-	     else if (j > 2) 
+	     else if (j > 2)
 	    	 game.getFont(1).drawText(320>>1,k, currentGame.getCON().fta_quotes[ftq], 0, 0, TextAlign.Center, 2+8+16+1, false);
 	     else
 	    	 game.getFont(1).drawText(320>>1,k, currentGame.getCON().fta_quotes[ftq], 0, 0, TextAlign.Center, 2+8+16+1+32, false);
 	}
-	
+
 	public static void displayfragbar(int yoffset, boolean showpalette)
 	{
 		int row = (ud.multimode - 1) / 4;
 		if(row >= 0)
 		{
 //			int framesx = 2 * xdim / tilesizx[BACKGROUND];
-//			int framesy = mulscale(tilesizy[FRAGBAR] / 2 * (row + 1), divscale(ydim, 200, 16), 16);
+//			int framesy = mulscale(engine.getTile(FRAGBAR).getHeight() / 2 * (row + 1), divscale(ydim, 200, 16), 16);
 //
 //			int x = 0;
 //			for(int i = 0; i <= framesx; i++) {
 //		    	engine.rotatesprite(x<<16, 0, 32768, 0, BACKGROUND, 0, 0, 8 | 16 | 256, 0, 0, xdim-1, framesy);
 //		    	x += tilesizx[BACKGROUND] / 2;
 //		    }
-			
+
 			if(yoffset > 0) yoffset -= 9 * row;
-			for(int r = 0; r <= row; r++) 
-				engine.rotatesprite(0,yoffset +(r * tilesizy[FRAGBAR]) << 16,34000,0,FRAGBAR,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+			for(int r = 0; r <= row; r++)
+				engine.rotatesprite(0,yoffset +(r * engine.getTile(FRAGBAR).getHeight()) << 16,34000,0,FRAGBAR,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
 			for(int i=connecthead;i>=0;i=connectpoint2[i])
 		    {
 				if(ud.user_name[i] == null || ud.user_name[i].isEmpty())
 					buildString(buffer, 0, "Player ", i+1);
 				else buildString(buffer, 0, ud.user_name[i]);
-				
+
 				game.getFont(0).drawText(26+(73*(i&3)),yoffset + 2+((i&28)<<1), buffer, 0, showpalette ? sprite[ps[i].i].pal : 0, TextAlign.Left, 10 | 16, false);
 		        buildString(buffer, 0, "", ps[i].frag-ps[i].fraggedself);
 		        game.getFont(0).drawText(23+50+(73*(i&3)),yoffset + 2+((i&28)<<1), buffer, 0, showpalette ? sprite[ps[i].i].pal : 0, TextAlign.Left, 10 | 16, false);
 		    }
 		}
 	}
-	
+
 	public static void displaymeters(int snum, int flags)
 	{
 		PlayerStruct p = ps[snum];
- 
+
 		engine.rotatesprite(257 << 16, 181 << 16, 0x8000, p.alcohol_meter, 62, 0, 0, 10 | flags, 0, 0, xdim - 1, ydim - 1);
 		engine.rotatesprite(293 << 16, 181 << 16, 0x8000, p.gut_meter, 62, 0, 0, 10 | flags, 0, 0, xdim - 1, ydim - 1);
 
@@ -466,19 +620,19 @@ public class View {
 		{
 			x = 248 << 16;
 			pic = 921;
-		} 
+		}
 		else if(p.alcohol_amount >= 66 && p.alcohol_amount <= 87)
 		{
 			x = 256 << 16;
 			pic = 922;
 		}
-		else 
+		else
 		{
 			x = 265 << 16;
 			pic = 923;
 		}
 		engine.rotatesprite(x, 190 << 16, 0x8000, 0, pic, 0, 0, 10 | 16 | flags, 0, 0, xdim - 1, ydim - 1);
-		
+
 		if(p.gut_amount >= 0 && p.gut_amount <= 30)
 		{
 			x = 276 << 16;
@@ -488,20 +642,20 @@ public class View {
 		{
 			x = 285 << 16;
 			pic = 921;
-		} 
+		}
 		else if(p.gut_amount >= 66 && p.gut_amount <= 87)
 		{
 			x = 294 << 16;
 			pic = 922;
 		}
-		else 
+		else
 		{
 			x = 302 << 16;
 			pic = 923;
 		}
 		engine.rotatesprite(x, 190 << 16, 0x8000, 0, pic, 0, 0, 10 | 16 | flags, 0, 0, xdim - 1, ydim - 1);
 	}
-	
+
 	public static void debuginfo(int x, int y)
 	{
 		buildString(buffer, 0, "totalclock= ", totalclock);
@@ -509,68 +663,68 @@ public class View {
 
 		buildString(buffer, 0, "global_random= ", global_random);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "randomseed= ", engine.getrand());
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "posx= ", ps[0].posx);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "posy= ", ps[0].posy);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "posz= ", ps[0].posz);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "ang= ", Float.toString(ps[0].ang));
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "horiz= ", Float.toString(ps[0].horiz));
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "xvel= ", ps[0].posxv);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "yvel= ", ps[0].posyv);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
 
 		buildString(buffer, 0, "CarSpeed= ", ps[0].CarSpeed);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "VBumpTarget= ", ps[0].VBumpTarget);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "VBumpNow= ", ps[0].VBumpNow);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "CarVar1= ", ps[0].CarVar1);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "CarVar2= ", ps[0].CarVar2);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "CarVar3= ", ps[0].CarVar3);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "CarVar4= ", ps[0].CarVar4);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "CarVar5= ", ps[0].CarVar5);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
-		
+
 		buildString(buffer, 0, "CarVar6= ", ps[0].CarVar6);
 		engine.printext256(x,y,31,-1,buffer,0, 1.0f); y += 10;
 	}
-	
+
 	public static void coolgaugetext(int snum)
 	{
 	    int i, o, ss;
 
 	    PlayerStruct p = ps[snum];
-	    
+
 //	    debuginfo(20, 40);
 
-	    if (p.invdisptime > 0) 
+	    if (p.invdisptime > 0)
 	    	displayinventory(p);
 
 	    if(screenpeek != myconnectindex)
@@ -604,13 +758,13 @@ public class View {
 	        if(p.ammo_amount[i] != 0) {
 		        engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,AMMOBOX,0,21,26|256,0,0,xdim-1,ydim-1);
 		        digitalnumber(x+16,200-17,p.ammo_amount[i],-16,10+16+256);
-		        x += tilesizx[AMMOBOX] / 2 + 2;
+		        x += engine.getTile(AMMOBOX).getWidth() / 2 + 2;
 	        }
-	        
+
 	        if((p.gotkey[1]|p.gotkey[2]|p.gotkey[3]) != 0) {
 	        	engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,AMMOBOX,0,21,26|256,0,0,xdim-1,ydim-1);
 		        engine.rotatesprite(x<<16,(200-28)<<16,0x8000,0,KEYSIGN,0,21,10+16+256,0,0,xdim-1,ydim-1);
-		        
+
 		        if ( p.gotkey[3] != 0 ) {
 		        	int pal = 23;
 		        	if(cfg.gColoredKeys) pal = 7;
@@ -624,17 +778,17 @@ public class View {
 		    	if ( p.gotkey[1] != 0  ) {
 		    		int pal = 0;
 		        	if(cfg.gColoredKeys) pal = 1;
-		    		engine.rotatesprite(x+11<<16,189<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
+		    		engine.rotatesprite(x+11<<16,189<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1);
 		    	}
-		        x += tilesizx[KEYSIGN] / 2 + 2;
+		        x += engine.getTile(KEYSIGN).getWidth() / 2 + 2;
 	        }
-	        
+
 	        { //my gutmeter
 		        engine.rotatesprite(225 << 16, 172 << 16, 0x9000, 0, GUTSMETTER, 0, 21, 26 | 512, 0, 0, xdim - 1, ydim - 1);
 				engine.rotatesprite(251 << 16, 189 << 16, 0x9000, p.alcohol_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
 				engine.rotatesprite(293 << 16, 189 << 16, 0x9000, p.gut_meter, 62, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
 	        }
-	      
+
 	        if (p.inven_icon != 0)
 	        {
 	        	engine.rotatesprite(x<<16, (200-30)<<16, 0x8000, 0, INVENTORYBOX, 0, 21, 26 | 256, 0, 0, xdim - 1, ydim - 1);
@@ -653,7 +807,7 @@ public class View {
 	            }
 	            if (i >= 0) engine.rotatesprite((x+6)<<16, (200-21)<<16, 0x8000, 0, i, 0, 0, 26 | 256, 0, 0, xdim - 1, ydim - 1);
 
-	            if (p.inven_icon >= 6) 
+	            if (p.inven_icon >= 6)
 	            	game.getFont(0).drawText(x+22,180,"AUTO", 0, 2, TextAlign.Left, 2 | 8 | 16 | 256, false);
 	            switch(p.inven_icon)
 	            {
@@ -670,31 +824,31 @@ public class View {
 
 	        return;
 	    }
-	    
+
 	    if(ss == 2) //GDX'S STATUS BAR
 	    {
 	    	//left part
 	    	engine.rotatesprite(81 << 16, 183 << 16, 0x8000, 0, WIDEHUD_PART1, 0, 0, 10 | 256, 0, 0, xdim - 1, ydim - 1);
-	    	
+
 	    	//health
 	    	if(sprite[p.i].pal == 1 && p.last_extra < 2)
 	            digitalnumber(59,200-20,1,-16,10+16+256);
 	        else digitalnumber(59,200-20,p.last_extra,-16,10+16+256);
-	    	
+
 	    	//ammo
 	        if (p.curr_weapon == HANDREMOTE_WEAPON) i = CROSSBOW_WEAPON; else i = p.curr_weapon;
-	        if(p.ammo_amount[i] != 0) 
+	        if(p.ammo_amount[i] != 0)
 		        digitalnumber(96,200-20,p.ammo_amount[i],-16,10+16+256);
-	    	
+
 	        if (ud.multimode > 1 && ud.coop != 1) {
-	        	if(waloff[KILLSSIGN] != null)
+	        	if(engine.getTile(KILLSSIGN).isLoaded())
 	        		engine.rotatesprite(118<<16,(168) << 16,32768,0,KILLSSIGN,0,0,10+16,0,0,xdim-1,ydim-1);
 	        	else engine.rotatesprite(126<<16,(169) << 16,65536,0,KILLSICON,0,0,10+16,0,0,xdim-1,ydim-1);
 	        }
-	        
+
 	        if (ud.multimode > 1 && ud.coop != 1)
 		    {
-	            digitalnumber(135,200-20,max(p.frag-p.fraggedself,0),-16,10+16); 
+	            digitalnumber(135,200-20,max(p.frag-p.fraggedself,0),-16,10+16);
 		    } else {
 		        //keys
 		        int x = 117;
@@ -711,13 +865,13 @@ public class View {
 		    	if ( p.gotkey[1] != 0  ) {
 		    		int pal = 0;
 		        	if(cfg.gColoredKeys) pal = 1;
-		    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1); 
+		    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16+256, 0, 0, xdim - 1, ydim - 1);
 		    	}
 		    }
 
 	        //right part
 	        engine.rotatesprite(244 << 16, 183 << 16, 0x8000, 0, WIDEHUD_PART2, 0, 0, 10 | 512, 0, 0, xdim - 1, ydim - 1);
-	    	
+
 	    	//inventory
 	    	int x = 185;
 	    	if (p.inven_icon != 0)
@@ -738,7 +892,7 @@ public class View {
 	            }
 	            if (i >= 0) engine.rotatesprite((x+6)<<16, o, 0x8000, 0, i, 0, 0, 26 | 512, 0, 0, xdim - 1, ydim - 1);
 
-	            if (p.inven_icon >= 6) 
+	            if (p.inven_icon >= 6)
 	            	game.getFont(0).drawText(x+22,180,"AUTO", 0, 2, TextAlign.Left, 2 | 8 | 16 | 512, false);
 	            switch(p.inven_icon)
 	            {
@@ -752,7 +906,7 @@ public class View {
 	            }
 	            invennum(x+27, 192, i, 0, 8 | 512);
 	        }
-	    	
+
 	    	displaymeters(screenpeek, 512);
 	    	return;
 	    }
@@ -760,7 +914,7 @@ public class View {
 	    //DRAW/UPDATE FULL STATUS BAR:
 
         patchstatusbar(0,0,320,200);
-        
+
         if(ss > 3) {
 	        engine.rotatesprite(0, 10354688, 0x8020, 0, 1649, 0, 0, 10+16, 0, 0, xdim - 1, ydim - 1);
 	        int wpic = 930;
@@ -777,16 +931,16 @@ public class View {
 	        	}
 	        }
         }
-        
+
         if (ud.multimode > 1 && ud.coop != 1) {
-        	if(waloff[KILLSSIGN] != null)
+        	if(engine.getTile(KILLSSIGN).isLoaded())
         		engine.rotatesprite(133<<16,(168) << 16,32768,0,KILLSSIGN,0,0,10+16,0,0,xdim-1,ydim-1);
         	else engine.rotatesprite(142<<16,(169) << 16,65536,0,KILLSICON,0,0,10+16,0,0,xdim-1,ydim-1);
         }
-	    
+
 	    if (ud.multimode > 1 && ud.coop != 1)
 	    {
-            digitalnumber(150,180,max(p.frag-p.fraggedself,0),-16,10+16); 
+            digitalnumber(150,180,max(p.frag-p.fraggedself,0),-16,10+16);
 	    }
 	    else
 	    {
@@ -804,14 +958,14 @@ public class View {
 	    	if ( p.gotkey[1] != 0  ) {
 	    		int pal = 0;
 	        	if(cfg.gColoredKeys) pal = 1;
-	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16, 0, 0, xdim - 1, ydim - 1); 
+	    		engine.rotatesprite(x+11<<16,187<<16, 0x8000, 0, 1656, 0, pal, 10+16, 0, 0, xdim - 1, ydim - 1);
 	    	}
 	    }
-	   
+
         if(sprite[p.i].pal == 1 && p.last_extra < 2)
             digitalnumber(64,200-20,1,-16,10+16);
         else digitalnumber(64,200-20,p.last_extra,-16,10+16);
-	    
+
         if (p.curr_weapon != KNEE_WEAPON)
         {
             if (p.curr_weapon == HANDREMOTE_WEAPON) i = CROSSBOW_WEAPON; else i = p.curr_weapon;
@@ -835,7 +989,7 @@ public class View {
                 case 7: i = BOOT_ICON; o = 178 << 16; break;
             }
             engine.rotatesprite(11993088,o,32768,0,i,0,0,10+16,0,0,xdim-1,ydim-1);
-            if (p.inven_icon >= 6) 
+            if (p.inven_icon >= 6)
             	game.getFont(0).drawText(201,180,  "AUTO", 0, 2, TextAlign.Left, 2 | 8 | 16, false);
 
             switch(p.inven_icon)
@@ -849,11 +1003,11 @@ public class View {
                 case 7: i = (p.boot_amount / 10 >> 1); break;
             }
             invennum(206, 192, i, 0, 8);
-            
+
         }
         displaymeters(screenpeek, 0);
 	}
-	
+
 	public static void displayrooms(int snum,int smoothratio)
 	{
 	    int dst,j,fz,cz;
@@ -864,13 +1018,13 @@ public class View {
 	    PlayerStruct p = ps[snum];
 
 	    gPlayerIndex = -1;
-	    
-	    if( (!game.menu.gShowMenu 
-	    		&& ud.overhead_on == 2) 
-	    		|| game.menu.isOpened(game.menu.mMenus[HELP]) 
+
+	    if( (!game.menu.gShowMenu
+	    		&& ud.overhead_on == 2)
+	    		|| game.menu.isOpened(game.menu.mMenus[HELP])
 	    		|| p.cursectnum == -1)
 	    	return;
-	    
+
 	    if ( p.fogtype != 0)
 	    	gVisibility = currentGame.getCON().const_visibility;
 	    visibility = gVisibility;
@@ -901,13 +1055,13 @@ public class View {
 	    }
 	    else
 	    {
-	        i = (int) divscale(1,sprite[p.i].yrepeat+28, 22);
+	        i = divscale(1,sprite[p.i].yrepeat+28, 22);
 	        if (i != oyrepeat)
 	        {
 	        	oyrepeat = i;
 	            vscrn(ud.screen_size);
 	        }
-	        
+
 	        if ( oviewingrange != viewingrange && p.DrugMode == 0 ) {
 	            engine.setaspect_new();
 	            oviewingrange = viewingrange;
@@ -926,11 +1080,11 @@ public class View {
                 cang += net.predictOld.lookang + (BClampAngle(net.predict.lookang+1024-net.predictOld.lookang)-1024) * smoothratio / 65536.0f;
                 choriz = net.predictOld.horiz+net.predictOld.horizoff+(((net.predict.horiz+net.predict.horizoff-net.predictOld.horiz-net.predictOld.horizoff) * smoothratio) / 65536.0f);
                 sect = net.predict.sectnum;
- 
+
                 if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
     	        {
                     tang = p.rotscrnang;
-                    engine.getrender().settiltang(net.predictOld.rotscrnang + mulscale(((net.predict.rotscrnang - net.predictOld.rotscrnang + 1024)&2047)-1024,smoothratio, 16));  
+                    engine.getrender().settiltang(net.predictOld.rotscrnang + mulscale(((net.predict.rotscrnang - net.predictOld.rotscrnang + 1024)&2047)-1024,smoothratio, 16));
     	        } else engine.getrender().settiltang(0);
 	        }
 	        else
@@ -941,14 +1095,14 @@ public class View {
                 cang = p.prevView.ang + (BClampAngle(cang+1024-p.prevView.ang)-1024) * smoothratio / 65536.0f;
                 cang += p.prevView.lookang + (BClampAngle(p.look_ang+1024-p.prevView.lookang)-1024) * smoothratio / 65536.0f;
                 choriz = (p.prevView.horiz +p.prevView.horizoff+((choriz-p.prevView.horiz-p.prevView.horizoff) * smoothratio) / 65536.0f);
-	        
+
                 if( ( ud.screen_tilting != 0 && p.rotscrnang != 0 ) )
     	        {
                     tang = p.rotscrnang;
-                    engine.getrender().settiltang(p.prevView.rotscrnang + mulscale(((p.rotscrnang - p.prevView.rotscrnang + 1024)&2047)-1024,smoothratio, 16));  
+                    engine.getrender().settiltang(p.prevView.rotscrnang + mulscale(((p.rotscrnang - p.prevView.rotscrnang + 1024)&2047)-1024,smoothratio, 16));
     	        } else engine.getrender().settiltang(0);
 	        }
-	     
+
 	        if (p.newowner >= 0)
 	        {
                 cang = (short) (p.ang+p.look_ang);
@@ -962,8 +1116,8 @@ public class View {
 	        else if( over_shoulder_on == 0 )
 	        	cposz += p.opyoff+mulscale((p.pyoff-p.opyoff),smoothratio, 16);
 	        else {
-	        	view(p,cposx,cposy,cposz,sect,cang,choriz); 
-        	  
+	        	view(p,cposx,cposy,cposz,sect,cang,choriz);
+
 	        	cposx = viewout.ox;
 	        	cposy = viewout.oy;
         	  	cposz = viewout.oz;
@@ -1006,7 +1160,7 @@ public class View {
 	            dst = 0x7fffffff; i = 0;
 	            for(k=0;k<mirrorcnt;k++)
 	            {
-	                j = (int) klabs(wall[mirrorwall[k]].x-cposx);
+	                j = klabs(wall[mirrorwall[k]].x-cposx);
 	                j += klabs(wall[mirrorwall[k]].y-cposy);
 	                if (j < dst) { dst = j; i = k; }
 	            }
@@ -1017,8 +1171,8 @@ public class View {
 
 	                tposx = mirrorx;
 	                tposy = mirrory;
-	        		tang = (short) mirrorang; 
-	        		
+	        		tang = (short) mirrorang;
+
 	                j = visibility;
 	                visibility = (j>>1) + (j>>2);
 
@@ -1038,7 +1192,7 @@ public class View {
 	        engine.drawrooms(cposx,cposy,cposz,cang,choriz,sect);
 	        animatesprites(cposx,cposy,cposz,(short)cang,smoothratio);
 	        engine.drawmasks();
-	        
+
 	        displaygeom3d(sect, cposx, cposy, cposz, choriz, cang, sect, smoothratio);
 	    }
 	}
@@ -1050,14 +1204,14 @@ public class View {
 	    {
 	        if( fta > 0 && q != 115 && q != 116 )
 	            if( ftq == 115 || ftq == 116 ) return;
-	        
+
 	        fta = 100;
 
 	        if( ftq != q || q == 26 )
 	        {
 	            ftq = (short) q;
 	        }
-	        
+
 	        int len = 0;
 	        while(len < currentGame.getCON().fta_quotes[ftq].length && currentGame.getCON().fta_quotes[ftq][++len] != 0);
 
@@ -1111,7 +1265,7 @@ public class View {
 	            case FOOTPRINTS4:
 	                if(t.shade == 127) continue;
 	                break;
-	                
+
 	            case BLOODSPLAT1:
 	            case BLOODSPLAT2:
 	            case BLOODSPLAT3:
@@ -1138,7 +1292,7 @@ public class View {
 
 	        if(t.sectnum < 0 || t.sectnum >= MAXSECTORS)
 	        	continue;
-	        
+
 	        if ((sector[t.sectnum].ceilingstat&1) != 0)
 	            l = sector[t.sectnum].ceilingshade;
 	        else
@@ -1155,7 +1309,7 @@ public class View {
 	        t = tsprite[j];
 	        i = t.owner;
 	        s = sprite[i];
-	        
+
 	        if(t.sectnum < 0 || t.sectnum >= MAXSECTORS)
 	        	continue;
 
@@ -1203,12 +1357,12 @@ public class View {
 	            t.y -= mulscale(65536-smoothratio,ps[s.yvel].posy-ps[s.yvel].oposy, 16);
 	            t.z = ps[s.yvel].oposz + mulscale(smoothratio,ps[s.yvel].posz-ps[s.yvel].oposz, 16);
 	            t.z += (40<<8);
-	            
+
 	            s.xrepeat = 24;
 	            s.yrepeat = 17;
 	        }
-	        else if( ( s.statnum == 0 && s.picnum != 1298) || s.statnum == 10 || s.statnum == 6 
-	        		|| s.statnum == 4 || s.statnum == 5 || s.statnum == 1 
+	        else if( ( s.statnum == 0 && s.picnum != 1298) || s.statnum == 10 || s.statnum == 6
+	        		|| s.statnum == 4 || s.statnum == 5 || s.statnum == 1
 	        		|| s.statnum == 116 || s.statnum == 117 || s.statnum == 118 || s.statnum == 121) //GDX 21.04.2019 - RA airplane interpolation
 	        {
 	        	// only interpolate certain moving things
@@ -1254,7 +1408,7 @@ public class View {
                     }
                 }
                 break;
-	
+
 	        case 5300:
             case 5295:
             case 5290:
@@ -1270,7 +1424,7 @@ public class View {
             case 4758:
             case 5602:
             case 5607:
-            case 5616: 
+            case 5616:
 	        case JIBS1:
             case JIBS2:
             case JIBS3:
@@ -1306,13 +1460,13 @@ public class View {
                 if(t.pal == 6) t.shade = -120;
                 if ( shadeEffect[s.sectnum] )
                     t.shade = 16;
-                    
+
             case SCRAP1: //464
-            case SCRAP2: 
-            case SCRAP3: 
-            case SCRAP4: 
+            case SCRAP2:
+            case SCRAP3:
+            case SCRAP4:
             case SCRAP5:
-            case SCRAP6: 
+            case SCRAP6:
             case SCRAP6+1:
             case SCRAP6+2:
             case SCRAP6+3:
@@ -1323,10 +1477,10 @@ public class View {
                 if(t.picnum == SCRAP1 && s.yvel > 0)
                     t.picnum = s.yvel;
                 else t.picnum += hittype[i].temp_data[0];
-            
+
                 if( sector[sect].floorpal != 0 )
                     t.pal = sector[sect].floorpal;
-                break;  
+                break;
 
             case CHIKENCROSSBOW:
             	k = engine.getangle(s.x-x,s.y-y);
@@ -1371,7 +1525,7 @@ public class View {
                 	t.pal = 2;
                 if ( ud.marker == 0 )
                 	t.xrepeat = t.yrepeat = 0;
-            	break;                
+            	break;
             case 46:
                 t.shade = (byte) (sintable[(totalclock<<4)&2047]>>10);
                 continue;
@@ -1414,7 +1568,7 @@ public class View {
                 }
                 else t.cstat &= ~4;
                 t.picnum = (short) (CROSSBOW+k);
-                break; 
+                break;
             case SHITBALL:
             	if ( sprite[s.owner].picnum == 5120 && sprite[s.owner].pal == 8 )
             		t.picnum = (short) ((totalclock >> 4) % 6 + 3500);
@@ -1476,7 +1630,7 @@ public class View {
             	if ( s.extra > 0 )
             		t.z += 1536;
             	break;
-            
+
             case APLAYER:
 
                 p = s.yvel;
@@ -1501,7 +1655,7 @@ public class View {
                 {
                 	if( tsprite[spritesortcnt] == null )
                 		tsprite[spritesortcnt] = new SPRITE();
-                	
+
                     tsprite[spritesortcnt].set(t);
                     tsprite[spritesortcnt].statnum = 99;
 
@@ -1519,7 +1673,7 @@ public class View {
                         case 10:
                         case 4:  tsprite[spritesortcnt].picnum = 26;      break;
                         case 5:	 tsprite[spritesortcnt].picnum = 23;      break;
-                        case 11: 
+                        case 11:
                         case 6:  tsprite[spritesortcnt].picnum = 3400;    break;
                         case 7:  tsprite[spritesortcnt].picnum = 29;      break;
                         case 8:  tsprite[spritesortcnt].picnum = 27;      break;
@@ -1562,7 +1716,7 @@ public class View {
 
                     if( sector[sect].floorpal != 0 )
 	                    t.pal = sector[sect].floorpal;
-                    
+
                     continue;
                 }
 
@@ -1597,8 +1751,8 @@ public class View {
 
                 if( t.z > hittype[i].floorz && t.xrepeat < 32 )
                     t.z = hittype[i].floorz;
-                
-                /*if ( ps[p].OnMotorcycle && p == screenpeek ) 
+
+                /*if ( ps[p].OnMotorcycle && p == screenpeek )
                 {
                 	t.picnum = 7219;
                 	t.xrepeat = 18;
@@ -1606,9 +1760,9 @@ public class View {
                 	t4 = 0;
                 	t3 = 0;
                 	t1 = 0;
-                } 
-                else */if ( ps[p].OnMotorcycle ) 
-                { 
+                }
+                else */if ( ps[p].OnMotorcycle )
+                {
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);
 	                if(k>6)
@@ -1617,15 +1771,15 @@ public class View {
 	                    t.cstat |= 4;
 	                }
 	                else t.cstat &= ~4;
-	
+
 	                t.picnum = (short) (7213 + k);
 	                t.xrepeat = 18;
                 	t.yrepeat = 18;
                 	t4 = 0;
                 	t3 = 0;
                 	t1 = 0;
-                } 
-                /*else if ( ps[p].OnBoat && p == screenpeek ) 
+                }
+                /*else if ( ps[p].OnBoat && p == screenpeek )
                 {
                 	t.picnum = 7190;
                 	t.xrepeat = 32;
@@ -1633,9 +1787,9 @@ public class View {
                 	t4 = 0;
                 	t3 = 0;
                 	t1 = 0;
-                } 
-                else */if ( ps[p].OnBoat ) 
-                { 
+                }
+                else */if ( ps[p].OnBoat )
+                {
                 	k = engine.getangle(s.x-x,s.y-y);
 	                k = (short) (((s.ang+3072+128-k)&2047)/170);
 	                if(k>6)
@@ -1644,7 +1798,7 @@ public class View {
 	                    t.cstat |= 4;
 	                }
 	                else t.cstat &= ~4;
-	
+
 	                t.picnum = (short) (7184 + k);
 	                t.xrepeat = 32;
                 	t.yrepeat = 32;
@@ -1652,7 +1806,7 @@ public class View {
                 	t3 = 0;
                 	t1 = 0;
                 }
-                
+
                 int tx = t.x - x;
 				int ty = t.y - y;
 				int angle = ((1024 + engine.getangle(tx, ty) - a) & kAngleMask) - 1024;
@@ -1662,12 +1816,14 @@ public class View {
 					int horizoff = (int) (100-ps[screenpeek].horiz);
 					long z1 = mulscale(dist, horizoff, 3) + z;
 
-					int zTop = t.z; 
+					int zTop = t.z;
 					int zBot = zTop;
-					int yoffs = (picanm[APLAYER] >> 16) & 255;
-					zTop -= (yoffs + tilesizy[APLAYER]) * (t.yrepeat << 2);
+					Tile pic = engine.getTile(APLAYER);
+
+					int yoffs = pic.getOffsetY();
+					zTop -= (yoffs + pic.getHeight()) * (t.yrepeat << 2);
 					zBot += -yoffs * (t.yrepeat << 2);
-					
+
 					if ((z1 < zBot) && (z1 > zTop))
 					{
 						if(engine.cansee(x, y, z, sprite[ps[screenpeek].i].sectnum, t.x, t.y, t.z, t.sectnum))
@@ -1675,9 +1831,9 @@ public class View {
 					}
 				}
 
-                break;   
+                break;
 	        case 27:
-	        	continue;   
+	        	continue;
 	        case MOTORCYCLE:
 	        	k = engine.getangle(s.x-x,s.y-y);
                 k = (short) (((s.ang+3072+128-k)&2047)/170);
@@ -1768,7 +1924,7 @@ public class View {
 
 	                t.picnum += (k + ( currentGame.getCON().script[t4] ) + l * t3);
 
-	                if(l > 0) while(t.picnum > 0 && t.picnum < MAXTILES && tilesizx[t.picnum] == 0)
+	                if(l > 0) while(t.picnum > 0 && t.picnum < MAXTILES && engine.getTile(t.picnum).getWidth() == 0)
 	                    t.picnum -= l;       //Hack, for actors
 
 	                if( hittype[i].dispicnum >= 0)
@@ -1779,7 +1935,7 @@ public class View {
 	        }
 	        if ( s.picnum == 5015 )
 	            t.shade = -127;
-	      
+
 	        if( s.statnum == 13 || badguy(s) || (s.picnum == APLAYER && s.owner >= 0) )
 	            if((s.cstat & 0x30) == 0 && t.statnum != 99 && s.picnum != EXPLOSION2 && s.picnum != 1080 && s.picnum != TORNADO && s.picnum != EXPLOSION3 && s.picnum != 5015)
 	        {
@@ -1793,7 +1949,7 @@ public class View {
 	                int daz,xrep,yrep;
 	                if ( sector[sect].lotag == 160 )
 	                    continue;
-	                
+
 	                if( (sector[sect].lotag&0xff) > 2 || s.statnum == 4 || s.statnum == 5 || s.picnum == MOSQUITO )
 	                    daz = sector[sect].floorz;
 	                else
@@ -1808,7 +1964,7 @@ public class View {
 	                    tspr.set(t);
 	                    int camangle = engine.getangle(x - tspr.x, y - tspr.y);
 	                    tspr.x -= mulscale(sintable[(camangle + 512)& 2047], 10, 16);
-	                    tspr.y += mulscale(sintable[(camangle + 1024) & 2047], 10, 16);  
+	                    tspr.y += mulscale(sintable[(camangle + 1024) & 2047], 10, 16);
 	                    tspr.statnum = 99;
 
 	                    tspr.yrepeat = (short) ( t.yrepeat>>3 );
@@ -1889,10 +2045,10 @@ public class View {
 	        			 gVisibility = -127;
 	        			 lastvisinc = totalclock+32;
 	        			 t.pal = 0;
-	        		 } 
+	        		 }
 	        		 else if(t.picnum == FIRELASER)
 	        			 t.picnum = (short) (((totalclock >> 2) & 5) + FIRELASER);
-	        		 
+
 	                t.shade = -127;
 	                break;
 	        	 case 1878:
@@ -1934,7 +2090,7 @@ public class View {
 	        	 case 3171:
 	        	 case 3216:
 	        	 case 3720:
-	        		 
+
 	        		 //RA
 	        	 case 3668:
 	        	 case 3795:
@@ -1973,7 +2129,7 @@ public class View {
 	        		 break;
 	        	 case 2034:
 	                 t.picnum = (short) ((totalclock & 1) + 2034);
-	        		 break; 
+	        		 break;
 	        	 case WATERSPLASH2:
 	        		 t.picnum = (short) (WATERSPLASH2+t1);
 	        		 break;
@@ -2015,7 +2171,7 @@ public class View {
 	            t.xrepeat = t.yrepeat = 0;
 	    }
 	}
-	
+
 	public static void se40code(int x,int y,int z,float a,float h, int smoothratio)
 	{
 	    for( int i = headspritestat[15]; i >= 0;  i = nextspritestat[i])
@@ -2029,10 +2185,10 @@ public class View {
 	        }
 	    }
 	}
-	
+
 	private static int[] tempsectorz = new int[MAXSECTORS];
 	private static short[] tempsectorpicnum = new short[MAXSECTORS];
-	
+
 	private static void SE40_Old(int spnum,int x,int y,int z,float a,float h,int smoothratio)
 	{
 		int i=0,j=0,k=0;
@@ -2056,7 +2212,7 @@ public class View {
 		{
 			if(sprite[j].picnum==1 &&
 					sprite[j].lotag==fofmode &&
-					sprite[j].hitag==sprite[floor1].hitag) 	
+					sprite[j].hitag==sprite[floor1].hitag)
 			{ floor1=j; fofmode=sprite[j].lotag; break;}
 		}
 
@@ -2120,7 +2276,7 @@ public class View {
 			}// end if
 		}// end for
 	} // end SE40
-	
+
 	public static byte[] oldgotsector = new byte[MAXSECTORS>>3];
 	public static void SE40_Draw(int spnum,int x,int y,int z,float a,float h,int smoothratio)
 	{
@@ -2137,19 +2293,19 @@ public class View {
 	        }
 	        i = nextspritestat[i];
 	    }
-		
+
 		/*
 		int rtype=0;
 		boolean drawror = false;
 		for(int i = 0; i < 16; i++)
 		{
 			if(rorsector[i] != -1) {
-				if( (  gotsector[rorsector[i]>>3]&(1<<(rorsector[i]&7))  ) != 0 
-						&& ((rortype[i] == 1 && sprite[spnum].lotag == 151) 
+				if( (  gotsector[rorsector[i]>>3]&(1<<(rorsector[i]&7))  ) != 0
+						&& ((rortype[i] == 1 && sprite[spnum].lotag == 151)
 						|| (rortype[i] == 2 && sprite[spnum].lotag == 150)))
 				{
-					drawror = true; 
-					rtype=rortype[i]; 
+					drawror = true;
+					rtype=rortype[i];
 					break;
 				}
 			}
@@ -2161,11 +2317,11 @@ public class View {
 			nLower = spnum;
 		if(rtype == 2) //floor
 			nUpper = spnum;
-		
+
 		for( int i = headspritestat[15]; i >= 0;  i = nextspritestat[i])
 		{
-			if(i != spnum && sprite[i].picnum==1 && sprite[i].hitag==sprite[spnum].hitag) 
-			{ 
+			if(i != spnum && sprite[i].picnum==1 && sprite[i].hitag==sprite[spnum].hitag)
+			{
 				if(rtype == 1 && sprite[i].lotag == 150) {
 					nUpper = i;
 					break;
@@ -2176,10 +2332,10 @@ public class View {
 				}
 			}
 		}
-		
+
 		if(nUpper == -1 || nLower == -1)
 			return;
-		
+
 		int rsect = -1, rx = 0, ry = 0, rz = 0;
 		if(rtype == 1) {
 			rsect = sprite[nUpper].sectnum;
@@ -2187,7 +2343,7 @@ public class View {
 			ry = sprite[nUpper].y - sprite[nLower].y;
 			rz = sector[sprite[nUpper].sectnum].floorz - sector[sprite[nLower].sectnum].ceilingz;
 		}
-		
+
 		if(rtype == 2) {
 			rsect = sprite[nLower].sectnum;
 			rx = sprite[nLower].x - sprite[nUpper].x;
@@ -2199,18 +2355,18 @@ public class View {
 		engine.drawrooms(x+rx,y+ry,z+rz,(short)a,h, (short) (rsect | MAXSECTORS));
 		animatesprites(x+rx,y+ry,z+rz,(short)a,smoothratio);
 		engine.drawmasks();
-		
+
 		System.arraycopy(oldgotsector, 0, gotsector, 0, gotsector.length);
 		*/
-	} 
-	
+	}
+
 	public static void addmessage(String message) {
 		buildString(currentGame.getCON().fta_quotes[122], 0, message);
 		FTA(122,ps[myconnectindex]);
 	}
-	
-	public static void viewDrawStats(int x, int y, int zoom, boolean topAligned)  
-	{ 
+
+	public static void viewDrawStats(int x, int y, int zoom, boolean topAligned)
+	{
 		if(cfg.gShowStat == 0)
 			return;
 
@@ -2223,42 +2379,42 @@ public class View {
 			int yoffset = (int) (3f * game.getFont(1).getHeight() * viewzoom);
 			y -= yoffset;
 		}
-		
+
 		int statx = x;
 		int staty = y;
-		
+
 		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 10 | 256, false);
-	
+
 		int offs = Bitoa(ps[connecthead].actors_killed, buffer);
 		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_actors_killed);
-		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);	
-		
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);
+
 		statx = x;
 		staty = y + (int) (12 * viewzoom);
-		
+
 		buildString(buffer, 0, "secrets:    ");
 		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 10 | 256, false);
 		alignx = game.getFont(1).getWidth(buffer);
 		offs = Bitoa(ps[connecthead].secret_rooms, buffer);
 		offs = buildString(buffer, offs, " /   ", ps[connecthead].max_secret_rooms);
-		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);	
-		
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);
+
 		statx = x;
 		staty = y + (int) (22 * viewzoom);
-		
+
 		buildString(buffer, 0, "time:    ");
 		game.getFont(1).drawText(statx, staty, buffer, zoom, 0, 2, TextAlign.Left, 10 | 256, false);
 		alignx = game.getFont(1).getWidth(buffer);
-		
+
 		int minutes = ps[myconnectindex].player_par/(26*60);
 		int sec = (ps[myconnectindex].player_par/26)%60;
-		
+
 		offs = Bitoa(minutes, buffer, 2);
 		offs = buildString(buffer, offs, " :   ", sec, 2);
-		
-		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);	
+
+		game.getFont(1).drawText(statx += (alignx + 6) * viewzoom, staty, buffer, zoom, 0, 15, TextAlign.Left, 10 | 256, false);
 	}
-	
+
 	private static PlayerOrig viewout = new PlayerOrig();
 	public static PlayerOrig view(PlayerStruct pp, int vx, int vy,int vz,short vsectnum, float ang, float horiz)
 	{
@@ -2277,7 +2433,7 @@ public class View {
 	     sp.cstat &= ~0x101;
 
 	     vsectnum = engine.updatesectorz(vx,vy,vz,vsectnum);
-	     
+
 	     engine.hitscan(vx,vy,vz,vsectnum,nx,ny,nz,pHitInfo,CLIPMASK1);
 	     int hitx = pHitInfo.hitx, hity = pHitInfo.hity;
 
@@ -2287,45 +2443,45 @@ public class View {
 	        return viewout;
 	     }
 
-	     int hx = hitx-(vx); 
+	     int hx = hitx-(vx);
 	     int hy = hity-(vy);
 	     if( (klabs(hx) + klabs(hy)) - (klabs(nx) + klabs(ny)) < 1024)
 	     {
 			int wx = 1; if(nx < 0) wx = -1;
 			int wy = 1; if(ny < 0) wy = -1;
-			
+
 			hx -= wx << 9;
 			hy -= wy << 9;
-			
+
 			int dist = 0;
 			if(nx != 0 && ny != 0) {
 				if(klabs(nx) > klabs(ny))
-					dist = (int) divscale(hx,nx,16);
-				else dist = (int) divscale(hy,ny,16);
+					dist = divscale(hx,nx,16);
+				else dist = divscale(hy,ny,16);
 			}
-			
+
 			if (dist < cameradist) cameradist = dist;
 	     }
-	     
+
 	     vx += mulscale(nx,cameradist,16);
 	     vy += mulscale(ny,cameradist,16);
 	     vz += mulscale(nz,cameradist,16);
-	  
+
 	     cameradist = min(cameradist+((totalclock-cameraclock)<<10),65536);
 	     cameraclock = totalclock;
 
 	     vsectnum = engine.updatesectorz(vx,vy,vz,vsectnum);
 
 	     sp.cstat = bakcstat;
-	     
+
 	     viewout.ox = vx;
 	     viewout.oy = vy;
 	     viewout.oz = vz;
 	     viewout.os = vsectnum;
-	     
+
 	     return viewout;
 	}
-	
+
 	public static void coords(short snum)
 	{
 	    short y = 0;
@@ -2365,10 +2521,10 @@ public class View {
 		if(isValidSector(sectnum)  && sector[sectnum].lotag == 848)
 		{
 	        short geomsect = 0;
-	        
+
 	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	short k = headspritesect[geomsector[i]]; 
+	        	short k = headspritesect[geomsector[i]];
 	        	while(k != -1)
 	        	{
 	        		short nextk = nextspritesect[k];
@@ -2379,12 +2535,12 @@ public class View {
 	        	if ( csect == geomsector[i] )
 	        		geomsect = i;
 	        }
-	        
+
 	        engine.drawrooms(cposx - geomx1[geomsect], cposy - geomy1[geomsect], cposz, cang, choriz, geomsect);
-	        
+
 	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	short k = headspritesect[geoms1[i]]; 
+	        	short k = headspritesect[geoms1[i]];
 	        	while(k != -1)
 	        	{
 	        		short nextk = nextspritesect[k];
@@ -2393,13 +2549,13 @@ public class View {
 	        		k = nextk;
 	        	}
 	        }
-	        
+
 	        animatesprites(cposx, cposy, cposz, (short) cang, smoothratio);
 	        engine.drawmasks();
-	        
+
 	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	short k = headspritesect[geomsector[i]]; 
+	        	short k = headspritesect[geomsector[i]];
 	        	while(k != -1)
 	        	{
 	        		short nextk = nextspritesect[k];
@@ -2410,12 +2566,12 @@ public class View {
 	        	if ( csect == geomsector[i] )
 	        		geomsect = i;
 	        }
-	        
+
 	        engine.drawrooms(cposx - geomx2[geomsect], cposy - geomy2[geomsect], cposz, cang, choriz, geomsect);
-	        
+
 	        for(short i = 0; i < numgeomeffects; i++)
 	        {
-	        	short k = headspritesect[geoms2[i]]; 
+	        	short k = headspritesect[geoms2[i]];
 	        	while(k != -1)
 	        	{
 	        		short nextk = nextspritesect[k];
@@ -2424,12 +2580,12 @@ public class View {
 	        		k = nextk;
 	        	}
 	        }
-	        
+
 	        animatesprites(cposx, cposy, cposz, (short) cang, smoothratio);
 	        engine.drawmasks();
 		}
 	}
-	
+
 	public static void displayinventory(PlayerStruct p)
 	{
 	    int n, j, xoff, y;
@@ -2443,7 +2599,7 @@ public class View {
 	    n |= (p.whishkey_amount > 0)?1:0; if((n&1) != 0) j++;
 	    n |= (p.yeehaa_amount > 0)?1<<4:0; if((n&16) != 0) j++;
 	    n |= (p.boot_amount > 0)?1<<6:0; if((n&64) != 0) j++;
-	    
+
 	    xoff = 160-(j*11);
 
 	    j = 0;
@@ -2461,8 +2617,8 @@ public class View {
 //	    }
 
 	    if((p.gotkey[0]|p.gotkey[1]|p.gotkey[2]) != 0)
-	        xoff += tilesizx[KEYSIGN] / 4;
-        
+	        xoff += engine.getTile(KEYSIGN).getWidth() / 4;
+
 	    while( j <= 9 )
 	    {
 	        if( (n&(1<<j)) != 0 )
@@ -2499,37 +2655,40 @@ public class View {
 	public static void displaymasks(short snum)
 	{
 	    int p = sector[ps[snum].cursectnum].floorpal;
-	    
+
 	    if(sprite[ps[snum].i].pal == 1)
 	        p = 1;
 	    if(ps[snum].scuba_on != 0)
 		{
+	    	Tile pic = engine.getTile(3374);
         	engine.rotatesprite(
-    	            (320 - (tilesizx[3374] >> 1) - 15) << 16,
-    	            (200 - (tilesizy[3374] >> 1) + (sintable[totalclock & 0x7FF] >> 10)) << 16,
+    	            (320 - (pic.getWidth() >> 1) - 15) << 16,
+    	            (200 - (pic.getHeight() >> 1) + (sintable[totalclock & 0x7FF] >> 10)) << 16,
     	            49152,0,3374,0,p,10 | 16 |512,
     	            windowx1, windowy1, windowx2, windowy2);
-        	
-        	int framesx = xdim / tilesizx[3377];
-			
-			int x = -tilesizx[3377]/2;
+
+        	pic = engine.getTile(3377);
+        	int framesx = xdim / pic.getWidth();
+
+			int x = -pic.getWidth()/2;
 			for(int i = 0; i <= framesx; i++) {
 				engine.rotatesprite(x<<16, (-1)<<16, 65536, 0, 3377, 0, p, 10 | 16, 0, 0, xdim-1, ydim-1);
 	        	engine.rotatesprite(x<<16, 200<<16, 65536, 0, 3377, 0, p, 4 | 10| 16, 0, 0, xdim-1, ydim-1);
-		    	x += tilesizx[3377] - 1;
+		    	x += pic.getWidth() - 1;
 		    }
-			
+
+			pic = engine.getTile(3378);
     	    engine.rotatesprite(
-    	            (320 - (tilesizx[3378])) << 16,
-    	            (200 - (tilesizy[3378])) << 16,
+    	            (320 - (pic.getWidth())) << 16,
+    	            (200 - (pic.getHeight())) << 16,
     	            65536, 0, 3378, 0, p, 10 | 16 |512,
     	            windowx1, windowy1, windowx2, windowy2);
     	    engine.rotatesprite(
-    	            tilesizx[3378] << 16,
-    	            (200 - (tilesizy[3378])) << 16,
+    	    		pic.getWidth() << 16,
+    	            (200 - (pic.getHeight())) << 16,
     	            65536,1024,3378,0,p, 4 | 10 | 16 |256,
     	            windowx1, windowy1, windowx2, windowy2);
-    		
+
 		}
 	}
 }

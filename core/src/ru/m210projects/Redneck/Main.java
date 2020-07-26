@@ -115,10 +115,10 @@ public class Main extends BuildGame {
 	 * Shuffle music option
 	 * Dead cows don't block your shots
 	 * Quick weapon switch without waiting fully raised
-	 * 
+	 *
 	 * TODO:
 	 * as I said once, you cannot pickup a weapon if you already have it (in MP?)
-	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка. 
+	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка.
 	 */
 
 	public static final String appdef = "rrgdx.def";
@@ -145,13 +145,13 @@ public class Main extends BuildGame {
 	public static Config cfg;
 	public RRMenuHandler menu;
 	public RRNetwork net;
-	
+
 	public Main(BuildConfig dcfg, String appname, String sversion, boolean isDemo, boolean isRelease) {
 		super(dcfg, appname, sversion, isRelease);
 		game = this;
 		cfg = (Config) dcfg;
 	}
-	
+
 	public Main(BuildConfig dcfg, String appname, String sversion, boolean isDemo) {
 		this(dcfg, appname, sversion, isDemo, true);
 	}
@@ -166,9 +166,9 @@ public class Main extends BuildGame {
 		net = (RRNetwork) pNet;
 
 		ConsoleInit();
-		
+
 		genspriteremaps();
-		
+
 		compilecons();
 
 		engine.inittimer(TICRATE);
@@ -202,9 +202,9 @@ public class Main extends BuildGame {
 			hittype[i] = new Weaponhit();
 
 		Console.Println("Initializing def-scripts...");
-		
+
 		loadGdxDef(baseDef, appdef, "rrgdx.dat");
-		
+
 		if (cfg.autoloadFolder) {
 			Console.Println("Initializing autoload folder");
 			DirectoryEntry autoload;
@@ -214,7 +214,7 @@ public class Main extends BuildGame {
 					if (file.getExtension().equals("zip")) {
 						Group group = BuildGdx.cache.add(file.getPath());
 						if(group == null) continue;
-						
+
 						GroupResource def = group.open(appdef);
 						if(def != null)
 						{
@@ -264,7 +264,7 @@ public class Main extends BuildGame {
 
 		return false;
 	}
-	
+
 	@Override
 	public boolean setDefs(DefScript script)
 	{
@@ -274,7 +274,7 @@ public class Main extends BuildGame {
 			((MenuFont)this.getFont(2)).update();
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -283,11 +283,11 @@ public class Main extends BuildGame {
 		uGameFlags = 0;
 		kGameCrash = false;
 		if(usecustomarts)
-			resetEpisodeResources();
-		
+			resetEpisodeResources(true);
+
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
-		
+
 		if(currentGame.getCON().type == RRRA && gMveScreen.init("redint.mve")) {
 			gMveScreen.setCallback(rMenu);
 			setScreen(gMveScreen.escSkipping(true));
@@ -466,27 +466,27 @@ public class Main extends BuildGame {
 		text += "\r\n";
 		text += "UserFlag: " + mUserFlag;
 		text += "\r\n";
-		
+
 		if (mUserFlag == UserFlag.Addon && currentGame != null) {
 			try {
 				FileEntry addon = currentGame.getFile();
-				if(addon != null  && currentGame.isPackage()) 
+				if(addon != null  && currentGame.isPackage())
 					text += "Episode filename: " + addon.getPath() + ":" + currentGame.ConName;
-				else 
+				else
 					text += "Episode filename: " + currentGame.getDirectory().checkFile(currentGame.ConName).getPath();
 				text += "\r\n";
 			} catch(Exception e) {
 				text += "Episode filename get error \r\n";
 			}
 		}
-		
+
 		text += "volume " + (ud.volume_number + 1);
 		text += "\r\n";
 		text += "level " + (ud.level_number + 1);
 		text += "\r\n";
 		text += "nDifficulty: " + ud.player_skill;
 		text += "\r\n";
-		
+
 		if (ps != null) {
 			text += "PlayerX: " + ps[myconnectindex].posx;
 			text += "\r\n";
@@ -512,7 +512,7 @@ public class Main extends BuildGame {
 				out = Arrays.copyOf(array.items, array.size);
 			}
 		} else out = text.getBytes();
-	
+
 		return out;
 	}
 }

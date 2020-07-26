@@ -76,7 +76,7 @@ public class Sector {
 		}
 		return false;
 	}
-	
+
 	public static boolean wallswitchcheck(int i)
 	{
 	    switch(sprite[i].picnum)
@@ -134,7 +134,7 @@ public class Sector {
 	    }
 	    return false;
 	}
-	
+
 	public static boolean haltsoundhack;
 	public static int callsound(int sn, int whatsprite)
 	{
@@ -143,7 +143,7 @@ public class Sector {
 	        haltsoundhack = false;
 	        return -1;
 	    }
-		
+
 	    short i = headspritesect[sn];
 	    while(i >= 0)
 	    {
@@ -179,7 +179,7 @@ public class Sector {
 	    }
 	    return -1;
 	}
-	
+
 	public static boolean check_activator_motion( int lotag )
 	{
 	    int i = headspritestat[8];
@@ -220,7 +220,7 @@ public class Sector {
 	    }
 	    return( false );
 	}
-	
+
 	public static boolean isadoorwall(int dapic)
 	{
 		switch(dapic)
@@ -252,7 +252,7 @@ public class Sector {
 		}
 		return false;
 	}
-	
+
 	public static boolean isadoorwall2(int dapic)
 	{
 	    switch(dapic)
@@ -341,7 +341,7 @@ public class Sector {
 		    case 3819:
 		    case 3827:
 		    case 3837:
-		    
+
 		    	//RA
 		    case 1996:
 		    case 2382:
@@ -412,14 +412,14 @@ public class Sector {
 	        if( sprite[ps[i].i].sectnum == sect ) return i;
 	    return -1;
 	}
-	
+
 	public static int ldist(SPRITE s1, SPRITE s2)
 	{
 	    int vx = s1.x - s2.x;
 	    int vy = s1.y - s2.y;
 	    return(FindDistance2D(vx,vy) + 1);
 	}
-	
+
 	public static int dist(SPRITE s1, SPRITE s2)
 	{
 		int vx = s1.x - s2.x;
@@ -427,13 +427,13 @@ public class Sector {
 		int vz = s1.z - s2.z;
 	    return(FindDistance3D(vx,vy,vz>>4));
 	}
-	
+
 	public static int player_dist;
 	public static int findplayer(SPRITE s)
 	{
 	    if(ud.multimode < 2)
 	    {
-	    	player_dist = (int) (klabs(ps[myconnectindex].oposx-s.x) + klabs(ps[myconnectindex].oposy-s.y) + ((klabs(ps[myconnectindex].oposz-s.z+(28<<8)))>>4));
+	    	player_dist = klabs(ps[myconnectindex].oposx-s.x) + klabs(ps[myconnectindex].oposy-s.y) + ((klabs(ps[myconnectindex].oposz-s.z+(28<<8)))>>4);
 	        return myconnectindex;
 	    }
 
@@ -442,7 +442,7 @@ public class Sector {
 
 	    for(int j=connecthead;j>=0;j=connectpoint2[j])
 	    {
-	        int x = (int) (klabs(ps[j].oposx-s.x) + klabs(ps[j].oposy-s.y) + ((klabs(ps[j].oposz-s.z+(28<<8)))>>4));
+	        int x = klabs(ps[j].oposx-s.x) + klabs(ps[j].oposy-s.y) + ((klabs(ps[j].oposz-s.z+(28<<8)))>>4);
 	        if( x < closest && sprite[ps[j].i].extra > 0 )
 	        {
 	            closest_player = j;
@@ -462,7 +462,7 @@ public class Sector {
 	    for(int j=connecthead;j>=0;j=connectpoint2[j])
 	        if(p != j && sprite[ps[j].i].extra > 0)
 	    {
-	        int x = (int) (klabs(ps[j].oposx-ps[p].posx) + klabs(ps[j].oposy-ps[p].posy) + (klabs(ps[j].oposz-ps[p].posz)>>4));
+	        int x = klabs(ps[j].oposx-ps[p].posx) + klabs(ps[j].oposy-ps[p].posy) + (klabs(ps[j].oposz-ps[p].posz)>>4);
 
 	        if( x < closest )
 	        {
@@ -490,7 +490,7 @@ public class Sector {
 	    			wall[i].xpanning += 6;
 	    	}
 	    }
-	    
+
 	    for(p=0;p < numanimwalls ;p++)
 	    {
 	        i = animwall[p].wallnum;
@@ -543,7 +543,7 @@ public class Sector {
 
 	                if((wall[i].cstat&254) != 0)
 	                {
-	                    wall[i].xpanning -= t>>10; 
+	                    wall[i].xpanning -= t>>10;
 	                    wall[i].ypanning -= t>>10;
 
 	                    if(wall[i].extra == 1)
@@ -572,7 +572,7 @@ public class Sector {
 	        }
 	    }
 	}
-	
+
 	public static boolean activatewarpelevators(int s, int d) //Parm = sectoreffectornum
 	{
 	    short i, sn;
@@ -618,7 +618,7 @@ public class Sector {
 	    }
 	    return false;
 	}
-	
+
 	public static int[] wallfind = new int[2];
 	public static void operatesectors(int sn, int ii)
 	{
@@ -675,7 +675,7 @@ public class Sector {
 	            j = sector[sn].hitag;
 	            if(hittype[j].temp_data[4] == 0)
 	                hittype[j].temp_data[4] = 1;
-	            
+
 	            callsound(sn,ii);
 	            break;
 
@@ -792,7 +792,7 @@ public class Sector {
 	            }
 
 	            if(i == -1) return;
-	            
+
 	            if(sprite[ii].sectnum == sn)
 	            {
 	                if( activatewarpelevators(i,-1) )
@@ -906,7 +906,7 @@ public class Sector {
 		            else
 		            {
 		                j = engine.nextsectorneighborz(sn,sptr.ceilingz,-1,-1);
-	
+
 		                if(j >= 0) j = sector[j].ceilingz;
 		                else
 		                {
@@ -1095,7 +1095,7 @@ public class Sector {
 	            return;
 	    }
 	}
-	
+
 	public static void operaterespawns(int low)
 	{
 	    short i, j, nexti;
@@ -1123,7 +1123,7 @@ public class Sector {
 	        i = nexti;
 	    }
 	}
-	
+
 	public static void operateactivators(int low, int snum)
 	{
 	    short k, p[];
@@ -1138,7 +1138,7 @@ public class Sector {
 	            sector[p[0]].floorshade = sector[p[0]].ceilingshade = (byte) p[3];
 	            int startwall = sector[p[0]].wallptr;
 	            int endwall = startwall + sector[p[0]].wallnum;
-	            
+
 	            for(int j=startwall;j < endwall;j++) {
 	            	WALL wal = wall[j];
 	                wal.shade = (byte) p[3];
@@ -1218,7 +1218,7 @@ public class Sector {
 
 	    operaterespawns(low);
 	}
-	
+
 	public static void operatemasterswitches(int low)
 	{
 	    int i = headspritestat[6];
@@ -1229,7 +1229,7 @@ public class Sector {
 	        i = nextspritestat[i];
 	    }
 	}
-	
+
 	public static void operateforcefields(int s, int low)
 	{
 	    for(int p=numanimwalls;p>=0;p--)
@@ -1257,7 +1257,7 @@ public class Sector {
 	        }
 	    }
 	}
-	
+
 	private static int[] chitsw = new int[3];
 	public static boolean checkhitswitch(int snum,int w,int switchtype)
 	{
@@ -1291,15 +1291,15 @@ public class Sector {
 
 	    switch(picnum)
 	    {
-		    case 121: 
-		    case 122: 
-		    case 125: 
-		    case 126: 
-		    case 2259: 
-		    case 2260: 
+		    case 121:
+		    case 122:
+		    case 125:
+		    case 126:
+		    case 2259:
+		    case 2260:
 	            break;
-	        case 82: 
-	        case 129: 
+	        case 82:
+	        case 129:
 	            if(ps[snum].access_incs == 0)
 	            {
 	            	if(currentGame.getCON().key_quotes == null)
@@ -1309,7 +1309,7 @@ public class Sector {
 	            		System.arraycopy(currentGame.getCON().fta_quotes[71], 0, currentGame.getCON().key_quotes[1], 0, 64);
 	            		System.arraycopy(currentGame.getCON().fta_quotes[72], 0, currentGame.getCON().key_quotes[2], 0, 64);
 	            	}
-	            	
+
 	                if( switchpal == 0 )
 	                {
 	                    if( ps[snum].gotkey[1] != 0 )
@@ -1354,43 +1354,43 @@ public class Sector {
 
 	                return false;
 	            }
-	        case 84: 
-	        case 85: 
-	        case 86: 
-	        case 87: 
-	        case 88: 
-	        case 89: 
-	        case 90: 
-	        case 91: 
-	        case 92: 
-	        case 93: 
-	        case 94: 
-	        case 95: 
-	        case 98: 
-	        case 99: 
-	        case 100: 
-	        case 101: 
-	        case 123: 
-	        case 124: 
-	        case 127: 
-	        case 128: 
-	        case 250: 
-	        case 251: 
-	        case 2214: 
-	        case 2222: 
-	        case 2223: 
-	        case 2224: 
-	        case 2225: 
-	        case 2226: 
-	        case 2227: 
-	        case 2249: 
-	        case 2250: 
-	        case 2254: 
-	        case 2255: 
-	        case 2697: 
-	        case 2698: 
-	        case 2707: 
-	        case 2708: 
+	        case 84:
+	        case 85:
+	        case 86:
+	        case 87:
+	        case 88:
+	        case 89:
+	        case 90:
+	        case 91:
+	        case 92:
+	        case 93:
+	        case 94:
+	        case 95:
+	        case 98:
+	        case 99:
+	        case 100:
+	        case 101:
+	        case 123:
+	        case 124:
+	        case 127:
+	        case 128:
+	        case 250:
+	        case 251:
+	        case 2214:
+	        case 2222:
+	        case 2223:
+	        case 2224:
+	        case 2225:
+	        case 2226:
+	        case 2227:
+	        case 2249:
+	        case 2250:
+	        case 2254:
+	        case 2255:
+	        case 2697:
+	        case 2698:
+	        case 2707:
+	        case 2708:
 
 	        		//RA
 	        case 8048:
@@ -1411,45 +1411,45 @@ public class Sector {
 	    {
 	        if( lotag == sprite[i].lotag ) switch(sprite[i].picnum)
 	        {
-		        case 85: 
-		        case 87: 
-		        case 89: 
-		        case 91: 
-		        case 93: 
-		        case 95: 
-		        case 124: 
-		        case 128: 
-		        case 251: 
-		        case 2223: 
-		        case 2225: 
-		        case 2227: 
-		        case 2250: 
-		        case 2255: 
-		        case 2698: 
-		        case 2708: 
+		        case 85:
+		        case 87:
+		        case 89:
+		        case 91:
+		        case 93:
+		        case 95:
+		        case 124:
+		        case 128:
+		        case 251:
+		        case 2223:
+		        case 2225:
+		        case 2227:
+		        case 2250:
+		        case 2255:
+		        case 2698:
+		        case 2708:
 		        	if ( sprite[i].picnum == 95 )
 		        		plantProcess = true;
 		        	if ( sprite[i].hitag != 999 )
 		        		sprite[i].picnum--;
 		        	break;
-		        case 82: 
-		        case 84: 
-		        case 86: 
-		        case 88: 
-		        case 90: 
-		        case 92: 
-		        case 94: 
-		        case 123: 
-		        case 127: 
-		        case 129: 
-		        case 250: 
-		        case 2222: 
-		        case 2224: 
-		        case 2226: 
-		        case 2249: 
-		        case 2254: 
-		        case 2697: 
-		        case 2707:	
+		        case 82:
+		        case 84:
+		        case 86:
+		        case 88:
+		        case 90:
+		        case 92:
+		        case 94:
+		        case 123:
+		        case 127:
+		        case 129:
+		        case 250:
+		        case 2222:
+		        case 2224:
+		        case 2226:
+		        case 2249:
+		        case 2254:
+		        case 2697:
+		        case 2707:
 		        case 8660:
 		        	if ( sprite[i].picnum != 127 || sprite[i].hitag != 999 )
 		        	{
@@ -1458,7 +1458,7 @@ public class Sector {
 		        		if ( sprite[i].picnum == 8660 ) {
 		        			BellTime = 132;
 		                    word_119BE0 = i;
-		        		}	
+		        		}
 		                sprite[i].picnum++;
 		        	}
 		        	else
@@ -1467,7 +1467,7 @@ public class Sector {
 		                while(x >= 0)
 		                {
 		                	short next = nextspritestat[x];
-		                	
+
 		                	if(sprite[x].picnum == 3410)
 		                	{
 		                		sprite[x].picnum = 3411;
@@ -1477,7 +1477,7 @@ public class Sector {
 		                	} else if(sprite[x].picnum == 295) {
 		                		engine.deletesprite(x);
 		                	}
-		                	
+
 		                	x = next;
 		                }
 		                sprite[i].picnum++;
@@ -1492,17 +1492,17 @@ public class Sector {
 	                if( sprite[i].picnum > (MULTISWITCH+3) )
 	                    sprite[i].picnum = MULTISWITCH;
 	                break;
-	
-	            case 121: 
-	            case 125: 
-	            case 2259: 
+
+	            case 121:
+	            case 125:
+	            case 2259:
 	                if( switchtype == 1 && w == i ) sprite[i].picnum++;
 	                else if( sprite[i].hitag == 0 ) correctdips++;
 	                numdips++;
 	                break;
-	            case 122: 
-	            case 126: 
-	            case 2260: 
+	            case 122:
+	            case 126:
+	            case 2260:
 	                if( switchtype == 1 && w == i ) sprite[i].picnum--;
 	                else if( sprite[i].hitag == 1 ) correctdips++;
 	                numdips++;
@@ -1511,7 +1511,7 @@ public class Sector {
 //	            	checknextlevel();
 	            	++sprite[i].picnum;
 	            	break;
-	            	
+
 	            	//RA
 	            case 8048:
 		        case 8049:
@@ -1531,16 +1531,16 @@ public class Sector {
 	        if(lotag == wall[x].lotag)
 	            switch(wall[x].picnum)
 	        {
-		        case 121: 
-		        case 125: 
-		        case 2259: 
+		        case 121:
+		        case 125:
+		        case 2259:
 	                if( switchtype == 0 && i == w ) wall[x].picnum++;
 	                else if( wall[x].hitag == 0 ) correctdips++;
 	                numdips++;
 	                break;
-		        case 122: 
-		        case 126: 
-		        case 2260: 
+		        case 122:
+		        case 126:
+		        case 2260:
 	                if( switchtype == 0 && i == w ) wall[x].picnum--;
 	                else if( wall[x].hitag == 1 ) correctdips++;
 	                numdips++;
@@ -1553,42 +1553,42 @@ public class Sector {
 	                if(wall[x].picnum > (MULTISWITCH+3) )
 	                    wall[x].picnum = MULTISWITCH;
 	                break;
-	            case 82: 
-	            case 84: 
-	            case 86: 
-	            case 88: 
-	            case 90: 
-	            case 123: 
-	            case 127: 
-	            case 129: 
-	            case 250: 
-	            case 2222: 
-	            case 2224: 
-	            case 2226: 
-	            case 2249: 
-	            case 2254: 
-	            case 2697: 
-	            case 2707: 
+	            case 82:
+	            case 84:
+	            case 86:
+	            case 88:
+	            case 90:
+	            case 123:
+	            case 127:
+	            case 129:
+	            case 250:
+	            case 2222:
+	            case 2224:
+	            case 2226:
+	            case 2249:
+	            case 2254:
+	            case 2697:
+	            case 2707:
 	            case 8660:
 	                wall[x].picnum++;
 	                break;
-	            case 85: 
-	            case 87: 
-	            case 89: 
-	            case 91: 
-	            case 124: 
-	            case 128: 
-	            case 251: 
-	            case 2223: 
-	            case 2225: 
-	            case 2227: 
-	            case 2250: 
-	            case 2255: 
-	            case 2698: 
-	            case 2708: 
+	            case 85:
+	            case 87:
+	            case 89:
+	            case 91:
+	            case 124:
+	            case 128:
+	            case 251:
+	            case 2223:
+	            case 2225:
+	            case 2227:
+	            case 2250:
+	            case 2255:
+	            case 2698:
+	            case 2708:
 	                wall[x].picnum--;
 	                break;
-	              
+
 	                //RA
 	            case 8048:
 		        case 8049:
@@ -1620,14 +1620,14 @@ public class Sector {
 	    {
 	        default:
 	            if(!isadoorwall(picnum)) break;
-	            
-	        case 121: 
-	        case 122: 
-	        case 125: 
-	        case 126: 
-	        case 2259: 
-	        case 2260: 
-	        	
+
+	        case 121:
+	        case 122:
+	        case 125:
+	        case 126:
+	        case 2259:
+	        case 2260:
+
 	            if( picnum == 121  || picnum == 122 ||
 	                picnum == 125 || picnum == 126 ||
 	                picnum == 2259 || picnum == 2260 )
@@ -1647,7 +1647,7 @@ public class Sector {
 	                if(numdips != correctdips) break;
 	                xyzsound(END_OF_LEVEL_WARN,ps[snum].i,sx,sy,ps[snum].posz);
 	            }
-	            
+
 	        case 84:
 	        case 85:
 	        case 86:
@@ -1657,35 +1657,35 @@ public class Sector {
 	        case 90:
 	        case 91:
 	        case 92:
-	        case 93:  
+	        case 93:
 	        case 250:
 	        case 251:
 	        case 2249:
 	        case 2250:
 	        case 2707:
 	        case 2708:
-	        	
-	        case 82:  
-	        case 123: 
-	        case 124: 
-	        case 127: 
-	        case 128: 
-	        case 129: 
-	        case 2222: 
-	        case 2223: 
-	        case 2224: 
-	        case 2225: 
-	        case 2226: 
-	        case 2227: 
-	        case 2254: 
-	        case 2255: 
-	        case 2697: 
-	        case 2698: 
-	        case MULTISWITCH: 
-	        case MULTISWITCH+1: 
-	        case MULTISWITCH+2: 
+
+	        case 82:
+	        case 123:
+	        case 124:
+	        case 127:
+	        case 128:
+	        case 129:
+	        case 2222:
+	        case 2223:
+	        case 2224:
+	        case 2225:
+	        case 2226:
+	        case 2227:
+	        case 2254:
+	        case 2255:
+	        case 2697:
+	        case 2698:
+	        case MULTISWITCH:
+	        case MULTISWITCH+1:
+	        case MULTISWITCH+2:
 	        case MULTISWITCH+3:
-	        	
+
 	        	//RA
             case 8048:
 	        case 8049:
@@ -1693,14 +1693,14 @@ public class Sector {
 	        case 8051:
 	        case 8660:
 	        case 8464:
-	        	
+
 	        	if( picnum == 8660)
 	        	{
 	        		 BellTime = 132;
 	        		 word_119BE0 = (short) w;
 	        		 sprite[w].picnum++;
 	        	}
-	        	
+
 	        	if(picnum == 8464)
 	        	{
 	        		sprite[w].picnum++;
@@ -1716,24 +1716,24 @@ public class Sector {
 	        	} else {
 	        		if(hitag == 10000)
 	        		{
-	        			if( picnum == MULTISWITCH 
-        					|| picnum == (MULTISWITCH+1) 
-        					|| picnum == (MULTISWITCH+2) 
+	        			if( picnum == MULTISWITCH
+        					|| picnum == (MULTISWITCH+1)
+        					|| picnum == (MULTISWITCH+2)
         					|| picnum == (MULTISWITCH+3)
                             || picnum == 8048
                             || picnum == 8049
-                            || picnum == 8050 
+                            || picnum == 8050
                             || picnum == 8051)
 	        			{
 	        				xyzsound(76, w, sx, sy, ps[snum].posz);
-                        
+
 	        				int count = 0;
 	        				for ( int k = 0; k < MAXSPRITES; ++k )
 	        				{
 	        			        if ( (sprite[k].picnum == 98 || sprite[k].picnum == 8048) && sprite[k].hitag == 10000 && count < 3 )
 	        			        	chitsw[count++] = k;
 	        				}
-	        				
+
 	        				if ( count == 3 )
 	        				{
 	        			        xyzsound(78, w, sx, sy, ps[snum].posz);
@@ -1747,17 +1747,17 @@ public class Sector {
 	        			          checkhitswitch(snum, chitsw[k], 1);
 	        			        }
 	        				}
-	        				
+
 	        				return true;
 	        			}
 	        		}
 	        	}
-	        	
+
 	        	//411
                 if( picnum == MULTISWITCH || picnum == (MULTISWITCH+1) ||
                     picnum == (MULTISWITCH+2) || picnum == (MULTISWITCH+3) )
                         lotag += picnum-MULTISWITCH;
-                
+
                 if( picnum == 8048 || picnum == 8049 ||
 	                    picnum == 8050 || picnum == 8051 )
 	                        lotag += picnum-8048;
@@ -1822,7 +1822,7 @@ public class Sector {
 	    }
 	    return false;
 	}
-	
+
 	public static void activatebysector(int sect,int j)
 	{
 	    int i = headspritesect[sect];
@@ -1838,7 +1838,7 @@ public class Sector {
 	    if(sector[sect].lotag != 22)
 	        operatesectors(sect,j);
 	}
-	
+
 	public static void checkplayerhurt(PlayerStruct p, int j)
 	{
 	    if( (j&kHitTypeMask) == kHitSprite )
@@ -1895,7 +1895,7 @@ public class Sector {
 
 	    }
 	}
-	
+
 	public static void allignwarpelevators()
 	{
 	    int i = headspritestat[3];
@@ -1921,7 +1921,7 @@ public class Sector {
 	        i = nextspritestat[i];
 	    }
 	}
-	
+
 	public static void breakwall(int newpn,int spr,int dawallnum)
 	{
 	    wall[dawallnum].picnum = (short) newpn;
@@ -1934,19 +1934,19 @@ public class Sector {
 	{
 	    int j, darkestwall;
 	    short i, sn = -1;
-	    
+
 	    WALL wal = wall[dawallnum];
 
 	    if(wal.overpicnum == MIRROR)
 	    {
 	        switch(atwith)
 	        {
-		        case 26: 
-		        case 1228: 
-		        case 1273: 
-		        case 1315: 
-		        case 1324: 
-		        case 1426: 
+		        case 26:
+		        case 1228:
+		        case 1273:
+		        case 1315:
+		        case 1324:
+		        case 1426:
 		        case 1774:
 	                lotsofglass2(spr,dawallnum,70);
 	                wal.cstat &= ~16;
@@ -1975,7 +1975,7 @@ public class Sector {
 
 	        case GLASS:
 	        case 1973:
-	        	sn = engine.updatesector(x,y,sn); 
+	        	sn = engine.updatesector(x,y,sn);
 	        	if( sn < 0 ) return;
 	            wal.overpicnum=GLASS2;
 	            if(wal.overpicnum == 1973)
@@ -2009,8 +2009,8 @@ public class Sector {
 	                spritesound(VENT_BUST,spr);
 	                return;
 	            case 3643: //Car textures
-	            case 3644: 
-	            case 3645: 
+	            case 3644:
+	            case 3645:
 	            case 3646:
 	            	if(wal.nextwall != -1) {
 	            		i = headspritesect[wall[wal.nextwall].nextsector];
@@ -2022,7 +2022,7 @@ public class Sector {
 	                    	{
 	                    		for(int k = 0; k < 16; k++)
 	                    			RANDOMSCRAP(nspr,i);
-	                    	
+
 		                    	nspr.detail++;
 		                    	if(nspr.detail == 25 && nspr.sectnum < MAXSECTORS)
 		                    	{
@@ -2041,10 +2041,10 @@ public class Sector {
 	            	}
 	            	return;
 
-	            case 164: 
-	            case 165: 
-	            case 166: 
-	            case 2217: 
+	            case 164:
+	            case 165:
+	            case 166:
+	            case 2217:
 
 	                lotsofglass2(spr,dawallnum,30);
 	                wal.picnum=(short) (199+(engine.krand()%3));
@@ -2055,24 +2055,24 @@ public class Sector {
 	                lotsofmoney(sprite[spr], ((engine.krand() & 7) + 1));
 	                spritesound(20, spr);
 	            	return;
-	            case 72: 
-	            case 74: 
-	            case 76: 
-	            case 244: 
-	            case 246: 
-	            case 1814: 
-	            case 1939: 
-	            case 1986: 
-	            case 1988: 
-	            case 2123: 
-	            case 2125: 
-	            case 2636: 
-	            case 2878: 
-	            case 2898: 
-	            case 3200: 
-	            case 3202: 
-	            case 3204: 
-	            case 3206: 
+	            case 72:
+	            case 74:
+	            case 76:
+	            case 244:
+	            case 246:
+	            case 1814:
+	            case 1939:
+	            case 1986:
+	            case 1988:
+	            case 2123:
+	            case 2125:
+	            case 2636:
+	            case 2878:
+	            case 2898:
+	            case 3200:
+	            case 3202:
+	            case 3204:
+	            case 3206:
 	            case 3208:
 
 	                if( rnd(128) )
@@ -2127,7 +2127,7 @@ public class Sector {
 
 	                short startwall = sector[sn].wallptr;
 	                int endwall = startwall + sector[sn].wallnum;
-	                
+
 	                for(i=startwall; i < endwall; i++) {
 	                	wal = wall[i];
 	                    if(wal.shade > darkestwall)
@@ -2147,7 +2147,7 @@ public class Sector {
 	                    i = nextspritestat[i];
 	                }
 	                break;
-	                
+
 	                //RA
 	            case 7433:
 	            	wal.picnum = 5018;
@@ -2257,25 +2257,25 @@ public class Sector {
 	            	return;
 	    }
 	}
-	
+
 	public static boolean checkhitceiling(short sn)
 	{
 	    int i, j;
-	   
+
 	    switch(sector[sn].ceilingpicnum)
 	    {
-		    case 72: 
-		    case 74: 
-		    case 76: 
-		    case 244: 
-		    case 246: 
-		    case 1939: 
-		    case 1986: 
-		    case 1988: 
-		    case 2123: 
-		    case 2125: 
-		    case 2878: 
-		    case 2898: 
+		    case 72:
+		    case 74:
+		    case 76:
+		    case 244:
+		    case 246:
+		    case 1939:
+		    case 1986:
+		    case 1988:
+		    case 2123:
+		    case 2125:
+		    case 2878:
+		    case 2898:
                 ceilingglass(ps[myconnectindex].i,sn,10);
                 spritesound(GLASS_BREAKING,ps[screenpeek].i);
 
@@ -2340,8 +2340,8 @@ public class Sector {
 	    }
 
 	    return false;
-	}  
-	
+	}
+
 	public static void checkhitsprite(short i,short sn)
 	{
 	    short j, k, p;
@@ -2375,15 +2375,15 @@ public class Sector {
 	                    break;
 	            }
 	    		break;
-	    	case 1141: 
-	        case 1150: 
-	        case 1152: 
-	        case 1157: 
-	        case 1158: 
-	        case 1163: 
-	        case 1164: 
-	        case 1165: 
-	        case 1166: 
+	    	case 1141:
+	        case 1150:
+	        case 1152:
+	        case 1157:
+	        case 1158:
+	        case 1163:
+	        case 1164:
+	        case 1165:
+	        case 1166:
 	            spritesound(GLASS_HEAVYBREAK,i);
 	            s = sprite[i];
 	            for(j=0;j<16;j++) RANDOMSCRAP(s, i);
@@ -2394,30 +2394,30 @@ public class Sector {
 	            sprite[i].cstat &= (65535-257);
 	            if( sprite[i].picnum == 234 ) {
 	            	sprite[i].picnum = 235;
-	            	spritesound(18,i); 
+	            	spritesound(18,i);
 	            }
 	            spritesound(GLASS_HEAVYBREAK,i);
 	            s = sprite[i];
 	            for(j=0;j<16;j++) RANDOMSCRAP(s,i);
-	            break;   
+	            break;
 	        case GRATE1:
 	            sprite[i].picnum = BGRATE1;
 	            sprite[i].cstat &= (65535-256-1);
 	            spritesound(VENT_BUST,i);
 	            break;
-	            
-	        case 1085: 
+
+	        case 1085:
 	        case 1086:
 	            sprite[i].picnum = 1088;
 	            sprite[i].cstat = 0;
-	            break;   
+	            break;
 	        case WATERFOUNTAIN:
 	        case WATERFOUNTAIN+1:
 	        case WATERFOUNTAIN+2:
-	        case WATERFOUNTAIN+3: 
+	        case WATERFOUNTAIN+3:
 	        	spawn(i,1196);
 	        	break;
-	        case 1098: 
+	        case 1098:
 	            sprite[i].picnum = 1120;
 	            sprite[i].cstat |= (engine.krand()&1)<<2;
 	            sprite[i].cstat &= ~257;
@@ -2430,11 +2430,11 @@ public class Sector {
 	            sprite[i].cstat &= ~257;
 	            spawn(i,1196);
 	            spritesound(GLASS_HEAVYBREAK,i);
-	            break;   
-	        case 1066: 
-	        case 1067: 
-	        case 1114: 
-	        case 1117: 
+	            break;
+	        case 1066:
+	        case 1067:
+	        case 1114:
+	        case 1117:
 	            if(sprite[sn].extra != currentGame.getCON().script[currentGame.getCON().actorscrptr[SHOTSPARK1]] )
 	            {
 	                for(j=0;j<15;j++)
@@ -2443,7 +2443,7 @@ public class Sector {
 	                spawn(i,EXPLOSION2);
 	                engine.deletesprite(i);
 	            }
-	            break;     
+	            break;
 	        case 1221:
 	        	//RA
 	        case 2654:
@@ -2452,18 +2452,18 @@ public class Sector {
 	            spritesound(GLASS_BREAKING,i);
 	            lotsofglass2(i,-1,10);
 	            engine.deletesprite(i);
-	            break;   
-	        case 3430: 
+	            break;
+	        case 3430:
 	        	sprite[sn].xvel = (short) ((sprite[i].xvel>>1)+(sprite[i].xvel>>2));
 	        	sprite[sn].ang -= engine.krand() & 16;
 	        	spritesound(355, i);
 	        	break;
 	        case QUEBALL:
 	        case STRIPEBALL:
-	        case 3440: 
-	        case 3441: 
-	        case 4897: 
-	        case 4898: 
+	        case 3440:
+	        case 3441:
+	        case 4897:
+	        case 4898:
 	        	if(sprite[sn].picnum == QUEBALL || sprite[sn].picnum == STRIPEBALL)
 	            {
 	                sprite[sn].xvel = (short) ((sprite[i].xvel>>1)+(sprite[i].xvel>>2));
@@ -2473,7 +2473,7 @@ public class Sector {
 	                    spritesound(POOLBALLHIT,i);
 	                break;
 	            }
-	            
+
             	if(sprite[sn].picnum == 3440 || sprite[sn].picnum == 3441)
             	{
             		sprite[sn].xvel = (short) ((sprite[i].xvel>>1)+(sprite[i].xvel>>2));
@@ -2482,7 +2482,7 @@ public class Sector {
             		spritesound(355, i);
             		break;
             	}
-            	
+
             	if(sprite[sn].picnum == 4897 || sprite[sn].picnum == 4898)
             	{
             		sprite[sn].xvel = (short) ((sprite[i].xvel>>1)+(sprite[i].xvel>>2));
@@ -2491,24 +2491,24 @@ public class Sector {
             		spritesound(355, i);
             		break;
             	}
-	            	
+
                 if( (engine.krand()&3) != 0)
                 {
                     sprite[i].xvel = 164;
                     sprite[i].ang = sprite[sn].ang;
                 }
-	            
+
 	            break;
 	        case 3152:
 	        	sprite[i].picnum = 3218;
 	        	break;
 	        case 3153:
 	        	sprite[i].picnum = 3219;
-	        	break;    
-	        case 2893: 
-	        case 2915: 
-	        case 3115: 
-	        case 3171: 
+	        	break;
+	        case 2893:
+	        case 2915:
+	        case 3115:
+	        case 3171:
 	            switch(sprite[i].picnum)
 	            {
 	                case 2893:sprite[i].picnum=2978;break;
@@ -2519,45 +2519,45 @@ public class Sector {
 
 	            spritesound(19, i);
 	            lotsofglass2(i, -1, 10);
-	            break;  
+	            break;
 	        case 2876:
 	        	sprite[i].picnum = 2990;
-	        	break;   
+	        	break;
 	        case 3114:
 	        	sprite[i].picnum = 3117;
-	        	break;   
+	        	break;
 	        case 2251:
 	        	sprite[i].picnum = 2252;
 	        	sprite[i].cstat &= (65535-256-1);
 	            spritesound(VENT_BUST,i);
-	        	break;  
-	        case 1080: 
-	        case 1168: 
-	        case 1172: 
-	        case 1174: 
-	        case 1175: 
-	        case 1176: 
-	        case 1178: 
-	        case 1180: 
-	        case 1215: 
-	        case 1216: 
-	        case 1217: 
-	        case 1218: 
-	        case 1219: 
-	        case 1220: 
-	        case 1222: 
-	        case 1280: 
-	        case 1281: 
-	        case 1282: 
-	        case 1283: 
-	        case 1284: 
-	        case 1285: 
-	        case 1286: 
-	        case 1287: 
-	        case 1288: 
-	        case 1289: 
+	        	break;
+	        case 1080:
+	        case 1168:
+	        case 1172:
+	        case 1174:
+	        case 1175:
+	        case 1176:
+	        case 1178:
+	        case 1180:
+	        case 1215:
+	        case 1216:
+	        case 1217:
+	        case 1218:
+	        case 1219:
+	        case 1220:
+	        case 1222:
+	        case 1280:
+	        case 1281:
+	        case 1282:
+	        case 1283:
+	        case 1284:
+	        case 1285:
+	        case 1286:
+	        case 1287:
+	        case 1288:
+	        case 1289:
 	        case 1824: //RA
-	        case 2215: 
+	        case 2215:
 	        case 2231:
 	            if(sprite[i].picnum == 1280)
 	                lotsofmoney(sprite[i],4+(engine.krand()&3));
@@ -2573,7 +2573,7 @@ public class Sector {
 	            sprite[i].ang = (short) (engine.krand()&2047);
 	            lotsofglass2(i,-1,8);
 	            engine.deletesprite(i);
-	            break;    
+	            break;
 	        case 1228:
 	        	sprite[i].picnum = 1210;
 	            spawn(i,1196);
@@ -2586,11 +2586,11 @@ public class Sector {
 	            hittype[sprite[i].owner].temp_data[2] ++;
 	            spawn(i,EXPLOSION2);
 	            break;
-	        case 1121: 
-	        case 1123: 
-	        case 1124: 
-	        case 1232: 
-	        case 1233: 
+	        case 1121:
+	        case 1123:
+	        case 1124:
+	        case 1232:
+	        case 1233:
 	        case 1234:
 	            switch(sprite[i].picnum)
 	            {
@@ -2604,11 +2604,11 @@ public class Sector {
 
 	            j = (short) spawn(i,STEAM);
 	            sprite[j].z = sector[sprite[i].sectnum].floorz-(32<<8);
-	            break;    
-	        case 1191: 
-	        case 1193: 
-	        case 1211: 
-	        case 1230: 
+	            break;
+	        case 1191:
+	        case 1193:
+	        case 1211:
+	        case 1230:
 	            switch(sprite[sn].picnum)
 	            {
 		            case 26:
@@ -2634,13 +2634,13 @@ public class Sector {
 	            spritesound(19,i);
 	            lotsofglass2(i, -1, 10);
 	        	break;
-	        case 2156: 
-	        case 2158: 
-	        case 2160: 
-	        case 2175: 
-	        case 2137: 
-	        case 2151: 
-	        case 2152: 
+	        case 2156:
+	        case 2158:
+	        case 2160:
+	        case 2175:
+	        case 2137:
+	        case 2151:
+	        case 2152:
 	        	sprite[i].picnum++;
 	            spritesound(19,i);
 	            lotsofglass2(i, -1, 10);
@@ -2650,9 +2650,9 @@ public class Sector {
 	                        engine.krand()&2047,(engine.krand()&63)+64,-(engine.krand()&4095)-sprite[i].zvel>>2,i,(short)5);
 	        	}
 	        	break;
-	        	
-	        	
-	        	
+
+
+
 	        	//RA
 	        case FANSPRITEWORK:
 	        	sprite[i].picnum = FANSPRITEBROKE;
@@ -2660,7 +2660,7 @@ public class Sector {
 	            spritesound(GLASS_HEAVYBREAK,i);
 	            s = sprite[i];
 	            for(j=0;j<16;j++) RANDOMSCRAP(s,i);
-	            break;   
+	            break;
 	        case 74:
 	        	sprite[i].picnum = 75;
 	            spritesound(20, i);
@@ -2699,7 +2699,7 @@ public class Sector {
 	        	if ( sprite[i].pal != 4 )
                 {
 	        		spritesound(69, i);
-    
+
 	        		if ( sprite[i].lotag != 0 )
 	        		{
 	        			for ( int l = 0; l < 4096; ++l )
@@ -2804,7 +2804,7 @@ public class Sector {
             	sprite[i].picnum += 3;
                 spritesound(18, i);
             	break;
-            
+
             case 8567:
             case 8568:
             case 8569:
@@ -3073,7 +3073,7 @@ public class Sector {
                 sprite[i].picnum = 5063;
                 spritesound(20, i);
                 break;
-                
+
             case 8589:
             case 8590:
             case 8591:
@@ -3166,7 +3166,7 @@ public class Sector {
 	                	if( sprite[sn].picnum == ALIENBLAST) {
 		                    if( (sprite[i].picnum == APLAYER && sprite[i].pal == 1 ) )
 		                        return;
-		                    
+
 		                    if ( currentGame.getCON().freezerhurtowner == 0 )
 		                    {
 		                    	if ( sprite[sn].owner == i)
@@ -3211,7 +3211,7 @@ public class Sector {
 	            break;
 	    }
 	}
-	
+
 	public static void checksectors(int snum)
 	{
 	    int i = -1,oldz;
@@ -3222,7 +3222,7 @@ public class Sector {
 	    if(p.cursectnum != -1) {
 		    switch(sector[p.cursectnum].lotag)
 		    {
-	
+
 		        case 32767:
 		            sector[p.cursectnum].lotag = 0;
 		            FTA(9,p);
@@ -3250,7 +3250,7 @@ public class Sector {
 		                sector[p.cursectnum].lotag = 0;
 		            }
 		            break;
-	
+
 		    }
 	    }
 
@@ -3332,7 +3332,7 @@ public class Sector {
 	                if(wall[hitscanwall].lotag != 0)
 	                    return;
 	        }
-	        
+
 	        if ( p.OnMotorcycle )
 	        {
 	        	if ( p.CarSpeed < 20 )
@@ -3346,14 +3346,14 @@ public class Sector {
 	        	return;
 	        }
 
-	        if(p.newowner >= 0) 
-	            neartag(p.oposx,p.oposy,p.oposz,sprite[p.i].sectnum,(short)p.oang,1280,1); 
+	        if(p.newowner >= 0)
+	            neartag(p.oposx,p.oposy,p.oposz,sprite[p.i].sectnum,(short)p.oang,1280,1);
 	        else
 	        {
 	        	neartag(p.posx,p.posy,p.posz,sprite[p.i].sectnum,(short)p.oang,1280,1);
-	            if(neartagsprite == -1 && neartagwall == -1 && neartagsector == -1) 
+	            if(neartagsprite == -1 && neartagwall == -1 && neartagsector == -1)
 	            	neartag(p.posx,p.posy,p.posz+(8<<8),sprite[p.i].sectnum,(short)p.oang,1280,1);
-	            if(neartagsprite == -1 && neartagwall == -1 && neartagsector == -1) 
+	            if(neartagsprite == -1 && neartagwall == -1 && neartagsector == -1)
 	            	neartag(p.posx,p.posy,p.posz+(16<<8),sprite[p.i].sectnum,(short)p.oang,1280,1);
 	            if(neartagsprite == -1 && neartagwall == -1 && neartagsector == -1)
 	            {
@@ -3362,10 +3362,10 @@ public class Sector {
 	                {
 	                    switch(sprite[neartagsprite].picnum)
 	                    {
-		                    case 1115: 
-		                    case 1168: 
-		                    case 5581: 
-		                    case 5583: 
+		                    case 1115:
+		                    case 1168:
+		                    case 5581:
+		                    case 5583:
 	                            return;
 	                        case 5317:
 	                        	 sprite[neartagsprite].detail = 1;
@@ -3390,7 +3390,7 @@ public class Sector {
 	            if(sector[p.cursectnum].lotag == 2 )
 	            {
 	                oldz = hitasprite(p.i);
-	                neartagsprite = (short) pHitInfo.hitsprite;
+	                neartagsprite = pHitInfo.hitsprite;
 	                if(oldz > 1280) neartagsprite = -1;
 	            }
 
@@ -3400,15 +3400,15 @@ public class Sector {
 
 	            switch(sprite[neartagsprite].picnum)
 	            {
-		            case 1098: 
-		            case 1100: 
-		            case 2121: 
+		            case 1098:
+		            case 1100:
+		            case 2121:
 		            case 2122:
 	                    if(p.last_pissed_time == 0)
 	                    {
 	                        if(ud.lockout == 0) spritesound(435,p.i);
 
-	                        p.last_pissed_time = 26*220; 
+	                        p.last_pissed_time = 26*220;
 	                        p.transporter_hold = 29*2;
 	                        if(p.holster_weapon == 0)
 	                        {
@@ -3530,7 +3530,7 @@ public class Sector {
 	            	if ( sector[neartagsector].filler > 3 )
                 		spritesound(99, p.i);
                     else spritesound(419, p.i);
-	            	
+
 	            	if(currentGame.getCON().key_quotes == null)
 	            	{
 	            		currentGame.getCON().key_quotes = new char[3][64];
@@ -3570,7 +3570,7 @@ public class Sector {
 	                    if(sprite[i].picnum == ACTIVATOR || sprite[i].picnum == MASTERSWITCH) return;
 	                    i = nextspritesect[i];
 	                }
-	                
+
 	                if ( checkaccess(neartagsector, snum) )
 	                	operatesectors(sprite[p.i].sectnum,p.i);
 	                else {
@@ -3583,10 +3583,10 @@ public class Sector {
 	            else checkhitswitch(snum,neartagwall,0);
 	        }
 	    }
-	    
-	    
+
+
 	}
-	
+
 	public static void pushwall(int nwal, short nsect, int snum)
 	{
 		int box = wall[nwal].nextsector;
@@ -3596,12 +3596,12 @@ public class Sector {
 			hitag = 4;
 		if ( hitag > 16 )
 			hitag = 16;
-		
+
 		int minx = 131072;
 		int miny = 131072;
 		int maxx = -131072;
 		int maxy = -131072;
-		
+
 		int wx, wy;
 		short wallptr = sector[box].wallptr;
 		int wallnum = wallptr + sector[box].wallnum;
@@ -3614,12 +3614,12 @@ public class Sector {
 		    if(wx < minx ) minx = wx;
 		    if(wy < miny ) miny = wy;
 		}
-		
+
 		maxx += hitag + 1;
 		maxy += hitag + 1;
 		minx -= hitag + 1;
 		miny -= hitag + 1;
-		
+
 		boolean inside = true;
 		if ( engine.inside(maxx, maxy, nsect) == 0 )
 			inside = false;
@@ -3629,7 +3629,7 @@ public class Sector {
 			inside = false;
 		if ( engine.inside(minx, maxy, nsect) == 0 )
 			inside = false;
-	
+
 		if ( inside )
 		{
 			if ( Sound[389].num == 0)
@@ -3651,7 +3651,7 @@ public class Sector {
 			    	engine.dragpoint(i, wx, wy);
 			    }
 			}
-		} 
+		}
 		else
 		{
 			for(short i = wallptr; i < wallnum; i++)
@@ -3673,7 +3673,7 @@ public class Sector {
 			}
 		}
 	}
-	
+
 	public static void CLEARCAMERAS(PlayerStruct p, int i)
 	{
 		if(i < 0)
@@ -3697,14 +3697,14 @@ public class Sector {
         else if(p.newowner >= 0)
             p.newowner = -1;
 	}
-	
+
 	public static void movejails()
 	{
 		for(int i = 0; i < numjaildoors; i++)
 		{
 			int speed = jailspeed[i];
 			if ( speed < 2 ) speed = 2;
-			
+
 			if(jailstatus[i] == 1 || jailstatus[i] == 3)
 			{
 				jailcount2[i] -= speed;
@@ -3725,7 +3725,7 @@ public class Sector {
 							case 20:
 								wx = wall[w].x - speed;
 								wy = wall[w].y;
-								break;	
+								break;
 							case 30:
 								wx = wall[w].x;
 								wy = wall[w].y - speed;
@@ -3743,9 +3743,9 @@ public class Sector {
 					jailcount2[i] = 0;
 					if(jailstatus[i] == 1)
 						jailstatus[i] = 2;
-					else if(jailstatus[i] == 3) 
+					else if(jailstatus[i] == 3)
 						jailstatus[i] = 0;
-					
+
 					switch(jaildirection[i])
 					{
 						case 10:
@@ -3753,7 +3753,7 @@ public class Sector {
 							break;
 						case 20:
 							jaildirection[i] = 40;
-							break;	
+							break;
 						case 30:
 							jaildirection[i] = 10;
 							break;
@@ -3765,7 +3765,7 @@ public class Sector {
 			}
 		}
 	}
-	
+
 	public static void movecarts()
 	{
 		for(int i = 0; i < numminecart; i++)
@@ -3793,7 +3793,7 @@ public class Sector {
 							case 20:
 								wx = wall[w].x - speed;
 								wy = wall[w].y;
-								break;	
+								break;
 							case 30:
 								wx = wall[w].x;
 								wy = wall[w].y - speed;
@@ -3805,14 +3805,14 @@ public class Sector {
 						}
 						engine.dragpoint(w, wx, wy);
 					}
-				} 
+				}
 				else
 				{
 					minedistance[i] = minefulldist[i];
 					if(minestatus[i] == 1)
 						minestatus[i] = 2;
 					else minestatus[i] = 1;
-					
+
 					switch(minedirection[i])
 					{
 						case 10:
@@ -3820,7 +3820,7 @@ public class Sector {
 							break;
 						case 20:
 							minedirection[i] = 40;
-							break;	
+							break;
 						case 30:
 							minedirection[i] = 10;
 							break;
@@ -3830,15 +3830,15 @@ public class Sector {
 					}
 				}
 			}
-			
-			
-			
+
+
+
 			int sect = minechild[i];
 			int minx = 131072;
 			int miny = 131072;
 			int maxx = -131072;
 			int maxy = -131072;
-			
+
 			int wx, wy;
 			int wallptr = sector[sect].wallptr;
 			int wallnum = wallptr + sector[sect].wallnum;
@@ -3851,19 +3851,19 @@ public class Sector {
 			    if(wx < minx ) minx = wx;
 			    if(wy < miny ) miny = wy;
 			}
-			
+
 			short s = headspritesect[sect];
 		    while(s >= 0)
 		    {
 		    	if ( badguy(sprite[s]) )
 		        	engine.setsprite(s, (minx + maxx) >> 1, (maxy + miny) >> 1, sprite[s].z);
-		    	
+
 		    	s = nextspritesect[s];
 		    }
-			
+
 		}
 	}
-	
+
 	public static void torchesprocess()
 	{
 		int shade = engine.krand() & 8;
@@ -3872,7 +3872,7 @@ public class Sector {
 			int tshade = torchshade[i] - shade;
 			short sectnum = torchsector[i];
 			switch ( torchflags[i] )
-			{ 
+			{
 				case 0:
 					sector[sectnum].floorshade = (byte) tshade;
 					sector[sectnum].ceilingshade = (byte) tshade;
@@ -3886,11 +3886,11 @@ public class Sector {
 		        	sector[sectnum].floorshade = (byte) tshade;
 		        	break;
 			}
-			
-			
+
+
 			int wallptr = sector[sectnum].wallptr;
 			int wallnum = wallptr + sector[sectnum].wallnum;
-		
+
 			for(int w = wallptr; w < wallnum; w++)
 			{
 				if ( wall[w].lotag != 1 )
@@ -3908,10 +3908,10 @@ public class Sector {
 			}
 		}
 	}
-	
+
 	public static int dword_18D0A8, dword_18D0A0, dword_18D0AC, dword_18D0A4;
 	public static byte byte_18D0BB;
-	
+
 	public static void lightningprocess(int snum)
 	{
 		int tourcheffect = 0;
@@ -3925,7 +3925,7 @@ public class Sector {
 				byte_18D0BB = brightness;
 				dword_18D0A0 = 0;
 				visibility = gVisibility;
-				
+
 //				engine.setbrightness(brightness, palette);
 				for(tourcheffect = 0; tourcheffect < numlightnineffects; tourcheffect++)
 				{
@@ -3942,7 +3942,7 @@ public class Sector {
 		else if ( (gotpic[322] & 2) != 0 )
 		{
 		    gotpic[322] &= ~2;
-		    if ( waloff[2577] != null )
+		    if ( engine.getTile(2577).isLoaded() )
 		    {
 		    	visibility = 256;
 		    	if ( engine.krand() > 65000 )
@@ -3979,14 +3979,14 @@ public class Sector {
 		else if ( (gotpic[320] & 4) != 0 )
 		{
 		    gotpic[320] &= ~4;
-		    if ( waloff[2562] != null && engine.krand() > 65000 )
+		    if ( engine.getTile(2562).isLoaded() && engine.krand() > 65000 )
 		    {
 		    	dword_18D0A4 = 1;
 		    	dword_18D0AC = 128;
 		    	sound((engine.rand() % 3 + 351));
 		    }
 		}
-		
+
 		if ( dword_18D0A0 == 1 )
 		{
 			int chance = engine.krand() & 4;
@@ -4022,10 +4022,10 @@ public class Sector {
 				int wallptr = sector[sect].wallptr;
 				int wallnum = wallptr + sector[sect].wallnum;
 				for(int w = wallptr; w < wallnum; w++)
-					wall[w].shade = (byte) tshade;
+					wall[w].shade = tshade;
 			}
 		}
-		
+
 		if ( dword_18D0A4 == 1 )
 		{
 			int shade = engine.krand() & 8 + torchshade[tourcheffect];
@@ -4038,11 +4038,11 @@ public class Sector {
 				int wallptr = sector[sect].wallptr;
 				int wallnum = wallptr + sector[sect].wallnum;
 				for(int w = wallptr; w < wallnum; w++)
-					wall[w].shade = (byte) tshade;
+					wall[w].shade = tshade;
 			}
 		}
 	}
-	
+
 	public static void setsectinterpolate(int i)
 	{
 		 int j, k, startwall,endwall;

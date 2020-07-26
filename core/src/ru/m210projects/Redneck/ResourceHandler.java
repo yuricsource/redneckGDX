@@ -16,10 +16,6 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Build.Engine.picanm;
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
-import static ru.m210projects.Build.Engine.waloff;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.error;
 import static ru.m210projects.Redneck.Gamedef.loaduserdef;
@@ -36,7 +32,6 @@ import static ru.m210projects.Redneck.Names.MIRROR;
 import static ru.m210projects.Redneck.Sounds.NUM_SOUNDS;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,19 +55,19 @@ public class ResourceHandler {
 	public static boolean usecustomarts;
 
 //	public static final int[][] replace = {
-//		{ 3363, 9217, 0x7dbfeb81 }, 
-//		{ 3364, 9218, 0x2cc3f6c9 }, 
-//		{ 3415, 9219, 0xc1230767 }, 
-//		{ 3416, 9220, 0xacaaa49c }, 
-//		{ 3417, 9221, 0x237f9b83 }, 
-//		{ 3418, 9222, 0x7508a5b9 }, 
+//		{ 3363, 9217, 0x7dbfeb81 },
+//		{ 3364, 9218, 0x2cc3f6c9 },
+//		{ 3415, 9219, 0xc1230767 },
+//		{ 3416, 9220, 0xacaaa49c },
+//		{ 3417, 9221, 0x237f9b83 },
+//		{ 3418, 9222, 0x7508a5b9 },
 //		{ 3453, 9223, 0x40870de8 },
 //		{ 3454, 9224, 0x5d46d512 },
 //		{ 3455, 9225, 0xdc2832ef },
 //		{ 3456, 9226, 0x92ee2add },
 //		{ 3457, 9227, 0x6ff18f18 },
 //		{ 3458, 9228, 0xd4a5ae9a },
-//		
+//
 //		{ 3483, 9231, 0x5f540506 }, //RA
 //		{ 3484, 9229, 0x5d46d512 },
 //		{ 3485, 9230, 0xdc2832ef },
@@ -81,7 +76,7 @@ public class ResourceHandler {
 //		{ 3488, 9234, 0x74adda9e },
 //		{ 3511, 9235, 0x7ecf8467 },
 //		{ 3515, 9236, 0x5c078007 },
-//		{ 7170, 9240, 0x3ec225f2 }, 
+//		{ 7170, 9240, 0x3ec225f2 },
 //		{ 7171, 9241, 0xadd86032 },
 //		{ 7172, 9242, 0x48a62a19 },
 //		{ 7173, 9243, 0x9e6d81ef },
@@ -108,20 +103,20 @@ public class ResourceHandler {
 //			int artversion = bb.getInt();
 //			if (artversion != 1)
 //				return;
-//			
+//
 //			numtiles = bb.getInt();
 //			int localtilestart = bb.getInt();
 //			int localtileend = bb.getInt();
 //			if(localtilestart >= MAXTILES || localtileend >= MAXTILES)
 //				return;
-//			
-//			for (int i = localtilestart; i <= localtileend; i++) 
+//
+//			for (int i = localtilestart; i <= localtileend; i++)
 //				tilesizx[i] = bb.getShort();
-//			for (int i = localtilestart; i <= localtileend; i++) 
+//			for (int i = localtilestart; i <= localtileend; i++)
 //				tilesizy[i] = bb.getShort();
 //			for (int i = localtilestart; i <= localtileend; i++)
 //				picanm[i] = bb.getInt();
-//			
+//
 //			for (int tilenume = localtilestart; tilenume <= localtileend; tilenume++) {
 //				if(bb.position() == bb.capacity())
 //					break;
@@ -135,39 +130,39 @@ public class ResourceHandler {
 //			ReplaceUserTiles();
 //		}
 //	}
-		
-	public static void resetEpisodeResources()
+
+	public static void resetEpisodeResources(boolean setDef)
 	{
 		BuildGdx.cache.clearDynamicResources();
 
 		usergroup = null;
 		currentGame = defGame;
-		
+
 		for(int i = 0; i < NUM_SOUNDS; i++)
 			Sound[i].ptr = null;
 
 		if(!usecustomarts) {
-			game.setDefs(game.baseDef);
-			return; 
+			if(setDef)
+				game.setDefs(game.baseDef);
+			return;
 		}
 
 		System.err.println("Reset to default resources");
-		Arrays.fill(tilesizx, 0, kMaxTiles, (short)0);
-		Arrays.fill(tilesizy, 0, kMaxTiles, (short)0);
-		Arrays.fill(picanm, 0, kMaxTiles, 0);
-		Arrays.fill(waloff, 0, kMaxTiles, null);
-		
+		for(int i = 0; i < kMaxTiles; i++) //don't touch usertiles
+			engine.getTile(i).clear();
+
 		if(engine.loadpics() == 0)
 			game.dassert("ART files not found " + new File(Path.Game.getPath() + "TILES###.ART").getAbsolutePath());
-		
-		game.setDefs(game.baseDef);
-			
+
+		if(setDef)
+			game.setDefs(game.baseDef);
+
 		InitSpecialTextures();
 		BowlReset();
 
 	    usecustomarts = false;
 	}
-	
+
 	public static void InitGroupResources(List<GroupResource> list)
 	{
 		for(GroupResource res : list) {
@@ -177,11 +172,11 @@ public class ResourceHandler {
 			}
 		}
 	}
-	
+
 	public static GameInfo levelGetEpisode(String filepath)
 	{
 		if(filepath == null) return null;
-		
+
 		String fullname = filepath;
 		String conName = null;
 		int filenameIndex = -1;
@@ -203,10 +198,10 @@ public class ResourceHandler {
 					if(ini.isInited)
 						episodes.put(file.getPath(), ini);
 				}
-			} 
+			}
 			else if(filenameIndex != -1 && (ini = episodes.get(fullname)) == null)
 			{
-				if(file.getExtension().equals("zip") 
+				if(file.getExtension().equals("zip")
 					|| file.getExtension().equals("grp"))
 				{
 					try {
@@ -232,28 +227,28 @@ public class ResourceHandler {
 		}
 		return null;
 	}
-	
+
 	public static void prepareusergroup(Group group, boolean removable) throws Exception
 	{
 		if(group.type == PackageType.Zip) //Correct path in archive (files shouldn't be in a subfolder)
 			((ZipGroup) group).removeFolders();
 		else if(group.type == PackageType.PackedZip)
 			((PackedZipGroup) group).removeFolders();
-		
+
 		List<GroupResource> list = group.getList();
 		for(GroupResource res : list) {
 			if(res.getExtension().equals("grp") || res.getExtension().equals("zip"))
 			{
 				BuildGdx.cache.add(res, removable);
 			}
-			
+
 //			if(res.fileformat.equals("cue")) {
 //				Console.Println("Cd tracks found...");
 //				parserfs(removable?group:-1, res.filename, res.getBytes());
 //			}
 		}
 	}
-	
+
 	private static void searchEpisodeResources(DirectoryEntry cache)
 	{
 		if(cache.getDirectories().size() > 0)
@@ -268,19 +263,19 @@ public class ResourceHandler {
 
 		if(usergroup == null)
 			usergroup = BuildGdx.cache.add("User", true);
-		
+
 		for (Iterator<FileEntry> it = cache.getFiles().values().iterator(); it.hasNext(); ) {
 			FileEntry file = it.next();
 			if(!file.getExtension().equals("zip")
-					&& !file.getExtension().equals("grp")) 
+					&& !file.getExtension().equals("grp"))
 				usergroup.add(file, -1);
 	    }
 	}
-	
+
 	public static void checkEpisodeResources(GameInfo addon)
 	{
-		resetEpisodeResources();
-		
+		resetEpisodeResources(false);
+
 		DefScript addonScript = new DefScript(game.baseDef, addon.getFile());
 		if(addon.isPackage())
 		{
@@ -288,23 +283,23 @@ public class ResourceHandler {
 			try {
 				Group gr = BuildGdx.cache.add(fil.getPath());
 				gr.setFlags(true, true);
-				
+
 				Resource res = gr.open(appdef); //load def scripts before delete folders
 				if(res != null)
 				{
 					addonScript.loadScript(gr.name + " script", res.getBytes());
 					res.close();
 				}
-				
+
 				prepareusergroup(gr, true);
-			} catch(Exception e) { 
-				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage()); 
+			} catch(Exception e) {
+				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage());
 				return;
 			}
 		} else
 		if(!addon.getDirectory().getName().equals("<main>")) {
 			searchEpisodeResources(addon.getDirectory());
-			
+
 			if(addon.getDirectory() != null) {
 				FileEntry def = addon.getDirectory().checkFile(appdef);
 				if(def != null) {
@@ -317,13 +312,13 @@ public class ResourceHandler {
 			engine.loadpic("TILESB66.ART");
 			usecustomarts = true;
 		}
-		
+
 		error = 0;
 		//Loading user package files
 		InitGroupResources(BuildGdx.cache.getDynamicResources());
-		if(addon.getCON() == null) 
+		if(addon.getCON() == null)
 			addon.setCON(loaduserdef(addon.ConName));
-		
+
 		if(error == 0) {
 			currentGame = addon;
 			game.setDefs(addonScript);
@@ -332,15 +327,11 @@ public class ResourceHandler {
 			game.GameCrash("\nErrors found in " + addon.ConName + " file.");
 		}
 	}
-	
+
 	public static void InitSpecialTextures()
 	{
-		tilesizx[GRID] = tilesizy[GRID] = 0;
-	    waloff[GRID] = null;
-		tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
-		
-		tilesizy[13] = 0; //ROR tile
-	    tilesizx[13] = 0;
-	    waloff[13] = null;
+		engine.getTile(MIRROR).clear();
+		engine.getTile(13).clear(); //ROR tile
+		engine.getTile(GRID).clear();
 	}
 }

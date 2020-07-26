@@ -20,14 +20,11 @@ import static ru.m210projects.Build.Engine.gotsector;
 import static ru.m210projects.Build.Engine.headspritesect;
 import static ru.m210projects.Build.Engine.nextspritesect;
 import static ru.m210projects.Build.Engine.numsectors;
-import static ru.m210projects.Build.Engine.picanm;
 import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.show2dsector;
 import static ru.m210projects.Build.Engine.show2dsprite;
 import static ru.m210projects.Build.Engine.sintable;
 import static ru.m210projects.Build.Engine.sprite;
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Engine.wall;
 import static ru.m210projects.Build.Engine.windowx1;
@@ -48,8 +45,9 @@ import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Names.APLAYERTOP;
 
 import ru.m210projects.Build.Engine;
-import ru.m210projects.Build.Render.Polymost;
+import ru.m210projects.Build.Render.Polymost.Polymost;
 import ru.m210projects.Build.Types.SPRITE;
+import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Build.Types.WALL;
 
 public class RRPolymost extends Polymost {
@@ -62,12 +60,12 @@ public class RRPolymost extends Polymost {
 	public void drawoverheadmap(int cposx, int cposy, int czoom, short cang) {
 		int i, j, k, l = 0, x1, y1, x2 = 0, y2 = 0, ox, oy, xoff, yoff;
 		int dax, day, sprx, spry;
-		int z1, z2, startwall, endwall, tilenum;
+		int z1, z2, startwall, endwall;
 		int xvect, yvect, xvect2, yvect2;
 		char col;
 		WALL wal, wal2;
 		SPRITE spr;
-		
+
 		int cosang, sinang, xspan, yspan;
 		int xrepeat, yrepeat, x3, y3, x4, y4;
 
@@ -78,9 +76,9 @@ public class RRPolymost extends Polymost {
 
 		// Draw red lines
 		for (i = 0; i < numsectors; i++) {
-			
+
 			if ((show2dsector[i>>3]&(1<<(i&7))) == 0) continue;
-			
+
 			startwall = sector[i].wallptr;
 			endwall = sector[i].wallptr + sector[i].wallnum;
 
@@ -95,7 +93,7 @@ public class RRPolymost extends Polymost {
 
 				if(wal.nextsector < 0)
 					continue;
-				
+
 				if (sector[wal.nextsector].ceilingz == z1)
 					if (sector[wal.nextsector].floorz == z2)
 						if (((wal.cstat | wall[wal.nextwall].cstat) & (16 + 32)) == 0)
@@ -106,7 +104,7 @@ public class RRPolymost extends Polymost {
                 if ((show2dsector[wal.nextsector>>3]&(1<<(wal.nextsector&7))) == 0)
                         col = 24;
                 else continue;
-                
+
 				ox = wal.x - cposx;
 				oy = wal.y - cposy;
 				x1 = dmulscale(ox, xvect, -oy, yvect, 16) + (xdim << 11);
@@ -128,11 +126,13 @@ public class RRPolymost extends Polymost {
 		for (i = 0; i < numsectors; i++)
 		{
 			if ((show2dsector[i>>3]&(1<<(i&7))) == 0) continue;
-			
+
 			for (j = headspritesect[i]; j >= 0; j = nextspritesect[j]) {
 					spr = sprite[j];
 					if (j == k || (spr.cstat & 0x8000) != 0 || spr.cstat == 257 || spr.xrepeat == 0)
 						continue;
+
+					Tile pic = engine.getTile(spr.picnum);
 					col = 71; //cyan;
 					if ((spr.cstat & 1) != 0)
 						col = 234; //magenta
@@ -168,16 +168,15 @@ public class RRPolymost extends Polymost {
 						break;
 					case 32:
 
-                        tilenum = spr.picnum;
-                        xoff = (byte)((((picanm[tilenum]>>8)&255))+spr.xoffset);
-                        yoff = (byte)((((picanm[tilenum]>>16)&255))+spr.yoffset);
+						xoff = (byte) (pic.getOffsetX()+spr.xoffset);
+						yoff = (byte) (pic.getOffsetY()+spr.yoffset);
                         if ((spr.cstat&4) > 0) xoff = -xoff;
                         if ((spr.cstat&8) > 0) yoff = -yoff;
 
                         k = spr.ang;
                         cosang = sintable[(k+512)&2047]; sinang = sintable[k&2047];
-                        xspan = tilesizx[tilenum]; xrepeat = spr.xrepeat;
-                        yspan = tilesizy[tilenum]; yrepeat = spr.yrepeat;
+                        xspan = pic.getWidth(); xrepeat = spr.xrepeat;
+                        yspan = pic.getHeight(); yrepeat = spr.yrepeat;
 
                         dax = ((xspan>>1)+xoff)*xrepeat; day = ((yspan>>1)+yoff)*yrepeat;
                         x1 = sprx + dmulscale(sinang,dax,cosang,day,16);
@@ -222,12 +221,12 @@ public class RRPolymost extends Polymost {
 				}
 		}
 
-		
+
 		// Draw white lines
 		for (i = 0; i < numsectors; i++) {
-			
+
 			if ((show2dsector[i>>3]&(1<<(i&7))) == 0) continue;
-			
+
 			startwall = sector[i].wallptr;
 			endwall = sector[i].wallptr + sector[i].wallnum;
 
@@ -237,9 +236,7 @@ public class RRPolymost extends Polymost {
 				if (wal.nextwall >= 0)
 					continue;
 
-				if (tilesizx[wal.picnum] == 0)
-					continue;
-				if (tilesizy[wal.picnum] == 0)
+				if (!engine.getTile(wal.picnum).hasSize())
 					continue;
 
 				if (j == k) {
@@ -262,7 +259,7 @@ public class RRPolymost extends Polymost {
 				drawline256(x1, y1, x2, y2, 24);
 			}
 		}
-		
+
 		int daang;
 		for(int p=connecthead;p >= 0;p=connectpoint2[p])
         {
@@ -287,7 +284,7 @@ public class RRPolymost extends Polymost {
 						i = APLAYERTOP;
 		        }
 
-				j = (int) (klabs(ps[p].truefz-ps[p].posz)>>8);
+				j = klabs(ps[p].truefz-ps[p].posz)>>8;
 				j = mulscale(czoom*(sprite[ps[p].i].yrepeat+j),yxaspect,16);
 
 				if(j < 22000) j = 22000;

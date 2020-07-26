@@ -16,8 +16,6 @@
 
 package ru.m210projects.Redneck.Fonts;
 
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Redneck.Names.BIGALPHANUM;
 import static ru.m210projects.Redneck.Names.BIGAPPOS;
 import static ru.m210projects.Redneck.Names.BIGCOLIN;
@@ -29,47 +27,49 @@ import static ru.m210projects.Redneck.Names.BIGX;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
+import ru.m210projects.Build.Types.Tile;
 
 public class MenuFont extends BuildFont {
 
 	public MenuFont(Engine draw) {
-		super(draw, tilesizy[BIGALPHANUM] / 2, 32768, 8 | 16);
+		super(draw, draw.getTile(BIGALPHANUM).getHeight() / 2, 32768, 8 | 16);
 
 		this.addChar(' ', nSpace, 5, nScale, 0, 0);
 		for(int i = 0; i < 26; i++) {
 			int nTile = i + BIGALPHANUM;
+			Tile pic = draw.getTile(nTile);
 
-			addChar((char) ('A' + i), nTile, tilesizx[nTile] / 2, nScale, 0, 0);
-			addChar((char) ('a' + i), nTile, tilesizx[nTile] / 2, nScale, 0, 0);
+			addChar((char) ('A' + i), nTile, pic.getWidth() / 2, nScale, 0, 0);
+			addChar((char) ('a' + i), nTile, pic.getWidth() / 2, nScale, 0, 0);
 		}
-		
+
 		for(int i = 0; i < 10; i++) {
 			int nTile = i + BIGALPHANUM - 10;
-			addChar((char) ('0' + i), nTile, tilesizx[nTile] / 2, nScale, 0, 0);
+			addChar((char) ('0' + i), nTile, draw.getTile(nTile).getWidth() / 2, nScale, 0, 0);
 		}
-		addChar('-', BIGALPHANUM-11, tilesizx[BIGALPHANUM-11] / 2, nScale, 0, 0);
-		addChar('.', BIGPERIOD, tilesizx[BIGPERIOD] / 2, nScale, 0, 0);
-		addChar(',', BIGCOMMA, tilesizx[BIGCOMMA] / 2, nScale, 0, 0);
-		addChar('!', BIGX, tilesizx[BIGX] / 2, nScale, 0, 0);
-		addChar('\'', BIGAPPOS, tilesizx[BIGAPPOS] / 2, nScale, 0, 0);
-		addChar('?', BIGQ, tilesizx[BIGQ] / 2, nScale, 0, 0);
-		addChar(';', BIGSEMI, tilesizx[BIGSEMI] / 2, nScale, 0, 0);
-		addChar(':', BIGCOLIN, tilesizx[BIGCOLIN] / 2, nScale, 0, 0);
+		addChar('-', BIGALPHANUM-11, draw.getTile(BIGALPHANUM-11).getWidth() / 2, nScale, 0, 0);
+		addChar('.', BIGPERIOD, draw.getTile(BIGPERIOD).getWidth() / 2, nScale, 0, 0);
+		addChar(',', BIGCOMMA, draw.getTile(BIGCOMMA).getWidth() / 2, nScale, 0, 0);
+		addChar('!', BIGX, draw.getTile(BIGX).getWidth() / 2, nScale, 0, 0);
+		addChar('\'', BIGAPPOS, draw.getTile(BIGAPPOS).getWidth() / 2, nScale, 0, 0);
+		addChar('?', BIGQ, draw.getTile(BIGQ).getWidth() / 2, nScale, 0, 0);
+		addChar(';', BIGSEMI, draw.getTile(BIGSEMI).getWidth() / 2, nScale, 0, 0);
+		addChar(':', BIGCOLIN, draw.getTile(BIGCOLIN).getWidth() / 2, nScale, 0, 0);
 	}
-	
+
 	public void update()
 	{
-		
+
 		for(int i = 0; i < 26; i++) {
 			int nTile = i + BIGALPHANUM;
 
-			charInfo[(char) ('A' + i)].nWidth = (short) (tilesizx[nTile] / 2);
-			charInfo[(char) ('a' + i)].nWidth = (short) (tilesizx[nTile] / 2);
+			charInfo[(char) ('A' + i)].nWidth = (short) (draw.getTile(nTile).getWidth() / 2);
+			charInfo[(char) ('a' + i)].nWidth = (short) (draw.getTile(nTile).getWidth() / 2);
 		}
-		
+
 		for(int i = 0; i < 10; i++) {
 			int nTile = i + BIGALPHANUM - 10;
-			charInfo[(char) ('0' + i)].nWidth = (short) (tilesizx[nTile] / 2);
+			charInfo[(char) ('0' + i)].nWidth = (short) (draw.getTile(nTile).getWidth() / 2);
 		}
 	}
 

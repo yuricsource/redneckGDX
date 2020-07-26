@@ -16,7 +16,6 @@
 
 package ru.m210projects.Redneck.Factory;
 
-import static ru.m210projects.Build.Engine.tilesizx;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Gameutils.coordsConvertYScaled;
@@ -24,6 +23,7 @@ import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.SLIDEBAR;
 
 import ru.m210projects.Build.Pattern.MenuItems.SliderDrawable;
+import ru.m210projects.Build.Types.Tile;
 
 public class RRSliderDrawable extends SliderDrawable {
 
@@ -55,19 +55,21 @@ public class RRSliderDrawable extends SliderDrawable {
 	@Override
 	public void drawSlider(int x, int y, int shade, int pal) {
 		if(pal != 1) pal = 2;
-		engine.rotatesprite((int) ((x - 0.5f) * 65536.0f), y - 3 << 16, 24576, 0, 623, shade, pal, 10 | 16, 0, 0, xdim-1, ydim-1);	
+		engine.rotatesprite((int) ((x - 0.5f) * 65536.0f), y - 3 << 16, 24576, 0, 623, shade, pal, 10 | 16, 0, 0, xdim-1, ydim-1);
 	}
 
 	@Override
 	public void drawScrollerBackground(int x, int y, int height, int shade, int pal) {
 		int ang = 512;
 		int sy = y + 9;
-		
+
 		engine.rotatesprite(x + 12 << 16, y - 7 << 16, 65536, ang, SLIDEBAR, 8, 0, 10 | 16, 0, 0, xdim-1, coordsConvertYScaled(sy));
 
+		Tile pic = engine.getTile(SLIDEBAR);
+
 		int clen = height - 15;
-		int dy = (tilesizx[SLIDEBAR]) - 19;
-		
+		int dy = (pic.getWidth()) - 19;
+
 		int posy = sy;
 		while(clen > 0)
 		{
@@ -76,14 +78,14 @@ public class RRSliderDrawable extends SliderDrawable {
 			posy += dy;
 			clen -= dy;
 		}
-		
+
 		int y2 = sy + height - 15;
-		engine.rotatesprite(x + 12 << 16, (y2 - (tilesizx[SLIDEBAR]) + 13) << 16, 65536, ang, SLIDEBAR, 8, 0, 10 | 16, 0, coordsConvertYScaled(y2), xdim-1, ydim-1);
+		engine.rotatesprite(x + 12 << 16, (y2 - (pic.getWidth()) + 13) << 16, 65536, ang, SLIDEBAR, 8, 0, 10 | 16, 0, coordsConvertYScaled(y2), xdim-1, ydim-1);
 	}
 
 	@Override
 	public void drawScroller(int x, int y, int shade, int pal) {
-		engine.rotatesprite((x + 14)<< 16, (y) << 16, 32768, 512, 623, shade, 2, 10 | 16, 0, 0, xdim-1, ydim-1);	
+		engine.rotatesprite((x + 14)<< 16, (y) << 16, 32768, 512, 623, shade, 2, 10 | 16, 0, 0, xdim-1, ydim-1);
 	}
 
 }

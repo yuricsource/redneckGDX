@@ -16,37 +16,40 @@
 
 package ru.m210projects.Redneck.Fonts;
 
-import static ru.m210projects.Build.Engine.tilesizx;
-import static ru.m210projects.Build.Engine.tilesizy;
 import static ru.m210projects.Build.Strhandler.isdigit;
 import static ru.m210projects.Redneck.Names.STARTALPHANUM;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildFont;
+import ru.m210projects.Build.Types.Tile;
 
 public class GameFont extends BuildFont {
 
 	public GameFont(Engine draw) {
-		super(draw, tilesizy[STARTALPHANUM] / 2 + 2, 32768, 8 | 16);
+		super(draw, draw.getTile(STARTALPHANUM).getHeight() / 2 + 2, 32768, 8 | 16);
 
 		this.addChar(' ', nSpace, 3, nScale, 0, 0);
 		int nTile = STARTALPHANUM;
 
 		for(int i = 0; i < 95; i++) {
-			if(tilesizx[nTile + i] != 0) {
+			Tile pic = draw.getTile(nTile + i);
+
+			if(pic.getWidth() != 0) {
 				char symbol = (char) (i + '!');
-				this.addChar(symbol, nTile + i, isdigit(symbol) ? 8 : tilesizx[nTile + i] / 2, nScale, 0, 0);
+				this.addChar(symbol, nTile + i, isdigit(symbol) ? 8 : pic.getWidth() / 2, nScale, 0, 0);
 			}
 		}
 	}
-	
+
 	public void update()
 	{
 		int nTile = STARTALPHANUM;
 		for(int i = 0; i < 95; i++) {
-			if(tilesizx[nTile + i] != 0) {
+			Tile pic = draw.getTile(nTile + i);
+
+			if(pic.getWidth() != 0) {
 				char symbol = (char) (i + '!');
-				charInfo[symbol].nWidth = isdigit(symbol) ? 8 : (short) (tilesizx[nTile + i] / 2);
+				charInfo[symbol].nWidth = isdigit(symbol) ? 8 : (short) (pic.getWidth() / 2);
 			}
 		}
 	}

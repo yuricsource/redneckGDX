@@ -16,7 +16,9 @@
 
 package ru.m210projects.Redneck.Factory;
 
-import static ru.m210projects.Redneck.Names.*;
+import static ru.m210projects.Build.Engine.xdim;
+import static ru.m210projects.Build.Engine.ydim;
+import static ru.m210projects.Redneck.Names.LOADSCREEN;
 
 import ru.m210projects.Build.Input.BuildControllers;
 import ru.m210projects.Build.OnSceenDisplay.OSDFunc;
@@ -45,10 +47,10 @@ public class RRFactory extends BuildFactory {
 		super("redneck.grp");
 		this.app = app;
 	}
-	
+
 	@Override
-	public int getInitTile() {
-		return LOADSCREEN;
+	public void drawInitScreen() {
+		app.pEngine.rotatesprite(160 << 16, 100 << 16, 65536, 0, LOADSCREEN, 0, 0, 2 | 8, 0, 0, xdim - 1, ydim - 1);
 	}
 
 	@Override
@@ -62,12 +64,12 @@ public class RRFactory extends BuildFactory {
 			return new RRSoftware(app.pEngine);
 		else return new RRPolymost(app.pEngine);
 	}
-	
+
 	@Override
 	public DefScript getBaseDef(BuildEngine engine) {
 		return new DefScript(engine, false);
 	}
-	
+
 	@Override
 	public BuildControls input(BuildControllers gpmanager) {
 		return new RRInput(app.pCfg, gpmanager);
@@ -94,7 +96,7 @@ public class RRFactory extends BuildFactory {
 					return new GameFont(app.pEngine);
 				if(i == 2)
 					return new MenuFont(app.pEngine);
-				
+
 				return new StandartFont(app.pEngine);
 			}
 		};

@@ -41,14 +41,15 @@ import static ru.m210projects.Redneck.Sounds.*;
 import static ru.m210projects.Redneck.SoundDefs.SUBWAY;
 
 import ru.m210projects.Build.Types.SPRITE;
+import ru.m210projects.Build.Types.Tile;
 
 public class Spawn {
-	
+
 	public static short EGS(short whatsect,int s_x,int s_y,int s_z,int s_pn, int s_s,int s_xr,int s_yr,int s_a,int s_ve,int s_zv,int s_ow,short s_ss)
 	{
 		if(whatsect < 0 || whatsect >= MAXSECTORS)
 			game.dassert("Wrong sector! " + whatsect);
-		
+
 	    short i = engine.insertsprite(whatsect,s_ss);
 	    if( i < 0 ) {
 	    	game.GameMessage(" Too many sprites spawned.");
@@ -117,10 +118,10 @@ public class Spawn {
 
 	    game.pInt.clearspriteinterpolate(i);
 		game.pInt.setsprinterpolate(i, s);
-		
+
 	    return(i);
 	}
-	
+
 	public static int tempwallptr;
 	public static int spawn( int j, int pn )
 	{
@@ -204,7 +205,7 @@ public class Spawn {
 	    }
 
 	    game.pInt.clearspriteinterpolate(i);
-	    
+
 	    sp = sprite[i];
 	    sect = sp.sectnum;
 
@@ -238,10 +239,10 @@ public class Spawn {
 
 	                        if( (currentGame.getCON().actortype[sp.picnum] & 2) != 0)
 	                            hittype[i].actorstayput = sp.sectnum;
-	                       
+
 	                        if ( checkaddkills(sp) )
 	                        	ps[connecthead].max_actors_killed++;
-	                        
+
 	                        sp.clipdist = 80;
 	                        if(j >= 0)
 	                        {
@@ -254,7 +255,7 @@ public class Spawn {
 	                    else
 	                    {
 	                        sp.clipdist = 40;
-	                        sp.owner = (short) i;
+	                        sp.owner = i;
 	                        engine.changespritestat(i,(short)1);
 	                    }
 
@@ -298,9 +299,9 @@ public class Spawn {
                         sp.pal = 1;
                     else if( sprite[j].pal != 6 && sprite[j].picnum != 1304 && sprite[j].picnum != TIRE )
                     {
-                        sp.pal = 2; 
+                        sp.pal = 2;
                     }
-                    else sp.pal = 0; 
+                    else sp.pal = 0;
 
                     if(sprite[j].picnum == TIRE)
                         sp.shade = 127;
@@ -319,13 +320,13 @@ public class Spawn {
                     sp.pal = 6;
                 insertspriteq(i);
                 engine.changespritestat(i,(short)5);
-                break; 
-                
-            case BULLETHOLE: 
+                break;
+
+            case BULLETHOLE:
                 sp.xrepeat = sp.yrepeat = 3;
                 sp.cstat = (short) (16+(engine.krand()&12));
                 insertspriteq(i);
-            case FEATHERS:	
+            case FEATHERS:
             	if ( sp.picnum == FEATHERS )
                 {
             		 hittype[i].temp_data[0] = engine.krand()&2047;
@@ -336,10 +337,10 @@ public class Spawn {
             	engine.changespritestat(i,(short) 5);
             	break;
 
-            case EXPLOSION2: 
-            case EXPLOSION3: 
-            case BURNING: 
-            case SMALLSMOKE: 
+            case EXPLOSION2:
+            case EXPLOSION3:
+            case BURNING:
+            case SMALLSMOKE:
                 if(j >= 0)
                 {
                     sp.ang = sprite[j].ang;
@@ -378,27 +379,27 @@ public class Spawn {
                 }
 
                 engine.changespritestat(i,(short)5);
-                break;        
-	                
-            case 1268: 
-            case 1309: 
+                break;
+
+            case 1268:
+            case 1309:
                 sp.extra = 0;
-            case 1187: 
-            case 1251: 
-            case 1304: 
-            case 1305: 
-            case 1306: 
-            case 1315: 
-            case 1317: 
-            case 1388: 
+            case 1187:
+            case 1251:
+            case 1304:
+            case 1305:
+            case 1306:
+            case 1315:
+            case 1317:
+            case 1388:
                 if(j >= 0)
                     sp.xrepeat = sp.yrepeat = 32;
                 sp.clipdist = 72;
                 makeitfall(currentGame.getCON(), i);
                 if(j >= 0)
                     sp.owner = (short) j;
-                else sp.owner = (short) i;
-            case 1147: 
+                else sp.owner = i;
+            case 1147:
                 if( ud.monsters_off && sp.picnum == 1147 )
                 {
                     sp.xrepeat = sp.yrepeat = 0;
@@ -411,7 +412,7 @@ public class Spawn {
                     sp.cstat = (short) (257|(engine.krand()&4));
                     engine.changespritestat(i,(short)2);
                 }
-                break;        
+                break;
             case 1272:
                 sp.lotag = 9999;
                 engine.changespritestat(i,(short)6);
@@ -459,57 +460,57 @@ public class Spawn {
                 sp.extra = 8;
                 engine.changespritestat(i,(short)6);
                 break;
-            case FANSPRITEWORK: 
-            case 234: 
-            case 1066: 
-            case 1067: 
-            case 1085: 
-            case 1086: 
-            case 1114: 
-            case 1117: 
-            case 1121: 
-            case 1123: 
-            case 1124: 
-            case 1141: 
-            case 1150: 
-            case 1152: 
-            case 1157: 
-            case 1158: 
-            case 1163: 
-            case 1164: 
-            case 1165: 
-            case 1166: 
-            case 1172: 
-            case 1174: 
-            case 1175: 
-            case 1176: 
-            case 1178: 
-            case 1180: 
-            case 1194: 
-            case 1203: 
-            case 1215: 
-            case 1216: 
-            case 1217: 
-            case 1218: 
-            case 1219: 
-            case 1220: 
-            case 1221: 
-            case 1222: 
-            case 1228: 
-            case 1232: 
-            case 1233: 
-            case 1234: 
-            case 1280: 
-            case 1281: 
-            case 1282: 
-            case 1283: 
-            case 1284: 
-            case 1285: 
-            case 1286: 
-            case 1287: 
-            case 1288: 
-            case 1289: 
-            case 2215: 
+            case FANSPRITEWORK:
+            case 234:
+            case 1066:
+            case 1067:
+            case 1085:
+            case 1086:
+            case 1114:
+            case 1117:
+            case 1121:
+            case 1123:
+            case 1124:
+            case 1141:
+            case 1150:
+            case 1152:
+            case 1157:
+            case 1158:
+            case 1163:
+            case 1164:
+            case 1165:
+            case 1166:
+            case 1172:
+            case 1174:
+            case 1175:
+            case 1176:
+            case 1178:
+            case 1180:
+            case 1194:
+            case 1203:
+            case 1215:
+            case 1216:
+            case 1217:
+            case 1218:
+            case 1219:
+            case 1220:
+            case 1221:
+            case 1222:
+            case 1228:
+            case 1232:
+            case 1233:
+            case 1234:
+            case 1280:
+            case 1281:
+            case 1282:
+            case 1283:
+            case 1284:
+            case 1285:
+            case 1286:
+            case 1287:
+            case 1288:
+            case 1289:
+            case 2215:
             	sp.clipdist = 32;
                 sp.cstat |= 257;
                 engine.changespritestat(i,(short)0);
@@ -525,7 +526,7 @@ public class Spawn {
 
                 sp.shade = -16;
                 sp.cstat |= 128;
-                
+
                 if(j >= 0)
                 {
                     if(sector[sprite[j].sectnum].lotag == 2)
@@ -540,7 +541,7 @@ public class Spawn {
                 if(sector[sect].floorpicnum == FLOORSLIME ||
                     sector[sect].ceilingpicnum == FLOORSLIME)
                         sp.pal = 7;
-            case 1080: 
+            case 1080:
             case NEON1:
             case NEON2:
             case NEON3:
@@ -557,20 +558,20 @@ public class Spawn {
             case JIBS4:
             case JIBS5:
             case JIBS6:
-            case 4041: 
-            case 4046: 
-            case 4055: 
-            case 4235: 
-            case 4244: 
-            case 4748: 
-            case 4753: 
-            case 4758: 
-            case 5290: 
-            case 5295: 
-            case 5300: 
-            case 5602: 
-            case 5607: 
-            case 5616: 
+            case 4041:
+            case 4046:
+            case 4055:
+            case 4235:
+            case 4244:
+            case 4748:
+            case 4753:
+            case 4758:
+            case 5290:
+            case 5295:
+            case 5300:
+            case 5602:
+            case 5607:
+            case 5616:
             case 2460: //RA green jibs1
             case 2465: //RA green jibs2
         	case 5872: //RA motowheel
@@ -591,31 +592,31 @@ public class Spawn {
         	case 7397: //RA deepjibs3
         	case 8890: //RA deep2jibs
         	case 8895: //RA deep2jibs2
-        		
+
         		if(currentGame.getCON().type != RRRA
         				&& (sp.picnum == 2460
     		            || sp.picnum == 2465
-    		        	|| sp.picnum == 5872 
-    		        	|| sp.picnum == 5877 
-    		        	|| sp.picnum == 5882 
+    		        	|| sp.picnum == 5872
+    		        	|| sp.picnum == 5877
+    		        	|| sp.picnum == 5882
     		        	|| sp.picnum == 6112
-    		        	|| sp.picnum == 6117 
-    		        	|| sp.picnum == 6121 
-    		        	|| sp.picnum == 6127 
-    		        	|| sp.picnum == 7000 
-    		        	|| sp.picnum == 7005 
+    		        	|| sp.picnum == 6117
+    		        	|| sp.picnum == 6121
+    		        	|| sp.picnum == 6127
+    		        	|| sp.picnum == 7000
+    		        	|| sp.picnum == 7005
     		        	|| sp.picnum == 7010
     		        	|| sp.picnum == 7015
     		        	|| sp.picnum == 7020
-    		        	|| sp.picnum == 7025 
+    		        	|| sp.picnum == 7025
     		        	|| sp.picnum == 7387
     		        	|| sp.picnum == 7392
-    		        	|| sp.picnum == 7397 
-    		        	|| sp.picnum == 8890 
+    		        	|| sp.picnum == 7397
+    		        	|| sp.picnum == 8890
     		        	|| sp.picnum == 8895))
         			break;
 
-        		
+
         		switch(sp.picnum)
         		{
         			case JIBS6:
@@ -636,7 +637,7 @@ public class Spawn {
 	                    break;
         		}
                 engine.changespritestat(i,(short)5);
-                break;    
+                break;
             case 1196:
             	sp.shade = -16;
             	engine.changespritestat(i,(short) 6);
@@ -647,8 +648,8 @@ public class Spawn {
             	break;
             case WATERFOUNTAIN:
                 sprite[i].lotag = 1;
-            case 1191: 
-            case 1193: 
+            case 1191:
+            case 1193:
             case TIRE:
             	sprite[i].cstat = 257; // Make it hitable
                 sprite[i].extra = 1;
@@ -730,7 +731,7 @@ public class Spawn {
                     sp.cstat |= 32768;
                 sp.yvel = 0;
                 engine.changespritestat(i,(short)6);
-                break;   
+                break;
             case WATERDRIP:
                 if(j >= 0 && (sprite[j].statnum == 10 || sprite[j].statnum == 1))
                 {
@@ -758,7 +759,7 @@ public class Spawn {
                 sp.yrepeat = 24;
                 engine.changespritestat(i,(short)6);
                 break;
-                
+
             case CRACK1:
             case CRACK2:
             case CRACK3:
@@ -772,25 +773,25 @@ public class Spawn {
                     break;
                 }
                 sp.pal = 0;
-                sp.owner = (short) i;
+                sp.owner = i;
                 engine.changespritestat(i,(short)6);
                 sp.xvel = 8;
                 ssp(i,CLIPMASK0);
-                break;    
-            case 1097: 
-            case 1106: 
+                break;
+            case 1097:
+            case 1106:
             	sp.cstat &= ~257;
             	engine.changespritestat(i,(short) 0);
             	break;
-            case 285: 
-            case 286: 
-            case 287: 
-            case 288: 
-            case 289: 
-            case 290: 
-            case 291: 
-            case 292: 
-            case 293: 
+            case 285:
+            case 286:
+            case 287:
+            case 288:
+            case 289:
+            case 290:
+            case 291:
+            case 292:
+            case 293:
             	sp.cstat = 0;
                 sp.xrepeat = 0;
                 sp.yrepeat = 0;
@@ -799,14 +800,14 @@ public class Spawn {
                 sp.lotag = 0;
                 engine.changespritestat(i,(short) 106);
             	break;
-            case BOWLLINE: 
-            case 281: 
-            case 282: 
-            case 283: 
-            case 2025: 
-            case 2026: 
-            case 2027: 
-            case 2028: 
+            case BOWLLINE:
+            case 281:
+            case 282:
+            case 283:
+            case 2025:
+            case 2026:
+            case 2027:
+            case 2028:
             	sp.cstat = 0;
                 sp.xrepeat = 0;
                 sp.yrepeat = 0;
@@ -826,13 +827,13 @@ public class Spawn {
             	sp.cstat |= 32768;
             	engine.changespritestat(i,(short) 107);
             	break;
-            case 296: 
-            case 297:   
+            case 296:
+            case 297:
             	sp.xrepeat = 64;
             	sp.yrepeat = 64;
             	sp.clipdist = 64;
             	engine.changespritestat(i,(short) 108);
-	            break;   
+	            break;
             case WATERBUBBLE:
                 if(j >= 0 && sprite[j].picnum == APLAYER)
                     sp.z -= (16<<8);
@@ -845,7 +846,7 @@ public class Spawn {
                 else sp.xrepeat = sp.yrepeat = 32;
 
                 engine.changespritestat(i,(short)5);
-                break;  
+                break;
             case TOUCHPLATE:
                 hittype[i].temp_data[2] = sector[sect].floorz;
                 if(sector[sect].lotag != 1 && sector[sect].lotag != 2)
@@ -860,39 +861,39 @@ public class Spawn {
                 sp.cstat |= 32768;
                 engine.changespritestat(i,(short)6);
                 break;
-            
+
             case 14: //RA
-            case FIRSTGUNSPRITE: 
-            case 22: 
-            case 23: 
-            case 24: 
-            case 25: 
-            case 27: 
-            case 28: 
-            case 29: 
-            case 37: 
-            case 40: 
-            case 41: 
-            case 42: 
-            case 43: 
-            case 44: 
-            case 45: 
-            case 46: 
-            case 47: 
-            case 48: 
-            case 49: 
-            case 51: 
-            case 52: 
-            case 53: 
-            case 54: 
-            case 55: 
-            case 56: 
-            case 57: 
-            case 59: 
-            case 61: 
-            case 78: 
-            case 1350: 
-            case 3437: 
+            case FIRSTGUNSPRITE:
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+            case 27:
+            case 28:
+            case 29:
+            case 37:
+            case 40:
+            case 41:
+            case 42:
+            case 43:
+            case 44:
+            case 45:
+            case 46:
+            case 47:
+            case 48:
+            case 49:
+            case 51:
+            case 52:
+            case 53:
+            case 54:
+            case 55:
+            case 56:
+            case 57:
+            case 59:
+            case 61:
+            case 78:
+            case 1350:
+            case 3437:
             case 5595:
             case 8460: //RA BOX
                 if(j >= 0)
@@ -910,7 +911,7 @@ public class Spawn {
                 }
                 else
                 {
-                    sp.owner = (short) i;
+                    sp.owner = i;
                     sp.cstat = 0;
                 }
 
@@ -951,7 +952,7 @@ public class Spawn {
                     engine.changespritestat(i,(short)2);
                     makeitfall(currentGame.getCON(), i);
                 }
-                
+
                 switch(sp.picnum)
                 {
                 	case 78:
@@ -1054,10 +1055,10 @@ public class Spawn {
             case LOCATORS:
                 sp.cstat |= 32768;
                 engine.changespritestat(i,(short)7);
-                break;    
+                break;
             case DYNAMITE:
                 sp.yvel = 4;
-                sp.owner = (short) i;
+                sp.owner = i;
                 sp.xrepeat = sp.yrepeat = 9;
             case REACTOR2:
             case REACTOR:
@@ -1073,7 +1074,7 @@ public class Spawn {
                     }
                     if ( checkaddkills(sp) )
                         ps[connecthead].max_actors_killed++;
-                    
+
                     hittype[i].temp_data[5] = 0;
                     if(ud.monsters_off)
                     {
@@ -1111,14 +1112,14 @@ public class Spawn {
                 }
                 sp.cstat = (short)32768;
                 engine.changespritestat(i,(short)11);
-                break;   
+                break;
             case ACTIVATORLOCKED:
             case ACTIVATOR:
                 sp.cstat |= 32768;
                 if(sp.picnum == ACTIVATORLOCKED)
                     sector[sp.sectnum].lotag |= 16384;
                 engine.changespritestat(i,(short)8);
-                break;     
+                break;
             case SECTOREFFECTOR:
                 sp.yvel = sector[sect].extra;
                 sp.cstat |= 32768;
@@ -1137,7 +1138,7 @@ public class Spawn {
                                     break;
                                 }
                         }
-                        else sprite[i].owner = (short) i;
+                        else sprite[i].owner = i;
 
                         hittype[i].temp_data[4] = (sector[sect].floorz == sprite[i].z)?1:0;
                         sp.cstat = 0;
@@ -1166,7 +1167,7 @@ public class Spawn {
                         sp.hitag <<= 2;
                         break;
 
-                    case 25: // Pistons 
+                    case 25: // Pistons
                         hittype[i].temp_data[3] = sector[sect].ceilingz;
                         hittype[i].temp_data[4] = 1;
                         sector[sect].ceilingz = sp.z;
@@ -1175,14 +1176,14 @@ public class Spawn {
                     case 35:
                         sector[sect].ceilingz = sp.z;
                         break;
-                    case 27: 
+                    case 27:
                         if(ud.recstat == 1)
                         {
                             sp.xrepeat=sp.yrepeat=64;
                             sp.cstat &= 32767;
                         }
                         break;
-                    case 12: 
+                    case 12:
                     case 47:
                     case 48: //RA
                         hittype[i].temp_data[1] = sector[sect].floorshade;
@@ -1260,9 +1261,9 @@ public class Spawn {
                         }
                         break;
 
-                    case 24: 
+                    case 24:
                         sp.yvel <<= 1;
-                    case 36: 
+                    case 36:
                         break;
                     case 88:
                          hittype[i].temp_data[0] = sector[sect].floorshade;
@@ -1278,7 +1279,7 @@ public class Spawn {
                          hittype[i].temp_data[3] = 1;
                          break;
 
-                    case 20: 
+                    case 20:
                     {
                         long q;
 
@@ -1323,7 +1324,7 @@ public class Spawn {
 
                     break;
 
-                    case 3: 
+                    case 3:
 
                         hittype[i].temp_data[3]=sector[sect].floorshade;
 
@@ -1347,7 +1348,7 @@ public class Spawn {
                         }
                         break;
 
-                    case 31: 
+                    case 31:
                         hittype[i].temp_data[1] = sector[sect].floorz;
                         if(sp.ang != 1536) sector[sect].floorz = sp.z;
 
@@ -1360,7 +1361,7 @@ public class Spawn {
                         game.pInt.setfloorinterpolate(sect, sector[sect]);  //floorz
 
                         break;
-                    case 32: 
+                    case 32:
                         hittype[i].temp_data[1] = sector[sect].ceilingz;
                         hittype[i].temp_data[2] = sp.hitag;
                         if(sp.ang != 1536) sector[sect].ceilingz = sp.z;
@@ -1391,13 +1392,13 @@ public class Spawn {
 
                         break;
 
-                    case 9: 
+                    case 9:
                         if( sector[sect].lotag != 0 &&
                             klabs(sector[sect].ceilingz-sp.z) > 1024)
                                 sector[sect].lotag |= 32768; //If its open
-                    case 8: 
+                    case 8:
                         //First, get the ceiling-floor shade
-                    	
+
                     	if ( sector[sect].lotag != 0 )
                     	{
                     		if ( (sector[sect].ceilingz - sp.z) > 1024 )
@@ -1418,10 +1419,10 @@ public class Spawn {
 
                         break;
 
-                    case 11://Pivitor rotater 
+                    case 11://Pivitor rotater
                         if(sp.ang>1024) hittype[i].temp_data[3] = 2;
                         else hittype[i].temp_data[3] = -2;
-                    case 0: 
+                    case 0:
                     case 2://Earthquakemakers
                     case 5://Boss Creature
                     case 6://Subway
@@ -1438,7 +1439,7 @@ public class Spawn {
                                 if(sp.pal != 0) sprite[i].clipdist = 1;
                                 else sprite[i].clipdist = 0;
                                 hittype[i].temp_data[3] = sector[sect].floorz;
-                                sector[sect].hitag = (short) i;
+                                sector[sect].hitag = i;
                             }
 
                             for(j = 0;j < MAXSPRITES;j++)
@@ -1487,7 +1488,7 @@ public class Spawn {
                                 sp.extra = 0;
                             else sp.extra = 1;
 
-                            sector[sect].hitag = (short) i;
+                            sector[sect].hitag = i;
 
                             j = 0;
 
@@ -1544,29 +1545,29 @@ public class Spawn {
                         j = callsound(sect,i);
                         if(j == -1) {
                         	if ( sector[sp.sectnum].floorpal == 7 )
-                            	j = 456; 
+                            	j = 456;
                            	else
                            		j = SUBWAY;
                         }
                         hittype[i].lastvx = j;
                     case 30:
                         if(numplayers > 1) break;
-                    case 0: 
-                    case 1: 
-                    case 5: 
-                    case 11: 
-                    case 15: 
-                    case 16: 
-                    case 26: 
+                    case 0:
+                    case 1:
+                    case 5:
+                    case 11:
+                    case 15:
+                    case 16:
+                    case 26:
                         setsectinterpolate(i);
                         break;
                 }
-               
+
                 switch(sprite[i].lotag)
                 {
                     case 150:
                     case 151:
-                    	
+
                     case 152:
     	            case 153:
                         engine.changespritestat(i,(short)15);
@@ -1584,8 +1585,8 @@ public class Spawn {
                         break;
                 }
 
-                break;   
-                
+                break;
+
             case SEENINE:
             case OOZFILTER:
 
@@ -1597,55 +1598,55 @@ public class Spawn {
                 }
                 else sp.cstat = 1+256;
                 sp.extra = (short) (currentGame.getCON().impact_damage<<2);
-                sp.owner = (short) i;
+                sp.owner = i;
 
                 engine.changespritestat(i,(short)6);
-                break;        
-                
+                break;
+
             case HENSTAND:
 	            sp.cstat = 257;
 	            sp.clipdist = 48;
 	            sp.xrepeat = 21;
 	            sp.yrepeat = 15;
 	            engine.changespritestat(i,(short) 2);
-	            break; 
-	            
+	            break;
+
             case 4770: //RA elvisbubba
-            case 6659: //RA baba   
+            case 6659: //RA baba
 	            if(currentGame.getCON().type != RRRA)
             		break;
-            case 4163: 
-            case 4249: 
-            case 4504: 
-            case 4650: 
-            case 4862: 
-            case 4946: 
-            case 5015: 
-            case 5121: 
-            case 5377: 
+            case 4163:
+            case 4249:
+            case 4504:
+            case 4650:
+            case 4862:
+            case 4946:
+            case 5015:
+            case 5121:
+            case 5377:
             	hittype[i].actorstayput = sp.sectnum;
-            case 256: 
-            case 264: 
-            case 1344: 
-            case 1930: 
-            case 4147: 
-            case 4162: 
-            case 4260: 
-            case 4352: 
-            case 4649: 
-            case 4861: 
-            case MOSQUITO: 
-            case 4945: 
-            case MINION: 
-            case 5270: 
-            case 5274: 
-            case 5278: 
-            case 5282: 
-            case 5286: 
-            case 5317: 
-            case 5376: 
-            case 5501: 
-            case 5635: 
+            case 256:
+            case 264:
+            case 1344:
+            case 1930:
+            case 4147:
+            case 4162:
+            case 4260:
+            case 4352:
+            case 4649:
+            case 4861:
+            case MOSQUITO:
+            case 4945:
+            case MINION:
+            case 5270:
+            case 5274:
+            case 5278:
+            case 5282:
+            case 5286:
+            case 5317:
+            case 5376:
+            case 5501:
+            case 5635:
             case MINIONUFO: //RA
             case 5890: //RA biker
             case 5891: //RA biker
@@ -1663,7 +1664,7 @@ public class Spawn {
         	case 8036: //RA rock2
             case 8663: //RA green rock
             case 8705: //RA deep2
-            	
+
             	if(currentGame.getCON().type != RRRA
             			&& (sp.picnum == MINIONUFO
 	    				|| sp.picnum == 5890
@@ -1676,25 +1677,25 @@ public class Spawn {
 			            || sp.picnum == 7035
 			            || sp.picnum == 7192
 			            || sp.picnum == 7199
-			        	|| sp.picnum == 7206 
+			        	|| sp.picnum == 7206
 			        	|| sp.picnum == 7280
 			        	|| sp.picnum == 8035
 			        	|| sp.picnum == 8036
 			            || sp.picnum == 8663
 			            || sp.picnum == 8705))
             		break;
-            	
-            	
+
+            	Tile pic = engine.getTile(sp.picnum);
             	switch(sp.picnum)
             	{
-            		case 5376: 
-            		case 5377: 
+            		case 5376:
+            		case 5377:
             		case 7030:
                         sp.xrepeat = 24;
                         sp.yrepeat = 18;
-                        sp.clipdist = 4 * (tilesizx[sp.picnum] * sp.xrepeat >> 7);
+                        sp.clipdist = 4 * (pic.getWidth() * sp.xrepeat >> 7);
             			break;
-            		case 5635: 
+            		case 5635:
             			if ( sp.pal == 34 )
                         {
             				sp.xrepeat = 22;
@@ -1705,60 +1706,60 @@ public class Spawn {
                         	sp.xrepeat = 22;
                         	sp.yrepeat = 20;
                         }
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
             			break;
-	                case 5270: 
-	    			case 5274: 
-	    			case 5278: 
-	    			case 5282: 
-	    			case 5286: 
+	                case 5270:
+	    			case 5274:
+	    			case 5278:
+	    			case 5282:
+	    			case 5286:
 	    				sp.extra = 50;
         			case 5317:
-        			case 4409: 
-        			case 4410: 
-        			case 4429: 
-        			case 4649: 
+        			case 4409:
+        			case 4410:
+        			case 4429:
+        			case 4649:
         			case 4650:
         				sp.xrepeat = 32;
                         sp.yrepeat = 32;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
         				break;
-        			case MOSQUITO: 
+        			case MOSQUITO:
         				sp.xrepeat = 14;
                         sp.yrepeat = 7;
                         sp.clipdist = 128;
         				break;
-        			case 5015: 
+        			case 5015:
         				sp.xrepeat = 48;
                         sp.yrepeat = 48;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
         				break;
-        			case 1930: 
+        			case 1930:
         				sp.xrepeat = 64;
                         sp.yrepeat = 128;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                         sp.cstat = 2;
         				break;
-        			case 4260: 
-        			case 4945: 
-        			case MINION: 
-        			case MINION+1: 
+        			case 4260:
+        			case 4945:
+        			case MINION:
+        			case MINION+1:
         				sp.xrepeat = 16;
                         sp.yrepeat = 16;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                         if(sp.picnum == MINION || sp.picnum == MINION+1)
                         {
                         	if ( ps[connecthead].isSwamp )
                                 sp.pal = 8;
-                        } 	
+                        }
         				break;
         			case 4352:
         				sp.xrepeat = 24;
                         sp.yrepeat = 22;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
         				break;
-        			case 4861: 
-        			case 4862: 
+        			case 4861:
+        			case 4862:
         			case 4897:
         				if ( sp.pal != 35 )
         				{
@@ -1769,40 +1770,40 @@ public class Spawn {
         				}
         				sp.xrepeat = 42;
                         sp.yrepeat = 30;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
         				break;
-        			case 4147: 
-        			case 4162: 
-        			case 4163: 
-        			case 4249: 
-        			case 4504: 
+        			case 4147:
+        			case 4162:
+        			case 4163:
+        			case 4249:
+        			case 4504:
         			case 7035:
         			case 4770:
         				sp.xrepeat = 25;
                         sp.yrepeat = 21;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
         				break;
                     case 6658:
                     case 6659:
                     	sp.xrepeat = 20;
                         sp.yrepeat = 20;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                     	break;
                     case 7206:
                     	sp.xrepeat = 32;
                         sp.yrepeat = 32;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                     	break;
                     case 7280:
                     	sp.xrepeat = 18;
                         sp.yrepeat = 18;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                     	break;
                     case 8035:
                     case 8036:
                     	sp.xrepeat = 64;
                         sp.yrepeat = 64;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                     	break;
                     case 8663:
                     	sp.xrepeat = 64;
@@ -1835,36 +1836,36 @@ public class Spawn {
                     case 7192:
                     	sp.xrepeat = 16;
                         sp.yrepeat = 16;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                     	break;
                     case 7199:
                     	sp.xrepeat = 48;
                         sp.yrepeat = 48;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
                     	break;
-                    case 5890: 
-    	            case 5891: 
+                    case 5890:
+    	            case 5891:
     	            case 6401:
     	            	sp.xrepeat = 28;
                         sp.yrepeat = 22;
                         sp.clipdist = 72;
                     	break;
-    	            case 5995: 
+    	            case 5995:
     	            	sp.xrepeat = 28;
                         sp.yrepeat = 22;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
     	            	break;
     	            case 6225:
     	            	sp.xrepeat = 26;
                         sp.yrepeat = 26;
-                        sp.clipdist = (tilesizx[sp.picnum] * sp.xrepeat) >> 7;
+                        sp.clipdist = (pic.getWidth() * sp.xrepeat) >> 7;
     	            	break;
     	            default:
     	            	sp.xrepeat = 40;
                         sp.yrepeat = 40;
     	            	break;
             	}
-                
+
                 if(j >= 0) sp.lotag = 0;
 
                 if( ( sp.lotag > ud.player_skill ) || ud.monsters_off )
@@ -1928,7 +1929,7 @@ public class Spawn {
                 sp.xrepeat = (short) (25-(j>>1));
                 sp.cstat |= (engine.krand()&4);
 
-                break;      
+                break;
             case STEAM:
                 if(j >= 0)
                 {
@@ -1997,14 +1998,14 @@ public class Spawn {
                 else sp.xrepeat = sp.yrepeat = 0;
 
                 engine.changespritestat(i,(short)5);
-                break;      
-            case 1098: 
-            case 1100: 
-            case 2121: 
-            case 2122: 
+                break;
+            case 1098:
+            case 1100:
+            case 2121:
+            case 2122:
             	sp.lotag = 1;
             	sp.clipdist = 8;
-            	sp.owner = (short) i;
+            	sp.owner = i;
             	sp.cstat |= 257;
             	break;
             case FORCESPHERE:
@@ -2018,7 +2019,7 @@ public class Spawn {
                     sp.xrepeat = sp.yrepeat = 1;
                     engine.changespritestat(i,(short)5);
                 }
-                break;       
+                break;
             case SHELL: //From the player
             case SHOTGUNSHELL:
                 if( j >= 0 )
@@ -2080,9 +2081,9 @@ public class Spawn {
                 sp.xvel = 0;
                 engine.changespritestat(i,(short) 1);
             	break;
-            case CHICKENATILE:   
-            case CHICKENBTILE:   
-            case CHICKENCTILE:  
+            case CHICKENATILE:
+            case CHICKENBTILE:
+            case CHICKENCTILE:
             	sp.cstat = 257;
                 sp.clipdist = 8;
                 sp.xrepeat = 32;
@@ -2123,7 +2124,7 @@ public class Spawn {
                 sp.xrepeat = 23;
                 sp.yrepeat = 23;
                 engine.changespritestat(i,(short) 2);
-            	break;       
+            	break;
             case APLAYER:
                 sp.xrepeat = sp.yrepeat = 0;
                 j = ud.coop;
@@ -2133,7 +2134,7 @@ public class Spawn {
                     engine.changespritestat(i,(short)5);
                 else
                     engine.changespritestat(i,(short)10);
-                break;            
+                break;
             case PLAYERONWATER:
                 if(j >= 0)
                 {
@@ -2144,11 +2145,11 @@ public class Spawn {
                         sp.cstat |= 32768;
                 }
                 engine.changespritestat(i,(short)13);
-                break;       
-            case 1115: 
-            case 1168: 
-            case 5581: 
-            case 5583: 
+                break;
+            case 1115:
+            case 1168:
+            case 5581:
+            case 5583:
                 sp.yvel = sp.hitag;
                 sp.hitag = -1;
             case QUEBALL:
@@ -2165,8 +2166,8 @@ public class Spawn {
                 }
 
                 engine.changespritestat(i,(short)2);
-                break;  
-                
+                break;
+
             //RA
             case MOTORCYCLE:
             	if ( ud.multimode < 2 && sp.pal == 1 )
@@ -2176,7 +2177,7 @@ public class Spawn {
                 	sp.pal = 0;
                 	sp.xrepeat = 18;
                 	sp.yrepeat = 18;
-                	sp.clipdist = tilesizx[sp.picnum] * sp.xrepeat >> 7;
+                	sp.clipdist = engine.getTile(sp.picnum).getWidth() * sp.xrepeat >> 7;
                   	sp.owner = 100;
                   	sp.cstat |= 257;
                   	sp.lotag = 1;
@@ -2191,7 +2192,7 @@ public class Spawn {
                 	sp.pal = 0;
                 	sp.xrepeat = 32;
                 	sp.yrepeat = 32;
-                	sp.clipdist = tilesizx[sp.picnum] * sp.xrepeat >> 7;
+                	sp.clipdist = engine.getTile(sp.picnum).getWidth() * sp.xrepeat >> 7;
                   	sp.owner = 20;
                   	sp.cstat |= 257;
                   	sp.lotag = 1;
@@ -2302,7 +2303,7 @@ public class Spawn {
 	    game.pInt.setsprinterpolate(i, sprite[i]);
 	    return i;
 	}
-	
+
 	public static void vglass(int x,int y,int a,int wn,int n)
 	{
 	    int z, zincs;
@@ -2355,7 +2356,7 @@ public class Spawn {
 	          sect = engine.updatesector(x1,y1,sect);
 	          if(sect >= 0)
 	          {
-	              z = (int) (sector[sect].floorz-(engine.krand()&(klabs(sector[sect].ceilingz-sector[sect].floorz))));
+	              z = sector[sect].floorz-(engine.krand()&(klabs(sector[sect].ceilingz-sector[sect].floorz)));
 	              if( z < -(32<<8) || z > (32<<8) )
 	                  z = sprite[i].z-(32<<8)+(engine.krand()&((64<<8)-1));
 	              a = (short) (sprite[i].ang-1024);
@@ -2363,7 +2364,7 @@ public class Spawn {
 	          }
          }
 	}
-	
+
 	public static void lotsofglass2(int i,int wallnum,int n)
 	{
 	     int j, xv, yv, z, x1, y1;
@@ -2403,7 +2404,7 @@ public class Spawn {
 	          sect = engine.updatesector(x1,y1,sect);
 	          if(sect >= 0)
 	          {
-	              z = (int) (sector[sect].floorz-(engine.krand()&(klabs(sector[sect].ceilingz-sector[sect].floorz))));
+	              z = sector[sect].floorz-(engine.krand()&(klabs(sector[sect].ceilingz-sector[sect].floorz)));
 	              if( z < -(32<<8) || z > (32<<8) )
 	                  z = sprite[i].z-(32<<8)+(engine.krand()&((64<<8)-1));
 	              a = (short) (sprite[i].ang-1024);
@@ -2462,7 +2463,7 @@ public class Spawn {
 	        for(j=n-1; j >= 0 ;j--)
 	        {
 	            a = (short) (engine.krand()&2047);
-	            k = (short) EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z-(engine.krand()&(63<<8)),GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&2047),i,(short)5);
+	            k = EGS(sprite[i].sectnum,sprite[i].x,sprite[i].y,sprite[i].z-(engine.krand()&(63<<8)),GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),1024-(engine.krand()&2047),i,(short)5);
 	            sprite[k].pal = (short) (engine.krand()&15);
 	        }
 	        return;
@@ -2481,15 +2482,15 @@ public class Spawn {
 	    	 y1 += yv;
 
 	    	 sect = engine.updatesector(x1,y1,sect);
-	    	 z = (int) (sector[sect].floorz-(engine.krand()&(klabs(sector[sect].ceilingz-sector[sect].floorz))));
+	    	 z = sector[sect].floorz-(engine.krand()&(klabs(sector[sect].ceilingz-sector[sect].floorz)));
 	    	 if( z < -(32<<8) || z > (32<<8) )
 	              z = sprite[i].z-(32<<8)+(engine.krand()&((64<<8)-1));
 	    	 a = (short) (sprite[i].ang-1024);
-	    	 k = (short) EGS(sprite[i].sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&2047),i,(short)5);
+	    	 k = EGS(sprite[i].sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(engine.krand()&63),-(engine.krand()&2047),i,(short)5);
 	    	 sprite[k].pal = (short) (engine.krand()&7);
 	     }
 	}
-	
+
 	public static void lotsofmoney(SPRITE s, int n) {
 		for (int i = n; i > 0; i--) {
 			int j = EGS(s.sectnum, s.x, s.y,
@@ -2502,7 +2503,7 @@ public class Spawn {
 	public static void guts(SPRITE s, int gtype, int n, int p) {
 		if(!isValidSector(s.sectnum))
 			return;
-		
+
 		int gutz, floorz;
 		int i;
 		char sx, sy;
@@ -2531,7 +2532,7 @@ public class Spawn {
 			} else
 			pal = 0;
 		}
-		
+
 		for (int j = 0; j < n; j++) {
 			int a = engine.krand() & 2047;
 			i = EGS(s.sectnum, s.x + (engine.krand() & 255) - 128, s.y

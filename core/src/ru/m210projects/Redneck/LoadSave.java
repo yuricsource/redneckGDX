@@ -23,8 +23,6 @@ import static ru.m210projects.Redneck.Globals.defGame;
 import static ru.m210projects.Redneck.Globals.nMaxEpisodes;
 import static ru.m210projects.Redneck.Globals.nMaxMaps;
 import static ru.m210projects.Redneck.Globals.nMaxSkills;
-import static ru.m210projects.Redneck.Main.gGameScreen;
-import static ru.m210projects.Redneck.Main.game;
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Screen.*;
 import static ru.m210projects.Redneck.View.*;
@@ -61,6 +59,7 @@ import ru.m210projects.Build.Pattern.Tools.SaveManager;
 import ru.m210projects.Build.Types.LittleEndian;
 import ru.m210projects.Build.Types.SECTOR;
 import ru.m210projects.Build.Types.SPRITE;
+import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Build.Types.WALL;
 import ru.m210projects.Redneck.Menus.MenuCorruptGame;
 import ru.m210projects.Redneck.Types.ANIMATION;
@@ -72,14 +71,14 @@ import ru.m210projects.Redneck.Types.SafeLoader;
 import ru.m210projects.Redneck.Types.Weaponhit;
 
 public class LoadSave {
-	
+
 	public static boolean gQuickSaving;
 	public static boolean gAutosaveRequest;
 
 	public static LSInfo lsInf = new LSInfo();
-	
+
 	public static final String savsign = "RGDX";
-	
+
 	public static final int gdxSave = 100;
 	public static final int currentGdxSave = 102;
 	public static final int SAVEVERSION = savsign.length() + 2; //version (2 bytes)
@@ -87,20 +86,20 @@ public class LoadSave {
 	public static final int SAVENAME = 32;
 	public static final int SAVELEVELINFO = 16;
 	public static final int SAVEHEADER = SAVEVERSION + SAVETIME + SAVENAME + SAVELEVELINFO;
-	
+
 	public static final int SAVESCREENSHOTSIZE = 160 * 100;
 	public static final int SAVEGDXDATA = SAVESCREENSHOTSIZE + 128;
 
 	public static String lastload;
 	public static int quickslot = 0;
 	public static SafeLoader loader = new SafeLoader();
-	
+
 	public static void FindSaves()
 	{
 		FileResource fil = null;
 		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.User).getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
-			
+
 			if (file.getExtension().equals("sav")) {
 				fil = BuildGdx.compat.open(file);
 				if (fil != null) {
@@ -109,7 +108,7 @@ public class LoadSave {
 						fil.close();
 						continue;
 					}
-					
+
 					if(signature.equals(savsign)) {
 						int nVersion = fil.readShort();
 						if(nVersion >= gdxSave) {
@@ -124,44 +123,45 @@ public class LoadSave {
 		}
 		game.pSavemgr.sort();
 	}
-	
+
 	public static int lsReadLoadData(String filename)
 	{
 		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
 		if( fil != null)
 		{
-			if(waloff[SaveManager.Screenshot] == null)
+			Tile pic = engine.getTile(SaveManager.Screenshot);
+			if(pic.data == null)
 				engine.allocatepermanenttile(SaveManager.Screenshot, 160, 100);
-			
+
 			int nVersion = checkSave(fil) & 0xFFFF;
 			lsInf.clear();
-			
+
 			if(nVersion == currentGdxSave)
 			{
 				fil.seek(SAVEVERSION, Whence.Set);
 				lsInf.date = game.date.getDate(fil.readLong());
 				fil.seek(SAVEVERSION + SAVETIME + SAVENAME, Whence.Set); //to SAVELEVELINFO
-				
+
 				lsInf.read(fil);
 				if(fil.remaining() <= SAVESCREENSHOTSIZE)
 				{
 					fil.close();
 					return -1;
 				}
-				
-				fil.read(waloff[SaveManager.Screenshot], 0, SAVESCREENSHOTSIZE);
+
+				fil.read(pic.data, 0, SAVESCREENSHOTSIZE);
 				lsInf.addonfile = null;
 				if(fil.readBoolean()) {
 					String ininame;
 					String fullname = fil.readString(144).trim();
-					
+
 					int filenameIndex = -1;
 					if((filenameIndex = fullname.indexOf(":")) != -1) {
 						String ext = FileUtils.getExtension(fullname.substring(0, filenameIndex));
 						ininame = ext + ":" + FileUtils.getFullName(fullname.substring(filenameIndex+1));
 					}
 					else ininame = FileUtils.getFullName(fullname);
-	
+
 					if (!ininame.isEmpty() )
 						lsInf.addonfile = "File: " + ininame;
 				}
@@ -175,7 +175,7 @@ public class LoadSave {
 		} else lsInf.clear();
 		return -1;
 	}
-	
+
 	public static final char[] filenum = new char[4];
 	public static String makeNum(int num)
 	{
@@ -183,20 +183,20 @@ public class LoadSave {
 		filenum[2] = (char) (((num/10)%10)+48);
 		filenum[1] = (char) (((num/100)%10)+48);
 		filenum[0] = (char) (((num/1000)%10)+48);
-		
+
 		return new String(filenum);
 	}
 
 	public static int checkSave(Resource bb)
 	{
 		String signature = bb.readString(4);
-		
+
 		if(signature == null || !signature.equals(savsign))
 			return 0;
 
 		return bb.readShort();
 	}
-	
+
 	public static int savegame(String savename, String filename)
 	{
 		if(isPsychoSkill())
@@ -204,11 +204,11 @@ public class LoadSave {
 			FTA(53, ps[myconnectindex]);
 			return -1;
 		}
-		
+
 		File file = BuildGdx.compat.checkFile(filename, Path.User);
 		if(file != null)
 			file.delete();
-	
+
 		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Write);
 		if(fil != null) {
 			long time = game.date.getCurrentDate();
@@ -218,33 +218,33 @@ public class LoadSave {
 
 			addmessage("GAME SAVED");
 			return 0;
-		} else 
+		} else
 			addmessage("Game not saved. Access denied!");
 
 		return -1;
 	}
-	
+
 	public static void MapSave(FileResource fil)
 	{
 		if(boardfilename != null)
 			fil.writeBytes(boardfilename.toCharArray(), 144);
 		else fil.writeBytes(new byte[144], 144);
-		
-		int bufsize = 2 + (numsectors * SECTOR.sizeof) 
+
+		int bufsize = 2 + (numsectors * SECTOR.sizeof)
 				+ 2 + (numwalls * WALL.sizeof)
-				+ (MAXSPRITES * SPRITE.sizeof) 
+				+ (MAXSPRITES * SPRITE.sizeof)
 				+ (MAXSECTORS+1) * 2
 				+ (MAXSTATUS+1) * 2 + MAXSPRITES * 8 + 3 * 16 + 4;
-		
-		ByteBuffer bb = ByteBuffer.allocate(bufsize); 
-		bb.order(ByteOrder.LITTLE_ENDIAN); 
+
+		ByteBuffer bb = ByteBuffer.allocate(bufsize);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		bb.putShort(numwalls);
 		for(int w = 0; w < numwalls; w++)
 			bb.put(wall[w].getBytes());
-		
+
 		bb.putShort(numsectors);
-		for(int s = 0; s < numsectors; s++) 
+		for(int s = 0; s < numsectors; s++)
 			bb.put(sector[s].getBytes());
 
 		for(int i = 0; i < MAXSPRITES; i++)
@@ -260,7 +260,7 @@ public class LoadSave {
 			bb.putShort(nextspritesect[i]);
 			bb.putShort(nextspritestat[i]);
 		}
-		
+
 		bb.putInt(rorcnt);
 		for(int i = 0; i < 16; i++) {
 			bb.putShort(rorsector[i]);
@@ -269,7 +269,7 @@ public class LoadSave {
 
 		fil.writeBytes(bb.array(),bb.capacity());
 	}
-	
+
 	public static void StuffSave(FileResource fil)
 	{
 		int bufsize = 2 + MAXCYCLERS * 6 * 2
@@ -283,7 +283,7 @@ public class LoadSave {
 					+ 30 * MAXGEOMETRY + 15 + 28;
 
 		ByteBuffer bb = ByteBuffer.allocate(bufsize);
-		bb.order(ByteOrder.LITTLE_ENDIAN); 
+		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		bb.putShort(numcyclers);
 		for(int i = 0; i < MAXCYCLERS; i++)
@@ -298,27 +298,27 @@ public class LoadSave {
 			bb.putShort(animwall[i].wallnum);
 			bb.putInt(animwall[i].tag);
 		}
-		for(int i = 0; i < 2048; i++) 
+		for(int i = 0; i < 2048; i++)
 			bb.putInt(msx[i]);
-		for(int i = 0; i < 2048; i++) 
+		for(int i = 0; i < 2048; i++)
 			bb.putInt(msy[i]);
-		
+
 		bb.putShort(spriteqloc);
 		bb.putShort(currentGame.getCON().spriteqamount);
 		for(int i = 0; i < 1024; i++)
 			bb.putShort(spriteq[i]);
-		
+
 		bb.putShort(mirrorcnt);
 		for(int i = 0; i < 64; i++)
 			bb.putShort(mirrorwall[i]);
 		for(int i = 0; i < 64; i++)
 			bb.putShort(mirrorsector[i]);
-		
+
 		bb.put(show2dsector);
-		
+
 		for(int i = 0; i < MAXSECTORS; i++)
 			bb.put(shadeEffect[i]?(byte)1:0);
-		
+
 		bb.putInt(numjaildoors);
 		for(int i = 0; i < MAXJAILDOORS; i++)
 		{
@@ -331,7 +331,7 @@ public class LoadSave {
 			bb.putShort(jailstatus[i]);
 			bb.putInt(jailcount2[i]);
 		}
-	
+
 		bb.putInt(numminecart);
 		for(int i = 0; i < MAXMINECARDS; i++)
 		{
@@ -344,7 +344,7 @@ public class LoadSave {
 			bb.putShort(minesound[i]);
 			bb.putShort(minestatus[i]);
 		}
-		
+
 		bb.putInt(numtorcheffects);
 		for(int i = 0; i < MAXTORCHES; i++)
 		{
@@ -352,14 +352,14 @@ public class LoadSave {
 			bb.put(torchshade[i]);
 			bb.putShort(torchflags[i]);
 		}
-		
+
 		bb.putInt(numlightnineffects);
 		for(int i = 0; i < MAXLIGHTNINS; i++)
 		{
 			bb.putShort(lightninsector[i]);
 			bb.putShort(lightninshade[i]);
 		}
-		
+
 		bb.putInt(numambients);
 		for(int i = 0; i < MAXAMBIENTS; i++)
 		{
@@ -367,7 +367,7 @@ public class LoadSave {
 			bb.putShort(ambientid[i]);
 			bb.putShort(ambienthitag[i]);
 		}
-		
+
 		bb.putInt(numgeomeffects);
 		for(int i = 0; i < MAXGEOMETRY; i++)
 		{
@@ -376,13 +376,13 @@ public class LoadSave {
 			bb.putInt(geomx1[i]);
 			bb.putInt(geomy1[i]);
 			bb.putInt(geomz1[i]);
-			
+
 			bb.putShort(geoms2[i]);
 			bb.putInt(geomx2[i]);
 			bb.putInt(geomy2[i]);
 			bb.putInt(geomz2[i]);
 		}
-		
+
 		bb.putShort((short)UFO_SpawnCount);
 		bb.putShort((short)UFO_SpawnTime);
 		bb.putShort((short)UFO_SpawnHulk);
@@ -390,7 +390,7 @@ public class LoadSave {
 		bb.putShort((short)0); //gEndFirstEpisode
 		bb.putShort((short)0); //gEndGame
 		bb.put((byte) (plantProcess?1:0));
-		
+
 		bb.putShort(BellTime);
 		bb.putInt(BellSound);
 		bb.putShort(word_119BE0);
@@ -405,33 +405,33 @@ public class LoadSave {
 
 	public static void ConSave(FileResource fil)
 	{
-		int bufsiz = MAXTILES + 4 * MAXSCRIPTSIZE 
-				+ 4 * MAXTILES 
+		int bufsiz = MAXTILES + 4 * MAXSCRIPTSIZE
+				+ 4 * MAXTILES
 				+ MAXSPRITES * Weaponhit.sizeof;
-		
+
 		ByteBuffer bb = ByteBuffer.allocate(bufsiz);
-		bb.order(ByteOrder.LITTLE_ENDIAN); 
+		bb.order(ByteOrder.LITTLE_ENDIAN);
 		for(int i = 0; i < MAXTILES; i++)
 			bb.put((byte)currentGame.getCON().actortype[i]);
 		for(int i=0;i<MAXSCRIPTSIZE;i++)
 	    	bb.putInt(currentGame.getCON().script[i]);
 		for(int i=0;i<MAXTILES;i++)
 			bb.putInt(currentGame.getCON().actorscrptr[i]);
-		for(int i=0;i<MAXSPRITES;i++) 
+		for(int i=0;i<MAXSPRITES;i++)
 			bb.put(hittype[i].getBytes());
 
 		fil.writeBytes(bb.array(),bb.capacity());
 	}
-	
-	public static void GameInfoSave(FileResource fil) 
+
+	public static void GameInfoSave(FileResource fil)
 	{
 		ByteBuffer bb = ByteBuffer.allocate(1113);
-		bb.order(ByteOrder.LITTLE_ENDIAN); 
+		bb.order(ByteOrder.LITTLE_ENDIAN);
 		bb.putShort(pskybits);
 		bb.putInt(parallaxyscale);
 		for(int i = 0; i < MAXPSKYTILES; i++)
 			bb.putShort(pskyoff[i]);
-		
+
 		bb.putShort(earthquaketime);
 		bb.putShort((short)ud.from_bonus);
 		bb.putShort((short)ud.secretlevel);
@@ -448,21 +448,21 @@ public class LoadSave {
         bb.putInt(ud.marker);
         bb.putInt(ud.ffire);
         bb.putShort(camsprite);
-	    
+
         bb.putShort(connecthead);
-        for(int i = 0; i < MAXPLAYERS; i++) 
+        for(int i = 0; i < MAXPLAYERS; i++)
         	bb.putShort(connectpoint2[i]);
         bb.putShort(numplayersprites);
-	  
-        for(int i = 0; i < MAXPLAYERS; i++) 
-        	for(int j = 0; j < MAXPLAYERS; j++) 
+
+        for(int i = 0; i < MAXPLAYERS; i++)
+        	for(int j = 0; j < MAXPLAYERS; j++)
         		bb.putShort(frags[i][j]);
         bb.putInt(engine.getrand());
         bb.putShort(global_random);
-        
+
         fil.writeBytes(bb.array(),bb.capacity());
 	}
-	
+
 	public static void AnimationSave(FileResource fil)
 	{
 		for(int i = 0; i < MAXANIMATES; i++) {
@@ -471,43 +471,43 @@ public class LoadSave {
 			fil.writeInt(gAnimationData[i].goal);
 			fil.writeInt(gAnimationData[i].vel);
 			fil.writeShort(gAnimationData[i].sect);
-		}	
+		}
 		fil.writeInt(gAnimationCount);
 	}
-	
+
 	public static void SaveVersion(FileResource fil, int nVersion)
 	{
 		fil.writeBytes(savsign.toCharArray(), 4);
 		fil.writeShort(nVersion);
 	}
-	
+
 	public static void SaveHeader(FileResource fil, String savename, long time)
 	{
 		SaveVersion(fil, currentGdxSave);
-		
+
 		byte[] buf = new byte[8];
 		LittleEndian.putLong(buf, 0, time);
 		fil.writeBytes(buf, 8);
 		fil.writeBytes(savename.toCharArray(), SAVENAME);
-		
+
 		fil.writeInt(ud.multimode);
 		fil.writeInt(ud.volume_number);
-		fil.writeInt(ud.level_number); 
-		fil.writeInt(ud.player_skill); 
+		fil.writeInt(ud.level_number);
+		fil.writeInt(ud.player_skill);
 	}
-	
+
 	public static void SaveScreenshot(FileResource fil) {
 		fil.writeBytes(gGameScreen.captBuffer, SAVESCREENSHOTSIZE);
 		gGameScreen.captBuffer = null;
 	}
-	
+
 	public static void SaveGDXBlock(FileResource fil)
 	{
 		SaveScreenshot(fil);
-		
+
 		ByteBuffer bb = ByteBuffer.allocate(SAVEGDXDATA);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
-		
+
 		byte warp_on = 0;
 		if(mUserFlag == UserFlag.Addon)
 			warp_on = 1;
@@ -533,22 +533,22 @@ public class LoadSave {
 			}
 			bb.put(name);
 		}
-		fil.writeBytes(bb.array(), SAVEGDXDATA); 	
+		fil.writeBytes(bb.array(), SAVEGDXDATA);
 	}
 
 	public static void save(FileResource fil, String savename, long time)
 	{
 		SaveHeader(fil, savename, time);
 		SaveGDXBlock(fil);
-		
+
 		MapSave(fil);
 		StuffSave(fil);
 		ConSave(fil);
 		AnimationSave(fil);
 		GameInfoSave(fil);
-		
+
 		fil.close();
-		
+
 		System.gc();
 	}
 
@@ -558,16 +558,16 @@ public class LoadSave {
 			gQuickSaving = true;
 		}
 	}
-	
+
 	public static boolean canLoad(String filename) {
 		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
 		if (fil != null) {
-			int nVersion = checkSave(fil) & 0xFFFF;	
-			
+			int nVersion = checkSave(fil) & 0xFFFF;
+
 			if(nVersion != currentGdxSave) {
 				if(nVersion >= gdxSave) {
 					final GameInfo addon = loader.LoadGDXHeader(fil);
-					
+
 					if(loader.level_number <= nMaxMaps && loader.volume_number < nMaxEpisodes && loader.player_skill >= 0 && loader.player_skill < nMaxSkills && loader.warp_on != 2) {
 						MenuCorruptGame menu = (MenuCorruptGame) game.menu.mMenus[CORRUPTLOAD];
 						menu.setRunnable(new Runnable() {
@@ -580,17 +580,17 @@ public class LoadSave {
 								gGameScreen.newgame(false, game, nEpisode, nLevel, nSkill);
 							}
 						});
-						game.menu.mOpen(menu, -1);	
+						game.menu.mOpen(menu, -1);
 					}
 				}
 			}
-			
+
 			fil.close();
 			return nVersion == currentGdxSave;
 		}
 		return false;
 	}
-	
+
 	public static void quickload()
 	{
 		if(numplayers > 1 || mFakeMultiplayer) return;
@@ -604,15 +604,16 @@ public class LoadSave {
 			if(canLoad(loadname)) {
 				game.changeScreen(gLoadingScreen.setTitle(loadname));
 				gLoadingScreen.init(new Runnable() {
+					@Override
 					public void run() {
-						if(!loadgame(loadname)) 
+						if(!loadgame(loadname))
 							game.setPrevScreen();
 					}
 				});
 			}
 		}
 	}
-	
+
 	public static void AnimationLoad(SafeLoader bb)
 	{
 		for(int i = 0; i < MAXANIMATES; i++) {
@@ -622,9 +623,9 @@ public class LoadSave {
 			gAnimationData[i].goal = bb.gAnimationData[i].goal;
 			gAnimationData[i].vel = bb.gAnimationData[i].vel;
 			gAnimationData[i].sect = bb.gAnimationData[i].sect;
-		}	
+		}
 		gAnimationCount = bb.gAnimationCount;
-		
+
 		for(int i = gAnimationCount-1;i>=0;i--)
 		{
 			ANIMATION gAnm = gAnimationData[i];
@@ -644,24 +645,24 @@ public class LoadSave {
 			}
 		}
 	}
-	
+
 	public static void ConLoad(SafeLoader bb)
 	{
 		System.arraycopy(bb.actortype, 0, currentGame.getCON().actortype, 0, MAXTILES);
 		System.arraycopy(bb.script, 0, currentGame.getCON().script, 0, MAXSCRIPTSIZE);
 		System.arraycopy(bb.actorscrptr, 0, currentGame.getCON().actorscrptr, 0, MAXTILES);
 
-		for(int i=0;i<MAXSPRITES;i++) 
+		for(int i=0;i<MAXSPRITES;i++)
 			hittype[i].copy(bb.hittype[i]);
 	}
-	
+
 	public static void GameInfoLoad(SafeLoader bb)
 	{
 		pskybits = bb.pskybits;
 		parallaxyscale = bb.parallaxyscale;
 		System.arraycopy(bb.pskyoff, 0, pskyoff, 0, MAXPSKYTILES);
 	    System.arraycopy(pskyoff, 0, zeropskyoff, 0, MAXPSKYTILES);
-		
+
 		earthquaketime = bb.earthquaketime;
 		ud.from_bonus = bb.from_bonus;
 		ud.secretlevel = bb.secretlevel;
@@ -678,34 +679,34 @@ public class LoadSave {
 		ud.marker = bb.marker;
 		ud.ffire = bb.ffire;
 		camsprite = bb.camsprite;
-	    
+
 		connecthead = bb.connecthead;
 		System.arraycopy(bb.connectpoint2, 0, connectpoint2, 0, MAXPLAYERS);
         numplayersprites = bb.numplayersprites;
-	  
+
         for(int i = 0; i < MAXPLAYERS; i++)
         	System.arraycopy(bb.frags[i], 0, frags[i], 0, MAXPLAYERS);
 
         engine.srand(bb.randomseed);
         global_random = bb.global_random;
 	}
-	
+
 	public static void StuffLoad(SafeLoader bb)
 	{
 		numcyclers = bb.numcyclers;
-		for(int i = 0; i < MAXCYCLERS; i++) 
+		for(int i = 0; i < MAXCYCLERS; i++)
 			System.arraycopy(bb.cyclers[i], 0, cyclers[i], 0, 6);
 		for(int i = 0; i < MAXPLAYERS; i++)
 			ps[i].copy(bb.ps[i]);
 		for(int i = 0; i < MAXPLAYERS; i++)
 			po[i].copy(bb.po[i]);
-		
+
 		numanimwalls = bb.numanimwalls;
 		for(int i = 0; i < MAXANIMWALLS; i++) {
 			animwall[i].wallnum = bb.animwall[i].wallnum;
 			animwall[i].tag = bb.animwall[i].tag;
 		}
-		
+
 		System.arraycopy(bb.msx, 0, msx, 0, 2048);
 		System.arraycopy(bb.msy, 0, msy, 0, 2048);
 
@@ -731,7 +732,7 @@ public class LoadSave {
 			jailstatus[i] = bb.jailstatus[i];
 			jailcount2[i] = bb.jailcount2[i];
 		}
-		
+
 		numminecart = bb.numminecart;
 		for(int i = 0; i < MAXMINECARDS; i++)
 		{
@@ -752,14 +753,14 @@ public class LoadSave {
 			torchshade[i] = bb.torchshade[i];
 			torchflags[i] = bb.torchflags[i];
 		}
-		
+
 		numlightnineffects = bb.numlightnineffects;
 		for(int i = 0; i < MAXLIGHTNINS; i++)
 		{
 			lightninsector[i] = bb.lightninsector[i];
 			lightninshade[i] = bb.lightninshade[i];
 		}
-		
+
 		numambients = bb.numambients;
 		for(int i = 0; i < MAXAMBIENTS; i++)
 		{
@@ -776,25 +777,25 @@ public class LoadSave {
 			geomx1[i] = bb.geomx1[i];
 			geomy1[i] = bb.geomy1[i];
 			geomz1[i] = bb.geomz1[i];
-			
+
 			geoms2[i] = bb.geoms2[i];
 			geomx2[i] = bb.geomx2[i];
 			geomy2[i] = bb.geomy2[i];
 			geomz2[i] = bb.geomz2[i];
 		}
-		
+
 		UFO_SpawnCount = bb.UFO_SpawnCount;
 		UFO_SpawnTime = bb.UFO_SpawnTime;
 		UFO_SpawnHulk = bb.UFO_SpawnHulk;
-		
+
 		//gEndFirstEpisode = bb.gEndFirstEpisode;
 		//gEndGame = bb.gEndGame;
 
 		InitSpecialTextures();
-	    
+
 	    BowlReset();
 		plantProcess = bb.plantProcess;
-		
+
 		BellTime = bb.BellTime;
 		BellSound = bb.BellSound;
 		word_119BE0 = bb.word_119BE0;
@@ -804,31 +805,31 @@ public class LoadSave {
 		fakebubba_spawn = bb.fakebubba_spawn;
 		dword_119C08 = bb.dword_119C08;
 	}
-	
+
 	public static void MapLoad(SafeLoader bb)
 	{
 		boardfilename = bb.boardfilename;
 		numwalls = bb.numwalls;
 		for(int w = 0; w < numwalls; w++) {
-			if(wall[w] == null) 
+			if(wall[w] == null)
 				wall[w] = new WALL();
 			wall[w].set(bb.wall[w]);
 		}
 		numsectors = bb.numsectors;
 		for(int s = 0; s < numsectors; s++) {
-			if(sector[s] == null) 
+			if(sector[s] == null)
 				sector[s] = new SECTOR();
 			sector[s].set(bb.sector[s]);
 		}
 		for(int i = 0; i < MAXSPRITES; i++) {
-			if(sprite[i] == null) 
+			if(sprite[i] == null)
 				sprite[i] = new SPRITE();
 			sprite[i].set(bb.sprite[i]);
 		}
-		
+
 		System.arraycopy(bb.headspritesect, 0, headspritesect, 0, MAXSECTORS+1);
 		System.arraycopy(bb.headspritestat, 0, headspritestat, 0, MAXSTATUS+1);
-		
+
 		System.arraycopy(bb.prevspritesect, 0, prevspritesect, 0, MAXSPRITES);
 		System.arraycopy(bb.prevspritestat, 0, prevspritestat, 0, MAXSPRITES);
 		System.arraycopy(bb.nextspritesect, 0, nextspritesect, 0, MAXSPRITES);
@@ -838,7 +839,7 @@ public class LoadSave {
 		System.arraycopy(bb.rorsector, 0, rorsector, 0, 16);
 		System.arraycopy(bb.rortype, 0, rortype, 0, 16);
 	}
-	
+
 	public static void LoadGDXBlock()
 	{
 		if(loader.warp_on == 0)
@@ -852,35 +853,35 @@ public class LoadSave {
 			GameInfo ini = loader.addon;
 			checkEpisodeResources(ini);
 		} else
-			resetEpisodeResources();
+			resetEpisodeResources(true);
 	}
-	
+
 	public static boolean checkfile(Resource bb)
 	{
-		int nVersion = checkSave(bb);	
+		int nVersion = checkSave(bb);
 		if(nVersion != currentGdxSave)
 			return false;
-		
+
 		if(!loader.load(bb))
 			return false;
-		
+
 		return true;
 	}
-	
+
 	public static void load()
 	{
 		ud.multimode = loader.multimode;
 		ud.volume_number = loader.volume_number;
 		ud.level_number = loader.level_number;
 		ud.player_skill = loader.player_skill;
-		
+
 		LoadGDXBlock();
 		MapLoad(loader);
 		StuffLoad(loader);
 		ConLoad(loader);
 		AnimationLoad(loader);
 		GameInfoLoad(loader);
-			
+
 		if(over_shoulder_on != 0)
 		{
 	         cameradist = 0;
@@ -889,7 +890,7 @@ public class LoadSave {
 		}
 
 		screenpeek = myconnectindex;
-		
+
 		if(ps[myconnectindex].fogtype == 2)
 			applyfog(2);
 		else applyfog(0);
@@ -933,10 +934,10 @@ public class LoadSave {
 
 	        k = nextspritestat[k];
 		}
-		
+
 		fta = 0;
 		everyothertime = 0;
-		
+
 		gPrecacheScreen.init(false, new Runnable() {
 			@Override
 			public void run() {
@@ -946,15 +947,15 @@ public class LoadSave {
 				userMusic = null;
 				if(boardfilename != null) {
 					FileEntry file = BuildGdx.compat.checkFile(boardfilename);
-					if(file != null) 
+					if(file != null)
 						sndCheckMusic(file);
 				}
-				
+
 				musicvolume = ud.volume_number;
 		    	musiclevel = ud.level_number;
 		    	sndPlayMusic(currentGame.getCON().music_fn[ud.volume_number][ud.level_number]);
 
-		    	
+
 
 				if(ps[myconnectindex].jetpack_on != 0)
 					spritesound(DUKE_JETPACK_IDLE,ps[myconnectindex].i);
@@ -963,13 +964,13 @@ public class LoadSave {
 				vscrn(ud.screen_size);
 
 				BuildGdx.audio.getSound().setReverb(false, 0);
-				
+
 				game.pInput.resetMousePos();
 				game.net.predict.reset();
 				game.gPaused = false;
-				
+
 				game.nNetMode = NetMode.Single;
-				
+
 				if ( ps[myconnectindex].one_parallax_sectnum >= 0 )
 					setupbackdrop(sector[ps[myconnectindex].one_parallax_sectnum].ceilingpicnum);
 
@@ -985,30 +986,30 @@ public class LoadSave {
 		});
 		game.changeScreen(gPrecacheScreen);
 	}
-	
+
 	public static boolean loadgame(String filename) {
 		if(isPsychoSkill())
 		{
 			FTA(53, ps[myconnectindex]);
 			return false;
 		}
-		
+
 		FileResource fil = BuildGdx.compat.open(filename, Path.User, Mode.Read);
 		if (fil != null) {
 			boolean status = checkfile(fil);
 			fil.close();
-			
+
 			if (status) {
 				load();
 				if (lastload == null || lastload.isEmpty())
 					lastload = filename;
-				
+
 				if(loader.getMessage() != null)
 					addmessage(loader.getMessage());
-				
+
 				return true;
 			}
-			
+
 			addmessage("Incompatible version of saved game found!");
 			return false;
 		}
