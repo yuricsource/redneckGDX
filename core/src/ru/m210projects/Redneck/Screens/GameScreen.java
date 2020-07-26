@@ -99,6 +99,7 @@ import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
 import static ru.m210projects.Redneck.Globals.musiclevel;
 import static ru.m210projects.Redneck.Globals.musicvolume;
 import static ru.m210projects.Redneck.Globals.nFakePlayers;
+import static ru.m210projects.Redneck.Globals.nMaxEpisodes;
 import static ru.m210projects.Redneck.Globals.pNetInfo;
 import static ru.m210projects.Redneck.Globals.ps;
 import static ru.m210projects.Redneck.Globals.screenpeek;
@@ -897,10 +898,10 @@ public class GameScreen extends GameAdapter {
 	{
 		String title = null;
 		if (mUserFlag != UserFlag.UserMap) {
-			if(currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
+			if(ud.volume_number < nMaxEpisodes && currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number] != null)
 				title = currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title;
 			else {
-				game.GameCrash("MapInfo not found! Episode: " + ud.volume_number + " Level: " + ud.level_number + " nMaps: " + currentGame.episodes[ud.volume_number].nMaps);
+				game.GameCrash("MapInfo not found! Episode: " + ud.volume_number + " Level: " + ud.level_number + " nMaps: " + (ud.volume_number < nMaxEpisodes ? currentGame.episodes[ud.volume_number].nMaps : 0));
 				return null;
 			}
 		}
@@ -1164,7 +1165,7 @@ public class GameScreen extends GameAdapter {
 	                    {
 	                        if( sprite[k].picnum == DYNAMITE && sprite[k].owner == p.i )
 	                        {
-	                            p.gotweapon[DYNAMITE] = true;
+	                            p.gotweapon[DYNAMITE_WEAPON] = true;
 	                            j = HANDREMOTE_WEAPON;
 	                            break;
 	                        }
