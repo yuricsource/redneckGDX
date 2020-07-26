@@ -103,14 +103,14 @@ public class Sounds {
 				return;
 			}
 		}
-		
+
 		List<FileEntry> tracks = new ArrayList<FileEntry>();
 		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.Game).getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
 			if(file.getExtension().equals("ogg"))
 				tracks.add(file);
 		}
-		
+
 		if(tracks.size() != 0)
 		{
 			int numtracks = tracks.size();
@@ -121,7 +121,7 @@ public class Sounds {
 			Console.Println(numtracks + " cd tracks found...");
 			return;
 		}
-		
+
 		cdtracks = new String[0];
 		Console.Println("Cd tracks not found.");
 	}
@@ -222,7 +222,7 @@ public class Sounds {
 			BuildGdx.audio.setVolume(Driver.Music, cfg.musicVolume);
 		else
 			BuildGdx.audio.setVolume(Driver.Music, 0);
-		
+
 		if (userMusic != null) {
 			if (currMusic != null && currMusic.isPlaying() && currSong == userMusic.getPath())
 				return;
@@ -234,7 +234,7 @@ public class Sounds {
 				return;
 			}
 		}
-		
+
 		if(cfg.gShuffleMusic)
 			currTrack = (int) (Math.random() * (cdtracks.length - 1));
 		sndPlayTrack(currTrack);
@@ -260,7 +260,7 @@ public class Sounds {
 
 	public static void checkTrack() {
 		if(cfg.muteMusic) return;
-		
+
 		if (currMusic != null && !currMusic.isPlaying()) {
 			if(cfg.gShuffleMusic)
 				currTrack = (int) (Math.random() * (cdtracks.length - 1));
@@ -269,13 +269,13 @@ public class Sounds {
 			if (currTrack < 0 || currTrack >= cdtracks.length)
 				currTrack = 0;
 
-			System.err.println("Change music to" + currTrack);
+			System.err.println("Change music to " + currTrack);
 			sndPlayTrack(currTrack);
 		} else if (currMusic == null) {
 			int i = 0;
 			if(cfg.gShuffleMusic)
 				i = (int) (Math.random() * (cdtracks.length - 1));
-			
+
 			for (; i < cdtracks.length; i++)
 				if (sndPlayTrack(i)) {
 					System.err.println("Start music " + i);
@@ -293,6 +293,8 @@ public class Sounds {
 		sndStopMusic();
 		if (nTrack >= 0 && nTrack < cdtracks.length && BuildGdx.cache.contains(cdtracks[nTrack], 0)
 				&& (currMusic = BuildGdx.audio.newMusic(MusicType.Digital, cdtracks[nTrack])) != null) {
+
+			System.err.println("Play track " + nTrack);
 			currTrack = nTrack;
 			currMusic.play(false);
 			return true;
@@ -361,7 +363,7 @@ public class Sounds {
 //			offs = buildString(currentGame.getCON().fta_quotes[113], offs, "(", num);
 //			offs = buildString(currentGame.getCON().fta_quotes[113], offs, ") not found.");
 //			FTA(113, ps[myconnectindex]);
-			
+
 			Console.Println("Sound " + "(" + num + ") not found.");
 			return 0;
 		}
@@ -412,11 +414,11 @@ public class Sounds {
 
 		if (i >= 0 && isValidSector(sprite[i].sectnum) && (currentGame.getCON().soundm[num] & 16) == 0 && sprite[i].picnum == MUSICANDSFX
 				&& sprite[i].lotag < 999 && sector[sprite[i].sectnum].lotag < 9)
-			sndist = (int) divscale(sndist, (sprite[i].hitag + 1), 14);
+			sndist = divscale(sndist, (sprite[i].hitag + 1), 14);
 
 		int pitchs = currentGame.getCON().soundps[num];
 		int pitche = currentGame.getCON().soundpe[num];
-		cx = (int) klabs(pitche - pitchs);
+		cx = klabs(pitche - pitchs);
 
 		if (cx != 0) {
 			if (pitchs < pitche)
@@ -510,10 +512,10 @@ public class Sounds {
 			return null;
 		if (cfg.noSound)
 			return null;
-		
+
 		if(num < 0 || num >= NUM_SOUNDS)
 			return null;
-		
+
 		if (!cfg.VoiceToggle && (currentGame.getCON().soundm[num] & 4) != 0)
 			return null;
 		if ((currentGame.getCON().soundm[num] & 8) != 0 && ud.lockout != 0)
@@ -524,7 +526,7 @@ public class Sounds {
 		int pitch;
 		int pitchs = currentGame.getCON().soundps[num];
 		int pitche = currentGame.getCON().soundpe[num];
-		int cx = (int) klabs(pitche - pitchs);
+		int cx = klabs(pitche - pitchs);
 
 		if (cx != 0) {
 			if (pitchs < pitche)
@@ -603,7 +605,7 @@ public class Sounds {
 	public static void stopsound(int num, int i) {
 		if(num < 0 || num >= NUM_SOUNDS)
 			return;
-		
+
 		if (Sound[num].num > 0 && (i == -1 || i == SoundOwner[num][Sound[num].num - 1].i)) {
 			SoundOwner[num][Sound[num].num - 1].voice.dispose();
 		}
@@ -612,7 +614,7 @@ public class Sounds {
 	public static void stopsound(int num) {
 		if(num < 0 || num >= NUM_SOUNDS)
 			return;
-		
+
 		if (Sound[num].num > 0) {
 			SoundOwner[num][Sound[num].num - 1].voice.dispose();
 		}
@@ -627,7 +629,7 @@ public class Sounds {
 	public static void stopenvsound(int num, int i) {
 		if(num < 0 || num >= NUM_SOUNDS)
 			return;
-		
+
 		if (Sound[num].num > 0) {
 			int k = Sound[num].num;
 			for (int j = 0; j < k; j++)
@@ -675,7 +677,7 @@ public class Sounds {
 					if (sprite[i].sectnum >= 0 && sprite[i].sectnum < MAXSECTORS) { // 0.751
 						if (i >= 0 && (currentGame.getCON().soundm[j] & 16) == 0 && sprite[i].picnum == MUSICANDSFX
 								&& sprite[i].lotag < 999 && (sector[sprite[i].sectnum].lotag & 0xff) < 9)
-							sndist = (int) divscale(sndist, (sprite[i].hitag + 1), 14);
+							sndist = divscale(sndist, (sprite[i].hitag + 1), 14);
 					}
 				}
 
