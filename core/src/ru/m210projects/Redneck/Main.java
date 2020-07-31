@@ -283,7 +283,7 @@ public class Main extends BuildGame {
 		uGameFlags = 0;
 		kGameCrash = false;
 		if(usecustomarts)
-			resetEpisodeResources(true);
+			resetEpisodeResources();
 
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();

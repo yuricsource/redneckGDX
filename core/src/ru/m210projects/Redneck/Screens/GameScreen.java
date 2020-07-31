@@ -802,7 +802,7 @@ public class GameScreen extends GameAdapter {
 					GameInfo game = (GameInfo)item;
 					checkEpisodeResources(game);
 					Console.Println("Start user episode: " + game.Title);
-				} else resetEpisodeResources(true);
+				} else resetEpisodeResources();
 
 				if(item instanceof FileEntry) {
 					flag = UserFlag.UserMap;
