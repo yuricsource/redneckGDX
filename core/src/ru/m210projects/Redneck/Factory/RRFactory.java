@@ -18,7 +18,7 @@ package ru.m210projects.Redneck.Factory;
 
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Redneck.Names.LOADSCREEN;
+import static ru.m210projects.Redneck.Names.*;
 
 import ru.m210projects.Build.Input.BuildControllers;
 import ru.m210projects.Build.OnSceenDisplay.OSDFunc;
@@ -32,6 +32,7 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.SliderDrawable;
 import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Build.Render.Renderer.RenderType;
+import ru.m210projects.Build.Render.GdxRender.GDXRenderer;
 import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Fonts.GameFont;
@@ -42,8 +43,8 @@ import ru.m210projects.Redneck.Fonts.StandartFont;
 public class RRFactory extends BuildFactory {
 
 	private Main app;
-	public RRFactory(Main app)
-	{
+
+	public RRFactory(Main app) {
 		super("redneck.grp");
 		this.app = app;
 	}
@@ -60,9 +61,17 @@ public class RRFactory extends BuildFactory {
 
 	@Override
 	public Renderer renderer(RenderType type) {
-		if(type == RenderType.Software)
+		if (type == RenderType.Software)
 			return new RRSoftware(app.pEngine);
-		else return new RRPolymost(app.pEngine);
+		else if (type == RenderType.PolyGDX)
+			return new GDXRenderer(app.pEngine) {
+				@Override
+				protected int[] getMirrorTextures() {
+					return new int[] { 13, GRID, MIRROR };
+				}
+			};
+		else
+			return new RRPolymost(app.pEngine);
 	}
 
 	@Override
@@ -90,11 +99,11 @@ public class RRFactory extends BuildFactory {
 		return new FontHandler(5) {
 			@Override
 			protected BuildFont init(int i) {
-				if(i == 0)
+				if (i == 0)
 					return new MiniFont(app.pEngine);
-				if(i == 1)
+				if (i == 1)
 					return new GameFont(app.pEngine);
-				if(i == 2)
+				if (i == 2)
 					return new MenuFont(app.pEngine);
 
 				return new StandartFont(app.pEngine);
