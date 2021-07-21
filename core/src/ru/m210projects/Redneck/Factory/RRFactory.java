@@ -64,12 +64,7 @@ public class RRFactory extends BuildFactory {
 		if (type == RenderType.Software)
 			return new RRSoftware(app.pEngine);
 		else if (type == RenderType.PolyGDX)
-			return new GDXRenderer(app.pEngine) {
-				@Override
-				protected int[] getMirrorTextures() {
-					return new int[] { 13, GRID, MIRROR };
-				}
-			};
+			return new RRPolygdx(app.pEngine);
 		else
 			return new RRPolymost(app.pEngine);
 	}
