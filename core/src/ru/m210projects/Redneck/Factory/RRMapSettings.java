@@ -86,7 +86,7 @@ public class RRMapSettings implements IOverheadMapSettings {
 	}
 
 	@Override
-	public int getWallColor(int w) {
+	public int getWallColor(int w, int s) {
 		WALL wal = wall[w];
 		if (Gameutils.isValidSector(wal.nextsector)) {// red wall
 			int col = 139; // red

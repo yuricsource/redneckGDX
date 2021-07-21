@@ -32,7 +32,6 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.SliderDrawable;
 import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Build.Render.Renderer.RenderType;
-import ru.m210projects.Build.Render.GdxRender.GDXRenderer;
 import ru.m210projects.Build.Script.DefScript;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Fonts.GameFont;
