@@ -64,204 +64,198 @@ public class Actors {
 	public static int UFO_SpawnTime;
 	public static int UFO_SpawnHulk;
 
-	public static boolean checkaddkills(SPRITE s)
-	{
-		switch(s.picnum)
-		{
-			case BOULDER:
-			case BOULDER1:
-			case 1147:
-			case RAT:
-			case TORNADO:
-			case BILLYCOCK:
-			case BILLYRAY:
-			case BILLYRAYSTAYPUT:
-			case 4249:
-			case DOGRUN:
-			case LTH:
-			case 4429:
-			case BUBBASTAND:
-			case HULK:
-			case HULKSTAYPUT:
-			case MOSQUITO:
-			case PIG:
-			case 4989:
-			case SBMOVE:
-			case MINION:
-			case MINIONSTAYPUT:
-			case UFO1:
-			case UFO2:
-			case UFO3:
-			case UFO4:
-			case UFO5:
-			case COOT:
-			case COOTSTAYPUT:
-			case 5501:
-			case VIXEN:
-				return true;
+	public static boolean checkaddkills(SPRITE s) {
+		switch (s.picnum) {
+		case BOULDER:
+		case BOULDER1:
+		case 1147:
+		case RAT:
+		case TORNADO:
+		case BILLYCOCK:
+		case BILLYRAY:
+		case BILLYRAYSTAYPUT:
+		case 4249:
+		case DOGRUN:
+		case LTH:
+		case 4429:
+		case BUBBASTAND:
+		case HULK:
+		case HULKSTAYPUT:
+		case MOSQUITO:
+		case PIG:
+		case 4989:
+		case SBMOVE:
+		case MINION:
+		case MINIONSTAYPUT:
+		case UFO1:
+		case UFO2:
+		case UFO3:
+		case UFO4:
+		case UFO5:
+		case COOT:
+		case COOTSTAYPUT:
+		case 5501:
+		case VIXEN:
+			return true;
 
-			case 5890: //RA
-			case 5891:
-			case 5995:
-			case 6225:
-			case 6401:
-			case 6658:
-			case 6659:
-			case 7030:
-			case 7035:
-			case 7192:
-			case 7199:
-			case 7206:
-			case 7280:
-			case 8035:
-			case 8036:
-			case 8705:
-				if(currentGame.getCON().type == RRRA)
-		    		return true;
-                break;
+		case 5890: // RA
+		case 5891:
+		case 5995:
+		case 6225:
+		case 6401:
+		case 6658:
+		case 6659:
+		case 7030:
+		case 7035:
+		case 7192:
+		case 7199:
+		case 7206:
+		case 7280:
+		case 8035:
+		case 8036:
+		case 8705:
+			if (currentGame.getCON().type == RRRA)
+				return true;
+			break;
 		}
 		return false;
 	}
 
-	public static int LocateTheLocator(int n,int sn)
-	{
-	    short i;
+	public static int LocateTheLocator(int n, int sn) {
+		short i;
 
-	    i = headspritestat[7];
-	    while(i >= 0)
-	    {
-	        if( (sn == -1 || sn == sprite[i].sectnum) && n == sprite[i].lotag )
-	            return i;
-	        i = nextspritestat[i];
-	    }
-	    return -1;
+		i = headspritestat[7];
+		while (i >= 0) {
+			if ((sn == -1 || sn == sprite[i].sectnum) && n == sprite[i].lotag)
+				return i;
+			i = nextspritestat[i];
+		}
+		return -1;
 	}
 
-	public static boolean badguy(SPRITE s)
-	{
-	    switch(s.picnum)
-	    {
-		    case BOULDER:
-		    case BOULDER1:
-		    case TORNADO:
-		    case BILLYCOCK:
-		    case BILLYSHOOT:
-		    case BILLYRAYSTAYPUT:
-		    case DOGRUN:
-		    case LTH:
-		    case 4429: //LTH
-		    case BUBBASTAND:
-		    case HULK:
-		    case HULKSTAYPUT:
-		    case HEN:
-		    case MOSQUITO:
-		    case PIG:
-		    case 4989:
-		    case SBMOVE:
-		    case MINION:
-		    case MINIONSTAYPUT:
-		    case UFO1:
-		    case UFO2:
-		    case UFO3:
-		    case UFO4:
-		    case UFO5:
-		    case COOT:
-		    case COOTSTAYPUT:
-		    case 5501:
-		    case VIXEN:
-		    	return true;
+	public static boolean badguy(SPRITE s) {
+		switch (s.picnum) {
+		case BOULDER:
+		case BOULDER1:
+		case TORNADO:
+		case BILLYCOCK:
+		case BILLYSHOOT:
+		case BILLYRAYSTAYPUT:
+		case DOGRUN:
+		case LTH:
+		case 4429: // LTH
+		case BUBBASTAND:
+		case HULK:
+		case HULKSTAYPUT:
+		case HEN:
+		case MOSQUITO:
+		case PIG:
+		case 4989:
+		case SBMOVE:
+		case MINION:
+		case MINIONSTAYPUT:
+		case UFO1:
+		case UFO2:
+		case UFO3:
+		case UFO4:
+		case UFO5:
+		case COOT:
+		case COOTSTAYPUT:
+		case 5501:
+		case VIXEN:
+			return true;
 
-		    case 1147: //RA
-		    case RAT:
-		    case 4249:
-		    case 4770:
-		    case MINIONUFO:
-		    case BIKERRIDE:
-		    case BIKERRIDE + 1:
-		    case BIKERSTAND:
-		    case 6225:
-		    case BIKERRIDEDAISY:
-		    case DAISYMAE:
-		    case DAISYMAE + 1:
-		    case BANJOCOOTER:
-		    case GUITARBILLY:
-		    case MINIONAIRBOAT:
-		    case HULKAIRBOAT:
-		    case DAISYAIRBOAT:
-		    case JACKOLOPE:
-		    case MAMAJACKOLOPE:
-		    	if(currentGame.getCON().type == RRRA)
-		    		return true;
-                break;
-	    }
+		case 1147: // RA
+		case RAT:
+		case 4249:
+		case 4770:
+		case MINIONUFO:
+		case BIKERRIDE:
+		case BIKERRIDE + 1:
+		case BIKERSTAND:
+		case 6225:
+		case BIKERRIDEDAISY:
+		case DAISYMAE:
+		case DAISYMAE + 1:
+		case BANJOCOOTER:
+		case GUITARBILLY:
+		case MINIONAIRBOAT:
+		case HULKAIRBOAT:
+		case DAISYAIRBOAT:
+		case JACKOLOPE:
+		case MAMAJACKOLOPE:
+			if (currentGame.getCON().type == RRRA)
+				return true;
+			break;
+		}
 
-	    if( currentGame.getCON().actortype[s.picnum] != 0 )
-	    	return true;
+		if (currentGame.getCON().actortype[s.picnum] != 0)
+			return true;
 
-	    return false;
+		return false;
 	}
 
-	public static boolean badguypic(int pn) //Redneck
+	public static boolean badguypic(int pn) // Redneck
 	{
-	    switch(pn)
-	    {
-		    case BOULDER:
-		    case BOULDER1:
-		    case 1147:
-		    case 1344:
-		    case TORNADO:
-		    case BILLYCOCK:
-		    case BILLYRAY:
-		    case BILLYRAYSTAYPUT:
-		    case 4249:
-		    case DOGRUN:
-		    case LTH:
-		    case 4429:
-		    case BUBBASTAND:
-		    case HULK:
-		    case HULKSTAYPUT:
-		    case MOSQUITO:
-		    case PIG:
-		    case 4989:
-		    case SBMOVE:
-		    case MINION:
-		    case MINIONSTAYPUT:
-		    case UFO1:
-		    case UFO2:
-		    case UFO3:
-		    case UFO4:
-		    case UFO5:
-		    case COOT:
-		    case COOTSTAYPUT:
-		    case 5501:
-		    case VIXEN:
-		    	return true;
+		switch (pn) {
+		case BOULDER:
+		case BOULDER1:
+		case 1147:
+		case 1344:
+		case TORNADO:
+		case BILLYCOCK:
+		case BILLYRAY:
+		case BILLYRAYSTAYPUT:
+		case 4249:
+		case DOGRUN:
+		case LTH:
+		case 4429:
+		case BUBBASTAND:
+		case HULK:
+		case HULKSTAYPUT:
+		case MOSQUITO:
+		case PIG:
+		case 4989:
+		case SBMOVE:
+		case MINION:
+		case MINIONSTAYPUT:
+		case UFO1:
+		case UFO2:
+		case UFO3:
+		case UFO4:
+		case UFO5:
+		case COOT:
+		case COOTSTAYPUT:
+		case 5501:
+		case VIXEN:
+			return true;
 
-		    	//RA
-		    case 4770:
-		    case MINIONUFO:
-		    case 5890:
-		    case 5891:
-		    case 5995:
-		    case 6225:
-		    case 6401:
-		    case 6658:
-		    case 6659:
-		    case 7030:
-		    case 7035:
-		    case 7192:
-		    case 7199:
-		    case 7206:
-		    case 7280:
-		    case 8705:
-		    	if(currentGame.getCON().type == RRRA)
-		    		return true;
-                break;
-	    }
+		// RA
+		case 4770:
+		case MINIONUFO:
+		case 5890:
+		case 5891:
+		case 5995:
+		case 6225:
+		case 6401:
+		case 6658:
+		case 6659:
+		case 7030:
+		case 7035:
+		case 7192:
+		case 7199:
+		case 7206:
+		case 7280:
+		case 8705:
+			if (currentGame.getCON().type == RRRA)
+				return true;
+			break;
+		}
 
-	    if( pn < MAXTILES && currentGame.getCON().actortype[pn] != 0 ) return true;
+		if (pn < MAXTILES && currentGame.getCON().actortype[pn] != 0)
+			return true;
 
-	    return false;
+		return false;
 	}
 
 	public static boolean ifsquished(int i, int p) {
@@ -299,8 +293,7 @@ public class Actors {
 	public static final short tempshort[] = new short[MAXSECTORS];
 	public static final byte statlist[] = { 0, 1, 6, 10, 12, 2, 5 };
 
-	public static void hitradius(short i, int r, int hp1, int hp2, int hp3,
-			int hp4) {
+	public static void hitradius(short i, int r, int hp1, int hp2, int hp3, int hp4) {
 		SPRITE s, sj;
 		WALL wal;
 		int d, q, x1, y1;
@@ -319,14 +312,12 @@ public class Actors {
 			do {
 				dasect = tempshort[sectcnt++];
 				if (((sector[dasect].ceilingz - s.z) >> 8) < r) {
-					d = klabs(wall[sector[dasect].wallptr].x - s.x) + klabs(wall[sector[dasect].wallptr].y
-							- s.y);
+					d = klabs(wall[sector[dasect].wallptr].x - s.x) + klabs(wall[sector[dasect].wallptr].y - s.y);
 					if (d < r)
 						checkhitceiling(dasect);
 					else {
-						d = klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].x
-								- s.x) + klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].y
-								- s.y);
+						d = klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].x - s.x)
+								+ klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].y - s.y);
 						if (d < r)
 							checkhitceiling(dasect);
 					}
@@ -348,9 +339,7 @@ public class Actors {
 						x1 = (((wal.x + wall[wal.point2].x) >> 1) + s.x) >> 1;
 						y1 = (((wal.y + wall[wal.point2].y) >> 1) + s.y) >> 1;
 						sect = engine.updatesector(x1, y1, sect);
-						if (sect >= 0
-								&& engine.cansee(x1, y1, s.z, sect, s.x, s.y,
-										s.z, s.sectnum))
+						if (sect >= 0 && engine.cansee(x1, y1, s.z, sect, s.x, s.y, s.z, s.sectnum))
 							checkhitwall(i, x, wal.x, wal.y, s.z, s.picnum);
 					}
 				}
@@ -372,17 +361,12 @@ public class Actors {
 					if ((sj.cstat & 257) != 0)
 						if (dist(s, sj) < r) {
 							if (badguy(sj)
-									&& !engine.cansee(sj.x, sj.y, sj.z + q,
-											sj.sectnum, s.x, s.y, s.z + q,
-											s.sectnum))
+									&& !engine.cansee(sj.x, sj.y, sj.z + q, sj.sectnum, s.x, s.y, s.z + q, s.sectnum))
 								continue;
 							checkhitsprite(j, i);
 						}
-				} else if (sj.extra >= 0
-						&& sj != s
-						&& (badguy(sj) || sj.picnum == 1185
-								|| sj.picnum == 3440 || sj.picnum == 1184
-								|| (sj.cstat & 257) != 0 || sj.picnum == LNRDLYINGDEAD)) {
+				} else if (sj.extra >= 0 && sj != s && (badguy(sj) || sj.picnum == 1185 || sj.picnum == 3440
+						|| sj.picnum == 1184 || (sj.cstat & 257) != 0 || sj.picnum == LNRDLYINGDEAD)) {
 					if (s.picnum == MORTER && j == s.owner)
 						continue;
 
@@ -392,20 +376,16 @@ public class Actors {
 					if (sj.picnum == APLAYER)
 						sj.z += PHEIGHT;
 
-					if (d < r
-							&& engine.cansee(sj.x, sj.y, sj.z - (8 << 8),
-									sj.sectnum, s.x, s.y, s.z - (12 << 8),
-									s.sectnum)) {
-						hittype[j].ang = engine
-								.getangle(sj.x - s.x, sj.y - s.y);
+					if (d < r && engine.cansee(sj.x, sj.y, sj.z - (8 << 8), sj.sectnum, s.x, s.y, s.z - (12 << 8),
+							s.sectnum)) {
+						hittype[j].ang = engine.getangle(sj.x - s.x, sj.y - s.y);
 
-					if(sprite[j].picnum == MINION && sprite[j].pal == 19)
-						continue;
+						if (sprite[j].picnum == MINION && sprite[j].pal == 19)
+							continue;
 
 						if (s.picnum == CROSSBOW && sj.extra > 0)
 							hittype[j].picnum = CROSSBOW;
-						else
-						if (s.picnum == CHIKENCROSSBOW && sj.extra > 0)
+						else if (s.picnum == CHIKENCROSSBOW && sj.extra > 0)
 							hittype[j].picnum = CROSSBOW;
 						else
 							hittype[j].picnum = RADIUSEXPLOSION;
@@ -413,40 +393,32 @@ public class Actors {
 						if (d < r / 3) {
 							if (hp4 == hp3)
 								hp4++;
-							hittype[j].extra = hp3
-									+ (engine.krand() % (hp4 - hp3));
+							hittype[j].extra = hp3 + (engine.krand() % (hp4 - hp3));
 						} else if (d < 2 * r / 3) {
 							if (hp3 == hp2)
 								hp3++;
-							hittype[j].extra = hp2
-									+ (engine.krand() % (hp3 - hp2));
+							hittype[j].extra = hp2 + (engine.krand() % (hp3 - hp2));
 						} else if (d < r) {
 							if (hp2 == hp1)
 								hp2++;
-							hittype[j].extra = hp1
-									+ (engine.krand() % (hp2 - hp1));
+							hittype[j].extra = hp1 + (engine.krand() % (hp2 - hp1));
 						}
 
-						if (sprite[j].picnum != HULK
-								&& sprite[j].picnum != SBMOVE
-								//GDX RA 2.10.2018
-								&& sprite[j].picnum != MAMAJACKOLOPE
-								&& sprite[j].picnum != GUITARBILLY
-								&& sprite[j].picnum != BANJOCOOTER
-								&& sprite[j].picnum != 8663) {
+						if (sprite[j].picnum != HULK && sprite[j].picnum != SBMOVE
+						// GDX RA 2.10.2018
+								&& sprite[j].picnum != MAMAJACKOLOPE && sprite[j].picnum != GUITARBILLY
+								&& sprite[j].picnum != BANJOCOOTER && sprite[j].picnum != 8663) {
 							if (sj.xvel < 0)
 								sj.xvel = 0;
 							sj.xvel += (s.extra << 2);
 						}
-						if (sj.picnum == 2231 || sj.picnum == 1185
-								|| sj.picnum == 1184 || sj.picnum == 3440)
+						if (sj.picnum == 2231 || sj.picnum == 1185 || sj.picnum == 1184 || sj.picnum == 3440)
 							checkhitsprite(j, i);
 
 						else if (s.extra == 0)
 							hittype[j].extra = 0;
 
-						if (sj.picnum != RADIUSEXPLOSION && s.owner >= 0
-								&& sprite[s.owner].statnum < MAXSTATUS) {
+						if (sj.picnum != RADIUSEXPLOSION && s.owner >= 0 && sprite[s.owner].statnum < MAXSTATUS) {
 							if (sj.picnum == APLAYER) {
 								p = sj.yvel;
 								if (ps[p].newowner >= 0) {
@@ -455,9 +427,7 @@ public class Actors {
 									ps[p].posy = ps[p].oposy;
 									ps[p].posz = ps[p].oposz;
 									ps[p].ang = ps[p].oang;
-									ps[p].cursectnum = engine.updatesector(
-											ps[p].posx, ps[p].posy,
-											ps[p].cursectnum);
+									ps[p].cursectnum = engine.updatesector(ps[p].posx, ps[p].posy, ps[p].cursectnum);
 									setpal(ps[p]);
 
 									k = headspritestat[1];
@@ -476,22 +446,19 @@ public class Actors {
 		}
 	}
 
-	public static int movesprite(short spritenum, int xchange, int ychange,
-			int zchange, int cliptype) {
+	public static int movesprite(short spritenum, int xchange, int ychange, int zchange, int cliptype) {
 		int retval;
 
 		boolean bg = badguy(sprite[spritenum]);
 
 		game.pInt.setsprinterpolate(spritenum, sprite[spritenum]);
 
-		if (sprite[spritenum].statnum == 5
-				|| (bg && sprite[spritenum].xrepeat < 4)) {
+		if (sprite[spritenum].statnum == 5 || (bg && sprite[spritenum].xrepeat < 4)) {
 			sprite[spritenum].x += (xchange * TICSPERFRAME) >> 2;
 			sprite[spritenum].y += (ychange * TICSPERFRAME) >> 2;
 			sprite[spritenum].z += (zchange * TICSPERFRAME) >> 2;
 			if (bg)
-				engine.setsprite(spritenum, sprite[spritenum].x,
-						sprite[spritenum].y, sprite[spritenum].z);
+				engine.setsprite(spritenum, sprite[spritenum].x, sprite[spritenum].y, sprite[spritenum].z);
 			return 0;
 		}
 
@@ -506,56 +473,46 @@ public class Actors {
 			int oldy = sprite[spritenum].y;
 
 			if (sprite[spritenum].xrepeat > 60) {
-				retval = engine.clipmove(sprite[spritenum].x,
-						sprite[spritenum].y, daz, dasectnum,
-						((xchange * TICSPERFRAME) << 11),
-						((ychange * TICSPERFRAME) << 11), 1024, (4 << 8),
-						(4 << 8), cliptype);
+				retval = engine.clipmove(sprite[spritenum].x, sprite[spritenum].y, daz, dasectnum,
+						((xchange * TICSPERFRAME) << 11), ((ychange * TICSPERFRAME) << 11), 1024, (4 << 8), (4 << 8),
+						cliptype);
 				sprite[spritenum].x = clipmove_x;
 				sprite[spritenum].y = clipmove_y;
 				daz = clipmove_z;
 				dasectnum = clipmove_sectnum;
 			} else {
-				retval = engine.clipmove(sprite[spritenum].x,
-						sprite[spritenum].y, daz, dasectnum,
-						((xchange * TICSPERFRAME) << 11),
-						((ychange * TICSPERFRAME) << 11), 192, (4 << 8),
-						(4 << 8), cliptype);
+				retval = engine.clipmove(sprite[spritenum].x, sprite[spritenum].y, daz, dasectnum,
+						((xchange * TICSPERFRAME) << 11), ((ychange * TICSPERFRAME) << 11), 192, (4 << 8), (4 << 8),
+						cliptype);
 				sprite[spritenum].x = clipmove_x;
 				sprite[spritenum].y = clipmove_y;
 				daz = clipmove_z;
 				dasectnum = clipmove_sectnum;
 			}
 
-			if (dasectnum < 0
-					|| (dasectnum >= 0 && (hittype[spritenum].actorstayput >= 0 && hittype[spritenum].actorstayput != dasectnum))) {
+			if (dasectnum < 0 || (dasectnum >= 0
+					&& (hittype[spritenum].actorstayput >= 0 && hittype[spritenum].actorstayput != dasectnum))) {
 				if (dasectnum < 0)
 					dasectnum = 0;
 				sprite[spritenum].x = oldx;
 				sprite[spritenum].y = oldy;
-				if (sector[dasectnum].lotag == 1
-						|| (hittype[spritenum].temp_data[0] & 3) == 1)
+				if (sector[dasectnum].lotag == 1 || (hittype[spritenum].temp_data[0] & 3) == 1)
 					sprite[spritenum].ang = (short) (engine.krand() & 2047);
 				engine.setsprite(spritenum, oldx, oldy, sprite[spritenum].z);
 
 				return (kHitSector | dasectnum);
 			}
-			if ((retval & kHitTypeMask) >= kHitWall
-					&& (hittype[spritenum].cgg == 0))
+			if ((retval & kHitTypeMask) >= kHitWall && (hittype[spritenum].cgg == 0))
 				sprite[spritenum].ang += 768;
 		} else {
 			if (sprite[spritenum].statnum == 4)
-				retval = engine.clipmove(sprite[spritenum].x,
-						sprite[spritenum].y, daz, dasectnum,
-						((xchange * TICSPERFRAME) << 11),
-						((ychange * TICSPERFRAME) << 11), 8, (4 << 8),
-						(4 << 8), cliptype);
+				retval = engine.clipmove(sprite[spritenum].x, sprite[spritenum].y, daz, dasectnum,
+						((xchange * TICSPERFRAME) << 11), ((ychange * TICSPERFRAME) << 11), 8, (4 << 8), (4 << 8),
+						cliptype);
 			else
-				retval = engine.clipmove(sprite[spritenum].x,
-						sprite[spritenum].y, daz, dasectnum,
-						((xchange * TICSPERFRAME) << 11),
-						((ychange * TICSPERFRAME) << 11), 128, (4 << 8),
-						(4 << 8), cliptype);
+				retval = engine.clipmove(sprite[spritenum].x, sprite[spritenum].y, daz, dasectnum,
+						((xchange * TICSPERFRAME) << 11), ((ychange * TICSPERFRAME) << 11), 128, (4 << 8), (4 << 8),
+						cliptype);
 			sprite[spritenum].x = clipmove_x;
 			sprite[spritenum].y = clipmove_y;
 			daz = clipmove_z;
@@ -566,8 +523,7 @@ public class Actors {
 			if ((dasectnum != sprite[spritenum].sectnum))
 				engine.changespritesect(spritenum, dasectnum);
 		daz = sprite[spritenum].z + ((zchange * TICSPERFRAME) >> 3);
-		if ((daz > hittype[spritenum].ceilingz)
-				&& (daz <= hittype[spritenum].floorz))
+		if ((daz > hittype[spritenum].ceilingz) && (daz <= hittype[spritenum].floorz))
 			sprite[spritenum].z = daz;
 		else if (retval == 0)
 			return (kHitSector | dasectnum);
@@ -579,8 +535,7 @@ public class Actors {
 	{
 		SPRITE s = sprite[i];
 
-		int movetype = movesprite(i,
-				(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
+		int movetype = movesprite(i, (s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
 				(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel, cliptype);
 
 		return (movetype == 0);
@@ -651,66 +606,45 @@ public class Actors {
 								continue;
 							}
 
-							if(currentGame.getCON().type != RRRA) {
-								if ( (s.pal == 33 || s.picnum == VIXEN) ) {
+							if (currentGame.getCON().type != RRRA) {
+								if ((s.pal == 33 || s.picnum == VIXEN)) {
 									int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 									int cz2 = s.z - (engine.krand() % (52 << 8));
-									cansee = engine.cansee(sx, sy, cz2, s.sectnum,
-											px, py, cz1,
-											ps[p].cursectnum);
+									cansee = engine.cansee(sx, sy, cz2, s.sectnum, px, py, cz1, ps[p].cursectnum);
 								} else {
-									if(((px - sx) * sintable[(s.ang + 512) & kAngleMask]) + ((py - sy) * sintable[(s.ang) & kAngleMask]) >= 0)
-									{
+									if (((px - sx) * sintable[(s.ang + 512) & kAngleMask])
+											+ ((py - sy) * sintable[(s.ang) & kAngleMask]) >= 0) {
 										int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 										int cz2 = s.z - (engine.krand() % (52 << 8));
-										cansee = engine.cansee(sx, sy, cz2, s.sectnum,
-												px, py, cz1,
-												ps[p].cursectnum);
+										cansee = engine.cansee(sx, sy, cz2, s.sectnum, px, py, cz1, ps[p].cursectnum);
 									}
 								}
 							}
 
-							if(currentGame.getCON().type == RRRA) {
-								if(s.pal == 33 || s.picnum == COOT
-								          || s.picnum == COOTSTAYPUT
-								          || s.picnum == VIXEN
-								          || s.picnum == BIKERSTAND
-								          || s.picnum == BIKERRIDE
-								          || s.picnum == 5891
-								          || s.picnum == 6658
-								          || s.picnum == BIKERRIDEDAISY
-								          || s.picnum == 6659
-								          || s.picnum == MINIONAIRBOAT
-								          || s.picnum == HULKAIRBOAT
-								          || s.picnum == DAISYAIRBOAT
-								          || s.picnum == JACKOLOPE
-								          || s.picnum == BANJOCOOTER
-								          || s.picnum == GUITARBILLY
-								          || s.picnum == 6225
-								          || s.picnum == MAMAJACKOLOPE
-								          || (s.picnum == MINION && s.pal == 8) )
-								{
+							if (currentGame.getCON().type == RRRA) {
+								if (s.pal == 33 || s.picnum == COOT || s.picnum == COOTSTAYPUT || s.picnum == VIXEN
+										|| s.picnum == BIKERSTAND || s.picnum == BIKERRIDE || s.picnum == 5891
+										|| s.picnum == 6658 || s.picnum == BIKERRIDEDAISY || s.picnum == 6659
+										|| s.picnum == MINIONAIRBOAT || s.picnum == HULKAIRBOAT
+										|| s.picnum == DAISYAIRBOAT || s.picnum == JACKOLOPE || s.picnum == BANJOCOOTER
+										|| s.picnum == GUITARBILLY || s.picnum == 6225 || s.picnum == MAMAJACKOLOPE
+										|| (s.picnum == MINION && s.pal == 8)) {
 									int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 									int cz2 = s.z - (engine.krand() % (52 << 8));
-									cansee = engine.cansee(sx, sy, cz2, s.sectnum,
-											px, py, cz1,
-											ps[p].cursectnum);
+									cansee = engine.cansee(sx, sy, cz2, s.sectnum, px, py, cz1, ps[p].cursectnum);
 								} else {
-									if(((px - sx) * sintable[(s.ang + 512) & kAngleMask]) + ((py - sy) * sintable[(s.ang) & kAngleMask]) >= 0)
-									{
+									if (((px - sx) * sintable[(s.ang + 512) & kAngleMask])
+											+ ((py - sy) * sintable[(s.ang) & kAngleMask]) >= 0) {
 										int cz1 = ps[p].oposz - (engine.krand() % (32 << 8));
 										int cz2 = s.z - (engine.krand() % (52 << 8));
-										cansee = engine.cansee(sx, sy, cz2, s.sectnum,
-												px, py, cz1,
-												ps[p].cursectnum);
+										cansee = engine.cansee(sx, sy, cz2, s.sectnum, px, py, cz1, ps[p].cursectnum);
 									}
 								}
 							}
 						} else {
 							int cz1 = ps[p].oposz - ((engine.krand() & 31) << 8);
 							int cz2 = s.z - ((engine.krand() & 31) << 8);
-							cansee = engine.cansee(s.x, s.y, cz2, s.sectnum,
-									ps[p].oposx, ps[p].oposy, cz1,
+							cansee = engine.cansee(s.x, s.y, cz2, s.sectnum, ps[p].oposx, ps[p].oposy, cz1,
 									ps[p].cursectnum);
 						}
 
@@ -756,8 +690,7 @@ public class Actors {
 					case PIG:
 					case DOGRUN:
 					case JACKOLOPE:
-						if(sub_64F28(i, p))
-						{
+						if (sub_64F28(i, p)) {
 							hittype[i].timetosleep = 0;
 							check_fta_sounds(i);
 							engine.changespritestat(i, (short) 1);
@@ -770,27 +703,22 @@ public class Actors {
 		}
 	}
 
-	public static void sub_64EF0(int snum)
-	{
+	public static void sub_64EF0(int snum) {
 		PlayerStruct p = ps[snum];
 		p.field_28E = 1;
 		p.field_X = p.posx;
 		p.field_Y = p.posy;
 	}
 
-	public static boolean sub_64F28(int nSprite, int nPlayer)
-	{
+	public static boolean sub_64F28(int nSprite, int nPlayer) {
 		PlayerStruct p = ps[nPlayer];
 		SPRITE pSprite = sprite[nSprite];
 
-		if ( p.field_28E != 0 )
-		{
+		if (p.field_28E != 0) {
 			int pal = pSprite.pal;
-			if ( pal != 30 && pal != 32 && pal != 33 )
-			{
-				if ( p.field_X - p.field_290 < pSprite.x && p.field_290 + p.field_X > pSprite.x )
-				{
-					if ( p.field_Y - p.field_290 < pSprite.y && p.field_Y + p.field_290 > pSprite.y )
+			if (pal != 30 && pal != 32 && pal != 33) {
+				if (p.field_X - p.field_290 < pSprite.x && p.field_290 + p.field_X > pSprite.x) {
+					if (p.field_Y - p.field_290 < pSprite.y && p.field_Y + p.field_290 > pSprite.y)
 						return true;
 				}
 			}
@@ -801,9 +729,7 @@ public class Actors {
 	public static int ifhitsectors(short sectnum) {
 		int i = headspritestat[5];
 		while (i >= 0) {
-			if (sprite[i].picnum == EXPLOSION2
-					|| sprite[i].picnum == EXPLOSION3
-					&& sectnum == sprite[i].sectnum)
+			if (sprite[i].picnum == EXPLOSION2 || sprite[i].picnum == EXPLOSION3 && sectnum == sprite[i].sectnum)
 				return i;
 			i = nextspritestat[i];
 		}
@@ -836,8 +762,7 @@ public class Actors {
 
 							ps[p].wackedbyactor = (short) j;
 
-							if (sprite[hittype[sn].owner].picnum == APLAYER
-									&& p != sprite[hittype[sn].owner].yvel)
+							if (sprite[hittype[sn].owner].picnum == APLAYER && p != sprite[hittype[sn].owner].yvel)
 								ps[p].frag_ps = sprite[j].yvel;
 
 							hittype[sn].owner = ps[p].i;
@@ -854,16 +779,12 @@ public class Actors {
 					case RADIUSEXPLOSION:
 					case CROSSBOW:
 					case CHIKENCROSSBOW:
-						ps[p].posxv += hittype[sn].extra
-								* (sintable[(hittype[sn].ang + 512) & 2047]) << 2;
-						ps[p].posyv += hittype[sn].extra
-								* (sintable[hittype[sn].ang & 2047]) << 2;
+						ps[p].posxv += hittype[sn].extra * (sintable[(hittype[sn].ang + 512) & 2047]) << 2;
+						ps[p].posyv += hittype[sn].extra * (sintable[hittype[sn].ang & 2047]) << 2;
 						break;
 					default:
-						ps[p].posxv += hittype[sn].extra
-								* (sintable[(hittype[sn].ang + 512) & 2047]) << 1;
-						ps[p].posyv += hittype[sn].extra
-								* (sintable[hittype[sn].ang & 2047]) << 1;
+						ps[p].posxv += hittype[sn].extra * (sintable[(hittype[sn].ang + 512) & 2047]) << 1;
+						ps[p].posyv += hittype[sn].extra * (sintable[hittype[sn].ang & 2047]) << 1;
 						break;
 					}
 				} else {
@@ -871,8 +792,7 @@ public class Actors {
 						return -1;
 
 					npc.extra -= hittype[sn].extra;
-					if (npc.picnum != 4989 && npc.owner >= 0
-							&& sprite[npc.owner].statnum < MAXSTATUS)
+					if (npc.picnum != 4989 && npc.owner >= 0 && sprite[npc.owner].statnum < MAXSTATUS)
 						npc.owner = (short) hittype[sn].owner;
 				}
 
@@ -926,19 +846,16 @@ public class Actors {
 
 			p = sprite[sprite[i].owner].yvel;
 
-			if (sector[ps[p].cursectnum].lotag != 1
-					|| sprite[ps[p].i].extra <= 0) {
+			if (sector[ps[p].cursectnum].lotag != 1 || sprite[ps[p].i].extra <= 0) {
 				ps[p].dummyplayersprite = -1;
 				engine.deletesprite(i);
 				i = nexti;
 				continue;
 			} else {
-				if (ps[p].on_ground && ps[p].on_warping_sector == 1
-						&& sector[ps[p].cursectnum].lotag == 1) {
+				if (ps[p].on_ground && ps[p].on_warping_sector == 1 && sector[ps[p].cursectnum].lotag == 1) {
 					sprite[i].cstat = 257;
-					sprite[i].z = sector[sprite[i].sectnum].ceilingz
-							+ (27 << 8);
-					sprite[i].ang = (short)ps[p].ang;
+					sprite[i].z = sector[sprite[i].sectnum].ceilingz + (27 << 8);
+					sprite[i].ang = (short) ps[p].ang;
 					if (hittype[i].temp_data[0] == 8)
 						hittype[i].temp_data[0] = 0;
 					else
@@ -995,8 +912,7 @@ public class Actors {
 
 					if (ud.multimode > 1)
 						if (sprite[ps[otherp].i].extra > 0) {
-							if (s.yrepeat > 32
-									&& sprite[ps[otherp].i].yrepeat < 32) {
+							if (s.yrepeat > 32 && sprite[ps[otherp].i].yrepeat < 32) {
 								if (otherx < 1400 && p.knee_incs == 0) {
 									p.knee_incs = 1;
 									p.weapon_pos = -1;
@@ -1013,8 +929,7 @@ public class Actors {
 						hittype[i].owner = i;
 
 						if (!ud.god)
-							if (ceilingspace(s.sectnum)
-									|| floorspace(s.sectnum))
+							if (ceilingspace(s.sectnum) || floorspace(s.sectnum))
 								quickkill(p);
 					} else {
 
@@ -1024,29 +939,29 @@ public class Actors {
 
 						p.newowner = -1;
 
-						if( p.wackedbyactor >= 0 && sprite[p.wackedbyactor].statnum < MAXSTATUS )
-	                    {
-	                        p.ang += getincangle(p.ang,engine.getangle(sprite[p.wackedbyactor].x-p.posx,sprite[p.wackedbyactor].y-p.posy)) / 2.0f;
-	                        p.ang = BClampAngle(p.ang);
-	                    }
+						if (p.wackedbyactor >= 0 && sprite[p.wackedbyactor].statnum < MAXSTATUS) {
+							p.ang += getincangle(p.ang, engine.getangle(sprite[p.wackedbyactor].x - p.posx,
+									sprite[p.wackedbyactor].y - p.posy)) / 2.0f;
+							p.ang = BClampAngle(p.ang);
+						}
 
-						if(!isPsychoSkill()) {
-							if( ud.multimode < 2 && lastload != null && !lastload.isEmpty() && ud.recstat != 2 && BuildGdx.compat.checkFile(lastload, Path.User) != null) {
-		                    	if(game.pInput.ctrlKeyPressed(Keys.ENTER))
-		                    	{
-		                    		game.changeScreen(gLoadingScreen.setTitle(lastload));
-		        					gLoadingScreen.init(new Runnable() {
-		        						@Override
+						if (!isPsychoSkill()) {
+							if (ud.multimode < 2 && lastload != null && !lastload.isEmpty() && ud.recstat != 2
+									&& BuildGdx.compat.checkFile(lastload, Path.User) != null) {
+								if (game.pInput.ctrlKeyPressed(Keys.ENTER)) {
+									game.changeScreen(gLoadingScreen.setTitle(lastload));
+									gLoadingScreen.init(new Runnable() {
+										@Override
 										public void run() {
-		        							if(!loadgame(lastload)) {
-		        								game.GameMessage("Can't load game!");
-		        								game.show();
-		        							}
-		        						}
-		        					});
-		                    		return;
-		                    	}
-		                    }
+											if (!loadgame(lastload)) {
+												game.GameMessage("Can't load game!");
+												game.show();
+											}
+										}
+									});
+									return;
+								}
+							}
 						}
 					}
 					s.ang = (short) p.ang;
@@ -1072,7 +987,7 @@ public class Actors {
 				else {
 					s.yrepeat = 36;
 					if (sector[s.sectnum].lotag != 2)
-						makeitfall(currentGame.getCON(),i);
+						makeitfall(currentGame.getCON(), i);
 					if (s.zvel == 0 && sector[s.sectnum].lotag == 1)
 						s.z += (32 << 8);
 				}
@@ -1088,7 +1003,7 @@ public class Actors {
 				}
 			}
 
-			if(isValidSector(s.sectnum)) {
+			if (isValidSector(s.sectnum)) {
 				if ((sector[s.sectnum].ceilingstat & 1) != 0)
 					s.shade += (sector[s.sectnum].ceilingshade - s.shade) >> 1;
 				else
@@ -1114,37 +1029,29 @@ public class Actors {
 			case RESPAWN:
 				if (sprite[i].extra == 66) {
 					j = spawn(i, sprite[i].hitag);
-					if(currentGame.getCON().type == RRRA) {
+					if (currentGame.getCON().type == RRRA) {
 						sprite[j].pal = sprite[i].pal;
-						if ( sprite[j].picnum == MAMAJACKOLOPE )
-						{
-							 if ( sprite[j].pal == 30 )
-							 {
-								 sprite[j].xrepeat = 26;
-								 sprite[j].yrepeat = 26;
-								 sprite[j].clipdist = 75;
-							 }
-							 else if ( sprite[j].pal == 31 )
-							 {
-								 sprite[j].xrepeat = 36;
-								 sprite[j].yrepeat = 36;
-								 sprite[j].clipdist = 100;
-							 }
-							 else
-							 {
-								 sprite[j].xrepeat = 50;
-								 sprite[j].yrepeat = 50;
-								 sprite[j].clipdist = 100;
-							 }
+						if (sprite[j].picnum == MAMAJACKOLOPE) {
+							if (sprite[j].pal == 30) {
+								sprite[j].xrepeat = 26;
+								sprite[j].yrepeat = 26;
+								sprite[j].clipdist = 75;
+							} else if (sprite[j].pal == 31) {
+								sprite[j].xrepeat = 36;
+								sprite[j].yrepeat = 36;
+								sprite[j].clipdist = 100;
+							} else {
+								sprite[j].xrepeat = 50;
+								sprite[j].yrepeat = 50;
+								sprite[j].clipdist = 100;
+							}
 						}
-						if ( sprite[j].pal == 8 )
+						if (sprite[j].pal == 8)
 							sprite[j].cstat |= 2;
-						if ( sprite[j].pal == 6 )
-						{
+						if (sprite[j].pal == 6) {
 							sprite[i].extra = 53;
 							sprite[j].pal = 0;
-						}
-						else
+						} else
 							engine.deletesprite(i);
 					} else
 						engine.deletesprite(i);
@@ -1170,23 +1077,18 @@ public class Actors {
 						BuildGdx.audio.getSound().setReverb(false, 0);
 						hittype[i].temp_data[0] = 0;
 					}
-				} else if (s.lotag < 999
-						&& sector[s.sectnum].lotag < 9
-						&& cfg.AmbienceToggle
+				} else if (s.lotag < 999 && sector[s.sectnum].lotag < 9 && cfg.AmbienceToggle
 						&& sector[sprite[i].sectnum].floorz != sector[sprite[i].sectnum].ceilingz) {
 					if ((currentGame.getCON().soundm[s.lotag] & 2) != 0) {
 						x = dist(sprite[ps[screenpeek].i], s);
-						if (x < ht && hittype[i].temp_data[0] == 0 && BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[s.lotag]-1))
-						{
+						if (x < ht && hittype[i].temp_data[0] == 0
+								&& BuildGdx.audio.getSound().isAvailable(currentGame.getCON().soundpr[s.lotag] - 1)) {
 							if (numenvsnds == cfg.maxvoices) {
 								j = headspritestat[11];
 								while (j >= 0) {
-									if (sprite[i].picnum == MUSICANDSFX
-											&& j != i
-											&& sprite[j].lotag < 999
+									if (sprite[i].picnum == MUSICANDSFX && j != i && sprite[j].lotag < 999
 											&& hittype[j].temp_data[0] == 1
-											&& dist(sprite[j],
-													sprite[ps[screenpeek].i]) > x) {
+											&& dist(sprite[j], sprite[ps[screenpeek].i]) > x) {
 										stopenvsound(sprite[j].lotag, j);
 										break;
 									}
@@ -1211,7 +1113,7 @@ public class Actors {
 						else
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
 								if (p == myconnectindex && ps[p].cursectnum == s.sectnum) {
-									j = s.lotag+((global_random & 0xFFFF)%(s.hitag+1));
+									j = s.lotag + ((global_random & 0xFFFF) % (s.hitag + 1));
 									sound(j);
 									hittype[i].temp_data[4] = 26 * 40 + (global_random % (26 * 40));
 								}
@@ -1242,8 +1144,7 @@ public class Actors {
 
 				j = ifhitbyweapon(i);
 				if (j >= 0) {
-					if (j == CROSSBOW || j == CHIKENCROSSBOW || j == RADIUSEXPLOSION || j == SEENINE
-							|| j == 1273) {
+					if (j == CROSSBOW || j == CHIKENCROSSBOW || j == RADIUSEXPLOSION || j == SEENINE || j == 1273) {
 						if (s.extra <= 0) {
 							hittype[i].temp_data[0] = 1;
 							j = headspritestat[12];
@@ -1251,8 +1152,7 @@ public class Actors {
 								if (sprite[j].hitag == sprite[i].hitag) {
 									hittype[j].temp_data[0] = 1;
 									sprite[j].cstat &= (65535 - 64);
-									if (sprite[j].picnum == CEILINGSTEAM
-											|| sprite[j].picnum == STEAM)
+									if (sprite[j].picnum == CEILINGSTEAM || sprite[j].picnum == STEAM)
 										sprite[j].cstat |= 32768;
 								}
 								j = nextspritestat[j];
@@ -1334,8 +1234,7 @@ public class Actors {
 		if ((t[3] == 1 && s.xrepeat != 0) || s.lotag == -99) {
 			int x = s.extra;
 			spawn(i, EXPLOSION2);
-			hitradius(i, currentGame.getCON().seenineblastradius, x >> 2, x - (x >> 1),
-					x - (x >> 2), x);
+			hitradius(i, currentGame.getCON().seenineblastradius, x >> 2, x - (x >> 1), x - (x >> 2), x);
 			spritesound(PIPEBOMB_EXPLODE, i);
 		}
 
@@ -1384,10 +1283,8 @@ public class Actors {
 						case 2:
 						case 6:
 						case 10:
-							s.ang = engine.getangle(
-									msx[t[4] + 1] - s.x, msy[t[4] + 1] - s.y);
-							engine.setsprite((short) j, msx[t[4] + 1], msy[t[4] + 1],
-									sprite[j].z);
+							s.ang = engine.getangle(msx[t[4] + 1] - s.x, msy[t[4] + 1] - s.y);
+							engine.setsprite((short) j, msx[t[4] + 1], msy[t[4] + 1], sprite[j].z);
 							t[0]++;
 							continue BOLT;
 						}
@@ -1442,11 +1339,11 @@ public class Actors {
 							ps[p].ang = (short) (s.ang + 1024);
 
 							ps[p].posxv = 0;
-		                	ps[p].posyv = 0;
-		                	ps[p].poszv = 0;
-		                	sprite[ps[p].i].xvel = 0;
-		                	ps[p].look_ang = 0;
-		                	ps[p].rotscrnang = 0;
+							ps[p].posyv = 0;
+							ps[p].poszv = 0;
+							sprite[ps[p].i].xvel = 0;
+							ps[p].look_ang = 0;
+							ps[p].rotscrnang = 0;
 						} else {
 							j = headspritesect[t[1]];
 							while (j >= 0) {
@@ -1484,16 +1381,15 @@ public class Actors {
 						s.xvel += 8;
 					s.ang = engine.getangle(msx[t[4]] - s.x, msy[t[4]] - s.y);
 					ssp(i, CLIPMASK0);
-					if (((s.x - msx[t[4]]) * (s.x - msx[t[4]]) + (s.y - msy[t[4]])
-							* (s.y - msy[t[4]])) < (128 * 128))
+					if (((s.x - msx[t[4]]) * (s.x - msx[t[4]]) + (s.y - msy[t[4]]) * (s.y - msy[t[4]])) < (128 * 128))
 						t[0]++;
 				}
 
 				else if (t[0] == 9)
 					t[0] = 0;
 
-				if(isValidSprite(msy[t[4]+2])) {
-					game.pInt.setsprinterpolate(msy[t[4]+2], sprite[msy[t[4]+2]]);
+				if (isValidSprite(msy[t[4] + 2])) {
+					game.pInt.setsprinterpolate(msy[t[4] + 2], sprite[msy[t[4] + 2]]);
 					engine.setsprite((short) msy[t[4] + 2], s.x, s.y, s.z - (34 << 8));
 				}
 
@@ -1516,19 +1412,18 @@ public class Actors {
 					} else if (s.owner == -2) {
 
 						ps[p].oposx = ps[p].posx;
-	                	ps[p].oposy = ps[p].posy;
-	                	ps[p].oposz = ps[p].posz;
-	                	ps[p].oang = ps[p].ang;
-	                	ps[p].opyoff = ps[p].pyoff;
+						ps[p].oposy = ps[p].posy;
+						ps[p].oposz = ps[p].posz;
+						ps[p].oang = ps[p].ang;
+						ps[p].opyoff = ps[p].pyoff;
 
-						if(IsOriginalDemo())
-	                	{
-	                		ps[p].posx = s.x-(sintable[((int)ps[p].ang+512)&2047]>>6);
-	                        ps[p].posy = s.y-(sintable[(int)ps[p].ang&2047]>>6);
-	                	} else {
-		                    ps[p].posx = (int) (s.x-(BCosAngle(BClampAngle(ps[p].ang)) / 64.0f));
-		                    ps[p].posy = (int) (s.y-(BSinAngle(BClampAngle(ps[p].ang)) / 64.0f));
-	                	}
+						if (IsOriginalDemo()) {
+							ps[p].posx = s.x - (sintable[((int) ps[p].ang + 512) & 2047] >> 6);
+							ps[p].posy = s.y - (sintable[(int) ps[p].ang & 2047] >> 6);
+						} else {
+							ps[p].posx = (int) (s.x - (BCosAngle(BClampAngle(ps[p].ang)) / 64.0f));
+							ps[p].posy = (int) (s.y - (BSinAngle(BClampAngle(ps[p].ang)) / 64.0f));
+						}
 
 						ps[p].posz = s.z + (2 << 8);
 						engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy, ps[p].posz);
@@ -1625,8 +1520,8 @@ public class Actors {
 				continue;
 			}
 
-			if (s.picnum == OOZFILTER || s.picnum == SEENINE
-					|| s.picnum == SEENINEDEAD || s.picnum == (SEENINEDEAD + 1)) {
+			if (s.picnum == OOZFILTER || s.picnum == SEENINE || s.picnum == SEENINEDEAD
+					|| s.picnum == (SEENINEDEAD + 1)) {
 				if (s.shade != -32 && s.shade != -33) {
 					if (s.xrepeat != 0)
 						j = (ifhitbyweapon(i) >= 0) ? 1 : 0;
@@ -1729,7 +1624,7 @@ public class Actors {
 				if (s.xvel == 0)
 					s.xvel = 1;
 				if (ssp(i, CLIPMASK0)) {
-					makeitfall(currentGame.getCON(),i);
+					makeitfall(currentGame.getCON(), i);
 					if ((engine.krand() & 1) != 0)
 						s.zvel -= 256;
 					if (klabs(s.xvel) < 48)
@@ -1753,8 +1648,7 @@ public class Actors {
 				if (t[3] == 0)
 					t[3] = sector[sect].floorshade;
 
-				CLEAR_THE_BOLT:
-				do {
+				CLEAR_THE_BOLT: do {
 					if (t[2] != 0) {
 						t[2]--;
 						sector[sect].floorshade = 20;
@@ -1765,17 +1659,15 @@ public class Actors {
 					if ((s.xrepeat | s.yrepeat) == 0) {
 						s.xrepeat = (short) t[0];
 						s.yrepeat = (short) t[1];
-					}
-	                else if( ((engine.krand()&8) == 0) )
-	                {
-	                	t[0] = s.xrepeat;
+					} else if (((engine.krand() & 8) == 0)) {
+						t[0] = s.xrepeat;
 						t[1] = s.yrepeat;
 						t[2] = global_random & 4;
 						s.xrepeat = s.yrepeat = 0;
-	                    continue CLEAR_THE_BOLT;
-	                }
+						continue CLEAR_THE_BOLT;
+					}
 					break;
-				} while(true);
+				} while (true);
 
 				s.picnum++;
 
@@ -1785,8 +1677,7 @@ public class Actors {
 				if ((l & 1) != 0)
 					s.cstat ^= 2;
 
-				if (s.picnum == (BOLT1 + 1) && (engine.krand() & 7) == 0
-						&& sector[sect].floorpicnum == HURTRAIL)
+				if (s.picnum == (BOLT1 + 1) && (engine.krand() & 7) == 0 && sector[sect].floorpicnum == HURTRAIL)
 					spritesound(SHORT_CIRCUIT, i);
 
 				if (s.picnum == BOLT1 + 4)
@@ -1807,7 +1698,7 @@ public class Actors {
 					if (t[1] == 1) // XXX == 0 in duke
 						s.cstat &= 32767;
 				} else {
-					makeitfall(currentGame.getCON(),i);
+					makeitfall(currentGame.getCON(), i);
 					ssp(i, CLIPMASK0);
 					if (s.xvel > 0)
 						s.xvel -= 2;
@@ -1823,7 +1714,7 @@ public class Actors {
 							continue;
 						} else {
 							game.pInt.setsprinterpolate(i, s);
-                            s.z = t[0];
+							s.z = t[0];
 							t[1] = 48 + (engine.krand() & 31);
 						}
 					}
@@ -1894,8 +1785,7 @@ public class Actors {
 				if (t[1] == 1) {
 					j = headspritestat[6];
 					while (j >= 0) {
-						if (j != i && sprite[j].picnum == TOUCHPLATE
-								&& sprite[j].lotag == s.lotag) {
+						if (j != i && sprite[j].picnum == TOUCHPLATE && sprite[j].lotag == s.lotag) {
 							hittype[j].temp_data[1] = 1;
 							hittype[j].temp_data[3] = t[3];
 						}
@@ -1905,7 +1795,7 @@ public class Actors {
 				continue;
 
 			case CANWITHSOMETHING: // ok?
-				makeitfall(currentGame.getCON(),i);
+				makeitfall(currentGame.getCON(), i);
 				j = ifhitbyweapon(i);
 
 				if (j >= 0) {
@@ -2018,10 +1908,8 @@ public class Actors {
 
 						ps[p].on_warping_sector = 1;
 
-						if (ps[p].transporter_hold == 0
-								&& ps[p].jumping_counter == 0) {
-							if (ps[p].on_ground && sectlotag == 0
-									&& onfloorz != 0 && ps[p].jetpack_on == 0) {
+						if (ps[p].transporter_hold == 0 && ps[p].jumping_counter == 0) {
+							if (ps[p].on_ground && sectlotag == 0 && onfloorz != 0 && ps[p].jetpack_on == 0) {
 								if (sprite[i].pal == 0) {
 									spawn(i, TRANSPORTERBEAM);
 									spritesound(TELEPORTER, i);
@@ -2046,41 +1934,33 @@ public class Actors {
 								ps[p].oposz = ps[p].posz = sprite[sprite[i].owner].z - PHEIGHT;
 
 								game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-                                ps[p].UpdatePlayerLoc();
+								ps[p].UpdatePlayerLoc();
 
-								engine.changespritesect(j,
-										sprite[sprite[i].owner].sectnum);
+								engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 								ps[p].cursectnum = sprite[j].sectnum;
 
-								k = (short) spawn(sprite[i].owner,
-										TRANSPORTERBEAM);
+								k = (short) spawn(sprite[i].owner, TRANSPORTERBEAM);
 								spritesound(TELEPORTER, k);
 
 								break;
 							}
-						}
-						else // if (!(sectlotag == 1 && ps[p].on_ground)) GDX 2.10.18
+						} else // if (!(sectlotag == 1 && ps[p].on_ground)) GDX 2.10.18
 							break;
 
-						if (onfloorz == 0
-								&& klabs(sprite[i].z - ps[p].posz) < 6144)
-							if ((ps[p].jetpack_on == 0)
-									|| (ps[p].jetpack_on != 0 && (sync[p].bits & 1) != 0)
+						if (onfloorz == 0 && klabs(sprite[i].z - ps[p].posz) < 6144)
+							if ((ps[p].jetpack_on == 0) || (ps[p].jetpack_on != 0 && (sync[p].bits & 1) != 0)
 									|| (ps[p].jetpack_on != 0 && (sync[p].bits & 2) != 0)) {
-								ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x
-										- sprite[i].x;
-								ps[p].oposy = ps[p].posy += sprite[sprite[i].owner].y
-										- sprite[i].y;
+								ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x - sprite[i].x;
+								ps[p].oposy = ps[p].posy += sprite[sprite[i].owner].y - sprite[i].y;
 
-								if (ps[p].jetpack_on != 0
-										&& ((sync[p].bits & 1) != 0 || ps[p].jetpack_on < 11))
+								if (ps[p].jetpack_on != 0 && ((sync[p].bits & 1) != 0 || ps[p].jetpack_on < 11))
 									ps[p].posz = sprite[sprite[i].owner].z - 6144;
 								else
 									ps[p].posz = sprite[sprite[i].owner].z + 6144;
 								ps[p].oposz = ps[p].posz;
 
 								game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-	                            ps[p].UpdatePlayerLoc();
+								ps[p].UpdatePlayerLoc();
 
 								engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 								ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
@@ -2089,36 +1969,29 @@ public class Actors {
 							}
 
 						k = 0;
-						if(currentGame.getCON().type == RRRA)
-						{
-							if (onfloorz != 0
-									&& sectlotag == 160
-									&& ps[p].posz > (sector[sect].floorz - 12288))
-							{
+						if (currentGame.getCON().type == RRRA) {
+							if (onfloorz != 0 && sectlotag == 160 && ps[p].posz > (sector[sect].floorz - 12288)) {
 								k = 2;
 								ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].ceilingz + 1792;
 							}
 
-							if (onfloorz != 0
-									&& sectlotag == 161
-									&& ps[p].posz < (sector[sect].ceilingz + 1536))
-							{
+							if (onfloorz != 0 && sectlotag == 161 && ps[p].posz < (sector[sect].ceilingz + 1536)) {
 								k = 2;
-								if ( sprite[ps[p].i].extra <= 0 )
-		                            break;
+								if (sprite[ps[p].i].extra <= 0)
+									break;
 								ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].floorz - 12544;
 							}
 						}
 
-						if ((onfloorz != 0
-								&& sectlotag == 1
-								//&& ps[p].on_ground 		GDX
+						if ((onfloorz != 0 && sectlotag == 1
+						// && ps[p].on_ground GDX
 								&& ps[p].posz > (sector[sect].floorz - 1536))
-								|| (onfloorz != 0 && sectlotag == 1 && ps[p].OnMotorcycle) ) //(16 << 8)))
-								//&& ((sync[p].bits & 2) != 0 || ps[p].poszv > 2048)) 		GDX
+								|| (onfloorz != 0 && sectlotag == 1 && ps[p].OnMotorcycle)) // (16 << 8)))
+						// && ((sync[p].bits & 2) != 0 || ps[p].poszv > 2048)) GDX
 						{
-							if ( ps[p].OnBoat )
-		                        break;;
+							if (ps[p].OnBoat)
+								break;
+							;
 							k = 1;
 							if (screenpeek == p) {
 								BuildGdx.audio.getSound().stopAllSounds();
@@ -2126,20 +1999,18 @@ public class Actors {
 							}
 							spritesound(DUKE_UNDERWATER, j);
 							ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].ceilingz + (7 << 8);
-							if ( ps[p].OnMotorcycle )
-		                        ps[p].CarVar1 = 1;
+							if (ps[p].OnMotorcycle)
+								ps[p].CarVar1 = 1;
 
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-                            ps[p].UpdatePlayerLoc();
+							ps[p].UpdatePlayerLoc();
 
 //							ps[p].posxv = 4096 - (engine.krand() & 8192); GDX
 //							ps[p].posyv = 4096 - (engine.krand() & 8192);
 
 						}
 
-						if (onfloorz != 0
-								&& sectlotag == 2
-								&& ps[p].posz < (sector[sect].ceilingz + (6 << 8))) {
+						if (onfloorz != 0 && sectlotag == 2 && ps[p].posz < (sector[sect].ceilingz + (6 << 8))) {
 							k = 1;
 							if (sprite[j].extra <= 0)
 								break;
@@ -2152,7 +2023,7 @@ public class Actors {
 							ps[p].oposz = ps[p].posz = sector[sprite[sprite[i].owner].sectnum].floorz - (7 << 8);
 
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-                            ps[p].UpdatePlayerLoc();
+							ps[p].UpdatePlayerLoc();
 
 //							ps[p].jumping_toggle = 1; GDX 2.10.2018
 //							ps[p].jumping_counter = 0;
@@ -2168,8 +2039,7 @@ public class Actors {
 								ps[p].transporter_hold = -2;
 							ps[p].cursectnum = sprite[sprite[i].owner].sectnum;
 
-							engine.changespritesect(j,
-									sprite[sprite[i].owner].sectnum);
+							engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 //							engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy,
 //									ps[p].posz + PHEIGHT); GDX 2.10.2018
 
@@ -2185,9 +2055,7 @@ public class Actors {
 //								}
 
 							ps[p].UpdatePlayerLoc();
-						}
-						else if ( k == 2 )
-	                    {
+						} else if (k == 2) {
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
 
 							ps[p].oposx = ps[p].posx += sprite[sprite[i].owner].x - sprite[i].x;
@@ -2199,12 +2067,12 @@ public class Actors {
 							engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 
 							ps[p].UpdatePlayerLoc();
-	                    }
+						}
 					}
 					break;
 
 				case 1:
-					if(currentGame.getCON().type != RRRA) {
+					if (currentGame.getCON().type != RRRA) {
 						switch (sprite[j].picnum) {
 						case 5501:
 						case UFO1:
@@ -2212,8 +2080,8 @@ public class Actors {
 						case UFO3:
 						case UFO4:
 						case UFO5:
-							//if (sprite[j].extra > 0) GDX 2.10.2018
-								continue;
+							// if (sprite[j].extra > 0) GDX 2.10.2018
+							continue;
 						}
 					} else {
 						switch (sprite[j].picnum) {
@@ -2232,199 +2100,174 @@ public class Actors {
 
 					ll = klabs(sprite[j].zvel);
 
-					{
-						warpspriteto = 0;
-						if (ll != 0 && sectlotag == 2
-								&& sprite[j].z < (sector[sect].ceilingz + ll))
+				{
+					warpspriteto = 0;
+					if (ll != 0 && sectlotag == 2 && sprite[j].z < (sector[sect].ceilingz + ll))
+						warpspriteto = 1;
+
+					if (ll != 0 && sectlotag == 1 && sprite[j].z > (sector[sect].floorz - ll)
+							&& sprite[j].picnum != DAISYAIRBOAT && sprite[j].picnum != HULKAIRBOAT
+							&& sprite[j].picnum != MINIONAIRBOAT)
+						warpspriteto = 1;
+
+					if (currentGame.getCON().type == RRRA) {
+						if (ll != 0 && sectlotag == 161 && sprite[j].z < (sector[sect].ceilingz + ll)
+								&& sprite[j].zvel < 0) {
 							warpspriteto = 1;
-
-						if (ll != 0 && sectlotag == 1
-								&& sprite[j].z > (sector[sect].floorz - ll)
-								&& sprite[j].picnum != DAISYAIRBOAT
-								&& sprite[j].picnum != HULKAIRBOAT
-								&& sprite[j].picnum != MINIONAIRBOAT)
-							warpspriteto = 1;
-
-						if(currentGame.getCON().type == RRRA) {
-							if ( ll != 0 && sectlotag == 161 && sprite[j].z < (sector[sect].ceilingz + ll) && sprite[j].zvel < 0 )
-					        {
+							zz = ll - klabs(sprite[j].z - sector[sect].ceilingz);
+						} else if (sectlotag == 161) {
+							if (sector[sect].ceilingz + 1000 > sprite[j].z && sprite[j].zvel < 0) {
 								warpspriteto = 1;
-								zz = ll - klabs(sprite[j].z - sector[sect].ceilingz);
-					        }
-					        else if ( sectlotag == 161 )
-					        {
-					        	if ( sector[sect].ceilingz + 1000 > sprite[j].z && sprite[j].zvel < 0 )
-					        	{
-					        		warpspriteto = 1;
-					        		zz = 1;
-					        	}
-					        }
-							if ( ll != 0 && sectlotag == 160 && sprite[j].z > (sector[sect].floorz - ll) && sprite[j].zvel >= 0  )
-					        {
-								warpspriteto = 1;
-								zz = ll - klabs(sector[sect].floorz - sprite[j].z);
-					        }
-					        else if ( sectlotag == 160 )
-					        {
-					        	if ( sector[sect].floorz - 1000 < sprite[j].z && sprite[j].zvel >= 0 )
-					        	{
-					        		warpspriteto = 1;
-					        		zz = 1;
-					        	}
-					        }
-						}
-
-						if (sectlotag == 0
-								&& (onfloorz != 0 || klabs(sprite[j].z
-										- sprite[i].z) < 4096)) {
-							if (sprite[sprite[i].owner].owner != sprite[i].owner
-									&& onfloorz != 0
-									&& hittype[i].temp_data[0] > 0
-									&& sprite[j].statnum != 5) {
-								hittype[i].temp_data[0]++;
-								continue BOLT;
+								zz = 1;
 							}
-							warpspriteto = 1;
 						}
+						if (ll != 0 && sectlotag == 160 && sprite[j].z > (sector[sect].floorz - ll)
+								&& sprite[j].zvel >= 0) {
+							warpspriteto = 1;
+							zz = ll - klabs(sector[sect].floorz - sprite[j].z);
+						} else if (sectlotag == 160) {
+							if (sector[sect].floorz - 1000 < sprite[j].z && sprite[j].zvel >= 0) {
+								warpspriteto = 1;
+								zz = 1;
+							}
+						}
+					}
 
-						if (warpspriteto != 0)
-							switch (sprite[j].picnum) {
-							case TRANSPORTERSTAR:
-							case TRANSPORTERBEAM:
-							case BULLETHOLE:
-							case WATERSPLASH2:
-							case BURNING:
-							case BURNING2:
-							case FIRE:
-							case FIRE2:
-							case MUD:
-								continue;
-							case PLAYERONWATER:
-								if (sectlotag == 2) {
-									sprite[j].cstat &= 32767;
-									break;
-								}
-							default:
-								if (sprite[j].statnum == 5
-										&& !(sectlotag == 1 || sectlotag == 2 || sectlotag == 160 || sectlotag == 161))
-									break;
+					if (sectlotag == 0 && (onfloorz != 0 || klabs(sprite[j].z - sprite[i].z) < 4096)) {
+						if (sprite[sprite[i].owner].owner != sprite[i].owner && onfloorz != 0
+								&& hittype[i].temp_data[0] > 0 && sprite[j].statnum != 5) {
+							hittype[i].temp_data[0]++;
+							continue BOLT;
+						}
+						warpspriteto = 1;
+					}
 
-							case WATERBUBBLE:
-								if ((engine.krand() >> 8) < 63) {
-									if (sectlotag > 0) {
-										k = (short) spawn(j, WATERSPLASH2);
-										if (sectlotag == 1
-												&& sprite[j].statnum == 4) {
-											sprite[k].xvel = (short) (sprite[j].xvel >> 1);
-											sprite[k].ang = sprite[j].ang;
-											ssp(k, CLIPMASK0);
-										}
+					if (warpspriteto != 0)
+						switch (sprite[j].picnum) {
+						case TRANSPORTERSTAR:
+						case TRANSPORTERBEAM:
+						case BULLETHOLE:
+						case WATERSPLASH2:
+						case BURNING:
+						case BURNING2:
+						case FIRE:
+						case FIRE2:
+						case MUD:
+							continue;
+						case PLAYERONWATER:
+							if (sectlotag == 2) {
+								sprite[j].cstat &= 32767;
+								break;
+							}
+						default:
+							if (sprite[j].statnum == 5
+									&& !(sectlotag == 1 || sectlotag == 2 || sectlotag == 160 || sectlotag == 161))
+								break;
+
+						case WATERBUBBLE:
+							if ((engine.krand() >> 8) < 63) {
+								if (sectlotag > 0) {
+									k = (short) spawn(j, WATERSPLASH2);
+									if (sectlotag == 1 && sprite[j].statnum == 4) {
+										sprite[k].xvel = (short) (sprite[j].xvel >> 1);
+										sprite[k].ang = sprite[j].ang;
+										ssp(k, CLIPMASK0);
 									}
+								}
 
-									switch (sectlotag) {
-									case 0:
-										if (onfloorz != 0) {
-											if (sprite[j].statnum == 4
-													|| (checkcursectnums(sect) == -1 && checkcursectnums(sprite[sprite[i].owner].sectnum) == -1)) {
-												game.pInt.setsprinterpolate(j, sprite[j]);
-
-												sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
-												sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-												sprite[j].z -= sprite[i].z
-														- sector[sprite[sprite[i].owner].sectnum].floorz;
-												sprite[j].ang = sprite[sprite[i].owner].ang;
-
-												if (sprite[i].pal == 0) {
-													k = (short) spawn(i,
-															TRANSPORTERBEAM);
-													spritesound(TELEPORTER, k);
-
-													k = (short) spawn(
-															sprite[i].owner,
-															TRANSPORTERBEAM);
-													spritesound(TELEPORTER, k);
-												}
-
-												if (sprite[sprite[i].owner].owner != sprite[i].owner) {
-													hittype[i].temp_data[0] = 13;
-													hittype[sprite[i].owner].temp_data[0] = 13;
-												}
-
-												engine.changespritesect(
-														j,
-														sprite[sprite[i].owner].sectnum);
-											}
-										} else {
+								switch (sectlotag) {
+								case 0:
+									if (onfloorz != 0) {
+										if (sprite[j].statnum == 4 || (checkcursectnums(sect) == -1
+												&& checkcursectnums(sprite[sprite[i].owner].sectnum) == -1)) {
 											game.pInt.setsprinterpolate(j, sprite[j]);
 
 											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-											sprite[j].z = sprite[sprite[i].owner].z + 4096;
+											sprite[j].z -= sprite[i].z - sector[sprite[sprite[i].owner].sectnum].floorz;
+											sprite[j].ang = sprite[sprite[i].owner].ang;
 
-											engine.changespritesect(
-													j,
-													sprite[sprite[i].owner].sectnum);
+											if (sprite[i].pal == 0) {
+												k = (short) spawn(i, TRANSPORTERBEAM);
+												spritesound(TELEPORTER, k);
+
+												k = (short) spawn(sprite[i].owner, TRANSPORTERBEAM);
+												spritesound(TELEPORTER, k);
+											}
+
+											if (sprite[sprite[i].owner].owner != sprite[i].owner) {
+												hittype[i].temp_data[0] = 13;
+												hittype[sprite[i].owner].temp_data[0] = 13;
+											}
+
+											engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 										}
-										break;
-									case 1:
+									} else {
 										game.pInt.setsprinterpolate(j, sprite[j]);
 
 										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].ceilingz + ll;
+										sprite[j].z = sprite[sprite[i].owner].z + 4096;
 
-										engine.changespritesect(j,
-												sprite[sprite[i].owner].sectnum);
+										engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+									}
+									break;
+								case 1:
+									game.pInt.setsprinterpolate(j, sprite[j]);
 
-										break;
-									case 2:
+									sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
+									sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
+									sprite[j].z = sector[sprite[sprite[i].owner].sectnum].ceilingz + ll;
+
+									engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+
+									break;
+								case 2:
+									game.pInt.setsprinterpolate(j, sprite[j]);
+
+									sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
+									sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
+									sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - ll;
+
+									engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+
+									break;
+								case 160:
+									if (currentGame.getCON().type == RRRA) {
 										game.pInt.setsprinterpolate(j, sprite[j]);
 
 										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
 										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - ll;
+										sprite[j].z = zz + sector[sprite[sprite[i].owner].sectnum].ceilingz;
 
 										engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
 
-										break;
-									case 160:
-										if(currentGame.getCON().type == RRRA) {
-											game.pInt.setsprinterpolate(j, sprite[j]);
-
-											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
-											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-											sprite[j].z = zz + sector[sprite[sprite[i].owner].sectnum].ceilingz;
-
-											engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
-
-											movesprite(j,
-													(sprite[j].xvel * (sintable[(sprite[j].ang + 512) & 2047])) >> 14,
-													(sprite[j].xvel * (sintable[sprite[j].ang & 2047])) >> 14, 0,
-													CLIPMASK1);
-										}
-										break;
-									case 161:
-										if(currentGame.getCON().type == RRRA) {
-											game.pInt.setsprinterpolate(j, sprite[j]);
-
-											sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
-											sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
-											sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - zz;
-
-											engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
-
-											movesprite(j,
-													(sprite[j].xvel * (sintable[(sprite[j].ang + 512) & 2047])) >> 14,
-													(sprite[j].xvel * (sintable[sprite[j].ang & 2047])) >> 14, 0,
-													CLIPMASK1);
-										}
-										break;
+										movesprite(j, (sprite[j].xvel * (sintable[(sprite[j].ang + 512) & 2047])) >> 14,
+												(sprite[j].xvel * (sintable[sprite[j].ang & 2047])) >> 14, 0,
+												CLIPMASK1);
 									}
-								}
+									break;
+								case 161:
+									if (currentGame.getCON().type == RRRA) {
+										game.pInt.setsprinterpolate(j, sprite[j]);
 
-								break;
+										sprite[j].x += (sprite[sprite[i].owner].x - sprite[i].x);
+										sprite[j].y += (sprite[sprite[i].owner].y - sprite[i].y);
+										sprite[j].z = sector[sprite[sprite[i].owner].sectnum].floorz - zz;
+
+										engine.changespritesect(j, sprite[sprite[i].owner].sectnum);
+
+										movesprite(j, (sprite[j].xvel * (sintable[(sprite[j].ang + 512) & 2047])) >> 14,
+												(sprite[j].xvel * (sintable[sprite[j].ang & 2047])) >> 14, 0,
+												CLIPMASK1);
+									}
+									break;
+								}
 							}
-					}
+
+							break;
+						}
+				}
 					break;
 
 				}
@@ -2443,89 +2286,70 @@ public class Actors {
 		if (numminecart != 0)
 			movecarts();
 
-		for (int i = headspritestat[115]; i >= 0; i = nextspritestat[i]) { //RA
-			if ( sprite[i].extra != 0)
-			{
-				if ( sprite[i].picnum != 8162 )
+		for (int i = headspritestat[115]; i >= 0; i = nextspritestat[i]) { // RA
+			if (sprite[i].extra != 0) {
+				if (sprite[i].picnum != 8162)
 					sprite[i].picnum = 8162;
 				sprite[i].extra--;
-				if ( sprite[i].extra == 0 )
-				{
+				if (sprite[i].extra == 0) {
 					int chance = engine.krand() & 0x7F;
-			        if ( chance >= 96 )
-			        {
-			        	if ( chance >= 112 )
-			        	{
-			        		if ( chance >= 120 )
-			        		{
-			        			if ( chance >= 126 )
-			        			{
-			        				if ( (ps[connecthead].SlotWin & 8) != 0 )
-			        					sprite[i].picnum = 8165;
-			        				else
-			        				{
-			        					sprite[i].picnum = 8166;
-			        					spawn(i, 5595);
-			        					ps[connecthead].SlotWin |= 8;
-			        					spritesound(52, i);
-			        				}
-			        			}
-			        			else if ( (ps[connecthead].SlotWin & 4) != 0)
-			        				sprite[i].picnum = 8165;
-			        			else
-			        			{
-			        				sprite[i].picnum = 8167;
-			        				spawn(i, 52);
-			        				ps[connecthead].SlotWin |= 4;
-			        				spritesound(52, i);
-			        			}
-			        		}
-			        		else if ( (ps[connecthead].SlotWin & 2) != 0 )
-			        			sprite[i].picnum = 8165;
-			        		else
-			        		{
-			        			sprite[i].picnum = 8168;
-			        			spawn(i, 26);
-			        			ps[connecthead].SlotWin |= 2;
-			        			spritesound(52, i);
-			        		}
-			        	}
-			        	else if ( (ps[connecthead].SlotWin & 1) != 0 )
-			        		sprite[i].picnum = 8165;
-			        	else
-			        	{
-			        		sprite[i].picnum = 8164;
-			        		spawn(i, 41);
-			        		ps[connecthead].SlotWin |= 1;
-			        		spritesound(52, i);
-			        	}
-			        }
-			        else sprite[i].picnum = 8165;
+					if (chance >= 96) {
+						if (chance >= 112) {
+							if (chance >= 120) {
+								if (chance >= 126) {
+									if ((ps[connecthead].SlotWin & 8) != 0)
+										sprite[i].picnum = 8165;
+									else {
+										sprite[i].picnum = 8166;
+										spawn(i, 5595);
+										ps[connecthead].SlotWin |= 8;
+										spritesound(52, i);
+									}
+								} else if ((ps[connecthead].SlotWin & 4) != 0)
+									sprite[i].picnum = 8165;
+								else {
+									sprite[i].picnum = 8167;
+									spawn(i, 52);
+									ps[connecthead].SlotWin |= 4;
+									spritesound(52, i);
+								}
+							} else if ((ps[connecthead].SlotWin & 2) != 0)
+								sprite[i].picnum = 8165;
+							else {
+								sprite[i].picnum = 8168;
+								spawn(i, 26);
+								ps[connecthead].SlotWin |= 2;
+								spritesound(52, i);
+							}
+						} else if ((ps[connecthead].SlotWin & 1) != 0)
+							sprite[i].picnum = 8165;
+						else {
+							sprite[i].picnum = 8164;
+							spawn(i, 41);
+							ps[connecthead].SlotWin |= 1;
+							spritesound(52, i);
+						}
+					} else
+						sprite[i].picnum = 8165;
 				}
 			}
 		}
 
-		for (short i = headspritestat[116], nexti; i >= 0; i = nexti) { //RA
+		for (short i = headspritestat[116], nexti; i >= 0; i = nexti) { // RA
 			nexti = nextspritestat[i];
-			if ( sprite[i].extra != 0 )
-			{
-				if ( sprite[i].extra == sprite[i].lotag )
+			if (sprite[i].extra != 0) {
+				if (sprite[i].extra == sprite[i].lotag)
 					sound(183);
 				sprite[i].extra--;
 
-				k = movesprite(
-						i,
-						mulscale(sintable[(sprite[i].ang + 512) & kAngleMask], sprite[i].hitag, 14),
-						mulscale(sintable[sprite[i].ang & kAngleMask], sprite[i].hitag, 14),
-						2 * sprite[i].hitag,
+				k = movesprite(i, mulscale(sintable[(sprite[i].ang + 512) & kAngleMask], sprite[i].hitag, 14),
+						mulscale(sintable[sprite[i].ang & kAngleMask], sprite[i].hitag, 14), 2 * sprite[i].hitag,
 						CLIPMASK0);
-				if ( k > 0 )
-				{
+				if (k > 0) {
 					spritesound(14, i);
 					engine.deletesprite(i);
 				}
-				if ( sprite[i].extra == 0 )
-				{
+				if (sprite[i].extra == 0) {
 					sound(215);
 					engine.deletesprite(i);
 					earthquaketime = 32;
@@ -2539,231 +2363,194 @@ public class Actors {
 			}
 		}
 
-		for (short i = headspritestat[117], nexti; i >= 0; i = nexti) { //RA
+		for (short i = headspritestat[117], nexti; i >= 0; i = nexti) { // RA
 			nexti = nextspritestat[i];
-			if ( sprite[i].hitag > 2 )
+			if (sprite[i].hitag > 2)
 				sprite[i].hitag = 0;
-			if ( (sprite[i].picnum == 8488 || sprite[i].picnum == 8490)
-					&& sprite[i].hitag != 2 )
-			{
+			if ((sprite[i].picnum == 8488 || sprite[i].picnum == 8490) && sprite[i].hitag != 2) {
 				sprite[i].hitag = 2;
 				sprite[i].extra = -100;
 			}
 
-			if ( sprite[i].hitag != 0 )
-		    {
-				if ( sprite[i].hitag == 1 )
-				{
+			if (sprite[i].hitag != 0) {
+				if (sprite[i].hitag == 1) {
 					sprite[i].extra--;
-					if ( sprite[i].extra <= -30 )
+					if (sprite[i].extra <= -30)
 						sprite[i].hitag = 0;
-				}
-				else if ( sprite[i].hitag == 2 )
-				{
+				} else if (sprite[i].hitag == 2) {
 					sprite[i].extra--;
-					if ( sprite[i].extra <= -104 )
-					{
+					if (sprite[i].extra <= -104) {
 						spawn(i, sprite[i].lotag);
 						engine.deletesprite(i);
 					}
 				}
-		    }
-		    else if ( ++sprite[i].extra >= 30 )
-		    	sprite[i].hitag = 1;
+			} else if (++sprite[i].extra >= 30)
+				sprite[i].hitag = 1;
 
 			movesprite(i, 0, 0, 2 * sprite[i].extra, CLIPMASK0);
 		}
 
-		for (short i = headspritestat[118]; i >= 0; i = nextspritestat[i]) { //RA
-			if ( sprite[i].hitag > 1 )
+		for (short i = headspritestat[118]; i >= 0; i = nextspritestat[i]) { // RA
+			if (sprite[i].hitag > 1)
 				sprite[i].hitag = 0;
-			if ( sprite[i].hitag != 0)
-			{
-				if ( sprite[i].hitag == 1 )
-				{
+			if (sprite[i].hitag != 0) {
+				if (sprite[i].hitag == 1) {
 					sprite[i].extra--;
-					if ( sprite[i].extra <= -20 )
+					if (sprite[i].extra <= -20)
 						sprite[i].hitag = 0;
 				}
-			}
-			else if ( ++sprite[i].extra >= 20 )
+			} else if (++sprite[i].extra >= 20)
 				sprite[i].hitag = 1;
 
 			movesprite(i, 0, 0, sprite[i].extra, CLIPMASK0);
 		}
 
-		if ( ps[connecthead].MamaEnd > 0 && --ps[connecthead].MamaEnd == 0 )
-		{
+		if (ps[connecthead].MamaEnd > 0 && --ps[connecthead].MamaEnd == 0) {
 			LeaveMap();
-		    ud.eog = 1;
+			ud.eog = 1;
 		}
 
-		if ( ps[connecthead].field_607 > 0 )
-		{
-			for(j = 0; j < MAXSPRITES; j++)
-			{
-				switch(sprite[j].picnum)
-				{
-					case 4147:
-					case 4162:
-					case 4163:
-					case 4249:
-					case 4260:
-					case 4352:
-					case 4429:
-					case 4649:
-					case 4650:
-					case 4861:
-					case 4916:
-					case 4945:
-					case 5120:
-					case 5121:
-					case MINIONUFO:
-					case 5274:
-					case 5278:
-					case 5282:
-					case 5286:
-					case 5376:
-					case 5377:
-					case 5635:
-					case 5890:
-					case 5891:
-					case 5995:
-					case 6225:
-					case 6401:
-					case 6658:
-					case 6659:
-					case 7030:
-					case 7035:
-					case 7192:
-					case 7199:
-					case 7206:
-				 	case 7280:
-				 	case 8705:
-				 		if ( ps[connecthead].field_607 == 3 )
-						{
-					        sprite[j].xrepeat <<= 1;
-					        sprite[j].yrepeat <<= 1;
-					        sprite[j].clipdist = engine.getTile(sprite[j].picnum).getWidth() * sprite[j].xrepeat >> 7;
-						}
-						else if ( ps[connecthead].field_607 == 2 )
-						{
-							sprite[j].xrepeat >>= 1;
-					        sprite[j].yrepeat >>= 1;
-					        sprite[j].clipdist = engine.getTile(sprite[j].picnum).getWidth() * sprite[j].xrepeat >> 7;
-						}
-					 break;
+		if (ps[connecthead].field_607 > 0) {
+			for (j = 0; j < MAXSPRITES; j++) {
+				switch (sprite[j].picnum) {
+				case 4147:
+				case 4162:
+				case 4163:
+				case 4249:
+				case 4260:
+				case 4352:
+				case 4429:
+				case 4649:
+				case 4650:
+				case 4861:
+				case 4916:
+				case 4945:
+				case 5120:
+				case 5121:
+				case MINIONUFO:
+				case 5274:
+				case 5278:
+				case 5282:
+				case 5286:
+				case 5376:
+				case 5377:
+				case 5635:
+				case 5890:
+				case 5891:
+				case 5995:
+				case 6225:
+				case 6401:
+				case 6658:
+				case 6659:
+				case 7030:
+				case 7035:
+				case 7192:
+				case 7199:
+				case 7206:
+				case 7280:
+				case 8705:
+					if (ps[connecthead].field_607 == 3) {
+						sprite[j].xrepeat <<= 1;
+						sprite[j].yrepeat <<= 1;
+						sprite[j].clipdist = engine.getTile(sprite[j].picnum).getWidth() * sprite[j].xrepeat >> 7;
+					} else if (ps[connecthead].field_607 == 2) {
+						sprite[j].xrepeat >>= 1;
+						sprite[j].yrepeat >>= 1;
+						sprite[j].clipdist = engine.getTile(sprite[j].picnum).getWidth() * sprite[j].xrepeat >> 7;
+					}
+					break;
 				}
 			}
 			ps[connecthead].field_607 = 0;
 		}
 
-		for (int i = headspritestat[119]; i >= 0; i = nextspritestat[i]) { //RA
-			if ( sprite[i].hitag > 0 )
-		    {
-				if ( sprite[i].extra != 0 )
+		for (int i = headspritestat[119]; i >= 0; i = nextspritestat[i]) { // RA
+			if (sprite[i].hitag > 0) {
+				if (sprite[i].extra != 0)
 					sprite[i].extra--;
-				else
-				{
+				else {
 					sprite[i].hitag--;
 					sprite[i].extra = 150;
 					spawn(i, 7280);
 				}
-		    }
+			}
 		}
 
-		for (short i = headspritestat[121]; i >= 0; i = nextspritestat[i]) { //RA
-			if ( ++sprite[i].extra >= 100 )
-			{
-				if ( sprite[i].extra == 200 )
-				{
-					engine.setsprite(i,sprite[i].x,sprite[i].y,sector[sprite[i].sectnum].floorz - 10);
+		for (short i = headspritestat[121]; i >= 0; i = nextspritestat[i]) { // RA
+			if (++sprite[i].extra >= 100) {
+				if (sprite[i].extra == 200) {
+					engine.setsprite(i, sprite[i].x, sprite[i].y, sector[sprite[i].sectnum].floorz - 10);
 					sprite[i].extra = 1;
 					sprite[i].picnum = 4956;
 					spawn(i, 1398);
 				}
 			} else {
-				if ( sprite[i].extra == 90 )
-				{
-					if ( --sprite[i].picnum < 4952 )
+				if (sprite[i].extra == 90) {
+					if (--sprite[i].picnum < 4952)
 						sprite[i].picnum = 4952;
 					sprite[i].extra = 1;
 				}
 
 				movesprite(i, 0, 0, -300, CLIPMASK0);
-			    if ( sector[sprite[i].sectnum].ceilingz + 1024 > sprite[i].z )
-			    {
-			    	sprite[i].picnum = 0;
-			    	sprite[i].extra = 100;
-			    }
+				if (sector[sprite[i].sectnum].ceilingz + 1024 > sprite[i].z) {
+					sprite[i].picnum = 0;
+					sprite[i].extra = 100;
+				}
 			}
 		}
 
-		for (int i = headspritestat[122]; i >= 0; i = nextspritestat[i]) { //RA
-			if ( sprite[i].extra != 0)
-			{
-				if ( sprite[i].picnum != 8589 )
+		for (int i = headspritestat[122]; i >= 0; i = nextspritestat[i]) { // RA
+			if (sprite[i].extra != 0) {
+				if (sprite[i].picnum != 8589)
 					sprite[i].picnum = 8589;
 				sprite[i].extra--;
-				if ( sprite[i].extra == 0 )
-				{
+				if (sprite[i].extra == 0) {
 					int change = engine.krand() & 0x7F;
-					if ( change >= 96 )
-					{
-						if ( change >= 112 )
-						{
-							if ( change >= 120 )
-							{
-								if ( change >= 126 )
-								{
-									if ( (ps[connecthead].SlotWin & 8) != 0 )
+					if (change >= 96) {
+						if (change >= 112) {
+							if (change >= 120) {
+								if (change >= 126) {
+									if ((ps[connecthead].SlotWin & 8) != 0)
 										sprite[i].picnum = 8593;
-									else
-									{
+									else {
 										sprite[i].picnum = 8592;
 										spawn(i, 5595);
 										ps[connecthead].SlotWin |= 8;
 										spritesound(342, i);
 									}
-								}
-								else if ( (ps[connecthead].SlotWin & 4) != 0)
+								} else if ((ps[connecthead].SlotWin & 4) != 0)
 									sprite[i].picnum = 8593;
-								else
-								{
+								else {
 									sprite[i].picnum = 8591;
 									spawn(i, 52);
 									ps[connecthead].SlotWin |= 4;
 									spritesound(342, i);
 								}
-							}
-							else if ( (ps[connecthead].SlotWin & 2) != 0)
+							} else if ((ps[connecthead].SlotWin & 2) != 0)
 								sprite[i].picnum = 8593;
-							else
-							{
+							else {
 								sprite[i].picnum = 8595;
 								spawn(i, 26);
 								ps[connecthead].SlotWin |= 2;
 								spritesound(342, i);
 							}
-						}
-						else if ( (ps[connecthead].SlotWin & 1) != 0)
+						} else if ((ps[connecthead].SlotWin & 1) != 0)
 							sprite[i].picnum = 8593;
-						else
-						{
+						else {
 							sprite[i].picnum = 8594;
 							spawn(i, 41);
 							ps[connecthead].SlotWin |= 1;
 							spritesound(342, i);
 						}
-					}
-					else sprite[i].picnum = 8593;
+					} else
+						sprite[i].picnum = 8593;
 				}
-		    }
+			}
 		}
 
-		for (int i = headspritestat[123]; i >= 0; i = nextspritestat[i]) { //RA
-			if ( sprite[i].lotag == 5 && Sound[WITNESSSTAND].num == 0 )
-			      spritesound(WITNESSSTAND, i);
+		for (int i = headspritestat[123]; i >= 0; i = nextspritestat[i]) { // RA
+			if (sprite[i].lotag == 5 && Sound[WITNESSSTAND].num == 0)
+				spritesound(WITNESSSTAND, i);
 		}
 
 		for (int i = headspritestat[107]; i >= 0; i = nextspritestat[i]) {
@@ -2878,13 +2665,11 @@ public class Actors {
 		for (int i = headspritestat[105]; i >= 0; i = nextspritestat[i]) {
 			s = sprite[i];
 			if (s.picnum == BOWLLINE && s.lotag == 100) {
-				if(BowlOpen(s.sectnum))
-				{
+				if (BowlOpen(s.sectnum)) {
 					s.lotag = 0;
-					if(s.extra == 1 && BowlCheck(s.sectnum) == 0)
+					if (s.extra == 1 && BowlCheck(s.sectnum) == 0)
 						s.extra = 2;
-					if(s.extra == 2)
-					{
+					if (s.extra == 2) {
 						s.extra = 0;
 						BowlUpdate(s.sectnum);
 					}
@@ -2913,14 +2698,14 @@ public class Actors {
 							spritesound(TELEPORTER, j);
 
 							game.pInt.setsprinterpolate(ps[p].i, sprite[ps[p].i]);
-	                        ps[p].UpdatePlayerLoc();
+							ps[p].UpdatePlayerLoc();
 
-	                        if (ud.multimode < 2)
-	                        	engine.deletesprite((short)j);
-	                        else {
-	                        	s.cstat &= ~1;
-	                        	s.cstat |= 32768;
-	                        }
+							if (ud.multimode < 2)
+								engine.deletesprite((short) j);
+							else {
+								s.cstat &= ~1;
+								s.cstat |= 32768;
+							}
 						}
 						j = nextj;
 					}
@@ -2985,23 +2770,17 @@ public class Actors {
 					j = headspritestat[0];
 					while (j >= 0) {
 						nextj = nextspritestat[j];
-						if (sprite[j].picnum == POCKET
-								&& ldist(sprite[j], s) < 52) {
+						if (sprite[j].picnum == POCKET && ldist(sprite[j], s) < 52) {
 							engine.deletesprite(i);
 							continue BOLT;
 						}
 						j = nextj;
 					}
 
-					j = (short) engine
-							.clipmove(
-									s.x,
-									s.y,
-									s.z,
-									s.sectnum,
-									(((s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14) * TICSPERFRAME) << 11,
-									(((s.xvel * (sintable[s.ang & 2047])) >> 14) * TICSPERFRAME) << 11,
-									24, (4 << 8), (4 << 8), CLIPMASK1);
+					j = (short) engine.clipmove(s.x, s.y, s.z, s.sectnum,
+							(((s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14) * TICSPERFRAME) << 11,
+							(((s.xvel * (sintable[s.ang & 2047])) >> 14) * TICSPERFRAME) << 11, 24, (4 << 8), (4 << 8),
+							CLIPMASK1);
 
 					if (clipmove_sectnum != -1) {
 						s.x = clipmove_x;
@@ -3014,13 +2793,11 @@ public class Actors {
 					if (nHitObject != 0) {
 						if (nHitObject == kHitWall) {
 							j &= kHitIndexMask;
-							k = engine.getangle(wall[wall[j].point2].x
-									- wall[j].x, wall[wall[j].point2].y
-									- wall[j].y);
+							k = engine.getangle(wall[wall[j].point2].x - wall[j].x, wall[wall[j].point2].y - wall[j].y);
 							s.ang = (short) (((k << 1) - s.ang) & 2047);
 						} else if (nHitObject == kHitSprite) {
 							j &= kHitIndexMask;
-							checkhitsprite(i, (short)j);
+							checkhitsprite(i, (short) j);
 						}
 					}
 					s.xvel--;
@@ -3038,16 +2815,14 @@ public class Actors {
 
 						// if(s.pal == 12)
 						{
-							j = getincangle((int)ps[p].ang,engine.getangle(s.x - ps[p].posx, s.y - ps[p].posy));
-							if (j > -64 && j < 64
-									&& ((sync[p].bits & (1 << 29)) != 0))
+							j = getincangle((int) ps[p].ang, engine.getangle(s.x - ps[p].posx, s.y - ps[p].posy));
+							if (j > -64 && j < 64 && ((sync[p].bits & (1 << 29)) != 0))
 								if (ps[p].toggle_key_flag == 1) {
 									a = headspritestat[1];
 									while (a >= 0) {
-										if (sprite[a].picnum == QUEBALL
-												|| sprite[a].picnum == STRIPEBALL) {
-											j = getincangle((int)ps[p].ang,engine.getangle(sprite[a].x - ps[p].posx,
-															sprite[a].y - ps[p].posy));
+										if (sprite[a].picnum == QUEBALL || sprite[a].picnum == STRIPEBALL) {
+											j = getincangle((int) ps[p].ang, engine.getangle(sprite[a].x - ps[p].posx,
+													sprite[a].y - ps[p].posy));
 											if (j > -64 && j < 64) {
 												findplayer(sprite[a]);
 												l = player_dist;
@@ -3069,8 +2844,7 @@ public class Actors {
 						}
 					}
 					if (x < 512 && s.sectnum == ps[p].cursectnum) {
-						s.ang = engine.getangle(s.x - ps[p].posx, s.y
-								- ps[p].posy);
+						s.ang = engine.getangle(s.x - ps[p].posx, s.y - ps[p].posy);
 						s.xvel = 48;
 					}
 				}
@@ -3078,12 +2852,11 @@ public class Actors {
 				break;
 
 			case RAT:
-				makeitfall(currentGame.getCON(),i);
+				makeitfall(currentGame.getCON(), i);
 				if (ssp(i, CLIPMASK0)) {
 					if ((engine.krand() & 255) < 3)
 						spritesound(RATTY, i);
-					s.ang += (engine.krand() & 31) - 15
-							+ (sintable[(t[0] << 8) & 2047] >> 11);
+					s.ang += (engine.krand() & 31) - 15 + (sintable[(t[0] << 8) & 2047] >> 11);
 				} else {
 					hittype[i].temp_data[0]++;
 					if (hittype[i].temp_data[0] > 1) {
@@ -3130,16 +2903,14 @@ public class Actors {
 						}
 					}
 
-					makeitfall(currentGame.getCON(),i);
+					makeitfall(currentGame.getCON(), i);
 
-					if (sector[sect].lotag != 1 && sector[sect].lotag != 160
-							&& s.z >= hittype[i].floorz - (FOURSLEIGHT)
+					if (sector[sect].lotag != 1 && sector[sect].lotag != 160 && s.z >= hittype[i].floorz - (FOURSLEIGHT)
 							&& s.yvel < 3) {
 						if (s.yvel > 0 || (s.yvel == 0 && hittype[i].floorz == sector[sect].floorz && s.picnum != 3464))
 							spritesound(PIPEBOMB_BOUNCE, i);
 
-						if ( s.picnum != 3464 )
-						{
+						if (s.picnum != 3464) {
 							s.zvel = (short) -((4 - s.yvel) << 8);
 							if (sector[s.sectnum].lotag == 2)
 								s.zvel >>= 2;
@@ -3156,10 +2927,8 @@ public class Actors {
 						s.zvel = 0;
 					}
 
-					j = movesprite(i,
-							(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
-							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel,
-							CLIPMASK0);
+					j = movesprite(i, (s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
+							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel, CLIPMASK0);
 
 					if (sector[sprite[i].sectnum].lotag == 1 && s.zvel == 0) {
 						s.z += (32 << 8);
@@ -3170,7 +2939,7 @@ public class Actors {
 					} else
 						t[5] = 0;
 
-					if (t[3] == 0 && (s.picnum == MORTER || s.picnum == 3464 ) && (j != 0 || x < 844)) {
+					if (t[3] == 0 && (s.picnum == MORTER || s.picnum == 3464) && (j != 0 || x < 844)) {
 						t[3] = 1;
 						t[4] = 0;
 						l = 0;
@@ -3199,14 +2968,12 @@ public class Actors {
 
 						checkhitwall(i, j, s.x, s.y, s.z, s.picnum);
 
-						k = engine.getangle(wall[wall[j].point2].x - wall[j].x,
-								wall[wall[j].point2].y - wall[j].y);
-						if ( s.picnum == 3464 )
-						{
-			                t[3] = 1;
-			                t[4] = 0;
-			                m = 0;
-			                s.xvel = 0;
+						k = engine.getangle(wall[wall[j].point2].x - wall[j].x, wall[wall[j].point2].y - wall[j].y);
+						if (s.picnum == 3464) {
+							t[3] = 1;
+							t[4] = 0;
+							m = 0;
+							s.xvel = 0;
 						} else {
 							s.ang = (short) (((k << 1) - s.ang) & 2047);
 							s.xvel >>= 1;
@@ -3260,24 +3027,21 @@ public class Actors {
 							continue;
 						}
 					}
-					if ( s.picnum == 3464 )
-					{
-				        spawn(i, BURNING);
-				        engine.deletesprite(i);
-				        continue;
+					if (s.picnum == 3464) {
+						spawn(i, BURNING);
+						engine.deletesprite(i);
+						continue;
 					}
-				} else if (s.picnum == DYNAMITE && x < 788 && t[0] > 7
-						&& s.xvel == 0)
-					if (engine.cansee(s.x, s.y, s.z - (8 << 8), s.sectnum,
-							ps[p].posx, ps[p].posy, ps[p].posz,
+				} else if (s.picnum == DYNAMITE && x < 788 && t[0] > 7 && s.xvel == 0)
+					if (engine.cansee(s.x, s.y, s.z - (8 << 8), s.sectnum, ps[p].posx, ps[p].posy, ps[p].posz,
 							ps[p].cursectnum))
-						if (ps[p].ammo_amount[4] < currentGame.getCON().max_ammo_amount[4]) { //GDX 3.10.2018
+						if (ps[p].ammo_amount[4] < currentGame.getCON().max_ammo_amount[4]) { // GDX 3.10.2018
 							if (ud.coop >= 1 && s.owner == i) {
 								for (j = 0; j < ps[p].weapreccnt; j++)
 									if (ps[p].weaprecs[j] == s.picnum)
-										continue BOLT; //v0.751
+										continue BOLT; // v0.751
 
-								if (ps[p].weapreccnt < 16) //v0.751
+								if (ps[p].weapreccnt < 16) // v0.751
 									ps[p].weaprecs[ps[p].weapreccnt++] = s.picnum;
 							}
 
@@ -3362,8 +3126,7 @@ public class Actors {
 				} else if (t[2] > 10) {
 					j = headspritestat[5];
 					while (j >= 0) {
-						if (sprite[j].owner == i
-								&& sprite[j].picnum == FORCESPHERE)
+						if (sprite[j].owner == i && sprite[j].picnum == FORCESPHERE)
 							hittype[j].temp_data[1] = 1 + (engine.krand() & 63);
 						j = nextspritestat[j];
 					}
@@ -3374,10 +3137,8 @@ public class Actors {
 
 			case POWDERKEGSPRITE:
 				if (sector[s.sectnum].lotag != 1 && sector[s.sectnum].lotag != 160 && s.xvel != 0) {
-					j = movesprite(i,
-							(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
-							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel,
-							CLIPMASK0);
+					j = movesprite(i, (s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
+							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel, CLIPMASK0);
 					s.xvel--;
 				}
 
@@ -3391,9 +3152,10 @@ public class Actors {
 					continue;
 				}
 				if (hittype[i].temp_data[0] >= (currentGame.getCON().respawnitemtime >> 1)
-						&& hittype[i].temp_data[0] < ((currentGame.getCON().respawnitemtime >> 1) + (currentGame.getCON().respawnitemtime >> 2)))
+						&& hittype[i].temp_data[0] < ((currentGame.getCON().respawnitemtime >> 1)
+								+ (currentGame.getCON().respawnitemtime >> 2)))
 					sprite[i].picnum = 876;
-				makeitfall(currentGame.getCON(),i);
+				makeitfall(currentGame.getCON(), i);
 				break;
 
 			case REACTORBURNT:
@@ -3465,7 +3227,7 @@ public class Actors {
 					t[4] = s.z;
 					s.z = sector[sect].floorz;
 					int dz = sector[sect].floorz - sector[sect].ceilingz;
-					if(dz != 0)
+					if (dz != 0)
 						s.z -= (engine.krand() % dz);
 
 					switch (t[1]) {
@@ -3544,23 +3306,20 @@ public class Actors {
 				if (sector[s.sectnum].lotag == 900)
 					s.xvel = 0;
 				if (s.xvel != 0) {
-					makeitfall(currentGame.getCON(),i);
-					j = movesprite(i,
-							(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
-							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel,
-							CLIPMASK0);
+					makeitfall(currentGame.getCON(), i);
+					j = movesprite(i, (s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
+							(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel, CLIPMASK0);
 
 					if ((j & kHitTypeMask) == kHitWall) {
 						j &= kHitIndexMask;
-						k = engine.getangle(wall[wall[j].point2].x - wall[j].x,
-								wall[wall[j].point2].y - wall[j].y);
+						k = engine.getangle(wall[wall[j].point2].x - wall[j].x, wall[wall[j].point2].y - wall[j].y);
 						s.ang = (short) (((k << 1) - s.ang) & 2047);
 					} else if ((j & kHitTypeMask) == kHitSprite) {
 						j &= kHitIndexMask;
-						checkhitsprite((short)j, i);
+						checkhitsprite((short) j, i);
 						if (sprite[j].picnum == HEN) {
 							int ss = spawn(j, HENSTAND);
-							engine.deletesprite((short)j);
+							engine.deletesprite((short) j);
 
 							sprite[ss].xvel = 32;
 							sprite[ss].lotag = 40;
@@ -3588,7 +3347,7 @@ public class Actors {
 					if ((s.picnum == 3440 || s.picnum == 3441) && s.xvel == 0)
 						engine.deletesprite(i);
 				} else if (sector[s.sectnum].lotag == 900) {
-					if ( s.picnum == BOWLINGBALL )
+					if (s.picnum == BOWLINGBALL)
 						BowlClose(i);
 					engine.deletesprite(i);
 					continue;
@@ -3605,12 +3364,10 @@ public class Actors {
 					continue;
 				}
 
-				makeitfall(currentGame.getCON(),i);
-				j = movesprite(i,
-						(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
-						(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel,
-						CLIPMASK0);
-				if(s.picnum == HEAD1TILE) {
+				makeitfall(currentGame.getCON(), i);
+				j = movesprite(i, (s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
+						(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel, CLIPMASK0);
+				if (s.picnum == HEAD1TILE) {
 					if ((sector[s.sectnum].floorz - 2048) <= s.z) {
 						if (sector[s.sectnum].lotag == 1)
 							sprite[spawn(i, WATERSPLASH2)].z = sector[s.sectnum].floorz;
@@ -3620,8 +3377,7 @@ public class Actors {
 					}
 				}
 
-				if ((j & kHitTypeMask) == kHitWall
-						|| (j & kHitTypeMask) == kHitSprite) {
+				if ((j & kHitTypeMask) == kHitWall || (j & kHitTypeMask) == kHitSprite) {
 					engine.deletesprite(i);
 					continue;
 				}
@@ -3647,45 +3403,42 @@ public class Actors {
 				}
 
 				if (sector[s.sectnum].lotag == 903)
-					makeitfall(currentGame.getCON(),i);
+					makeitfall(currentGame.getCON(), i);
 
-				j = movesprite(i,
-					(s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
-					(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel,
-					CLIPMASK0);
+				j = movesprite(i, (s.xvel * (sintable[(s.ang + 512) & 2047])) >> 14,
+						(s.xvel * (sintable[s.ang & 2047])) >> 14, s.zvel, CLIPMASK0);
 
 				switch (sector[s.sectnum].lotag) {
-					case 901:
-						s.picnum = CHICKENBTILE;
-						break;
-					case 902:
-						s.picnum = CHICKENCTILE;
-						break;
-					case 903:
-						if ((sector[s.sectnum].floorz - 2048) <= s.z) {
-							engine.deletesprite(i);
-							continue;
-						}
-						break;
-					case 904:
+				case 901:
+					s.picnum = CHICKENBTILE;
+					break;
+				case 902:
+					s.picnum = CHICKENCTILE;
+					break;
+				case 903:
+					if ((sector[s.sectnum].floorz - 2048) <= s.z) {
 						engine.deletesprite(i);
 						continue;
+					}
+					break;
+				case 904:
+					engine.deletesprite(i);
+					continue;
 				}
 
-				if ((j & kHitTypeMask) == kHitWall
-						|| (j & kHitTypeMask) == kHitSprite) {
+				if ((j & kHitTypeMask) == kHitWall || (j & kHitTypeMask) == kHitSprite) {
 					engine.deletesprite(i);
 					continue;
 				}
 				break;
-			case MOTORCYCLE: //RA
-				makeitfall(currentGame.getCON(),i);
+			case MOTORCYCLE: // RA
+				makeitfall(currentGame.getCON(), i);
 				getglobalz(i);
-				if ( sector[s.sectnum].lotag == 1 )
+				if (sector[s.sectnum].lotag == 1)
 					engine.setsprite(i, s.x, s.y, hittype[i].floorz + 4096);
 				break;
-			case SWAMPBUGGY: //RA
-				makeitfall(currentGame.getCON(),i);
+			case SWAMPBUGGY: // RA
+				makeitfall(currentGame.getCON(), i);
 				getglobalz(i);
 				break;
 			case UFO1:
@@ -3693,7 +3446,7 @@ public class Actors {
 			case UFO3:
 			case UFO4:
 			case UFO5:
-			case MINIONUFO: //RA
+			case MINIONUFO: // RA
 
 				getglobalz(i);
 
@@ -3735,9 +3488,9 @@ public class Actors {
 						for (l = 0; l < 16; l++)
 							RANDOMSCRAP(s, i);
 						spritesound(LASERTRIP_EXPLODE, i);
-						if ( ps[connecthead].isSwamp )
+						if (ps[connecthead].isSwamp)
 							spawn(i, MINION);
-		                else {
+						else {
 							switch (s.picnum) {
 							case UFO1:
 								spawn(i, HEN);
@@ -3754,11 +3507,11 @@ public class Actors {
 							case UFO5:
 								spawn(i, BILLYRAY);
 								break;
-							case MINIONUFO: //RA
+							case MINIONUFO: // RA
 								spawn(i, HEN);
 								break;
 							}
-		                }
+						}
 
 						ps[connecthead].actors_killed++;
 						engine.deletesprite(i);
@@ -3783,17 +3536,13 @@ public class Actors {
 						shoot(i, FIRELASER);
 						s.ang = (short) a;
 					}
-					if (t[2] > (26 * 3)
-							|| !engine.cansee(s.x, s.y, s.z - (16 << 8),
-									s.sectnum, ps[p].posx, ps[p].posy,
-									ps[p].posz, ps[p].cursectnum)) {
+					if (t[2] > (26 * 3) || !engine.cansee(s.x, s.y, s.z - (16 << 8), s.sectnum, ps[p].posx, ps[p].posy,
+							ps[p].posz, ps[p].cursectnum)) {
 						t[0] = 0;
 						t[2] = 0;
 					} else
-						hittype[i].tempang += getincangle(
-								hittype[i].tempang,
-								engine.getangle(ps[p].posx - s.x, ps[p].posy
-										- s.y)) / 3;
+						hittype[i].tempang += getincangle(hittype[i].tempang,
+								engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y)) / 3;
 				} else if (t[0] == 2 || t[0] == 3) {
 					t[3] = 0;
 					if (s.xvel > 0)
@@ -3809,18 +3558,15 @@ public class Actors {
 							s.z += sgn(ps[p].posz - s.z) << 10;
 					} else {
 						t[2]++;
-						if (t[2] > (26 * 3)
-								|| !engine.cansee(s.x, s.y, s.z - (16 << 8),
-										s.sectnum, ps[p].posx, ps[p].posy,
-										ps[p].posz, ps[p].cursectnum)) {
+						if (t[2] > (26 * 3) || !engine.cansee(s.x, s.y, s.z - (16 << 8), s.sectnum, ps[p].posx,
+								ps[p].posy, ps[p].posz, ps[p].cursectnum)) {
 							t[0] = 1;
 							t[2] = 0;
 						} else if ((t[2] & 15) == 0) {
 							shoot(i, FIRELASER);
 						}
 					}
-					s.ang += getincangle(s.ang,
-							engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y)) >> 2;
+					s.ang += getincangle(s.ang, engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y)) >> 2;
 				}
 
 				if (t[0] != 2 && t[0] != 3) {
@@ -3829,8 +3575,7 @@ public class Actors {
 						a = s.ang;
 						s.xvel >>= 1;
 					} else
-						a = engine.getangle(sprite[j].x - s.x, sprite[j].y
-								- s.y);
+						a = engine.getangle(sprite[j].x - s.x, sprite[j].y - s.y);
 
 					if (t[0] == 1 || t[0] == 4) // Found a locator and going
 												// with it
@@ -3913,7 +3658,7 @@ public class Actors {
 
 			execute(currentGame.getCON(), i, p, x);
 
-			if(!IsOriginalDemo() && s.picnum == COW && s.extra <= 0 && (s.cstat & 256) != 0)
+			if (!IsOriginalDemo() && s.picnum == COW && s.extra <= 0 && (s.cstat & 256) != 0)
 				s.cstat &= ~256;
 		}
 
@@ -3953,7 +3698,7 @@ public class Actors {
 						insertspriteq(i);
 				}
 
-				makeitfall(currentGame.getCON(),i);
+				makeitfall(currentGame.getCON(), i);
 
 				p = findplayer(s);
 				x = player_dist;
@@ -4009,8 +3754,7 @@ public class Actors {
 				} else
 					t[1] = 0;
 
-				if (sector[s.sectnum].lotag == 800
-						&& sector[s.sectnum].floorz - 2048 <= s.z)
+				if (sector[s.sectnum].lotag == 800 && sector[s.sectnum].floorz - 2048 <= s.z)
 					engine.deletesprite(i);
 
 				continue;
@@ -4032,7 +3776,7 @@ public class Actors {
 			case GLASSPIECES + 2:
 			case POPCORN:
 
-				makeitfall(currentGame.getCON(),i);
+				makeitfall(currentGame.getCON(), i);
 
 				if (s.zvel > 4096)
 					s.zvel = 4096;
@@ -4069,8 +3813,7 @@ public class Actors {
 
 				s.xvel = (short) ((engine.krand() & 7) + (sintable[hittype[i].temp_data[0] & 2047] >> 9));
 				hittype[i].temp_data[0] += (engine.krand() & 63);
-				if ((hittype[i].temp_data[0] & 2047) > 512
-						&& (hittype[i].temp_data[0] & 2047) < 1596) {
+				if ((hittype[i].temp_data[0] & 2047) > 512 && (hittype[i].temp_data[0] & 2047) < 1596) {
 					if (sector[sect].lotag == 2) {
 						if (s.zvel < 64)
 							s.zvel += (currentGame.getCON().gc >> 5) + (engine.krand() & 7);
@@ -4114,16 +3857,14 @@ public class Actors {
 				engine.deletesprite(i);
 				continue;
 			case FEATHERS + 1:
-				hittype[i].floorz = s.z = engine.getflorzofslope(s.sectnum,
-						s.x, s.y);
+				hittype[i].floorz = s.z = engine.getflorzofslope(s.sectnum, s.x, s.y);
 				if (sector[s.sectnum].lotag != 800)
 					break;
 				engine.deletesprite(i);
 				continue;
 
 			case SHOTGUNSPRITE:
-				if (sector[s.sectnum].lotag != 800
-						|| sector[s.sectnum].floorz - 2048 > s.z)
+				if (sector[s.sectnum].lotag != 800 || sector[s.sectnum].floorz - 2048 > s.z)
 					break;
 
 				engine.deletesprite(i);
@@ -4183,26 +3924,26 @@ public class Actors {
 			case COOTJIBB:
 			case COOTJIBC:
 
-			case 2460: //RA green jibs1
-            case 2465: //RA green jibs2
-			case 5872: //RA motowheel
-        	case 5877: //RA mototank
-        	case 5882: //RA boarddebris
-        	case 6112: //RA bikenbody
-        	case 6117: //RA bikenhead
-        	case 6121: //RA bikerhead2
-        	case 6127: //RA bikerhand
-        	case 7000: //RA babahead
-        	case 7005: //RA bababody
-        	case 7010: //RA babafoot
-        	case 7015: //RA babahand
-        	case 7020: //RA debris
-        	case 7025: //RA debbris
-        	case 7387: //RA deepjibs
-        	case 7392: //RA deepjibs2
-        	case 7397: //RA deepjibs3
-        	case 8890: //RA deep2jibs
-        	case 8895: //RA deep2jibs2
+			case 2460: // RA green jibs1
+			case 2465: // RA green jibs2
+			case 5872: // RA motowheel
+			case 5877: // RA mototank
+			case 5882: // RA boarddebris
+			case 6112: // RA bikenbody
+			case 6117: // RA bikenhead
+			case 6121: // RA bikerhead2
+			case 6127: // RA bikerhand
+			case 7000: // RA babahead
+			case 7005: // RA bababody
+			case 7010: // RA babafoot
+			case 7015: // RA babahand
+			case 7020: // RA debris
+			case 7025: // RA debbris
+			case 7387: // RA deepjibs
+			case 7392: // RA deepjibs2
+			case 7397: // RA deepjibs3
+			case 8890: // RA deep2jibs
+			case 8895: // RA deep2jibs2
 
 				if (s.xvel > 0)
 					s.xvel--;
@@ -4233,8 +3974,7 @@ public class Actors {
 						t[1]++;
 					else if (sector[sect].lotag != 2) {
 						t[1] = 0;
-						if (s.picnum == LNRLEG || s.picnum == LNRDTORSO
-								|| s.picnum == LNRDGUN) {
+						if (s.picnum == LNRLEG || s.picnum == LNRDTORSO || s.picnum == LNRDGUN) {
 							if (t[0] > 6)
 								t[0] = 0;
 							else
@@ -4262,18 +4002,17 @@ public class Actors {
 					s.z += s.zvel;
 
 					if (s.z < sector[s.sectnum].floorz) {
-						if (sector[s.sectnum].lotag == 800
-								&& sector[s.sectnum].floorz - 2048 <= s.z)
+						if (sector[s.sectnum].lotag == 800 && sector[s.sectnum].floorz - 2048 <= s.z)
 							engine.deletesprite(i);
 						continue;
 					}
 					engine.deletesprite(i);
 				} else {
-					if ( s.picnum == 2465 || s.picnum == 2460 ) //RA
+					if (s.picnum == 2465 || s.picnum == 2460) // RA
 					{
 						engine.deletesprite(i);
 						continue;
-		            }
+					}
 
 					if (t[2] == 0) {
 						if (s.sectnum == -1) {
@@ -4299,8 +4038,7 @@ public class Actors {
 							engine.deletesprite(i);
 							continue;
 						}
-						if (sector[s.sectnum].lotag == 800
-								&& sector[s.sectnum].floorz - 2048 <= s.z)
+						if (sector[s.sectnum].lotag == 800 && sector[s.sectnum].floorz - 2048 <= s.z)
 							engine.deletesprite(i);
 
 						continue;
@@ -4329,7 +4067,7 @@ public class Actors {
 					sprite[ps[p].i].extra -= 4;
 				}
 
-				//break GDX 3.10.2018
+				// break GDX 3.10.2018
 			case FIRELASER:
 			case UWHIP:
 			case OWHIP:
@@ -4475,8 +4213,7 @@ public class Actors {
 				continue;
 			}
 
-			if (IFWITHIN(s, SCRAP6, SCRAP5 + 3))
-			{
+			if (IFWITHIN(s, SCRAP6, SCRAP5 + 3)) {
 				if (s.xvel > 0)
 					s.xvel--;
 				else
@@ -4657,8 +4394,8 @@ public class Actors {
 
 							ps[p].posz += zchange;
 
-							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y,
-									ps[p].posx, ps[p].posy, (short) (q * l));
+							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y, ps[p].posx, ps[p].posy,
+									(short) (q * l));
 
 							m = out.getX();
 							x = out.getY();
@@ -4678,10 +4415,8 @@ public class Actors {
 
 					p = headspritesect[s.sectnum];
 					while (p >= 0) {
-						if (sprite[p].statnum != 3 && sprite[p].statnum != 4)
-						{
-							if (sprite[p].picnum == APLAYER
-									&& sprite[p].owner >= 0) {
+						if (sprite[p].statnum != 3 && sprite[p].statnum != 4) {
+							if (sprite[p].picnum == APLAYER && sprite[p].owner >= 0) {
 								p = nextspritesect[p];
 								continue;
 							}
@@ -4692,8 +4427,8 @@ public class Actors {
 							sprite[p].ang &= 2047;
 							sprite[p].z += zchange;
 
-							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y,
-									sprite[p].x, sprite[p].y, (short) (q * l));
+							Point out = engine.rotatepoint(sprite[j].x, sprite[j].y, sprite[p].x, sprite[p].y,
+									(short) (q * l));
 							sprite[p].x = out.getX();
 							sprite[p].y = out.getY();
 						}
@@ -4741,9 +4476,8 @@ public class Actors {
 							sprite[nSpawn].pal = 33;
 
 							if (UFO_SpawnHulk == 0) {
-								nSpawn = EGS(s.sectnum, s.x, s.y,
-										sector[s.sectnum].ceilingz + 119428,
-										3677, -8, 16, 16, 0, 0, 0, i, (short)5);
+								nSpawn = EGS(s.sectnum, s.x, s.y, sector[s.sectnum].ceilingz + 119428, 3677, -8, 16, 16,
+										0, 0, 0, i, (short) 5);
 								sprite[nSpawn].cstat = 514;
 								sprite[nSpawn].yrepeat = 255;
 								sprite[nSpawn].pal = 7;
@@ -4762,8 +4496,7 @@ public class Actors {
 				int count = 0;
 				j = headspritesect[s.sectnum];
 				while (j >= 0) {
-					if (sprite[j].picnum == UFOBEAM && count != UFO_SpawnCount
-							&& ++UFO_SpawnTime == 64) {
+					if (sprite[j].picnum == UFOBEAM && count != UFO_SpawnCount && ++UFO_SpawnTime == 64) {
 						UFO_SpawnTime = count;
 						--UFO_SpawnCount;
 						int spawntile = 0;
@@ -4781,7 +4514,7 @@ public class Actors {
 							spawntile = UFO4;
 							break;
 						}
-						if(currentGame.getCON().type == RRRA)
+						if (currentGame.getCON().type == RRRA)
 							spawntile = MINIONUFO;
 						int nSpawn = spawn(i, spawntile);
 						sprite[nSpawn].z = sector[sprite[nSpawn].sectnum].ceilingz;
@@ -4791,8 +4524,7 @@ public class Actors {
 
 				j = headspritestat[3];
 				while (j >= 0) {
-					if ((sprite[j].lotag == 14) && (sh == sprite[j].hitag)
-							&& (hittype[j].temp_data[0] == t[0])) {
+					if ((sprite[j].lotag == 14) && (sh == sprite[j].hitag) && (hittype[j].temp_data[0] == t[0])) {
 						sprite[j].xvel = s.xvel;
 
 						if (hittype[j].temp_data[5] == 0)
@@ -4810,8 +4542,7 @@ public class Actors {
 
 			case 14:
 				if (s.owner == -1)
-					s.owner = (short) LocateTheLocator((short) t[3],
-							(short) t[0]);
+					s.owner = (short) LocateTheLocator((short) t[3], (short) t[0]);
 
 				if (s.owner == -1) {
 					game.dassert("Could not find any locators for SE# 6 and 14 with a hitag of " + t[3]);
@@ -4832,8 +4563,7 @@ public class Actors {
 				}
 
 				if (s.xvel != 0) {
-					x = engine.getangle(sprite[s.owner].x - s.x,
-							sprite[s.owner].y - s.y);
+					x = engine.getangle(sprite[s.owner].x - s.x, sprite[s.owner].y - s.y);
 					q = getincangle(s.ang, x) >> 3;
 
 					t[2] += q;
@@ -4842,22 +4572,19 @@ public class Actors {
 					if (s.xvel == sc.extra) {
 						if (Sound[hittype[i].lastvx].num == 0)
 							spritesound(hittype[i].lastvx, i);
-						if (!ud.monsters_off && sc.floorpal == 0
-								&& (sc.floorstat & 1) != 0 && rnd(8)) {
+						if (!ud.monsters_off && sc.floorpal == 0 && (sc.floorstat & 1) != 0 && rnd(8)) {
 							p = (short) findplayer(s);
 							x = player_dist;
 							if (x < 20480) {
 								j = s.ang;
-								s.ang = engine.getangle(s.x
-										- ps[p].posx, s.y - ps[p].posy);
+								s.ang = engine.getangle(s.x - ps[p].posx, s.y - ps[p].posy);
 								shoot(i, CROSSBOW);
 								s.ang = (short) j;
 							}
 						}
 					}
 
-					if (s.xvel <= 64 && (sc.floorstat & 1) == 0
-							&& (sc.ceilingstat & 1) == 0)
+					if (s.xvel <= 64 && (sc.floorstat & 1) == 0 && (sc.ceilingstat & 1) == 0)
 						stopsound(hittype[i].lastvx, i);
 
 					if ((sc.floorz - sc.ceilingz) < (108 << 8)) {
@@ -4865,8 +4592,7 @@ public class Actors {
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
 								if (sprite[ps[p].i].extra > 0) {
 									k = ps[p].cursectnum;
-									k = engine.updatesector(ps[p].posx,
-											ps[p].posy, k);
+									k = engine.updatesector(ps[p].posx, ps[p].posy, k);
 									if ((k == -1 && !ud.clipping)
 											|| (k == s.sectnum && ps[p].cursectnum != s.sectnum)) {
 										ps[p].posx = s.x;
@@ -4883,7 +4609,7 @@ public class Actors {
 					x = (s.xvel * sintable[s.ang & 2047]) >> 14;
 
 					for (p = connecthead; p >= 0; p = connectpoint2[p])
-						if (ps[p].cursectnum != -1 && sector[ps[p].cursectnum].lotag != 2) { //v0.751
+						if (ps[p].cursectnum != -1 && sector[ps[p].cursectnum].lotag != 2) { // v0.751
 							if (po[p].os == s.sectnum) {
 								po[p].ox += m;
 								po[p].oy += x;
@@ -4915,12 +4641,9 @@ public class Actors {
 						}
 					j = headspritesect[s.sectnum];
 					while (j >= 0) {
-						if (sprite[j].statnum != 10
-								&& sector[sprite[j].sectnum].lotag != 2
-								&& sprite[j].picnum != SECTOREFFECTOR
-								&& sprite[j].picnum != LOCATORS) {
-							Point out = engine.rotatepoint(s.x, s.y, sprite[j].x,
-									sprite[j].y, (short) q);
+						if (sprite[j].statnum != 10 && sector[sprite[j].sectnum].lotag != 2
+								&& sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS) {
+							Point out = engine.rotatepoint(s.x, s.y, sprite[j].x, sprite[j].y, (short) q);
 
 							game.pInt.setsprinterpolate(j, sprite[j]);
 
@@ -4963,15 +4686,12 @@ public class Actors {
 						jj = headspritesect[sprite[sprite[i].owner].sectnum];
 						while (jj >= 0) {
 							ll = nextspritesect[jj];
-							if (sprite[jj].statnum == 1 && badguy(sprite[jj])
-									&& sprite[jj].picnum != SECTOREFFECTOR
+							if (sprite[jj].statnum == 1 && badguy(sprite[jj]) && sprite[jj].picnum != SECTOREFFECTOR
 									&& sprite[jj].picnum != LOCATORS) {
 								k = sprite[jj].sectnum;
-								k = engine.updatesector(sprite[jj].x,
-										sprite[jj].y, k);
+								k = engine.updatesector(sprite[jj].x, sprite[jj].y, k);
 								if (sprite[jj].extra >= 0 && k == s.sectnum) {
-									gutsdir(sprite[jj], JIBS6, 72,
-											myconnectindex);
+									gutsdir(sprite[jj], JIBS6, 72, myconnectindex);
 									spritesound(SQUISHED, i);
 									engine.deletesprite(jj);
 								}
@@ -4994,15 +4714,13 @@ public class Actors {
 							t[4] = 2;
 						else {
 							if (s.xvel == 0)
-								operateactivators(
-										s.hitag + (t[3] == 0 ? 1 : 0), -1);
+								operateactivators(s.hitag + (t[3] == 0 ? 1 : 0), -1);
 							if (s.xvel < 256)
 								s.xvel += 16;
 						}
 					}
 					if (t[4] == 2) {
-						l = FindDistance2D(sprite[s.owner].x - s.x,
-								sprite[s.owner].y - s.y);
+						l = FindDistance2D(sprite[s.owner].x - s.x, sprite[s.owner].y - s.y);
 
 						if (l <= 128)
 							s.xvel = 0;
@@ -5019,8 +4737,7 @@ public class Actors {
 
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
-								if (sprite[j].picnum != SECTOREFFECTOR
-										&& sprite[j].picnum != LOCATORS) {
+								if (sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS) {
 									game.pInt.setsprinterpolate(j, sprite[j]);
 								}
 								j = nextspritesect[j];
@@ -5039,8 +4756,7 @@ public class Actors {
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
 								if (sprite[ps[p].i].extra > 0) {
 									k = ps[p].cursectnum;
-									k = engine.updatesector(ps[p].posx,
-											ps[p].posy, k);
+									k = engine.updatesector(ps[p].posx, ps[p].posy, k);
 									if ((k == -1 && !ud.clipping)
 											|| (k == s.sectnum && ps[p].cursectnum != s.sectnum)) {
 										ps[p].posx = s.x;
@@ -5074,8 +4790,7 @@ public class Actors {
 
 					j = headspritesect[s.sectnum];
 					while (j >= 0) {
-						if (sprite[j].picnum != SECTOREFFECTOR
-								&& sprite[j].picnum != LOCATORS) {
+						if (sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS) {
 
 							game.pInt.setsprinterpolate(j, sprite[j]);
 
@@ -5098,8 +4813,7 @@ public class Actors {
 							for (p = connecthead; p >= 0; p = connectpoint2[p])
 								if (sprite[ps[p].i].extra > 0) {
 									k = ps[p].cursectnum;
-									k = engine.updatesector(ps[p].posx,
-											ps[p].posy, k);
+									k = engine.updatesector(ps[p].posx, ps[p].posy, k);
 									if ((k == -1 && !ud.clipping)
 											|| (k == s.sectnum && ps[p].cursectnum != s.sectnum)) {
 										ps[p].posx = s.x;
@@ -5118,17 +4832,14 @@ public class Actors {
 						jj = headspritesect[sprite[sprite[i].owner].sectnum];
 						while (jj >= 0) {
 							ll = nextspritesect[jj];
-							if (sprite[jj].statnum == 1 && badguy(sprite[jj])
-									&& sprite[jj].picnum != SECTOREFFECTOR
+							if (sprite[jj].statnum == 1 && badguy(sprite[jj]) && sprite[jj].picnum != SECTOREFFECTOR
 									&& sprite[jj].picnum != LOCATORS) {
 								// if(sprite[j].sectnum != s.sectnum)
 								{
 									k = sprite[jj].sectnum;
-									k = engine.updatesector(sprite[jj].x,
-											sprite[jj].y, k);
+									k = engine.updatesector(sprite[jj].x, sprite[jj].y, k);
 									if (sprite[jj].extra >= 0 && k == s.sectnum) {
-										gutsdir(sprite[jj], JIBS6, 24,
-												myconnectindex);
+										gutsdir(sprite[jj], JIBS6, 24, myconnectindex);
 										spritesound(SQUISHED, jj);
 										engine.deletesprite(jj);
 									}
@@ -5193,8 +4904,7 @@ public class Actors {
 
 							sprite[jj].x += m;
 							sprite[jj].y += x;
-							engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
-									sprite[jj].z);
+							engine.setsprite(jj, sprite[jj].x, sprite[jj].y, sprite[jj].z);
 						}
 						jj = nextj;
 					}
@@ -5299,8 +5009,7 @@ public class Actors {
 				x = player_dist;
 				if (x < 8192) {
 					j = s.ang;
-					s.ang = engine.getangle(s.x - ps[p].posx, s.y
-							- ps[p].posy);
+					s.ang = engine.getangle(s.x - ps[p].posx, s.y - ps[p].posy);
 					shoot(i, FIRELASER);
 					s.ang = (short) j;
 				}
@@ -5335,8 +5044,7 @@ public class Actors {
 				if (ldist(sprite[s.owner], s) < 1024) {
 					short ta;
 					ta = s.ang;
-					s.ang = engine.getangle(ps[p].posx - s.x,
-							ps[p].posy - s.y);
+					s.ang = engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y);
 					s.ang = ta;
 					s.owner = -1;
 					continue;
@@ -5344,8 +5052,7 @@ public class Actors {
 				} else
 					s.xvel = 256;
 
-				x = engine.getangle(sprite[s.owner].x - s.x, sprite[s.owner].y
-						- s.y);
+				x = engine.getangle(sprite[s.owner].x - s.x, sprite[s.owner].y - s.y);
 				q = getincangle(s.ang, x) >> 3;
 				s.ang += q;
 
@@ -5353,8 +5060,7 @@ public class Actors {
 					t[2] += q;
 					sc.ceilingshade = 127;
 				} else {
-					t[2] += getincangle(t[2] + 512,
-							engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y)) >> 2;
+					t[2] += getincangle(t[2] + 512, engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y)) >> 2;
 					sc.ceilingshade = 0;
 				}
 
@@ -5396,8 +5102,7 @@ public class Actors {
 				if (j >= 0) {
 					short sn;
 
-					if ((sc.lotag & 0x8000) != 0
-							|| hittype[i].temp_data[4] != 0)
+					if ((sc.lotag & 0x8000) != 0 || hittype[i].temp_data[4] != 0)
 						x = -t[3];
 					else
 						x = t[3];
@@ -5407,8 +5112,7 @@ public class Actors {
 
 					j = headspritestat[3];
 					while (j >= 0) {
-						if (((sprite[j].lotag) == st)
-								&& (sprite[j].hitag) == sh) {
+						if (((sprite[j].lotag) == st) && (sprite[j].hitag) == sh) {
 							sn = sprite[j].sectnum;
 							m = sprite[j].shade;
 
@@ -5454,15 +5158,13 @@ public class Actors {
 
 			case 10:
 
-				if ((sc.lotag & 0xff) == 27
-						|| (sc.floorz > sc.ceilingz && (sc.lotag & 0xff) != 23)
+				if ((sc.lotag & 0xff) == 27 || (sc.floorz > sc.ceilingz && (sc.lotag & 0xff) != 23)
 						|| sc.lotag == (short) 32791) {
 					j = 1;
 
 					if ((sc.lotag & 0xff) != 27)
 						for (p = connecthead; p >= 0; p = connectpoint2[p])
-							if (sc.lotag != 30 && sc.lotag != 31
-									&& sc.lotag != 0)
+							if (sc.lotag != 30 && sc.lotag != 31 && sc.lotag != 0)
 								if (s.sectnum == sprite[ps[p].i].sectnum)
 									j = 0;
 
@@ -5473,7 +5175,7 @@ public class Actors {
 							case 21:
 							case 22:
 							case 26:
-								if(currentGame.getCON().type != RRRA) { //GDX 3.10.2018
+								if (currentGame.getCON().type != RRRA) { // GDX 3.10.2018
 									if (getanimationgoal(sector[s.sectnum], CEILZ) >= 0)
 										break;
 								}
@@ -5503,10 +5205,8 @@ public class Actors {
 					for (j = startwall; j < endwall; j++) {
 						k = headspritestat[1];
 						while (k >= 0) {
-							if (sprite[k].extra > 0
-									&& badguy(sprite[k])
-									&& engine.clipinsidebox(sprite[k].x,
-											sprite[k].y, (short) j, 256) == 1)
+							if (sprite[k].extra > 0 && badguy(sprite[k])
+									&& engine.clipinsidebox(sprite[k].x, sprite[k].y, (short) j, 256) == 1)
 								continue BOLT;
 							k = nextspritestat[k];
 						}
@@ -5514,8 +5214,7 @@ public class Actors {
 						k = headspritestat[10];
 						while (k >= 0) {
 							if (sprite[k].owner >= 0
-									&& engine.clipinsidebox(sprite[k].x,
-											sprite[k].y, (short) j, 144) == 1) {
+									&& engine.clipinsidebox(sprite[k].x, sprite[k].y, (short) j, 144) == 1) {
 								t[5] = 8; // Delay
 								k = (short) ((sprite[i].yvel >> 3) * t[3]);
 								t[2] -= k;
@@ -5586,11 +5285,11 @@ public class Actors {
 
 				if (t[0] == 1) // Lights flickering on
 				{
-					if(st != 48) {
+					if (st != 48) {
 						if (sc.floorshade > s.shade) {
 							sc.floorpal = s.pal;
 							sc.floorshade -= 2;
-							if(st != 47) {
+							if (st != 47) {
 								sc.ceilingpal = s.pal;
 								sc.ceilingshade -= 2;
 							}
@@ -5607,9 +5306,7 @@ public class Actors {
 							}
 						} else
 							t[0] = 2;
-					}
-					else
-					{
+					} else {
 						if (sc.ceilingshade > s.shade) {
 							sc.ceilingpal = s.pal;
 							sc.ceilingshade -= 2;
@@ -5653,15 +5350,15 @@ public class Actors {
 							else
 								sc.ceilingz = t[0];
 						} else {
-							game.pInt.setfloorinterpolate(s.sectnum,sc);
+							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							if (klabs(t[1] - sc.floorz) >= j)
 								sc.floorz += sgn(t[1] - sc.floorz) * j;
 							else
 								sc.floorz = t[1];
 						}
 					} else {
-						game.pInt.setfloorinterpolate(s.sectnum,sc);
-                    	game.pInt.setceilinterpolate(s.sectnum, sc);
+						game.pInt.setfloorinterpolate(s.sectnum, sc);
+						game.pInt.setceilinterpolate(s.sectnum, sc);
 						if (klabs(t[1] - sc.floorz) >= j)
 							sc.floorz += sgn(t[1] - sc.floorz) * j;
 						else
@@ -5748,8 +5445,7 @@ public class Actors {
 
 					j = headspritesect[s.sectnum];
 					while (j >= 0) {
-						if (sprite[j].picnum == REACTOR
-								|| sprite[j].picnum == REACTOR2)
+						if (sprite[j].picnum == REACTOR || sprite[j].picnum == REACTOR2)
 							break;
 						j = nextspritesect[j];
 					}
@@ -5776,7 +5472,7 @@ public class Actors {
 				q = t[0] * (sprite[i].yvel << 2);
 
 				game.pInt.setfloorinterpolate(s.sectnum, sc);
-                game.pInt.setceilinterpolate(s.sectnum, sc);
+				game.pInt.setceilinterpolate(s.sectnum, sc);
 				sc.ceilingz += q;
 				sc.floorz += q;
 
@@ -5822,8 +5518,7 @@ public class Actors {
 					j = headspritestat[3];
 					while (j >= 0) {
 						if (i != j && (sprite[j].lotag) == 17)
-							if ((sc.hitag - t[0]) == (sector[sprite[j].sectnum].hitag)
-									&& sh == (sprite[j].hitag))
+							if ((sc.hitag - t[0]) == (sector[sprite[j].sectnum].hitag) && sh == (sprite[j].hitag))
 								break;
 						j = nextspritestat[j];
 					}
@@ -5840,8 +5535,7 @@ public class Actors {
 
 							ps[p].posx += sprite[j].x - s.x;
 							ps[p].posy += sprite[j].y - s.y;
-							ps[p].posz = sector[sprite[j].sectnum].floorz
-									- (sc.floorz - ps[p].posz);
+							ps[p].posz = sector[sprite[j].sectnum].floorz - (sc.floorz - ps[p].posz);
 
 							hittype[k].floorz = sector[sprite[j].sectnum].floorz;
 							hittype[k].ceilingz = sector[sprite[j].sectnum].ceilingz;
@@ -5864,12 +5558,10 @@ public class Actors {
 
 							sprite[k].x += sprite[j].x - s.x;
 							sprite[k].y += sprite[j].y - s.y;
-							sprite[k].z = sector[sprite[j].sectnum].floorz
-									- (sc.floorz - sprite[k].z);
+							sprite[k].z = sector[sprite[j].sectnum].floorz - (sc.floorz - sprite[k].z);
 
 							engine.changespritesect(k, sprite[j].sectnum);
-							engine.setsprite(k, sprite[k].x, sprite[k].y,
-									sprite[k].z);
+							engine.setsprite(k, sprite[k].x, sprite[k].y, sprite[k].z);
 
 							hittype[k].floorz = sector[sprite[j].sectnum].floorz;
 							hittype[k].ceilingz = sector[sprite[j].sectnum].ceilingz;
@@ -5896,13 +5588,10 @@ public class Actors {
 							sc.floorz += sc.extra;
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
-								if (sprite[j].picnum == APLAYER
-										&& sprite[j].owner >= 0)
+								if (sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
 									if (ps[sprite[j].yvel].on_ground)
 										ps[sprite[j].yvel].posz += sc.extra;
-								if (sprite[j].zvel == 0
-										&& sprite[j].statnum != 3
-										&& sprite[j].statnum != 4) {
+								if (sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4) {
 									game.pInt.setsprinterpolate(j, sprite[j]);
 									sprite[j].z += sc.extra;
 									hittype[j].floorz = sc.floorz;
@@ -5929,15 +5618,12 @@ public class Actors {
 							sc.floorz -= sc.extra;
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
-								if (sprite[j].picnum == APLAYER
-										&& sprite[j].owner >= 0)
+								if (sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
 									if (ps[sprite[j].yvel].on_ground)
 										ps[sprite[j].yvel].posz -= sc.extra;
-								if (sprite[j].zvel == 0
-										&& sprite[j].statnum != 3
-										&& sprite[j].statnum != 4) {
+								if (sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4) {
 									game.pInt.setsprinterpolate(j, sprite[j]);
-                                    sprite[j].z -= sc.extra;
+									sprite[j].z -= sc.extra;
 									hittype[j].floorz = sc.floorz;
 								}
 								j = nextspritesect[j];
@@ -6072,17 +5758,16 @@ public class Actors {
 
 							sprite[jj].x += x;
 							sprite[jj].y += l;
-							engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
-									sprite[jj].z);
+							engine.setsprite(jj, sprite[jj].x, sprite[jj].y, sprite[jj].z);
 							if ((sector[sprite[jj].sectnum].floorstat & 2) != 0)
 								if (sprite[jj].statnum == 2)
-									makeitfall(currentGame.getCON(),jj);
+									makeitfall(currentGame.getCON(), jj);
 						}
 						jj = nextj;
 					}
 
-					engine.dragpoint((short)t[1], wall[t[1]].x + x, wall[t[1]].y + l);
-					engine.dragpoint((short)t[2], wall[t[2]].x + x, wall[t[2]].y + l);
+					engine.dragpoint((short) t[1], wall[t[1]].x + x, wall[t[1]].y + l);
+					engine.dragpoint((short) t[2], wall[t[2]].x + x, wall[t[2]].y + l);
 
 					for (p = connecthead; p >= 0; p = connectpoint2[p])
 						if (ps[p].cursectnum == s.sectnum && ps[p].on_ground) {
@@ -6092,8 +5777,7 @@ public class Actors {
 //							ps[p].oposx = ps[p].posx;
 //							ps[p].oposy = ps[p].posy;
 
-							engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy,
-									ps[p].posz + PHEIGHT);
+							engine.setsprite(ps[p].i, ps[p].posx, ps[p].posy, ps[p].posz + PHEIGHT);
 						}
 
 					sc.floorxpanning -= x >> 3;
@@ -6133,8 +5817,7 @@ public class Actors {
 						if (s.ang == 1536) {
 							game.pInt.setceilinterpolate(s.sectnum, sc);
 							sc.ceilingz = l;
-						}
-						else {
+						} else {
 							game.pInt.setfloorinterpolate(s.sectnum, sc);
 							sc.floorz = l;
 						}
@@ -6151,8 +5834,7 @@ public class Actors {
 					if (getanimationgoal(sector[t[0]], CEILZ) >= 0) {
 						game.pInt.setceilinterpolate(s.sectnum, sc);
 						sc.ceilingz += sc.extra * 9;
-					}
-					else
+					} else
 						t[1] = 0;
 				}
 				break;
@@ -6192,10 +5874,8 @@ public class Actors {
 						case 6:
 						case 1:
 						case 0:
-							if (sprite[jj].picnum == BOLT1
-									|| sprite[jj].picnum == BOLT1 + 1
-									|| sprite[jj].picnum == BOLT1 + 2
-									|| sprite[jj].picnum == BOLT1 + 3
+							if (sprite[jj].picnum == BOLT1 || sprite[jj].picnum == BOLT1 + 1
+									|| sprite[jj].picnum == BOLT1 + 2 || sprite[jj].picnum == BOLT1 + 3
 									|| wallswitchcheck(jj))
 								break;
 
@@ -6206,12 +5886,11 @@ public class Actors {
 									sprite[jj].x += x >> 2;
 									sprite[jj].y += l >> 2;
 
-									engine.setsprite(jj, sprite[jj].x,
-											sprite[jj].y, sprite[jj].z);
+									engine.setsprite(jj, sprite[jj].x, sprite[jj].y, sprite[jj].z);
 
 									if ((sector[sprite[jj].sectnum].floorstat & 2) != 0)
 										if (sprite[jj].statnum == 2)
-											makeitfall(currentGame.getCON(),jj);
+											makeitfall(currentGame.getCON(), jj);
 								}
 							}
 							break;
@@ -6237,8 +5916,7 @@ public class Actors {
 						k = (short) spawn(i, SMALLSMOKE);
 						sprite[k].xvel = (short) (96 + (engine.krand() & 127));
 						ssp(k, CLIPMASK0);
-						engine.setsprite(k, sprite[k].x, sprite[k].y,
-								sprite[k].z);
+						engine.setsprite(k, sprite[k].x, sprite[k].y, sprite[k].z);
 						if (rnd(16))
 							spawn(i, EXPLOSION2);
 					}
@@ -6246,7 +5924,7 @@ public class Actors {
 				switch (t[0]) {
 				case 0:
 					game.pInt.setfloorinterpolate(s.sectnum, sc);
-                	game.pInt.setceilinterpolate(s.sectnum, sc);
+					game.pInt.setceilinterpolate(s.sectnum, sc);
 
 					sc.ceilingz += s.yvel;
 					if (sc.ceilingz > sc.floorz)
@@ -6280,14 +5958,14 @@ public class Actors {
 					sc.ceilingz += sprite[i].yvel << 4;
 					if (sc.ceilingz > sc.floorz) {
 						sc.ceilingz = sc.floorz;
-						if(ps[screenpeek].field_601 != 0)
+						if (ps[screenpeek].field_601 != 0)
 							spritesound(371, i);
 					}
 				} else {
 					sc.ceilingz -= sprite[i].yvel << 4;
-					if (sc.ceilingz < t[3]) { //XXX data[4] RA
+					if (sc.ceilingz < t[3]) { // XXX data[4] RA
 						sc.ceilingz = t[3];
-						if(ps[screenpeek].field_601 != 0)
+						if (ps[screenpeek].field_601 != 0)
 							spritesound(167, i);
 					}
 				}
@@ -6320,8 +5998,7 @@ public class Actors {
 						sprite[jj].y += x;
 
 						sprite[jj].z += s.zvel;
-						engine.setsprite(jj, sprite[jj].x, sprite[jj].y,
-								sprite[jj].z);
+						engine.setsprite(jj, sprite[jj].x, sprite[jj].y, sprite[jj].z);
 					}
 					jj = nextj;
 				}
@@ -6355,14 +6032,12 @@ public class Actors {
 						ud.camerasprite = i;
 						t[0]++;
 					} else if (ud.recstat == 2 && ps[p].newowner == -1) {
-						if (engine.cansee(s.x, s.y, s.z, sprite[i].sectnum,
-								ps[p].posx, ps[p].posy, ps[p].posz,
+						if (engine.cansee(s.x, s.y, s.z, sprite[i].sectnum, ps[p].posx, ps[p].posy, ps[p].posz,
 								ps[p].cursectnum)) {
 							if (x < (sh & 0xFFFF)) {
 								ud.camerasprite = i;
 								t[0] = 999;
-								s.ang += getincangle(s.ang, engine.getangle(
-										ps[p].posx - s.x, ps[p].posy - s.y)) >> 3;
+								s.ang += getincangle(s.ang, engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y)) >> 3;
 								sprite[i].yvel = (short) (100 + ((s.z - ps[p].posz) / 257));
 
 							} else if (t[0] == 999) {
@@ -6374,8 +6049,7 @@ public class Actors {
 
 							}
 						} else {
-							s.ang = engine.getangle(ps[p].posx - s.x,
-									ps[p].posy - s.y);
+							s.ang = engine.getangle(ps[p].posx - s.x, ps[p].posy - s.y);
 
 							if (t[0] == 999) {
 								if (ud.camerasprite == i)
@@ -6406,12 +6080,11 @@ public class Actors {
 					}
 
 					game.pInt.setfloorinterpolate(s.sectnum, sc);
-                    j = headspritesect[s.sectnum];
-                    while(j >= 0)
-                    {
-                    	game.pInt.setsprinterpolate(j, sprite[j]);
-                        j = nextspritesect[j];
-                    }
+					j = headspritesect[s.sectnum];
+					while (j >= 0) {
+						game.pInt.setsprinterpolate(j, sprite[j]);
+						j = nextspritesect[j];
+					}
 
 					if (t[2] == 1) // Retract
 					{
@@ -6427,12 +6100,10 @@ public class Actors {
 
 								j = headspritesect[s.sectnum];
 								while (j >= 0) {
-									if (sprite[j].picnum == APLAYER
-											&& sprite[j].owner >= 0)
+									if (sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
 										if (ps[sprite[j].yvel].on_ground)
 											ps[sprite[j].yvel].posz += l;
-									if (sprite[j].zvel == 0
-											&& sprite[j].statnum != 3) {
+									if (sprite[j].zvel == 0 && sprite[j].statnum != 3) {
 										sprite[j].z += l;
 										hittype[j].floorz = sc.floorz;
 									}
@@ -6451,12 +6122,10 @@ public class Actors {
 
 								j = headspritesect[s.sectnum];
 								while (j >= 0) {
-									if (sprite[j].picnum == APLAYER
-											&& sprite[j].owner >= 0)
+									if (sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
 										if (ps[sprite[j].yvel].on_ground)
 											ps[sprite[j].yvel].posz += l;
-									if (sprite[j].zvel == 0
-											&& sprite[j].statnum != 3) {
+									if (sprite[j].zvel == 0 && sprite[j].statnum != 3) {
 										sprite[j].z += l;
 										hittype[j].floorz = sc.floorz;
 									}
@@ -6478,13 +6147,10 @@ public class Actors {
 
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
-								if (sprite[j].picnum == APLAYER
-										&& sprite[j].owner >= 0)
+								if (sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
 									if (ps[sprite[j].yvel].on_ground)
 										ps[sprite[j].yvel].posz += l;
-								if (sprite[j].zvel == 0
-										&& sprite[j].statnum != 3
-										&& sprite[j].statnum != 4) {
+								if (sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4) {
 									sprite[j].z += l;
 									hittype[j].floorz = sc.floorz;
 								}
@@ -6502,13 +6168,10 @@ public class Actors {
 
 							j = headspritesect[s.sectnum];
 							while (j >= 0) {
-								if (sprite[j].picnum == APLAYER
-										&& sprite[j].owner >= 0)
+								if (sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
 									if (ps[sprite[j].yvel].on_ground)
 										ps[sprite[j].yvel].posz -= l;
-								if (sprite[j].zvel == 0
-										&& sprite[j].statnum != 3
-										&& sprite[j].statnum != 4) {
+								if (sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4) {
 									sprite[j].z -= l;
 									hittype[j].floorz = sc.floorz;
 								}
@@ -6538,8 +6201,7 @@ public class Actors {
 								t[2] = 0;
 								t[0] = 0;
 							} else
-								sc.ceilingz += sgn(s.z - sc.ceilingz)
-										* sprite[i].yvel;
+								sc.ceilingz += sgn(s.z - sc.ceilingz) * sprite[i].yvel;
 						} else {
 							if (klabs(sc.ceilingz - t[1]) < (sprite[i].yvel << 1)) {
 								sc.ceilingz = t[1];
@@ -6547,8 +6209,7 @@ public class Actors {
 								t[2] = 0;
 								t[0] = 0;
 							} else
-								sc.ceilingz += sgn(t[1] - sc.ceilingz)
-										* sprite[i].yvel;
+								sc.ceilingz += sgn(t[1] - sc.ceilingz) * sprite[i].yvel;
 						}
 						break;
 					}
@@ -6560,8 +6221,7 @@ public class Actors {
 							callsound(s.sectnum, i);
 							sc.ceilingz = s.z;
 						} else
-							sc.ceilingz += sgn(s.z - sc.ceilingz)
-									* sprite[i].yvel;
+							sc.ceilingz += sgn(s.z - sc.ceilingz) * sprite[i].yvel;
 					} else {
 						if (klabs(sc.ceilingz - t[1]) < (sprite[i].yvel << 1)) {
 							t[0] = 0;
@@ -6624,8 +6284,7 @@ public class Actors {
 
 				if (rnd(64)) {
 					k = (short) spawn(i, EXPLOSION2);
-					sprite[k].xrepeat = sprite[k].yrepeat = (short) (2 + (engine
-							.krand() & 7));
+					sprite[k].xrepeat = sprite[k].yrepeat = (short) (2 + (engine.krand() & 7));
 					sprite[k].z = sc.floorz - (engine.krand() % x);
 					sprite[k].ang += 256 - (engine.krand() % 511);
 					sprite[k].xvel = (short) (engine.krand() & 127);
@@ -6644,8 +6303,7 @@ public class Actors {
 
 				if (rnd(32)) {
 					k = (short) spawn(i, EXPLOSION2);
-					sprite[k].xrepeat = sprite[k].yrepeat = (short) (2 + (engine
-							.krand() & 3));
+					sprite[k].xrepeat = sprite[k].yrepeat = (short) (2 + (engine.krand() & 3));
 					sprite[k].z = sc.floorz - (engine.krand() % x);
 					sprite[k].ang += 256 - (engine.krand() % 511);
 					sprite[k].xvel = (short) (engine.krand() & 127);
@@ -6666,47 +6324,42 @@ public class Actors {
 			if (wal.nextsector == -1)
 				continue;
 
-			engine.alignflorslope(s.sectnum, wal.x, wal.y,
-					sector[wal.nextsector].floorz);
+			engine.alignflorslope(s.sectnum, wal.x, wal.y, sector[wal.nextsector].floorz);
 		}
 	}
 
-	public static boolean BowlOpen(int sectorid)
-	{
-		if ( getanimationgoal(sector[sectorid], CEILZ) == -1 )
-		{
+	public static boolean BowlOpen(int sectorid) {
+		if (getanimationgoal(sector[sectorid], CEILZ) == -1) {
 			int i = engine.nextsectorneighborz(sectorid, sector[sectorid].ceilingz, -1, -1);
-			if(i == -1) return false;
-		    setanimation(sectorid, sectorid, sector[i].ceilingz, 64, CEILZ);
-		    return true;
+			if (i == -1)
+				return false;
+			setanimation(sectorid, sectorid, sector[i].ceilingz, 64, CEILZ);
+			return true;
 		}
 
 		return false;
 	}
 
 	private static boolean pinstay[] = new boolean[10];
-	public static int BowlCheck(int nSprite)
-	{
+
+	public static int BowlCheck(int nSprite) {
 		Arrays.fill(pinstay, false);
 		int pinums = 0, bowline = 0;
 		for (int i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
-			if(sprite[i].picnum == 3440) { //pin sprite
+			if (sprite[i].picnum == 3440) { // pin sprite
 				pinstay[sprite[i].lotag] = true;
 				pinums++;
 			}
-			if(sprite[i].picnum == 280)
+			if (sprite[i].picnum == 280)
 				bowline = sprite[i].hitag;
 		}
 
-		if(bowline != 0)
-		{
+		if (bowline != 0) {
 			engine.copytilepiece(2024, 0, 0, 128, 64, bowline + 2024, 0, 0);
-			for(int i = 0; i < 10; i++)
-			{
+			for (int i = 0; i < 10; i++) {
 				int x = 0, y = 0;
-				if(pinstay[i]) {
-					switch(i)
-					{
+				if (pinstay[i]) {
+					switch (i) {
 					case 0:
 						x = 64;
 						y = 48;
@@ -6751,22 +6404,18 @@ public class Actors {
 					engine.copytilepiece(2023, 0, 0, 8, 8, bowline + 2024, x - 4, y - 10);
 				}
 			}
-			engine.invalidatetile(bowline + 2024, 0, 1<<4);
+			engine.getrender().invalidatetile(bowline + 2024, 0, 1 << 4);
 		}
 
 		return pinums;
 	}
 
-	public static void BowlReset()
-	{
-		for(int i = 0; i < 4; i++)
-		{
+	public static void BowlReset() {
+		for (int i = 0; i < 4; i++) {
 			engine.copytilepiece(2024, 0, 0, 128, 64, i + 2025, 0, 0);
-			for(int j = 0; j < 10; j++)
-			{
+			for (int j = 0; j < 10; j++) {
 				int x = 0, y = 0;
-				switch(j)
-				{
+				switch (j) {
 				case 0:
 					x = 64;
 					y = 48;
@@ -6810,25 +6459,24 @@ public class Actors {
 				}
 				engine.copytilepiece(2023, 0, 0, 8, 8, i + 2025, x - 4, y - 10);
 			}
-			engine.invalidatetile(i + 2025, 0, 1<<4);
+			engine.getrender().invalidatetile(i + 2025, 0, 1 << 4);
 		}
 	}
 
-	public static void BowlUpdate(int nSprite)
-	{
+	public static void BowlUpdate(int nSprite) {
 		for (short i = headspritesect[nSprite], nexti; i >= 0; i = nexti) {
 			nexti = nextspritesect[i];
-			if(sprite[i].picnum == 3440) //pin sprite
+			if (sprite[i].picnum == 3440) // pin sprite
 				engine.deletesprite(i);
 		}
 
 		int bowline = 0;
 		for (int i = headspritesect[nSprite]; i >= 0; i = nextspritesect[i]) {
-			if(sprite[i].picnum == 283) //pinid sprite
+			if (sprite[i].picnum == 283) // pinid sprite
 			{
 				int spawnid = spawn(i, 3440);
 				sprite[spawnid].lotag = sprite[i].lotag;
-				if(sprite[i].lotag != 3 && sprite[i].lotag != 5) {
+				if (sprite[i].lotag != 3 && sprite[i].lotag != 5) {
 					engine.krand();
 					sprite[spawnid].clipdist = 48;
 				} else {
@@ -6840,18 +6488,15 @@ public class Actors {
 				sprite[spawnid].ang -= ((rand & 0x20) - (engine.krand() & 0x40)) & kAngleMask;
 			}
 
-			if(sprite[i].picnum == 280)
+			if (sprite[i].picnum == 280)
 				bowline = sprite[i].hitag;
 		}
 
-		if(bowline != -1)
-		{
+		if (bowline != -1) {
 			engine.copytilepiece(2024, 0, 0, 128, 64, bowline + 2024, 0, 0);
-			for(int i = 0; i < 10; i++)
-			{
+			for (int i = 0; i < 10; i++) {
 				int x = 0, y = 0;
-				switch(i)
-				{
+				switch (i) {
 				case 0:
 					x = 64;
 					y = 48;
@@ -6895,36 +6540,32 @@ public class Actors {
 				}
 				engine.copytilepiece(2023, 0, 0, 8, 8, bowline + 2024, x - 4, y - 10);
 			}
-			engine.invalidatetile(bowline + 2024, 0, 1<<4);
+			engine.getrender().invalidatetile(bowline + 2024, 0, 1 << 4);
 		}
 	}
 
-	public static void BowlClose(int nSprite)
-	{
+	public static void BowlClose(int nSprite) {
 		for (int i = headspritestat[105]; i >= 0; i = nextspritestat[i]) {
-			if ( sprite[i].picnum == 281 && sprite[i].sectnum == sprite[nSprite].sectnum )
-			{
+			if (sprite[i].picnum == 281 && sprite[i].sectnum == sprite[nSprite].sectnum) {
 				for (int j = headspritestat[105]; j >= 0; j = nextspritestat[j]) {
-		            if ( sprite[j].picnum == 282 && sprite[i].hitag == sprite[j].hitag )
-		            	spawn(j, 3437);
+					if (sprite[j].picnum == 282 && sprite[i].hitag == sprite[j].hitag)
+						spawn(j, 3437);
 
-		            if ( sprite[j].picnum == 280
-			              && sprite[j].hitag == sprite[i].hitag
-			              && sprite[j].lotag == 0 )
-		            {
-		            	sprite[j].lotag = 100;
-		            	sprite[j].extra++;
-		            	int sectnum = sprite[j].sectnum;
-		            	if ( getanimationgoal(sector[sectnum], CEILZ) == -1 ) {
-		            	    setanimation(sectnum, sectnum, sector[sectnum].floorz, 64, CEILZ);
-		            	}
-		            }
+					if (sprite[j].picnum == 280 && sprite[j].hitag == sprite[i].hitag && sprite[j].lotag == 0) {
+						sprite[j].lotag = 100;
+						sprite[j].extra++;
+						int sectnum = sprite[j].sectnum;
+						if (getanimationgoal(sector[sectnum], CEILZ) == -1) {
+							setanimation(sectnum, sectnum, sector[sectnum].floorz, 64, CEILZ);
+						}
+					}
 				}
 			}
 		}
 	}
 
 	public static boolean isPsychoSkill() {
-		 return currentGame.getCON().type != RRRA && ud.player_skill >= 5 || currentGame.getCON().type == RRRA && ud.player_skill >= 4;
+		return currentGame.getCON().type != RRRA && ud.player_skill >= 5
+				|| currentGame.getCON().type == RRRA && ud.player_skill >= 4;
 	}
 }

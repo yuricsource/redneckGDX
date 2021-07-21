@@ -37,7 +37,7 @@ public class MVEScreen extends SkippableAdapter {
 
 	@Override
 	public void show() {
-		if(game.pMenu.gShowMenu)
+		if (game.pMenu.gShowMenu)
 			game.pMenu.mClose();
 
 		engine.sampletimer();
@@ -49,8 +49,8 @@ public class MVEScreen extends SkippableAdapter {
 	}
 
 	@Override
-	public void hide () {
-		engine.setbrightness(ud.brightness>>2, palette, GLInvalidateFlag.All);
+	public void hide() {
+		engine.setbrightness(ud.brightness >> 2, palette, GLInvalidateFlag.All);
 	}
 
 	@Override
@@ -65,59 +65,61 @@ public class MVEScreen extends SkippableAdapter {
 		return this;
 	}
 
-	public boolean init(String fn)
-	{
-		if(anmfil != null) return false;
+	public boolean init(String fn) {
+		if (anmfil != null)
+			return false;
 
 		Resource dat = BuildGdx.cache.open(fn, 0);
-		if(dat == null) return false;
+		if (dat == null)
+			return false;
 
-	    try {
-	    	anmfil = new MVEFile(dat);
-	    	Tile pic = engine.getTile(TILE_ANIM);
+		try {
+			anmfil = new MVEFile(dat);
+			Tile pic = engine.getTile(TILE_ANIM);
 
-	    	pic.setWidth(anmfil.getHeight());
-	    	pic.setHeight(anmfil.getWidth());
+			pic.setWidth(anmfil.getHeight());
+			pic.setHeight(anmfil.getWidth());
 
-		    anmtime = 0;
+			anmtime = 0;
 			LastMS = -1;
 
 			pic.data = null;
 
-		    byte[] pal = anmfil.getPalette();
-		    engine.changepalette(pal);
+			byte[] pal = anmfil.getPalette();
+			engine.changepalette(pal);
 
-		    int white = -1;
-		    int k = 0;
-	        for (int i = 0; i < 256; i+=3)
-	        {
-	            int j = (pal[3*i]&0xFF)+(pal[3*i+1]&0xFF)+(pal[3*i+2]&0xFF);
-	            if (j > k) { k = j; white = i; }
-	        }
-
-	        int palnum = ANIM_PAL - 1;
-		    byte[] remapbuf = new byte[768];
-			for(int i = 0; i < 768; i++)
-				remapbuf[i] = (byte) white;
-			engine.makepalookup(palnum, remapbuf,0, 1, 0, 1);
-
-			for(int i = 0; i < 256; i++) {
-				int tile = game.getFont(0).getTile(i);
-				if(tile >= 0)
-					engine.invalidatetile(tile, palnum, -1);
+			int white = -1;
+			int k = 0;
+			for (int i = 0; i < 256; i += 3) {
+				int j = (pal[3 * i] & 0xFF) + (pal[3 * i + 1] & 0xFF) + (pal[3 * i + 2] & 0xFF);
+				if (j > k) {
+					k = j;
+					white = i;
+				}
 			}
 
-		    return true;
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    	return false;
-	    }
+			int palnum = ANIM_PAL - 1;
+			byte[] remapbuf = new byte[768];
+			for (int i = 0; i < 768; i++)
+				remapbuf[i] = (byte) white;
+			engine.makepalookup(palnum, remapbuf, 0, 1, 0, 1);
+
+			for (int i = 0; i < 256; i++) {
+				int tile = game.getFont(0).getTile(i);
+				if (tile >= 0)
+					engine.getrender().invalidatetile(tile, palnum, -1);
+			}
+
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
-	public boolean anmPlay()
-	{
-		if(anmfil != null) {
-			if(LastMS == -1)
+	public boolean anmPlay() {
+		if (anmfil != null) {
+			if (LastMS == -1)
 				LastMS = engine.getticks();
 
 			long ms = engine.getticks();
@@ -129,25 +131,25 @@ public class MVEScreen extends SkippableAdapter {
 			float tick = anmfil.getRate() / 2000.0f;
 			Tile pic = engine.getTile(TILE_ANIM);
 
-			if(anmtime >= tick) {
-				if(!(isDone = anmfil.process())) {
+			if (anmtime >= tick) {
+				if (!(isDone = anmfil.process())) {
 					pic.data = anmfil.getFrame();
-					engine.invalidatetile(TILE_ANIM, ANIM_PAL, -1);	// JBF 20031228
+					engine.getrender().invalidatetile(TILE_ANIM, ANIM_PAL, -1); // JBF 20031228
 				}
 
 				anmtime -= tick;
 			}
 
 			LastMS = ms;
-			if(pic.getWidth() <= 0)
+			if (pic.getWidth() <= 0)
 				return false;
 
-			if(pic.data != null) {
+			if (pic.data != null) {
 				engine.rotatesprite(160 << 16, 100 << 16, divscale(200, pic.getWidth(), 16), 512, TILE_ANIM, 0,
 						ANIM_PAL, 2 | 4 | 8 | 64, 0, 0, xdim - 1, ydim - 1);
 			}
 
-			if(isDone)
+			if (isDone)
 				return false;
 
 			return true;
@@ -158,7 +160,7 @@ public class MVEScreen extends SkippableAdapter {
 
 	@Override
 	public void draw(float delta) {
-		if(!anmPlay() && skipCallback != null) {
+		if (!anmPlay() && skipCallback != null) {
 			close();
 			if (callback != null) {
 				BuildGdx.app.postRunnable(callback);
@@ -174,8 +176,7 @@ public class MVEScreen extends SkippableAdapter {
 			game.getFont(0).drawText(160, 5, "Press ESC to skip", shade, ANIM_PAL - 1, TextAlign.Center, 2, true);
 	}
 
-	public boolean isInited()
-	{
+	public boolean isInited() {
 		return anmfil != null;
 	}
 
