@@ -45,10 +45,8 @@ public class RRMapSettings implements IOverheadMapSettings {
 	}
 
 	@Override
-	public boolean isShowFloorSprites(MapView view) {
-		if (view == MapView.Polygons)
-			return false;
-		return true;
+	public boolean isShowFloorSprites() {
+		return false;
 	}
 
 	@Override
@@ -159,6 +157,26 @@ public class RRMapSettings implements IOverheadMapSettings {
 	@Override
 	public int getViewPlayer() {
 		return screenpeek;
+	}
+
+	@Override
+	public int getWallX(int w) {
+		return wall[w].x;
+	}
+
+	@Override
+	public int getWallY(int w) {
+		return wall[w].y;
+	}
+
+	@Override
+	public int getSpriteX(int spr) {
+		return sprite[spr].x;
+	}
+
+	@Override
+	public int getSpriteY(int spr) {
+		return sprite[spr].y;
 	}
 
 }

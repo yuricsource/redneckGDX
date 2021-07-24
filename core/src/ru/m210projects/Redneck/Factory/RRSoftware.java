@@ -18,16 +18,10 @@ package ru.m210projects.Redneck.Factory;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Render.Software.Software;
-import ru.m210projects.Build.Render.Software.SoftwareOrpho;
 
 public class RRSoftware extends Software {
 
 	public RRSoftware(Engine engine) {
-		super(engine);
-	}
-
-	@Override
-	protected SoftwareOrpho allocOrphoRenderer() {
-		return new SoftwareOrpho(this, new RRMapSettings());
+		super(engine, new RRMapSettings());
 	}
 }

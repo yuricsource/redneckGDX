@@ -20,23 +20,16 @@ import static ru.m210projects.Redneck.Names.GRID;
 import static ru.m210projects.Redneck.Names.MIRROR;
 
 import ru.m210projects.Build.Engine;
-import ru.m210projects.Build.Render.GdxRender.GDXOrtho;
 import ru.m210projects.Build.Render.GdxRender.GDXRenderer;
 
 public class RRPolygdx extends GDXRenderer {
 
 	public RRPolygdx(Engine engine) {
-		super(engine);
+		super(engine, new RRMapSettings());
 	}
 
 	@Override
 	protected int[] getMirrorTextures() {
 		return new int[] { GRID, 13, MIRROR };
 	}
-
-	@Override
-	protected GDXOrtho allocOrphoRenderer() {
-		return new GDXOrtho(this, new RRMapSettings());
-	}
-
 }

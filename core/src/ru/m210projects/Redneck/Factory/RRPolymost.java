@@ -18,16 +18,10 @@ package ru.m210projects.Redneck.Factory;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Render.Polymost.Polymost;
-import ru.m210projects.Build.Render.Polymost.Polymost2D;
 
 public class RRPolymost extends Polymost {
 
 	public RRPolymost(Engine engine) {
-		super(engine);
-	}
-
-	@Override
-	protected Polymost2D allocOrphoRenderer() {
-		return new Polymost2D(this, new RRMapSettings());
+		super(engine, new RRMapSettings());
 	}
 }
