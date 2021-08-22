@@ -179,4 +179,8 @@ public class RRMapSettings implements IOverheadMapSettings {
 		return sprite[spr].y;
 	}
 
+	@Override
+	public int getSpritePicnum(int spr) {
+		return sprite[spr].picnum;
+	}
 }
