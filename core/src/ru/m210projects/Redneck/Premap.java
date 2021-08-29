@@ -156,6 +156,7 @@ import java.util.Arrays;
 import ru.m210projects.Build.Architecture.BuildFrame.FrameType;
 import ru.m210projects.Build.Architecture.BuildGdx;
 import ru.m210projects.Build.FileHandle.Resource;
+import ru.m210projects.Build.Render.GLRenderer;
 import ru.m210projects.Build.Types.SPRITE;
 import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Build.Types.WALL;
@@ -1120,7 +1121,8 @@ public class Premap {
 		}
 
 		uGameFlags |= MODE_EOL;
-		if(mUserFlag != UserFlag.UserMap && (uGameFlags & MODE_END) == 0 && ud.level_number >= currentGame.episodes[ud.volume_number].nMaps)
+		if (mUserFlag != UserFlag.UserMap && (uGameFlags & MODE_END) == 0
+				&& ud.level_number >= currentGame.episodes[ud.volume_number].nMaps)
 			uGameFlags |= MODE_END;
 
 		if (ud.rec != null)
@@ -1237,7 +1239,8 @@ public class Premap {
 		Resource fp = BuildGdx.cache.open("lookup.dat", 0);
 		if (fp != null)
 			numl = fp.readByte();
-		else throw new FileNotFoundException("\nERROR: File 'LOOKUP.DAT' not found.");
+		else
+			throw new FileNotFoundException("\nERROR: File 'LOOKUP.DAT' not found.");
 
 		for (j = 0; j < numl; j++) {
 			look_pos = fp.readByte();
@@ -1353,6 +1356,15 @@ public class Premap {
 				palookupfog[23] = opalookupfog[2];
 				palookupfog[8] = opalookupfog[1];
 			}
+		}
+
+		final GLRenderer gl = engine.glrender();
+		if (gl != null && gl.getTextureManager() != null) {
+			gl.getTextureManager().invalidatepalookup(0);
+			gl.getTextureManager().invalidatepalookup(30);
+			gl.getTextureManager().invalidatepalookup(33);
+			gl.getTextureManager().invalidatepalookup(23);
+			gl.getTextureManager().invalidatepalookup(8);
 		}
 	}
 }
