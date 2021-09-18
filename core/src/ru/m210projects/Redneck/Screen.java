@@ -25,7 +25,6 @@
 package ru.m210projects.Redneck;
 
 import static java.lang.Math.max;
-import static ru.m210projects.Build.Engine.fullscreen;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.windowx1;
@@ -112,7 +111,6 @@ public class Screen {
 	public static void setup3dscreen(int w, int h) {
 		if (!engine.setgamemode(cfg.fullscreen, w, h))
 			cfg.fullscreen = 0;
-		fullscreen = cfg.fullscreen;
 
 		cfg.ScreenWidth = BuildGdx.graphics.getWidth();
 		cfg.ScreenHeight = BuildGdx.graphics.getHeight();

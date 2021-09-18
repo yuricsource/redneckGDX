@@ -34,19 +34,19 @@ public class RREngine extends BuildEngine {
 	public RREngine(BuildGame game) throws Exception {
 		super(game, TICSPERFRAME);
 	}
-	
+
 	@Override
-	public boolean setgamemode(int davidoption, int daxdim, int daydim) 
+	public boolean setgamemode(int davidoption, int daxdim, int daydim)
 	{
 		boolean out = super.setgamemode(davidoption, daxdim, daydim);
 		gViewXScaled = (xdim << 16) / 320;
 		gViewYScaled = (ydim << 16) / 200;
-		
+
 		return out;
 	}
-	
+
 	@Override
-	public int setrendermode(Renderer render) { 
+	public boolean setrendermode(Renderer render) {
 		if(this.render != null && this.render != render)
 		{
 			if(render.getType() != RenderType.Software)
@@ -66,10 +66,10 @@ public class RREngine extends BuildEngine {
 				}
 			}
 		}
-		
+
 		return super.setrendermode(render);
 	}
-	
+
 //	@Override
 //	public void sampletimer() {
 //		if (timerfreq == 0)
