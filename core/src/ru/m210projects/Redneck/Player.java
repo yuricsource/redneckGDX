@@ -374,7 +374,7 @@ public class Player {
 		case COWPIE:
 		case 59: // empty
 		case BOOTS:
-		case 1350: // 6 банок
+		case 1350: // 6 Р±Р°РЅРѕРє
 			return true;
 		}
 		return false;
@@ -767,9 +767,6 @@ public class Player {
 			sb_snum = 0;
 
 		psect = p.cursectnum;
-		if(psect == 1024)
-			return;
-		
 		if(psect == -1)
 	    {
 	        if(s.extra > 0 && !ud.clipping)
@@ -779,6 +776,9 @@ public class Player {
 	        }
 	        psect = 0;
 	    }
+
+		if(!isValidSector(s.sectnum) || !isValidSector(psect))
+			return;
 
 		p.ohoriz = p.horiz;
 		p.ohorizoff = p.horizoff;

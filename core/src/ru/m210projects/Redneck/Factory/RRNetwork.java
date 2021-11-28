@@ -310,6 +310,9 @@ public class RRNetwork extends BuildNet {
 		sb_snum = syn.bits;
 
 		psect = predict.sectnum;
+		if(!isValidSector(psect))
+			return;
+
 		psectlotag = sector[psect].lotag;
 		spritebridge = 0;
 
