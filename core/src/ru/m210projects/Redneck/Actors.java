@@ -4291,7 +4291,7 @@ public class Actors {
 
 				j = s.owner;
 
-				if (sprite[j].lotag == (short) 65535) {
+				if (j == -1 || sprite[j].lotag == (short) 65535) {
 					engine.deletesprite(i);
 					continue;
 				}

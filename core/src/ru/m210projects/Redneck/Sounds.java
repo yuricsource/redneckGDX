@@ -87,20 +87,25 @@ public class Sounds {
 	{
 		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.Game).getFiles().values().iterator(); it.hasNext();) {
 			FileEntry file = it.next();
-			if(file.getExtension().equals("cue"))
-			{
-				CueScript cdTracks = new CueScript(file);
-				cdtracks = cdTracks.getTracks();
+			if(file.getExtension().equals("cue")) {
+				byte[] data = BuildGdx.compat.getBytes(file);
+				if(data != null) {
+					CueScript cdTracks = new CueScript(file.getName(), data);
+					cdtracks = cdTracks.getTracks();
 
-				int numtracks = cdtracks.length;
-				for(int i = 0; i < cdtracks.length; i++) {
-					if(!BuildGdx.cache.contains(cdtracks[i], 0)) {
-						cdtracks[i] = null;
-						numtracks--;
+					int numtracks = cdtracks.length;
+					for(int i = 0; i < cdtracks.length; i++) {
+						if(!BuildGdx.cache.contains(cdtracks[i], 0)) {
+							cdtracks[i] = null;
+							numtracks--;
+						}
+					}
+
+					if(numtracks > 0) {
+						Console.Println(numtracks + " cd tracks found...");
+						return;
 					}
 				}
-				Console.Println(numtracks + " cd tracks found...");
-				return;
 			}
 		}
 

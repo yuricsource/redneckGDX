@@ -149,7 +149,8 @@ public class Cheats {
 						int levnume = opt[1] - 1;
 						if(volnume >= currentGame.nEpisodes || volnume < 0)
 							volnume = ud.volume_number;
-						if(levnume >= currentGame.episodes[volnume].nMaps || levnume < 0)
+						if((currentGame.episodes[volnume] != null
+								&& levnume >= currentGame.episodes[volnume].nMaps) || levnume < 0)
 							levnume = ud.level_number;
 						ud.volume_number = volnume;
                         ud.level_number = levnume;
