@@ -1212,6 +1212,11 @@ public class View {
 	            ftq = (short) q;
 	        }
 
+			if(ftq >= currentGame.getCON().fta_quotes.length) {
+				Console.Println("Invalid quote " + ftq, Console.OSDTEXT_RED);
+				return;
+			}
+
 	        int len = 0;
 	        while(len < currentGame.getCON().fta_quotes[ftq].length && currentGame.getCON().fta_quotes[ftq][++len] != 0);
 
@@ -1234,6 +1239,9 @@ public class View {
 	        t = tsprite[j];
 	        i = t.owner;
 	        s = sprite[t.owner];
+
+			if(!isValidSector(t.sectnum))
+				continue;
 
 	        switch(t.picnum)
 	        {

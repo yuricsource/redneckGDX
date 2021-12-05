@@ -24,6 +24,7 @@ import static ru.m210projects.Build.Engine.palookup;
 import static ru.m210projects.Build.Engine.ydim;
 import static ru.m210projects.Build.Gameutils.coordsConvertXScaled;
 import static ru.m210projects.Build.Gameutils.coordsConvertYScaled;
+import static ru.m210projects.Build.Pragmas.scale;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Gameutils.ConvertType;
@@ -55,6 +56,17 @@ public class StandartFont extends BuildFont {
 			}
 		}
 
+		return width;
+	}
+
+	public int getWidth(char[] text, int scale) {
+		int width = 0;
+		if (text != null) {
+			int pos = 0;
+			while (pos < text.length && text[pos++] != 0) {
+				width += scale(8, scale, 0x10000);
+			}
+		}
 		return width;
 	}
 

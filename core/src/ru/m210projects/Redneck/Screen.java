@@ -25,7 +25,6 @@
 package ru.m210projects.Redneck;
 
 import static java.lang.Math.max;
-import static ru.m210projects.Build.Engine.fullscreen;
 import static ru.m210projects.Build.Engine.palette;
 import static ru.m210projects.Build.Engine.sector;
 import static ru.m210projects.Build.Engine.windowx1;
@@ -34,8 +33,7 @@ import static ru.m210projects.Build.Engine.windowy1;
 import static ru.m210projects.Build.Engine.windowy2;
 import static ru.m210projects.Build.Engine.xdim;
 import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Build.Gameutils.coordsConvertXScaled;
-import static ru.m210projects.Build.Gameutils.coordsConvertYScaled;
+import static ru.m210projects.Build.Gameutils.*;
 import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
 import static ru.m210projects.Build.Pragmas.scale;
 import static ru.m210projects.Build.Strhandler.Bitoa;
@@ -112,7 +110,6 @@ public class Screen {
 	public static void setup3dscreen(int w, int h) {
 		if (!engine.setgamemode(cfg.fullscreen, w, h))
 			cfg.fullscreen = 0;
-		fullscreen = cfg.fullscreen;
 
 		cfg.ScreenWidth = BuildGdx.graphics.getWidth();
 		cfg.ScreenHeight = BuildGdx.graphics.getHeight();
@@ -205,10 +202,12 @@ public class Screen {
 //		        scale(x1,xdim,320),scale(y1,ydim,200),
 //		        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);
 
-		engine.rotatesprite(8 << 16, 183 << 16, 0x8000, 0, WIDEHUD_LEFTSHADOW, 0, 0, 10 | 256, 0, 0, xdim - 1,
-				ydim - 1);
-		engine.rotatesprite(311 << 16, 183 << 16, 0x8000, 0, WIDEHUD_RIGHTSHADOW, 0, 0, 10 | 512, 0, 0, xdim - 1,
-				ydim - 1);
+		if(!isSquareResolution(xdim, ydim)) {
+			engine.rotatesprite(8 << 16, 183 << 16, 0x8000, 0, WIDEHUD_LEFTSHADOW, 0, 0, 10 | 256, 0, 0, xdim - 1,
+					ydim - 1);
+			engine.rotatesprite(311 << 16, 183 << 16, 0x8000, 0, WIDEHUD_RIGHTSHADOW, 0, 0, 10 | 512, 0, 0, xdim - 1,
+					ydim - 1);
+		}
 	}
 
 	public static void displayinventory(PlayerStruct p) {

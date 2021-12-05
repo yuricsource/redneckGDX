@@ -57,7 +57,7 @@ public class AnmScreen extends SkippableAdapter {
 
 	@Override
 	public void show() {
-		if(game.pMenu.gShowMenu)
+		if (game.pMenu.gShowMenu)
 			game.pMenu.mClose();
 
 		engine.sampletimer();
@@ -69,8 +69,8 @@ public class AnmScreen extends SkippableAdapter {
 	}
 
 	@Override
-	public void hide () {
-		engine.setbrightness(ud.brightness>>2, palette, GLInvalidateFlag.All);
+	public void hide() {
+		engine.setbrightness(ud.brightness >> 2, palette, GLInvalidateFlag.All);
 	}
 
 	@Override
@@ -85,62 +85,64 @@ public class AnmScreen extends SkippableAdapter {
 		return this;
 	}
 
-	public boolean init(String fn, int t)
-	{
-		if(anmfil != null) return false;
+	public boolean init(String fn, int t) {
+		if (anmfil != null)
+			return false;
 
 		byte[] animbuf = BuildGdx.cache.getBytes(fn, 0);
-		if(animbuf == null) return false;
+		if (animbuf == null)
+			return false;
 
-	    try {
-	    	anmfil = new AnimFile(animbuf);
-	    	Tile pic = engine.getTile(TILE_ANIM);
+		try {
+			anmfil = new AnimFile(animbuf);
+			Tile pic = engine.getTile(TILE_ANIM);
 
-	    	pic.setWidth(200);
-	    	pic.setHeight(320);
-		    lastanimhack = t;
-		    frame = 1;
+			pic.setWidth(200);
+			pic.setHeight(320);
+			lastanimhack = t;
+			frame = 1;
 
-		    anmtime = 0;
+			anmtime = 0;
 			LastMS = -1;
 			name = fn;
 
 			pic.data = null;
 
-		    byte[] pal = anmfil.getPalette();
-		    engine.changepalette(pal);
+			byte[] pal = anmfil.getPalette();
+			engine.changepalette(pal);
 
-		    int white = -1;
-		    int k = 0;
-	        for (int i = 0; i < 256; i+=3)
-	        {
-	            int j = (pal[3*i]&0xFF)+(pal[3*i+1]&0xFF)+(pal[3*i+2]&0xFF);
-	            if (j > k) { k = j; white = i; }
-	        }
-
-	        int palnum = ANIM_PAL - 1;
-		    byte[] remapbuf = new byte[768];
-			for(int i = 0; i < 768; i++)
-				remapbuf[i] = (byte) white;
-			engine.makepalookup(palnum, remapbuf,0, 1, 0, 1);
-
-			for(int i = 0; i < 256; i++) {
-				int tile = game.getFont(3).getTile(i);
-				if(tile >= 0)
-					engine.invalidatetile(tile, palnum, -1);
+			int white = -1;
+			int k = 0;
+			for (int i = 0; i < 256; i += 3) {
+				int j = (pal[3 * i] & 0xFF) + (pal[3 * i + 1] & 0xFF) + (pal[3 * i + 2] & 0xFF);
+				if (j > k) {
+					k = j;
+					white = i;
+				}
 			}
 
-		    return true;
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    	return false;
-	    }
+			int palnum = ANIM_PAL - 1;
+			byte[] remapbuf = new byte[768];
+			for (int i = 0; i < 768; i++)
+				remapbuf[i] = (byte) white;
+			engine.makepalookup(palnum, remapbuf, 0, 1, 0, 1);
+
+			for (int i = 0; i < 256; i++) {
+				int tile = game.getFont(3).getTile(i);
+				if (tile >= 0)
+					engine.getrender().invalidatetile(tile, palnum, -1);
+			}
+
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
-	public boolean anmPlay()
-	{
-		if(anmfil != null) {
-			if(LastMS == -1)
+	public boolean anmPlay() {
+		if (anmfil != null) {
+			if (LastMS == -1)
 				LastMS = engine.getticks();
 
 			long ms = engine.getticks();
@@ -148,19 +150,19 @@ public class AnmScreen extends SkippableAdapter {
 			anmtime += dt;
 
 			float rate = 1000f;
-			if(name.equalsIgnoreCase("redneck.anm"))
+			if (name.equalsIgnoreCase("redneck.anm"))
 				rate = 700f;
-			if(name.equalsIgnoreCase("rr_outro.anm"))
+			if (name.equalsIgnoreCase("rr_outro.anm"))
 				rate = 1200f;
-			if(lastanimhack == -1) //RRRA statistics screen
+			if (lastanimhack == -1) // RRRA statistics screen
 				rate = 2000f;
 
 			float tick = rate / anmfil.getRate();
 			Tile pic = engine.getTile(TILE_ANIM);
-			if(anmtime >= tick) {
-				if(frame < anmfil.numFrames()) {
+			if (anmtime >= tick) {
+				if (frame < anmfil.numFrames()) {
 					pic.data = anmfil.draw(frame);
-					engine.invalidatetile(TILE_ANIM, ANIM_PAL, -1);	// JBF 20031228
+					engine.getrender().invalidatetile(TILE_ANIM, ANIM_PAL, -1); // JBF 20031228
 
 					logoanimsounds(frame, lastanimhack);
 
@@ -171,13 +173,14 @@ public class AnmScreen extends SkippableAdapter {
 			}
 
 			LastMS = ms;
-			if(pic.getWidth() <= 0)
+			if (pic.getWidth() <= 0)
 				return false;
 
-			if(pic.data != null)
-				engine.rotatesprite(0<<16,0<<16,65536,512,TILE_ANIM,0,ANIM_PAL,2+4+8+16+64, 0,0,xdim-1,ydim-1);
+			if (pic.data != null)
+				engine.rotatesprite(0 << 16, 0 << 16, 65536, 512, TILE_ANIM, 0, ANIM_PAL, 2 + 4 + 8 + 16 + 64, 0, 0,
+						xdim - 1, ydim - 1);
 
-			if(frame >= anmfil.numFrames())
+			if (frame >= anmfil.numFrames())
 				return false;
 
 			return true;
@@ -188,13 +191,13 @@ public class AnmScreen extends SkippableAdapter {
 
 	@Override
 	public void draw(float delta) {
-		if(!anmPlay() && skipCallback != null) {
+		if (!anmPlay() && skipCallback != null) {
 //			if(!checkAnm()) {
-				anmClose();
-				if (callback != null) {
-					BuildGdx.app.postRunnable(callback);
-					callback = null;
-				}
+			anmClose();
+			if (callback != null) {
+				BuildGdx.app.postRunnable(callback);
+				callback = null;
+			}
 //			}
 		}
 
@@ -206,8 +209,7 @@ public class AnmScreen extends SkippableAdapter {
 			game.getFont(3).drawText(160, 5, "Press ESC to skip", shade, ANIM_PAL - 1, TextAlign.Center, 2, true);
 	}
 
-	public boolean isInited()
-	{
+	public boolean isInited() {
 		return anmfil != null;
 	}
 
@@ -215,31 +217,29 @@ public class AnmScreen extends SkippableAdapter {
 		anmfil = null;
 	}
 
-	public static void logoanimsounds(int fr, int num)
-	{
-	    switch(num)
-	    {
-	        case 0: //intro
-	        	if(fr == 1)
-	        		sound(29);
-	            break;
-	        case 1: //interplay
-	        	if(fr == 1)
-	        		sound(478);
-	            break;
-	        case 2: //xatrix
-	        	if(fr == 1)
-	        		sound(479);
-	            break;
-	        case 5: //episode 1
-	        	if(fr == 1 && currentGame.getCON().type != RR66)
-	        		sound(35);
-	            break;
-	        case 6: //episode 2
-	        	if(fr == 1 && currentGame.getCON().type != RR66)
-	        		sound(82);
-	            break;
-	    }
+	public static void logoanimsounds(int fr, int num) {
+		switch (num) {
+		case 0: // intro
+			if (fr == 1)
+				sound(29);
+			break;
+		case 1: // interplay
+			if (fr == 1)
+				sound(478);
+			break;
+		case 2: // xatrix
+			if (fr == 1)
+				sound(479);
+			break;
+		case 5: // episode 1
+			if (fr == 1 && currentGame.getCON().type != RR66)
+				sound(35);
+			break;
+		case 6: // episode 2
+			if (fr == 1 && currentGame.getCON().type != RR66)
+				sound(82);
+			break;
+		}
 	}
 
 }

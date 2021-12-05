@@ -118,7 +118,7 @@ public class Main extends BuildGame {
 	 *
 	 * TODO:
 	 * as I said once, you cannot pickup a weapon if you already have it (in MP?)
-	 * Улучшение, которое я хотел бы увидеть, - зафиксировать счетчик врагов. NukeyT сказал мне много вещей, которые не следует считать врагами (например, торнадо или даже Бубба), а Виксен считается только мертвым, если их тела выбиты, что должно быть только для стражей Халка.
+	 * РЈР»СѓС‡С€РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ СЏ С…РѕС‚РµР» Р±С‹ СѓРІРёРґРµС‚СЊ, - Р·Р°С„РёРєСЃРёСЂРѕРІР°С‚СЊ СЃС‡РµС‚С‡РёРє РІСЂР°РіРѕРІ. NukeyT СЃРєР°Р·Р°Р» РјРЅРµ РјРЅРѕРіРѕ РІРµС‰РµР№, РєРѕС‚РѕСЂС‹Рµ РЅРµ СЃР»РµРґСѓРµС‚ СЃС‡РёС‚Р°С‚СЊ РІСЂР°РіР°РјРё (РЅР°РїСЂРёРјРµСЂ, С‚РѕСЂРЅР°РґРѕ РёР»Рё РґР°Р¶Рµ Р‘СѓР±Р±Р°), Р° Р’РёРєСЃРµРЅ СЃС‡РёС‚Р°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РјРµСЂС‚РІС‹Рј, РµСЃР»Рё РёС… С‚РµР»Р° РІС‹Р±РёС‚С‹, С‡С‚Рѕ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ РґР»СЏ СЃС‚СЂР°Р¶РµР№ РҐР°Р»РєР°.
 	 */
 
 	public static final String appdef = "rrgdx.def";
@@ -283,7 +283,7 @@ public class Main extends BuildGame {
 		uGameFlags = 0;
 		kGameCrash = false;
 		if(usecustomarts)
-			resetEpisodeResources(true);
+			resetEpisodeResources();
 
 		if (ud.recstat == 1 && ud.rec != null)
 			ud.rec.close();
@@ -495,6 +495,8 @@ public class Main extends BuildGame {
 			text += "PlayerZ: " + ps[myconnectindex].posz;
 			text += "\r\n";
 			text += "PlayerAng: " + ps[myconnectindex].ang;
+			text += "\r\n";
+			text += "PlayerHoriz: " + ps[myconnectindex].horiz;
 			text += "\r\n";
 			text += "PlayerSect: " + ps[myconnectindex].cursectnum;
 			text += "\r\n";

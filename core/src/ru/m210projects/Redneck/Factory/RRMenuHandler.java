@@ -57,6 +57,7 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuTextField;
 import ru.m210projects.Build.Pattern.MenuItems.MenuVariants;
 import ru.m210projects.Build.Types.Tile;
 import ru.m210projects.Redneck.Menus.InterfaceMenu;
+import ru.m210projects.Redneck.Screens.MenuScreen;
 
 public class RRMenuHandler extends MenuHandler {
 
@@ -94,7 +95,7 @@ public class RRMenuHandler extends MenuHandler {
 	@Override
 	public void mDrawMenu() {
 		if(screensize != 0) vscrn(0);
-		if(!(app.pMenu.getCurrentMenu() instanceof MenuRendererSettings) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
+		if(!(app.getScreen() instanceof MenuScreen) && !(app.pMenu.getCurrentMenu() instanceof MenuRendererSettings) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
 			int tile = LOADSCREEN;
 			Tile pic = engine.getTile(tile);
 
