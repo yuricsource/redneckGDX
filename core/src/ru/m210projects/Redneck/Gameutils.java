@@ -16,134 +16,100 @@
 
 package ru.m210projects.Redneck;
 
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Spawn.*;
+import ru.m210projects.Build.Types.Sprite;
 
 import static ru.m210projects.Build.Engine.neartag;
-import static ru.m210projects.Build.Pragmas.*;
-import static ru.m210projects.Build.Strhandler.buildString;
-
-import ru.m210projects.Build.Types.SPRITE;
+import static ru.m210projects.Build.Pragmas.klabs;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Names.SCRAP6;
+import static ru.m210projects.Redneck.Spawn.EGS;
 
 public class Gameutils {
 
-	public static int neartag(int xs, int ys, int zs, int sectnum, int ange, int neartagrange, int tagsearch)
-	{
-		int out = engine.neartag(xs,ys,zs, (short)sectnum, (short)ange,neartag,neartagrange,tagsearch);
-    	neartagsprite = (short) neartag.tagsprite;
-    	neartagwall = (short) neartag.tagwall;
-    	neartagsector = (short) neartag.tagsector;
-    	neartaghitdist = neartag.taghitdist;
-    	return out;
-	}
-	
-	public static int FindDistance2D(int dx, int dy)
-	{
-		dx = (int) klabs(dx);
-		dy = (int) klabs(dy);
-		if (dx == 0) return(dy);
-		if (dy == 0) return(dx);
-		if (dy < dx) { int i = dx; dx = dy; dy = i; } //swap x, y
-		dx += (dx>>1);
-		return ((dx>>6)+(dx>>2)+dy-(dy>>5)-(dy>>7)); //handle 1 octant
-		//return engine.ksqrt(dx*dx + dy*dy);
-	}
-	
-	public static int FindDistance3D(int dx, int dy, int dz)
-	{
-		dx = (int) klabs(dx);
-		dy = (int) klabs(dy);
-		dz = (int) klabs(dz);
+    public static void neartag(int xs, int ys, int zs, int sectnum, int ange, int neartagrange, int tagsearch) {
+        engine.neartag(xs, ys, zs, (short) sectnum, (short) ange, neartag, neartagrange, tagsearch);
+        neartagsprite = neartag.tagsprite;
+        neartagwall = neartag.tagwall;
+        neartagsector = neartag.tagsector;
+    }
 
-		if (dx < dy) { int i = dx; dx = dy; dy = i; } //swap x, y
-		if (dx < dz) { int i = dx; dx = dz; dz = i; } //swap x, z
+    public static int FindDistance2D(int dx, int dy) {
+        dx = klabs(dx);
+        dy = klabs(dy);
+        if (dx == 0) {
+            return (dy);
+        }
+        if (dy == 0) {
+            return (dx);
+        }
+        if (dy < dx) {
+            int i = dx;
+            dx = dy;
+            dy = i;
+        } //swap x, y
+        dx += (dx >> 1);
+        return ((dx >> 6) + (dx >> 2) + dy - (dy >> 5) - (dy >> 7)); //handle 1 octant
+        //return EngineUtils.sqrt(dx*dx + dy*dy);
+    }
 
-		int t = dy + dz;
+    public static int FindDistance3D(int dx, int dy, int dz) {
+        dx = klabs(dx);
+        dy = klabs(dy);
+        dz = klabs(dz);
 
-		return (dx - (dx>>4) + (t>>2) + (t>>3));
-		//return engine.ksqrt(dx*dx + dy*dy + dz*dz);
-	}
-	
-	public static boolean rnd(int X)
-	{
-		return (engine.krand()>>8)>=(255-(X));
-	}
-	
-	public static void RANDOMSCRAP(SPRITE s, int i) {
-		int vz = -512-(engine.krand()&2047);
-		int ve = (engine.krand()&63)+64;
-		int va = engine.krand()&2047;
-		int pn = SCRAP6+(engine.krand()&15);
-		int sz = s.z-(8<<8)-(engine.krand()&8191);
-		int sy = s.y+(engine.krand()&255)-128;
-		int sx = s.x+(engine.krand()&255)-128;
-		EGS(s.sectnum,sx,sy,sz,pn,-8,16,16,va,ve,vz,i,(short)5);
-	}
-	
-	public static boolean IFWITHIN(SPRITE s, int B, int E) {
-		return (s.picnum)>=(B) && (s.picnum)<=(E);
-	}
-	
-	public static boolean AFLAMABLE(int X) {
-		return (X==1191||X==1193||X==1230||X==3062);
-	}
-	
-	public static int sgn(int val)
-	{
-		return ((val > 0)?1:0) - ((val < 0)?1:0);
-	}
-	
-	public static int ClipRange(int value, int min, int max) {
-		if(value < min)
-			value = min;
-		if(value > max)
-			value = max;
-		
-		return value;
-	}
-	
-	public static int ClipLow(int value, int min) {
-		if(value < min)
-			value = min;
-		
-		return value;
-	}
-	
-	public static int ClipHigh(int value, int max) {
-		if(value > max)
-			value = max;
-		
-		return value;
-	}
+        if (dx < dy) {
+            int i = dx;
+            dx = dy;
+            dy = i;
+        } //swap x, y
+        if (dx < dz) {
+            int i = dx;
+            dx = dz;
+            dz = i;
+        } //swap x, z
 
-	
-	public static float ClipLow(float value, int min) {
-		if(value < min)
-			value = min;
-		
-		return value;
-	}
-	
-	public static float ClipHigh(float value, int max) {
-		if(value > max)
-			value = max;
-		
-		return value;
-	}
-	
-	public static char[] toCharArray(String... text)
-	{
-		buildString(buf, 0, text);
-		
-		return buf;
-	}
-	
-	public static char[] toCharArray(String text, int num)
-	{
-		buildString(buf, 0, text, num);
-		
-		return buf;
-	}
+        int t = dy + dz;
+
+        return (dx - (dx >> 4) + (t >> 2) + (t >> 3));
+        //return EngineUtils.sqrt(dx*dx + dy*dy + dz*dz);
+    }
+
+    public static boolean rnd(int X) {
+        return (engine.krand() >> 8) >= (255 - (X));
+    }
+
+    public static void RANDOMSCRAP(Sprite s, int i) {
+        int vz = -512 - (engine.krand() & 2047);
+        int ve = (engine.krand() & 63) + 64;
+        int va = engine.krand() & 2047;
+        int pn = SCRAP6 + (engine.krand() & 15);
+        int sz = s.getZ() - (8 << 8) - (engine.krand() & 8191);
+        int sy = s.getY() + (engine.krand() & 255) - 128;
+        int sx = s.getX() + (engine.krand() & 255) - 128;
+        EGS(s.getSectnum(), sx, sy, sz, pn, -8, 16, 16, va, ve, vz, i, (short) 5);
+    }
+
+    public static boolean IFWITHIN(Sprite s, int B, int E) {
+        return (s.getPicnum()) >= (B) && (s.getPicnum()) <= (E);
+    }
+
+    public static boolean AFLAMABLE(int X) {
+        return (X == 1191 || X == 1193 || X == 1230 || X == 3062);
+    }
+
+    public static int sgn(int val) {
+        return ((val > 0) ? 1 : 0) - ((val < 0) ? 1 : 0);
+    }
+
+    public static int ClipRange(int value, int min, int max) {
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+
+        return value;
+    }
 }

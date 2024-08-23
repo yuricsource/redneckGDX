@@ -16,41 +16,44 @@
 
 package ru.m210projects.Redneck.Types;
 
-import ru.m210projects.Build.FileHandle.Resource;
-import ru.m210projects.Build.Types.LittleEndian;
+import ru.m210projects.Build.Types.Serializable;
+import ru.m210projects.Build.filehandle.StreamUtils;
 
-public class PlayerOrig {
-	public static final int sizeof = 16;
-	
-	public int ox,oy,oz;
-    public short oa,os;
-    
-    private byte[] buf = new byte[sizeof];
-    public byte[] getBytes()
-    {
-    	LittleEndian.putInt(buf, 0, ox);
-    	LittleEndian.putInt(buf, 4, oy);
-    	LittleEndian.putInt(buf, 8, oz);
-    	LittleEndian.putShort(buf, 12, oa);
-    	LittleEndian.putShort(buf, 14, os);
-    	return buf;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class PlayerOrig implements Serializable<PlayerOrig> {
+
+    public int ox, oy, oz;
+    public int oa, os;
+
+    public void copy(PlayerOrig src) {
+        ox = src.ox;
+        oy = src.oy;
+        oz = src.oz;
+        oa = src.oa;
+        os = src.os;
     }
-    
-    public void set(Resource bb)
-    {
-    	ox = bb.readInt();
-    	oy = bb.readInt();
-    	oz = bb.readInt();
-    	oa = bb.readShort();
-    	os = bb.readShort();
+
+    @Override
+    public PlayerOrig readObject(InputStream is) throws IOException {
+        ox = StreamUtils.readInt(is);
+        oy = StreamUtils.readInt(is);
+        oz = StreamUtils.readInt(is);
+        oa = StreamUtils.readShort(is);
+        os = StreamUtils.readShort(is);
+        return this;
     }
-    
-    public void copy(PlayerOrig src)
-    {
-    	ox = src.ox;
-    	oy = src.oy;
-    	oz = src.oz;
-    	oa = src.oa;
-    	os = src.os;
+
+    @Override
+    public PlayerOrig writeObject(OutputStream os) throws IOException {
+        StreamUtils.writeInt(os, ox);
+        StreamUtils.writeInt(os, oy);
+        StreamUtils.writeInt(os, oz);
+        StreamUtils.writeShort(os, oa);
+        StreamUtils.writeShort(os, this.os);
+
+        return this;
     }
 }

@@ -23,22 +23,22 @@ import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
 
 public class RMenuMultiplayer extends MenuMultiplayer {
 
-	public RMenuMultiplayer(BuildGame app) {
-		super(app, 0, 45, 20, app.getFont(2));
-	}
+    public RMenuMultiplayer(BuildGame app) {
+        super(app, 0, 45, 20, app.getFont(2));
+    }
 
-	@Override
-	public MenuTitle getTitle(BuildGame app, String text) {
-		return new RRTitle(text);
-	}
+    @Override
+    public MenuTitle getTitle(BuildGame app, String text) {
+        return new RRTitle(text);
+    }
 
-	@Override
-	public BuildMenu getMenuCreate(BuildGame app) {
-		return new RMenuCreate(app);
-	}
+    @Override
+    public RMenuCreate getMenuCreate(BuildGame app) {
+        return new RMenuCreate(app);
+    }
 
-	@Override
-	public BuildMenu getMenuJoin(BuildGame app) {
-		return new RMenuJoin(app);
-	}
+    @Override
+    public RMenuJoin getMenuJoin(BuildGame app) {
+        return new RMenuJoin(app);
+    }
 }

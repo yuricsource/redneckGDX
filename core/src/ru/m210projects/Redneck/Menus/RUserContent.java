@@ -16,296 +16,182 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Redneck.Gamedef.preparescript;
-import static ru.m210projects.Redneck.Gamedef.isaltok;
-import static ru.m210projects.Build.Strhandler.*;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.SoundDefs.PISTOL_BODYHIT;
-import static ru.m210projects.Redneck.Sounds.sound;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Build.OnSceenDisplay.Console.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import ru.m210projects.Redneck.Types.GameInfo;
-import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.FileHandle.DirectoryEntry;
-import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.Group;
-import ru.m210projects.Build.FileHandle.GroupResource;
-import ru.m210projects.Build.FileHandle.Compat.Path;
-import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuFileBrowser;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Build.Types.ConvertType;
+import ru.m210projects.Build.Types.Transparent;
+import ru.m210projects.Build.Types.font.TextAlign;
+import ru.m210projects.Build.filehandle.Entry;
+import ru.m210projects.Build.filehandle.fs.Directory;
+import ru.m210projects.Build.filehandle.fs.FileEntry;
 import ru.m210projects.Redneck.Main;
+import ru.m210projects.Redneck.Types.GameInfo;
+import ru.m210projects.Redneck.filehandle.EpisodeEntry;
+
+import java.util.List;
+
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
+import static ru.m210projects.Redneck.Main.gDemoScreen;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Names.LOADSCREEN;
+import static ru.m210projects.Redneck.ResourceHandler.episodeManager;
+import static ru.m210projects.Redneck.SoundDefs.PISTOL_BODYHIT;
+import static ru.m210projects.Redneck.Sounds.sound;
 
 public class RUserContent extends BuildMenu {
 
-	public boolean showmain;
-	private Main app;
-	private MenuFileBrowser list;
-	
-	public RUserContent(final Main app)
-	{
-		this.app = app;
-		MenuTitle title = new RRTitle("User Content");
+    private final Main app;
+    private final MenuFileBrowser list;
+    public boolean showmain;
 
-		int width = 240;
-		list = new MenuFileBrowser(app, app.getFont(0), app.getFont(1), app.getFont(0), 40, 45, width, 1, 14, LOADSCREEN) {
-			
-			@Override
-			public void init() {
-				registerExtension("map", 0, 0);
-				registerExtension("grp", 2, 1);
-				registerExtension("zip", 2, 1);
-				registerExtension("con", 2, 1);
-			}
-			
-			@Override
-			public void handleFile(FileEntry fil) {
-				if(fil.getExtension().equals("map"))
-					addFile(fil, fil.getName());
-				else if(fil.getExtension().equals("grp") || fil.getExtension().equals("zip"))
-					buildPackage(this, fil);
-			}
-			
-			@Override
-			public void invoke(Object obj) {
-				if(obj == null) return;
-				
-				if(obj instanceof FileEntry) {
-					FileEntry fil = (FileEntry) obj;
-					if(fil.getExtension().equals("map"))
-						launchMap(fil);
-					else if(fil.getExtension().equals("con")) 
-						launchEpisode(episodes.get(fil.getPath()));
-					else if(fil.getExtension().equals("grp") || fil.getExtension().equals("zip"))
-						launchEpisode(episodes.get(getFileName()));
-				}
-			}
-			
-			@Override
-			public void handleDirectory(DirectoryEntry dir)
-			{
-				if(app.menu.gShowMenu)
-					sound(PISTOL_BODYHIT);
-				buildAddons(this, dir);
-			}
+    public RUserContent(final Main app) {
+        super(app.pMenu);
+        this.app = app;
+        MenuTitle title = new RRTitle("User Content");
 
-			@Override
-			public void drawHeader(int x1, int x2, int y)
-			{
-				/*directories*/ topFont.drawText(x1, y, dirs, -32, topPal, TextAlign.Left, 2, true);
-				/*files*/ topFont.drawText(x2, y, ffs, -32, topPal, TextAlign.Left, 2, true);
-			}
-			
-			@Override
-			public void drawPath(int x, int y)
-			{
-				brDrawText(pathFont, toCharArray(path), x, y, -32, pathPal, 0, this.x + this.width - 4);
-			}
-		};
-		
-		list.topPal = 10;
-		list.pathPal = 10;
-		list.listPal = 12;
-		list.backgroundPal = 4;
-		
-		addItem(title, false);
-		addItem(list, true);
-	}
-	
-	private void buildAddons(MenuFileBrowser blist, DirectoryEntry dir)
-	{
-		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
-			FileEntry file = it.next();
-			if(file.getExtension().equals("con")) 
-				InitTree(map, preparescript(BuildGdx.compat.getBytes(file)), file.getName());
-		}
-		
-		for (Iterator<FileEntry> it = dir.getFiles().values().iterator(); it.hasNext();) {
-			FileEntry file = it.next();
-			if(file.getExtension().equals("con"))
-			{
-				List<String> list = map.get(file.getName());
-				if(list != null) 
-					handleList(map, list);
-			}
-		}
+        int width = 240;
+        list = new MenuFileBrowser(app, app.getFont(0), app.getFont(1), app.getFont(0), 40, 45, width, 1, 14, LOADSCREEN) {
 
-		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
-			String con = it.next();
-			if(dir != BuildGdx.compat.getDirectory(Path.Game) || !con.equals("game.con")) {
-				FileEntry fil = dir.checkFile(con);
-				GameInfo addon = episodes.get(fil.getPath());
-				if(addon == null) {
-					addon = new GameInfo(fil, con);
-					addon.init();
-					if(addon.isInited) {
-						Console.Println("Addon found: " + addon.ConName);
-						blist.addFile(fil, con);
-						episodes.put(fil.getPath(), addon);
-					}
-				} else {
-					if(addon.isInited) 
-						blist.addFile(fil, con);
-				}
-			}
-		}
-		
-		if(showmain && dir == BuildGdx.compat.getDirectory(Path.Game)) {
-			String entry = defGame.getFile().getPath();
-			GameInfo addon = episodes.get(entry);
-			if(addon == null) {
-				blist.addFile(defGame.getFile(), entry);
-				episodes.put(entry, defGame);
-			} else {
-				blist.addFile(defGame.getFile(), entry);
-			}
-		}
-	}
-	
-	private void buildPackage(MenuFileBrowser blist, FileEntry file)
-	{
-		if(file.getParent() == BuildGdx.compat.getDirectory(Path.Game) && file.getName().equals("redneck.grp"))
-			return; //show main
-		
-		try {
-			Group res = BuildGdx.cache.isGroup(file.getPath());
-			if(res != null)
-			{
-				HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-				for(GroupResource files : res.getList()) {
-					if(files.getExtension().equals("con")) 
-						InitTree(map, preparescript(files.getBytes()), files.getFullName());	
-				}
-				
-				for(GroupResource files : res.getList()) {
-					if(files.getExtension().equals("con")) {
-						List<String> list = map.get(files.getFullName());
-						if(list != null) 
-							handleList(map, list);
-					}
-				}
-
-				for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
-					String con = res.name+":"+it.next();
-					GameInfo addon = episodes.get(con);
-					if(addon == null) {
-						String conName = con.substring(con.indexOf(":")+1);
-						addon = new GameInfo(res, file, conName);
-						if(addon.isInited) {
-							Console.Println("Found addon: " + con);
-							episodes.put(con, addon);
-							blist.addFile(file, con);
-						} else Console.Print(con + " found, but can't be loaded", OSDTEXT_RED);
-					} else {
-						if(addon.isInited) {
-							blist.addFile(file, con);
-						}
-					}
-				}
-				
-				res.dispose();
-				res = null;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void InitTree(HashMap<String, List<String>> map, byte[] buf, String parentName)
-	{
-		if(buf == null) return;
-		
-        List<String> list = null;
-		int index = -1;
-        while( (index = indexOf("include ", buf, index+1)) != -1)
-        {
-        	int textptr = index + 7;
-        	if(list == null) list = new ArrayList<String>();
-        	
-        	while( !isaltok(buf[textptr]) )
-            {
-                textptr++;
-                if( textptr >= buf.length || buf[textptr] == 0 ) break;
+            @Override
+            public void init() {
+                registerExtension("map", 0, 0);
+                registerExtension("grp", 2, 1);
+                registerExtension("zip", 2, 1);
+                registerExtension("pk3", 2, 1);
+                registerExtension("con", 2, 1);
+                registerExtension("dmo", 1, -1);
             }
 
-            int i = 0;
-            while(  textptr+i < buf.length && isaltok(buf[textptr+i]) ) i++;
-            
-            String name = new String(buf, textptr, i);
-            list.add(name.toLowerCase());
+            @Override
+            public void handleFile(FileEntry fil) {
+                switch (fil.getExtension()) {
+                    case "MAP":
+                        addFile(fil);
+                        break;
+                    case "DMO":
+                        if (showmain) {
+                            break; // multiplayer menu
+                        }
+
+                        if (gDemoScreen.isDemoFile(fil))
+                            addFile(fil);
+                        break;
+                    case "GRP":
+                    case "ZIP":
+                    case "PK3":
+                        if (!showmain && fil.getName().equalsIgnoreCase(game.mainGrp)) {
+                            break;
+                        }
+
+                        for (EpisodeEntry entry : episodeManager.getEpisodeEntries(fil)) {
+                            addFile((FileEntry) entry);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void invoke(FileEntry fil) {
+                switch (fil.getExtension()) {
+                    case "MAP":
+                        launchMap(fil);
+                        break;
+                    case "CON":
+                    case "GRP":
+                    case "ZIP":
+                    case "PK3":
+                        if (fil instanceof EpisodeEntry) {
+                            launchEpisode(episodeManager.getEpisode((EpisodeEntry) fil));
+                        }
+                        break;
+                    case "DMO":
+                        Directory parent = fil.getParent();
+                        List<Entry> demoList = gDemoScreen.checkDemoEntry(parent);
+                        gDemoScreen.nDemonum = demoList.indexOf(fil);
+                        gDemoScreen.showDemo(fil, null);
+                        app.pMenu.mClose();
+                        break;
+                }
+            }
+
+            @Override
+            public void handleDirectory(Directory dir) {
+                if (app.pMenu.gShowMenu) {
+                    sound(PISTOL_BODYHIT);
+                }
+
+                for (EpisodeEntry entry : episodeManager.getEpisodeEntries(dir.getDirectoryEntry())) {
+                    addFile(entry.getFileEntry());
+                }
+            }
+
+            @Override
+            public void drawHeader(Renderer renderer, int x1, int x2, int y) {
+                /*directories*/
+                topFont.drawTextScaled(renderer, x1, y, dirs, 1.0f, -32, topPal, TextAlign.Left, Transparent.None, ConvertType.Normal, true);
+                /*files*/
+                topFont.drawTextScaled(renderer, x2, y, ffs, 1.0f, -32, topPal, TextAlign.Left, Transparent.None, ConvertType.Normal, true);
+            }
+
+            @Override
+            public void drawPath(Renderer renderer, int x, int y, String path) {
+                super.drawPath(renderer, x, y, this.path);
+            }
+        };
+
+        list.topPal = 10;
+        list.pathPal = 10;
+        list.listPal = 12;
+        list.backgroundPal = 4;
+
+        addItem(title, false);
+        addItem(list, true);
+    }
+
+    public boolean mFromNetworkMenu() {
+        return app.menu.getLastMenu() == app.menu.mMenus[NETWORKGAME];
+    }
+
+    public void setShowMain(boolean show) {
+        this.showmain = show;
+        if (game.getCache().isGameDirectory(list.getDirectory())) {
+            list.refreshList();
+        }
+    }
+
+    private void launchEpisode(GameInfo game) {
+        if (game == null) {
+            return;
         }
 
-        if(list != null)
-        	map.put(parentName, list);
-	}
-	
-	private void handleList(HashMap<String, List<String>> map, List<String> list)
-	{
-		for(String child : list)
-			for (Iterator<String> con = map.keySet().iterator(); con.hasNext();) {
-				String name = con.next();
-				if(name.equals(child)) {
-					List<String> other = map.get(name);
-					con.remove();
-					if(other != null) 
-						handleList(map, other);
-					break;
-				}
-			}
-	}
-	
-	public boolean mFromNetworkMenu() {
-		return app.menu.getLastMenu() == app.menu.mMenus[NETWORKGAME];
-	}
+        if (mFromNetworkMenu()) {
+            NetworkMenu network = (NetworkMenu) app.menu.mMenus[NETWORKGAME];
+            network.setEpisode(game);
+            app.menu.mMenuBack();
+            return;
+        }
 
-	public void setShowMain(boolean show)
-	{
-		this.showmain = show;
-		if(list.getDirectory() == BuildGdx.compat.getDirectory(Path.Game))
-			list.refreshList();
-	}
-	
-	private void launchEpisode(GameInfo game)
-	{
-		if(game == null) return;
+        NewAddonMenu next = (NewAddonMenu) app.menu.mMenus[NEWADDON];
+        next.setEpisode(game);
+        app.menu.mOpen(next, -1);
+    }
 
-		if(mFromNetworkMenu())
-		{
-			NetworkMenu network = (NetworkMenu) app.menu.mMenus[NETWORKGAME];
-			network.setEpisode(game);
-			app.menu.mMenuBack();
-			return;
-		}
+    private void launchMap(FileEntry file) {
+        if (file == null) {
+            return;
+        }
 
-		NewAddonMenu next = (NewAddonMenu) app.menu.mMenus[NEWADDON];
-		next.setEpisode(game);
-		app.menu.mOpen(next, -1);
-	}
-	
-	private void launchMap(FileEntry file)
-	{
-		if(file == null) return;
-		
-		if(mFromNetworkMenu())
-		{
-			NetworkMenu network = (NetworkMenu) app.menu.mMenus[NETWORKGAME];
-			network.setMap(file);
-			app.menu.mMenuBack();
-			return;
-		}
-		
-		DifficultyMenu next = (DifficultyMenu) app.menu.mMenus[DIFFICULTY];
-		next.setMap(file);
-		app.menu.mOpen(next, -1);
-	}
+        if (mFromNetworkMenu()) {
+            NetworkMenu network = (NetworkMenu) app.menu.mMenus[NETWORKGAME];
+            network.setMap(file);
+            app.menu.mMenuBack();
+            return;
+        }
+
+        DifficultyMenu next = (DifficultyMenu) app.menu.mMenus[DIFFICULTY];
+        next.setMap(file);
+        app.menu.mOpen(next, -1);
+    }
 }

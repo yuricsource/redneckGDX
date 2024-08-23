@@ -17,42 +17,43 @@
 
 package ru.m210projects.Redneck.Types;
 
+import ru.m210projects.Build.filehandle.StreamUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 import static ru.m210projects.Redneck.Globals.RRRA;
 import static ru.m210projects.Redneck.Globals.currentGame;
 
-import ru.m210projects.Build.FileHandle.Resource;
-
 public class LSInfo {
-	public int skill;
-	public int episode;
-	public int level;
-	public String info;
-	public String date;
-	public String addonfile;
-	
-	public void read(Resource bb)
-	{
-		bb.readInt(); //ud.multimode
-		episode = bb.readInt() + 1;
-		level = bb.readInt() + 1;
-		skill = bb.readInt();
-		if(currentGame.getCON().type == RRRA) 
-			skill++;
-		update();
-	}
-	
-	public void update()
-	{
-		info = "Episode:" + episode + " / Level:" + level + " / Skill:" + (skill != 6 ? skill : "CM");
-	}
-	
-	public void clear()
-	{
-		skill = 0;
-		episode = 0;
-		level = 0;
-		info = "Empty slot";
-		date = null;
-		addonfile = null;
-	}
+    public int skill;
+    public int episode;
+    public int level;
+    public String info;
+    public String date;
+    public String addonfile;
+
+    public void read(InputStream is) throws IOException {
+        StreamUtils.readInt(is); //ud.multimode
+        episode = StreamUtils.readInt(is) + 1;
+        level = StreamUtils.readInt(is) + 1;
+        skill = StreamUtils.readInt(is);
+        if (currentGame.getCON().type == RRRA) {
+            skill++;
+        }
+        update();
+    }
+
+    public void update() {
+        info = "Episode:" + episode + " / Level:" + level + " / Skill:" + (skill != 6 ? skill : "CM");
+    }
+
+    public void clear() {
+        skill = 0;
+        episode = 0;
+        level = 0;
+        info = "Empty slot";
+        date = null;
+        addonfile = null;
+    }
 }

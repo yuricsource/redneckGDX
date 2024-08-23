@@ -16,20 +16,44 @@
 
 package ru.m210projects.Redneck.Factory;
 
+import ru.m210projects.Build.Engine;
+import ru.m210projects.Build.Render.GdxRender.GDXOrtho;
+import ru.m210projects.Build.Render.GdxRender.GDXRenderer;
+import ru.m210projects.Build.settings.GameConfig;
+
 import static ru.m210projects.Redneck.Names.GRID;
 import static ru.m210projects.Redneck.Names.MIRROR;
 
-import ru.m210projects.Build.Engine;
-import ru.m210projects.Build.Render.GdxRender.GDXRenderer;
+public class RRPolygdx extends GDXRenderer implements RRRenderer {
 
-public class RRPolygdx extends GDXRenderer {
+    public RRPolygdx(GameConfig config) {
+        super(config);
+    }
 
-	public RRPolygdx(Engine engine) {
-		super(engine, new RRMapSettings());
-	}
+    @Override
+    protected GDXOrtho allocOrphoRenderer(Engine engine) {
+        return new GDXOrtho(this, new RRMapSettings());
+    }
 
-	@Override
-	protected int[] getMirrorTextures() {
-		return new int[] { GRID, 13, MIRROR };
-	}
+    @Override
+    protected int[] getMirrorTextures() {
+        return new int[]{GRID, 13, MIRROR};
+    }
+
+    @Override
+    public void setaspect(int daxrange, int daaspect) {
+        super.setaspect(daxrange, daaspect);
+    }
+
+    @Override
+    public int getViewingRange() {
+        return viewingrange;
+    }
+
+    @Override
+    public int getYXAspect() {
+        return yxaspect;
+    }
+
+
 }

@@ -16,101 +16,81 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Build.Engine.palette;
-import static ru.m210projects.Build.Engine.totalclock;
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
+import ru.m210projects.Build.Architecture.common.audio.Source;
+import ru.m210projects.Build.Render.Renderer;
+
+
 import static ru.m210projects.Redneck.Globals.*;
 import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Sounds.*;
-
-import com.badlogic.gdx.ScreenAdapter;
-
-import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
+import static ru.m210projects.Redneck.Sounds.StopAllSounds;
+import static ru.m210projects.Redneck.Sounds.sound;
 
 public class EndScreen extends ScreenAdapter {
 
-	private Source voice;
-	
-	@Override
-	public void show() {
-		engine.setbrightness(ud.brightness >> 2, palette, GLInvalidateFlag.All);
-		totalclock = 0;
-		StopAllSounds();
-		voice = sound(35);
-	}
+    private Source voice;
 
-	@Override
-	public void render(float delta) {
-		engine.clearview(0);
-		engine.sampletimer();
+    @Override
+    public void show() {
+        engine.setbrightness(cfg.getPaletteGamma(), engine.getPaletteManager().getBasePalette());
+        engine.getTimer().reset();
+        StopAllSounds();
+        voice = sound(35);
+    }
 
-		if ((totalclock >> 4 & 1) != 0) {
-			engine.rotatesprite(0, 0, 65536, 0, 8677, 0, 0, 2 + 8 + 16 + 64 + 128, 0, 0, xdim - 1, ydim - 1);
-		} else
-			engine.rotatesprite(0, 0, 65536, 0, 8678, 0, 0, 2 + 8 + 16 + 64 + 128, 0, 0, xdim - 1, ydim - 1);
+    @Override
+    public void render(float delta) {
+        Renderer renderer = game.getRenderer();
+        renderer.clearview(0);
 
-		if (totalclock > 500 && (voice == null || !voice.isPlaying())) {
-			BuildGdx.app.postRunnable(new Runnable() {
-				@Override
-				public void run() {
-					game.changeScreen(gStatisticScreen);
-				}
-			});
-		}
+        if ((engine.getTotalClock() >> 4 & 1) != 0) {
+            renderer.rotatesprite(0, 0, 65536, 0, 8677, 0, 0, 2 + 8 + 16 + 64 + 128);
+        } else {
+            renderer.rotatesprite(0, 0, 65536, 0, 8678, 0, 0, 2 + 8 + 16 + 64 + 128);
+        }
 
-		engine.nextpage();
-	}
+        if (engine.getTotalClock() > 500 && (voice == null || !voice.isPlaying())) {
+            Gdx.app.postRunnable(() -> game.changeScreen(gStatisticScreen));
+        }
 
-	public void episode1() {
-		BuildGdx.app.postRunnable(new Runnable() {
-			@Override
-			public void run() {
-				String filename = "turdmov.anm";
-				if (currentGame.getCON().type == RR66)
-					filename = "turd66.anm";
+        engine.nextpage(delta);
+    }
 
-				if (gAnmScreen.init(filename, 6)) {
-					gAnmScreen.setCallback(new Runnable() {
-						@Override
-						public void run() {
-							game.changeScreen(gStatisticScreen);
-						}
-					});
-					game.setScreen(gAnmScreen.escSkipping(true));
-				} else
-					game.changeScreen(gStatisticScreen);
-			}
-		});
-	}
+    public void episode1() {
+        Gdx.app.postRunnable(() -> {
+            String filename = "turdmov.anm";
+            if (currentGame.getCON().type == RR66) {
+                filename = "turd66.anm";
+            }
 
-	public void episode2() {
-		BuildGdx.app.postRunnable(new Runnable() {
-			@Override
-			public void run() {
-				if (currentGame.getCON().type == RRRA)
-				{
-					game.setScreen(gEndScreen);
-					return;
-				}
-				
-				String filename = "rr_outro.anm";
-				if (currentGame.getCON().type == RR66)
-					filename = "end66.anm";
+            if (gAnmScreen.init(filename, 6)) {
+                gAnmScreen.setCallback(() -> game.changeScreen(gStatisticScreen));
+                game.changeScreen(gAnmScreen.escSkipping(true));
+            } else {
+                game.changeScreen(gStatisticScreen);
+            }
+        });
+    }
 
-				if (gAnmScreen.init(filename, 5)) {
-					gAnmScreen.setCallback(new Runnable() {
-						@Override
-						public void run() {
-							game.changeScreen(gStatisticScreen);
-						}
-					});
-					game.setScreen(gAnmScreen.escSkipping(true));
-				} else
-					game.changeScreen(gStatisticScreen);
-			}
-		});
-	}
+    public void episode2() {
+        Gdx.app.postRunnable(() -> {
+            if (currentGame.getCON().type == RRRA) {
+                game.changeScreen(gEndScreen);
+                return;
+            }
+
+            String filename = "rr_outro.anm";
+            if (currentGame.getCON().type == RR66) {
+                filename = "end66.anm";
+            }
+
+            if (gAnmScreen.init(filename, 5)) {
+                gAnmScreen.setCallback(() -> game.changeScreen(gStatisticScreen));
+                game.changeScreen(gAnmScreen.escSkipping(true));
+            } else {
+                game.changeScreen(gStatisticScreen);
+            }
+        });
+    }
 }

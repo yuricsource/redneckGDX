@@ -16,40 +16,40 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import ru.m210projects.Redneck.Main;
-import ru.m210projects.Build.Input.Keymap;
+import ru.m210projects.Build.input.keymap.Keymap;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuJoystick;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Redneck.Main;
 
 public class RMenuJoystick extends MenuJoystick {
 
-	public RMenuJoystick(Main app) {
-		super(app, 20, 50, 280, 12, 15, app.getFont(1), 12);
-		
-		mList.menupal = 15;
-		
-		mJoyDevices.listFont = app.getFont(0);
-		mJoyDevices.listShadow = true;
-		
-		mList.font = app.getFont(0);
-		mList.pal_left = mList.pal_right = 2;
-		mList.fontShadow = true;
-		
-		mText.font = mText2.font = app.getFont(0);
-		mText.y -= 60;
-		mText2.y -= 60;
-		mText.fontShadow = mText2.fontShadow = true;
-	}
+    public RMenuJoystick(Main app) {
+        super(app, 20, 50, 280, 12, 15, app.getFont(1), 12);
 
-	@Override
-	public MenuTitle getTitle(BuildGame app, String text) {
-		return new RRTitle(text);
-	}
+        mList.axispal = 15;
 
-	@Override
-	public String keyNames(int keycode) {
-		return Keymap.toString(keycode);
-	}
+        mJoyDevices.listFont = app.getFont(0);
+        mJoyDevices.listShadow = true;
+
+        mList.font = app.getFont(0);
+        mList.pal_left = mList.pal_right = 2;
+        mList.fontShadow = true;
+
+        mText.font = mText2.font = app.getFont(0);
+        mText.y -= 60;
+        mText2.y -= 60;
+        mText.fontShadow = mText2.fontShadow = true;
+    }
+
+    @Override
+    public MenuTitle getTitle(BuildGame app, String text) {
+        return new RRTitle(text);
+    }
+
+    @Override
+    public String keyNames(int keycode) {
+        return Keymap.toString(keycode);
+    }
 
 }

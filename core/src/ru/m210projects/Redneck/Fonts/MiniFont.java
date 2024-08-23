@@ -16,33 +16,33 @@
 
 package ru.m210projects.Redneck.Fonts;
 
-import static ru.m210projects.Redneck.Names.MINIFONT;
-
 import ru.m210projects.Build.Engine;
-import ru.m210projects.Build.Pattern.BuildFont;
+import ru.m210projects.Build.Types.font.CharInfo;
 
-public class MiniFont extends BuildFont {
+import static ru.m210projects.Redneck.Main.engine;
 
-	public MiniFont(Engine draw) {
-		super(draw, (draw.getTile(MINIFONT).getHeight() + 2) / 2, 32768, 8 | 16);
+public class MiniFont extends ConsoleFont {
 
-		this.addChar(' ', nSpace, 5, nScale, 0, 0);
-		int nTile = MINIFONT;
+    public MiniFont(Engine draw) {
+        super(draw);
+        this.size /= 2;
+        this.setVerticalScaled(true);
+    }
 
-		for(int i = 0; i < 64; i++) {
-			char symbol = (char) (i + '!');
-			if(draw.getTile(nTile + i).getWidth() != 0)
-				this.addChar(symbol, nTile + i, 4, nScale, 0, 0);
-		}
-		for(int i = 64; i < 90; i++) {
-			char symbol = (char) (i + '!');
-			if(draw.getTile(nTile + i - 32).getWidth() != 0)
-				this.addChar(symbol, nTile + i - 32, 4, nScale, 0, 0);
-		}
-		for(int i = 90; i < 95; i++) {
-			char symbol = (char) (i + '!');
-			if(draw.getTile(nTile + i).getWidth() != 0)
-				this.addChar(symbol, nTile + i, 4, nScale, 0, 0);
-		}
-	}
+    @Override
+    protected void addChar(char ch, int nTile) {
+        final float scale = 0.5f;
+
+        this.addCharInfo(ch, new CharInfo(this, nTile, scale, 8, engine.getTile(nTile).getWidth(), 0, 0) {
+            @Override
+            public int getWidth() {
+                return (int) ((engine.getTile(nTile).getWidth() + 1) * tileScale);
+            }
+
+            @Override
+            public int getHeight() {
+                return (int) ((engine.getTile(nTile).getHeight() + 1) * tileScale);
+            }
+        });
+    }
 }

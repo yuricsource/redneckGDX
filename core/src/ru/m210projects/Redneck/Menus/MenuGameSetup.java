@@ -16,112 +16,94 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Build.Net.Mmulti.*;
-
-import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
-import ru.m210projects.Build.Pattern.MenuItems.MenuConteiner;
-import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
-import ru.m210projects.Build.Pattern.MenuItems.MenuItem;
-import ru.m210projects.Build.Pattern.MenuItems.MenuProc;
-import ru.m210projects.Build.Pattern.MenuItems.MenuSwitch;
+import ru.m210projects.Build.Pattern.MenuItems.*;
 import ru.m210projects.Redneck.Main;
+
+import static ru.m210projects.Build.net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.net.Mmulti.numplayers;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Types.UserDefs.DEMOSTAT_NULL;
+import static ru.m210projects.Redneck.Types.UserDefs.DEMOSTAT_RECORD;
 
 public class MenuGameSetup extends BuildMenu {
 
-	public MenuGameSetup(final Main app)
-	{
-		RRTitle mTitle = new RRTitle("Game Setup");
-		int pos = 40;
+    public MenuGameSetup(final Main app) {
+        super(app.pMenu);
+        RRTitle mTitle = new RRTitle("Game Setup");
+        int pos = 40;
 
-		MenuSwitch sSlopeTilt = new MenuSwitch("SCREEN TILTING:", app.getFont(1), 46, pos += 12, 240, ud.screen_tilting==1, new MenuProc() {
-			@Override
-			public void run( MenuHandler handler, MenuItem pItem ) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				ud.screen_tilting = sw.value?1:0;
-			}
-		}, null, null);
+        MenuSwitch sAutoload = new MenuSwitch("Autoload folder", app.getFont(1), 46, pos += 12, 240, cfg.isAutoloadFolder(), (handler, pItem) -> {
+            MenuSwitch sw = (MenuSwitch) pItem;
+            cfg.setAutoloadFolder(sw.value);
+        }, "Enabled", "Disabled");
 
-		MenuSwitch sAutoAim = new MenuSwitch("AutoAim:", app.getFont(1), 46, pos += 12, 240, cfg.gAutoAim, new MenuProc() {
-			@Override
-			public void run( MenuHandler handler, MenuItem pItem ) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				cfg.gAutoAim = sw.value;
-				ps[myconnectindex].auto_aim = cfg.gAutoAim?1:0;
-				if(numplayers > 1) app.net.getnames();
-			}
-		}, null, null);
-		
-		MenuSwitch sColoredKeys = new MenuSwitch("Colored keys:", app.getFont(1), 46, pos += 12, 240, cfg.gColoredKeys,
-				new MenuProc() {
-					@Override
-					public void run( MenuHandler handler, MenuItem pItem ) {
-						MenuSwitch sw = (MenuSwitch) pItem;
-						cfg.gColoredKeys = sw.value;
-					}
-				}, null, null);
+        MenuSwitch sSlopeTilt = new MenuSwitch("SCREEN TILTING:", app.getFont(1), 46, pos += 12, 240, ud.screen_tilting == 1, (handler, pItem) -> {
+            MenuSwitch sw = (MenuSwitch) pItem;
+            ud.screen_tilting = sw.value ? 1 : 0;
+        }, null, null);
 
-		MenuSwitch sStartup = new MenuSwitch("Startup window:", app.getFont(1), 46, pos += 12, 240, cfg.startup, new MenuProc() {
-			@Override
-			public void run( MenuHandler handler, MenuItem pItem ) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				cfg.startup = sw.value;
-			}
-		}, null, null);
+        MenuSwitch sAutoAim = new MenuSwitch("AutoAim:", app.getFont(1), 46, pos += 12, 240, cfg.gAutoAim, (handler, pItem) -> {
+            MenuSwitch sw = (MenuSwitch) pItem;
+            cfg.gAutoAim = sw.value;
+            ps[myconnectindex].auto_aim = cfg.gAutoAim ? 1 : 0;
+            if (numplayers > 1) {
+                app.net.getnames();
+            }
+        }, null, null);
 
-		MenuSwitch sCheckVersion = new MenuSwitch("Check for updates:", app.getFont(1), 46, pos += 12, 240, cfg.checkVersion,
-				new MenuProc() {
-					@Override
-					public void run( MenuHandler handler, MenuItem pItem ) {
-						MenuSwitch sw = (MenuSwitch) pItem;
-						cfg.checkVersion = sw.value;
-					}
-				}, null, null);
+        MenuSwitch sColoredKeys = new MenuSwitch("Colored keys:", app.getFont(1), 46, pos += 12, 240, cfg.gColoredKeys,
+                (handler, pItem) -> {
+                    MenuSwitch sw = (MenuSwitch) pItem;
+                    cfg.gColoredKeys = sw.value;
+                }, null, null);
 
-		MenuConteiner mPlayingDemo = new MenuConteiner("Demos playback:", app.getFont(1), 46, pos += 12, 240, null, 0,
-				new MenuProc() {
-					@Override
-					public void run( MenuHandler handler, MenuItem pItem ) {
-						MenuConteiner item = (MenuConteiner) pItem;
-						cfg.gDemoSeq = item.num;
-					}
-				}) {
-			@Override
-			public void open() {
-				if (this.list == null) {
-					this.list = new char[3][];
-					this.list[0] = "Off".toCharArray();
-					this.list[1] = "In order".toCharArray();
-					this.list[2] = "Randomly".toCharArray();
-				}
-				num = cfg.gDemoSeq;
-			}
-		};
-		
-		MenuSwitch sRecord = new MenuSwitch("Record demo:", app.getFont(1), 46, pos += 12, 240, ud.m_recstat == 1,
-		new MenuProc() {
-			@Override
-			public void run( MenuHandler handler, MenuItem pItem ) {
-				MenuSwitch sw = (MenuSwitch) pItem;
-				ud.m_recstat = sw.value?1:0;
-			}
-		}, null, null) {
-			
-			@Override
-			public void open() {
-				value = ud.m_recstat == 1;
-				mCheckEnableItem(!app.isCurrentScreen(gGameScreen));
-			}
-		};
 
-		addItem(mTitle, false);
-		addItem(sSlopeTilt, true);
-		addItem(sAutoAim, false);
-		addItem(sColoredKeys, false);
-		addItem(sStartup, false);
-		addItem(sCheckVersion, false);
-		addItem(mPlayingDemo, false);
-		addItem(sRecord, false);
-	}
+        MenuConteiner mPlayingDemo = new MenuConteiner("Demos playback:", app.getFont(1), 46, pos += 12, 240, null, 0,
+                (handler, pItem) -> {
+                    MenuConteiner item = (MenuConteiner) pItem;
+                    cfg.gDemoSeq = item.num;
+                }) {
+            @Override
+            public void open() {
+                if (this.list == null) {
+                    this.list = new char[3][];
+                    this.list[0] = "Off".toCharArray();
+                    this.list[1] = "In order".toCharArray();
+                    this.list[2] = "Randomly".toCharArray();
+                }
+                num = cfg.gDemoSeq;
+            }
+        };
+
+        MenuSwitch sRecord = new MenuSwitch("Record demo:", app.getFont(1), 46, pos += 12, 240, ud.m_recstat == DEMOSTAT_RECORD,
+                (handler, pItem) -> {
+                    MenuSwitch sw = (MenuSwitch) pItem;
+                    ud.m_recstat = sw.value  ? DEMOSTAT_RECORD : DEMOSTAT_NULL;
+                }, null, null) {
+
+            @Override
+            public void open() {
+                value = gDemoScreen.isRecordEnabled();
+                mCheckEnableItem(!app.isCurrentScreen(gGameScreen));
+            }
+        };
+
+        MenuSwitch mTimer = new MenuSwitch("Game loop timer:", app.getFont(1), 46, pos + 12, 240, cfg.isLegacyTimer(),
+                (handler, pItem) -> {
+                    MenuSwitch sw = (MenuSwitch) pItem;
+                    cfg.setLegacyTimer(sw.value);
+                    engine.inittimer(cfg.isLegacyTimer(), TICRATE, TICSPERFRAME);
+                }, "Legacy", "Gdx") {
+        };
+
+        addItem(mTitle, false);
+        addItem(sAutoload, true);
+        addItem(sSlopeTilt, false);
+        addItem(sAutoAim, false);
+        addItem(sColoredKeys, false);
+        addItem(mPlayingDemo, false);
+        addItem(sRecord, false);
+        addItem(mTimer, false);
+    }
 }

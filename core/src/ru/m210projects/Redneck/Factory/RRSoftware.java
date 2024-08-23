@@ -18,10 +18,32 @@ package ru.m210projects.Redneck.Factory;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Render.Software.Software;
+import ru.m210projects.Build.Render.Software.SoftwareOrpho;
+import ru.m210projects.Build.settings.GameConfig;
 
-public class RRSoftware extends Software {
+public class RRSoftware extends Software implements RRRenderer {
 
-	public RRSoftware(Engine engine) {
-		super(engine, new RRMapSettings());
-	}
+    public RRSoftware(GameConfig config) {
+        super(config);
+    }
+
+    @Override
+    protected SoftwareOrpho allocOrphoRenderer(Engine engine) {
+        return new SoftwareOrpho(this, new RRMapSettings());
+    }
+
+    @Override
+    public void setaspect(int daxrange, int daaspect) {
+        super.setaspect(daxrange, daaspect);
+    }
+
+    @Override
+    public int getViewingRange() {
+        return viewingrange;
+    }
+
+    @Override
+    public int getYXAspect() {
+        return yxaspect;
+    }
 }

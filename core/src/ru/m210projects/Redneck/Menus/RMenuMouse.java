@@ -16,20 +16,20 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import ru.m210projects.Redneck.Main;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuMouse;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Redneck.Main;
 
 public class RMenuMouse extends MenuMouse {
 
-	public RMenuMouse(Main app) {
-		super(app, 20, 40, 280, 12, 5, app.getFont(1), 0);
-	}
+    public RMenuMouse(Main app) {
+        super(app, 20, 40, 280, 12, 5, app.getFont(1), 0);
+    }
 
-	@Override
-	public MenuTitle getTitle(BuildGame app, String text) {
-		return new RRTitle(text);
-	}
+    @Override
+    public MenuTitle getTitle(BuildGame app, String text) {
+        return new RRTitle(text);
+    }
 
 }

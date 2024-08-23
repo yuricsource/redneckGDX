@@ -16,73 +16,77 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-import static ru.m210projects.Redneck.ResourceHandler.*;
-import static ru.m210projects.Redneck.Globals.*;
-
-import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
-import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
-import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
-import ru.m210projects.Build.Pattern.MenuItems.MenuItem;
-import ru.m210projects.Build.Pattern.MenuItems.MenuProc;
-import ru.m210projects.Redneck.Main;
+import ru.m210projects.Build.Pattern.MenuItems.*;
+import ru.m210projects.Build.filehandle.Entry;
+import ru.m210projects.Build.filehandle.FileUtils;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
+import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Types.GameInfo;
+
+import java.nio.file.Path;
+
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
+import static ru.m210projects.Redneck.Globals.defGame;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.ResourceHandler.levelGetEpisode;
 
 public class NewGameMenu extends BuildMenu {
 
-	public NewGameMenu(final Main app)
-	{
-		final RRMenuHandler menu = (RRMenuHandler) app.menu;
+    public NewGameMenu(final Main app) {
+        super(app.pMenu);
+        final RRMenuHandler menu = app.menu;
 
-		addItem(new RRTitle("SELECT AN EPISODE"), false);
-		final GameInfo RR66Game = levelGetEpisode("game66.con");
-		
-		MenuProc newEpProc = new MenuProc() {
-			@Override
-			public void run( MenuHandler handler, MenuItem pItem ) {
-				EpisodeButton but = (EpisodeButton) pItem;
-				if(RR66Game != null && but.game == RR66Game) {
-					NewAddonMenu next = (NewAddonMenu) app.menu.mMenus[NEWADDON];
-					next.setEpisode(but.game);
-					app.menu.mOpen(next, -1);
-				} else {
-					DifficultyMenu next = (DifficultyMenu) menu.mMenus[DIFFICULTY];
-					next.setEpisode(but.game, but.specialOpt);
-					menu.mOpen(next, but.nItem);
-				}
-			}
-		};
+        addItem(new RRTitle("SELECT AN EPISODE"), false);
+        final GameInfo RR66Game = getRoute66Addon(new Path[] {FileUtils.getPath("game66.con")});
 
-		int epnum = 0;
-		int pos = 30;
-		for(int i = 0; i < 2; i++)
-		{
-			if(defGame.episodes[i] != null) { //empty check
-				EpisodeButton skill = new EpisodeButton(defGame, defGame.episodes[i].Title, app.getFont(2), 0, pos+=19, 320, newEpProc, i);
-				addItem(skill, i == 0);
-				epnum++;
-			}
-		}
-		
-		
-		if(RR66Game != null)
-		{
-			RR66Game.Title = "Route 66";
-			EpisodeButton pItem = new EpisodeButton(RR66Game, RR66Game.Title, app.getFont(2), 0, pos += 19, 320, newEpProc, 0);
-			addItem(pItem, epnum == 0);
-			epnum++;
-		}
-		
-		final RUserContent usercont = (RUserContent) menu.mMenus[USERCONTENT];
-		MenuButton mUser = new MenuButton("< USER CONTENT >", app.getFont(2), 0, pos+=25, 320, 1, 2, null, -1, new MenuProc() {
-			@Override
-			public void run(MenuHandler handler, MenuItem pItem) {
-				if(usercont.showmain) 
-					usercont.setShowMain(false);
-				handler.mOpen(usercont, -1);
-			}
-		}, -1);
-		addItem(mUser, epnum == 0);
-	}
+        MenuProc newEpProc = (handler, pItem) -> {
+            EpisodeButton but = (EpisodeButton) pItem;
+            if (RR66Game != null && but.game == RR66Game) {
+                NewAddonMenu next = (NewAddonMenu) app.menu.mMenus[NEWADDON];
+                next.setEpisode(but.game);
+                app.menu.mOpen(next, -1);
+            } else {
+                DifficultyMenu next = (DifficultyMenu) menu.mMenus[DIFFICULTY];
+                next.setEpisode(but.game, but.specialOpt);
+                menu.mOpen(next, but.nItem);
+            }
+        };
+
+        int epnum = 0;
+        int pos = 30;
+        for (int i = 0; i < 2; i++) {
+            if (defGame.episodes[i] != null) { //empty check
+                EpisodeButton skill = new EpisodeButton(defGame, defGame.episodes[i].Title, app.getFont(2), 0, pos += 19, 320, newEpProc, i);
+                addItem(skill, i == 0);
+                epnum++;
+            }
+        }
+
+
+        if (RR66Game != null) {
+            addItem(new EpisodeButton(RR66Game, RR66Game.title, app.getFont(2), 0, pos += 19, 320, newEpProc, 0), epnum == 0);
+            epnum++;
+        }
+
+        final RUserContent usercont = (RUserContent) menu.mMenus[USERCONTENT];
+        MenuButton mUser = new MenuButton("< USER CONTENT >", app.getFont(2), 0, pos + 25, 320, 1, 2, null, -1, (handler, pItem) -> {
+            if (usercont.showmain) {
+                usercont.setShowMain(false);
+            }
+            handler.mOpen(usercont, -1);
+        }, -1);
+        addItem(mUser, epnum == 0);
+    }
+
+    private GameInfo getRoute66Addon(Path[] path) {
+        for (Path s : path) {
+            Entry entry = game.getCache().getEntry(s, true);
+            GameInfo addon = levelGetEpisode(entry);
+            if (addon != null) {
+                addon.title = "Route 66";
+                return addon;
+            }
+        }
+        return null;
+    }
 }

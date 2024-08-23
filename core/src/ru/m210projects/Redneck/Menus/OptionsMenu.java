@@ -15,33 +15,34 @@
 // along with RedneckGDX.  If not, see <http://www.gnu.org/licenses/>.
 
 package ru.m210projects.Redneck.Menus
-;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
+        ;
 
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
-import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
+import ru.m210projects.Redneck.Main;
+
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.SOUNDSET;
 
 public class OptionsMenu extends BuildMenu {
 
-	public OptionsMenu(Main app)
-	{
-		addItem(new RRTitle("Options"), false);
-		
-		final RRMenuHandler menu = (RRMenuHandler) app.menu;
-		
-		int pos = 35;
-		MenuButton bGameSetup = new MenuButton("GAME SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new MenuGameSetup(app), 1, null, 0);
-		MenuButton bHUDSetup = new MenuButton("INTERFACE SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new InterfaceMenu(app), 1, null, 0);
-		MenuButton bSoundSetup = new MenuButton("AUDIO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, menu.mMenus[SOUNDSET], 1, null, 0);
-		MenuButton bVideoSetup = new MenuButton("VIDEO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new RMenuVideoMode(app), 1, null, 0);
-		MenuButton bKeySetup = new MenuButton("CONTROL SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0,  new MenuControls(app), 1, null, 0);
-		
-		addItem(bGameSetup, true);
-		addItem(bHUDSetup, false);
-		addItem(bSoundSetup, false);
-		addItem(bVideoSetup, false);
-		addItem(bKeySetup, false);
-	}
+    public OptionsMenu(Main app) {
+        super(app.pMenu);
+        addItem(new RRTitle("Options"), false);
+
+        final RRMenuHandler menu = app.menu;
+
+        int pos = 35;
+        MenuButton bGameSetup = new MenuButton("GAME SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new MenuGameSetup(app), 1, null, 0);
+        MenuButton bHUDSetup = new MenuButton("INTERFACE SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new InterfaceMenu(app), 1, null, 0);
+        MenuButton bSoundSetup = new MenuButton("AUDIO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, menu.mMenus[SOUNDSET], 1, null, 0);
+        MenuButton bVideoSetup = new MenuButton("VIDEO SETUP", app.getFont(2), 0, pos += 20, 320, 1, 0, new RMenuVideoMode(app), 1, null, 0);
+        MenuButton bKeySetup = new MenuButton("CONTROL SETUP", app.getFont(2), 0, pos + 20, 320, 1, 0, new MenuControls(app), 1, null, 0);
+
+        addItem(bGameSetup, true);
+        addItem(bHUDSetup, false);
+        addItem(bSoundSetup, false);
+        addItem(bVideoSetup, false);
+        addItem(bKeySetup, false);
+    }
 }

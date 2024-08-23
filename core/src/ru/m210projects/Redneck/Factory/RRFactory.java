@@ -16,16 +16,9 @@
 
 package ru.m210projects.Redneck.Factory;
 
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Redneck.Names.*;
-
-import ru.m210projects.Build.Input.BuildControllers;
-import ru.m210projects.Build.OnSceenDisplay.OSDFunc;
-import ru.m210projects.Build.Pattern.BuildControls;
-import ru.m210projects.Build.Pattern.BuildEngine;
+import ru.m210projects.Build.Engine;
+import ru.m210projects.Build.EngineUtils;
 import ru.m210projects.Build.Pattern.BuildFactory;
-import ru.m210projects.Build.Pattern.BuildFont;
 import ru.m210projects.Build.Pattern.BuildNet;
 import ru.m210projects.Build.Pattern.FontHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
@@ -33,86 +26,95 @@ import ru.m210projects.Build.Pattern.MenuItems.SliderDrawable;
 import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Build.Render.Renderer.RenderType;
 import ru.m210projects.Build.Script.DefScript;
-import ru.m210projects.Redneck.Main;
+import ru.m210projects.Build.Types.font.Font;
+import ru.m210projects.Build.osd.OsdColor;
+import ru.m210projects.Build.osd.OsdFunc;
+import ru.m210projects.Redneck.Fonts.ConsoleFont;
 import ru.m210projects.Redneck.Fonts.GameFont;
 import ru.m210projects.Redneck.Fonts.MenuFont;
 import ru.m210projects.Redneck.Fonts.MiniFont;
-import ru.m210projects.Redneck.Fonts.StandartFont;
+import ru.m210projects.Redneck.Main;
+
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Names.LOADSCREEN;
 
 public class RRFactory extends BuildFactory {
 
-	private Main app;
+    private final Main app;
 
-	public RRFactory(Main app) {
-		super("redneck.grp");
-		this.app = app;
-	}
+    public RRFactory(Main app) {
+        super("redneck.grp");
+        this.app = app;
 
-	@Override
-	public void drawInitScreen() {
-		app.pEngine.rotatesprite(160 << 16, 100 << 16, 65536, 0, LOADSCREEN, 0, 0, 2 | 8, 0, 0, xdim - 1, ydim - 1);
-	}
+        OsdColor.DEFAULT.setPal(100); // WHITE
+    }
 
-	@Override
-	public BuildEngine engine() throws Exception {
-		return Main.engine = new RREngine(app);
-	}
+    @Override
+    public void drawInitScreen() {
+        Renderer renderer = game.getRenderer();
+        renderer.rotatesprite(160 << 16, 100 << 16, 65536, 0, LOADSCREEN, 0, 0, 2 | 8);
+    }
 
-	@Override
-	public Renderer renderer(RenderType type) {
-		if (type == RenderType.Software)
-			return new RRSoftware(app.pEngine);
-		else if (type == RenderType.PolyGDX)
-			return new RRPolygdx(app.pEngine);
-		else
-			return new RRPolymost(app.pEngine);
-	}
+    @Override
+    public Engine engine() throws Exception {
+        return Main.engine = new RREngine(app);
+    }
 
-	@Override
-	public DefScript getBaseDef(BuildEngine engine) {
-		return new DefScript(engine, false);
-	}
+    @Override
+    public Renderer renderer(RenderType type) {
+        if (type == RenderType.Software) {
+            return new RRSoftware(app.pCfg);
+        } else if (type == RenderType.PolyGDX) {
+            return new RRPolygdx(app.pCfg);
+        } else {
+            return new RRPolymost(app.pCfg);
+        }
+    }
 
-	@Override
-	public BuildControls input(BuildControllers gpmanager) {
-		return new RRInput(app.pCfg, gpmanager);
-	}
+    @Override
+    public DefScript getBaseDef(Engine engine) {
+        return new DefScript(engine);
+    }
 
-	@Override
-	public OSDFunc console() {
-		return new RROSDFunc(app.pEngine);
-	}
+    @Override
+    public OsdFunc getOsdFunc() {
+        return new RROsdFunc();
+    }
 
-	@Override
-	public MenuHandler menus() {
-		return app.menu = new RRMenuHandler(app);
-	}
+    @Override
+    public MenuHandler menus() {
+        return app.menu = new RRMenuHandler(app);
+    }
 
-	@Override
-	public FontHandler fonts() {
-		return new FontHandler(5) {
-			@Override
-			protected BuildFont init(int i) {
-				if (i == 0)
-					return new MiniFont(app.pEngine);
-				if (i == 1)
-					return new GameFont(app.pEngine);
-				if (i == 2)
-					return new MenuFont(app.pEngine);
+    @Override
+    public FontHandler fonts() {
+        return new FontHandler(5) {
+            @Override
+            protected Font init(int i) {
+                switch (i) {
+                    case 0:
+                        return new MiniFont(app.pEngine);
+                    case 1:
+                        return new GameFont(app.pEngine);
+                    case 2:
+                        return new MenuFont(app.pEngine);
+                    case 3:
+                        return new ConsoleFont(app.pEngine);
+                    default:
+                        return EngineUtils.getLargeFont();
+                }
+            }
+        };
+    }
 
-				return new StandartFont(app.pEngine);
-			}
-		};
-	}
+    @Override
+    public BuildNet net() {
+        return new RRNetwork(app);
+    }
 
-	@Override
-	public BuildNet net() {
-		return new RRNetwork(app);
-	}
-
-	@Override
-	public SliderDrawable slider() {
-		return new RRSliderDrawable();
-	}
+    @Override
+    public SliderDrawable slider() {
+        return new RRSliderDrawable();
+    }
 
 }

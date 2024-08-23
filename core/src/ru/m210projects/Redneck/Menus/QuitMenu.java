@@ -16,39 +16,34 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
-
-import ru.m210projects.Build.Architecture.BuildGdx;
+import com.badlogic.gdx.Gdx;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuText;
 import ru.m210projects.Build.Pattern.MenuItems.MenuVariants;
 import ru.m210projects.Redneck.Main;
 
+import static ru.m210projects.Build.net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.net.Mmulti.numplayers;
+
 public class QuitMenu extends BuildMenu {
 
-	public QuitMenu(final Main game)
-	{
-		MenuText QuitQuestion = new MenuText("Are you sure you want to quit?", game.getFont(1), 160, 90, 1);
-		MenuVariants QuitVariants = new MenuVariants(game.pEngine, "[Y/N]", game.getFont(1), 160, 105) {
-			@Override
-			public void positive(MenuHandler menu) {
-				if (numplayers > 1) {
-					BuildGdx.app.postRunnable(new Runnable() {
-						@Override
-						public void run() {
-							game.net.NetDisconnect(myconnectindex);
-						}
-					});
-				}
-				
-				game.gExit = true;
-				menu.mClose();
-			}
-		};
+    public QuitMenu(final Main game) {
+        super(game.pMenu);
+        MenuText QuitQuestion = new MenuText("Are you sure you want to quit?", game.getFont(1), 160, 90, 1);
+        MenuVariants QuitVariants = new MenuVariants(game.pEngine, "[Y/N]", game.getFont(1), 160, 105) {
+            @Override
+            public void positive(MenuHandler menu) {
+                if (numplayers > 1) {
+                    Gdx.app.postRunnable(() -> game.net.NetDisconnect(myconnectindex));
+                }
 
-		addItem(QuitQuestion, false);
-		addItem(QuitVariants, true);
-	}
+                game.gExit = true;
+                menu.mClose();
+            }
+        };
+
+        addItem(QuitQuestion, false);
+        addItem(QuitVariants, true);
+    }
 }

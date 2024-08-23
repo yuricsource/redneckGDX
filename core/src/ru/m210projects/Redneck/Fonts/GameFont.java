@@ -16,41 +16,44 @@
 
 package ru.m210projects.Redneck.Fonts;
 
+import ru.m210projects.Build.Engine;
+import ru.m210projects.Build.Types.font.CharInfo;
+import ru.m210projects.Build.Types.font.Font;
+import ru.m210projects.Build.filehandle.art.ArtEntry;
+
 import static ru.m210projects.Build.Strhandler.isdigit;
+import static ru.m210projects.Redneck.Main.engine;
 import static ru.m210projects.Redneck.Names.STARTALPHANUM;
 
-import ru.m210projects.Build.Engine;
-import ru.m210projects.Build.Pattern.BuildFont;
-import ru.m210projects.Build.Types.Tile;
+public class GameFont extends Font {
 
-public class GameFont extends BuildFont {
+    public GameFont(Engine draw) {
+        this.size = (draw.getTile(STARTALPHANUM).getHeight() + 2) / 2;
+        this.addCharInfo(' ', new CharInfo(this, -1, 0.5f, 8));
+        update();
+    }
 
-	public GameFont(Engine draw) {
-		super(draw, draw.getTile(STARTALPHANUM).getHeight() / 2 + 2, 32768, 8 | 16);
+    public void update() {
+        int nTile = STARTALPHANUM;
+        for (int i = 0; i < 95; i++) {
+            ArtEntry pic = engine.getTile(nTile + i);
 
-		this.addChar(' ', nSpace, 3, nScale, 0, 0);
-		int nTile = STARTALPHANUM;
+            if (pic.getWidth() != 0) {
+                char symbol = (char) (i + '!');
+                int cellSize = isdigit(symbol) ? 16 : pic.getWidth();
+                this.addCharInfo(symbol, new CharInfo(this, nTile + i, 0.5f, cellSize, cellSize, 0, 0) {
+                    @Override
+                    public int getWidth() {
+                        return (int) ((pic.getWidth() + 1) * tileScale);
+                    }
 
-		for(int i = 0; i < 95; i++) {
-			Tile pic = draw.getTile(nTile + i);
+                    @Override
+                    public int getHeight() {
+                        return (int) ((pic.getHeight() + 1) * tileScale);
+                    }
+                });
+            }
+        }
+    }
 
-			if(pic.getWidth() != 0) {
-				char symbol = (char) (i + '!');
-				this.addChar(symbol, nTile + i, isdigit(symbol) ? 8 : pic.getWidth() / 2, nScale, 0, 0);
-			}
-		}
-	}
-
-	public void update()
-	{
-		int nTile = STARTALPHANUM;
-		for(int i = 0; i < 95; i++) {
-			Tile pic = draw.getTile(nTile + i);
-
-			if(pic.getWidth() != 0) {
-				char symbol = (char) (i + '!');
-				charInfo[symbol].nWidth = isdigit(symbol) ? 8 : (short) (pic.getWidth() / 2);
-			}
-		}
-	}
 }

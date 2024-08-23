@@ -16,354 +16,418 @@
 
 package ru.m210projects.Redneck.Screens;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
+import com.badlogic.gdx.Screen;
+import ru.m210projects.Build.Types.Sprite;
+import ru.m210projects.Build.filehandle.Group;
+import ru.m210projects.Build.settings.GameKeys;
+import ru.m210projects.Build.filehandle.Entry;
+import ru.m210projects.Build.filehandle.StreamUtils;
+import ru.m210projects.Build.input.GameKey;
+import ru.m210projects.Build.osd.Console;
+import ru.m210projects.Build.osd.OsdColor;
+import ru.m210projects.Redneck.Main;
+import ru.m210projects.Redneck.Types.PlayerStruct;
+import ru.m210projects.Redneck.filehandle.DemoFile;
+import ru.m210projects.Redneck.Types.GameInfo;
+import ru.m210projects.Redneck.filehandle.DemoRecorder;
+
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static ru.m210projects.Build.Engine.MAXPLAYERS;
-import static ru.m210projects.Build.Engine.totalclock;
 import static ru.m210projects.Build.Gameutils.BClipRange;
-import static ru.m210projects.Build.Net.Mmulti.connecthead;
-import static ru.m210projects.Build.Net.Mmulti.connectpoint2;
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
-import static ru.m210projects.Build.OnSceenDisplay.Console.OSDTEXT_GOLD;
-import static ru.m210projects.Build.OnSceenDisplay.Console.*;
+import static ru.m210projects.Build.net.Mmulti.*;
+import static ru.m210projects.Build.filehandle.fs.Directory.DUMMY_ENTRY;
 import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.LoadSave.*;
-import static ru.m210projects.Redneck.Player.*;
+import static ru.m210projects.Redneck.LoadSave.lastload;
 import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.View.*;
-import static ru.m210projects.Redneck.Screen.*;
+import static ru.m210projects.Redneck.Player.InitPlayers;
+import static ru.m210projects.Redneck.ResourceHandler.levelGetEpisode;
 import static ru.m210projects.Redneck.SoundDefs.THUD;
 import static ru.m210projects.Redneck.Sounds.sound;
-import static ru.m210projects.Redneck.ResourceHandler.*;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.Resource;
-import ru.m210projects.Build.FileHandle.Compat.Path;
-import ru.m210projects.Build.OnSceenDisplay.Console;
-import ru.m210projects.Build.Pattern.BuildControls;
-import ru.m210projects.Build.Settings.BuildConfig.GameKeys;
-import ru.m210projects.Redneck.Config.RRKeys;
-import ru.m210projects.Redneck.Main;
-import ru.m210projects.Redneck.Factory.RRMenuHandler;
-import ru.m210projects.Redneck.Types.DemoFile;
-import ru.m210projects.Redneck.Types.GameInfo;
+import static ru.m210projects.Redneck.Types.UserDefs.*;
+import static ru.m210projects.Redneck.View.operatefta;
 
 public class DemoScreen extends GameScreen {
 
-	public static String firstdemofile;
-	public int nDemonum = -1;
-	public List<String> demofiles = new ArrayList<String>();
-	public DemoFile demfile;
+    public int nDemonum = -1;
+    public final Map<Group, List<Entry>> demofiles = new HashMap<>();
+    public DemoFile demfile;
+    protected final Entry lastDemoEntry = DUMMY_ENTRY;
 
-	public DemoScreen(Main game) {
-		super(game);
-	}
+    public DemoScreen(Main game) {
+        super(game);
+    }
 
-	@Override
-	public void show() {
-		lastload = null;
-	}
+    @Override
+    public void show() {
+        lastload = null;
+    }
 
-	@Override
-	public void hide() {
-		ud.user_name[myconnectindex] = cfg.pName;
-	}
+    @Override
+    public void hide() {
+        ud.user_name[myconnectindex] = cfg.getpName();
+    }
 
-	public boolean showDemo(String name, String ini)
-	{
-		demfile = null;
-		try {
-			demfile = new DemoFile(name);
-		} catch(Exception e) {}
+    public boolean showDemo(Entry entry, Entry ini) {
+        onStopRecord();
 
-		if(demfile == null || demfile.reccnt == 0)
-		{
-			Console.Println("Can't play the demo file: " + name, OSDTEXT_RED);
-			return false;
-		}
+        demfile = null;
+        try (InputStream is = entry.getInputStream()) {
+            demfile = new DemoFile(is);
+        } catch (Exception e) {
+            Console.out.println("Can't play the demo file: " + entry.getName(), OsdColor.RED);
+            return false;
+        }
 
-		InitPlayers();
-		mFakeMultiplayer = demfile.multimode > 1;
-		if(mFakeMultiplayer)
-			nFakePlayers = demfile.multimode;
+        InitPlayers();
+        mFakeMultiplayer = demfile.multimode > 1;
+        if (mFakeMultiplayer) {
+            nFakePlayers = demfile.multimode;
+        }
 
-		if (numplayers > 1)
-			game.pNet.NetDisconnect(myconnectindex);
+        if (numplayers > 1) {
+            game.pNet.NetDisconnect(myconnectindex);
+        }
 
-		ud.volume_number = demfile.volume_number;
-		ud.level_number = demfile.level_number;
-		ud.player_skill = demfile.player_skill;
+        ud.volume_number = demfile.volume_number;
+        ud.level_number = demfile.level_number;
+        ud.player_skill = demfile.player_skill;
 
-		ud.coop = demfile.coop;
-		ud.ffire = demfile.ffire;
-		ud.multimode = demfile.multimode;
-		ud.monsters_off = demfile.monsters_off;
-		ud.respawn_monsters = demfile.respawn_monsters;
-		ud.respawn_items = demfile.respawn_items;
-		ud.respawn_inventory = demfile.respawn_inventory;
-		ud.playerai = demfile.playerai;
-		for ( int i = 0; i < MAXPLAYERS; i++ )
-			ud.user_name[i] = demfile.user_name[i];
+        ud.coop = demfile.coop;
+        ud.ffire = demfile.ffire;
+        ud.multimode = demfile.multimode;
+        ud.monsters_off = demfile.monsters_off;
+        ud.respawn_monsters = demfile.respawn_monsters;
+        ud.respawn_items = demfile.respawn_items;
+        ud.respawn_inventory = demfile.respawn_inventory;
+        ud.playerai = demfile.playerai;
+        System.arraycopy(demfile.user_name, 0, ud.user_name, 0, MAXPLAYERS);
 
-		boardfilename = demfile.boardfilename;
+        boardfilename = game.getCache().getEntry(demfile.boardfilename, true);
 
-		for(int i=0;i<ud.multimode;i++) {
-			ps[i].aim_mode = demfile.aim_mode[i];
-			if(demfile.version >= GDXBYTEVERSION)
-				ps[i].auto_aim = demfile.auto_aim[i];
-			else ps[i].auto_aim = 1;
-		}
+        for (int i = 0; i < ud.multimode; i++) {
+            ps[i].aim_mode = demfile.aim_mode[i];
+            if (demfile.version >= GDXBYTEVERSION) {
+                ps[i].auto_aim = demfile.auto_aim[i];
+            } else {
+                ps[i].auto_aim = 1;
+            }
+        }
 
-		ud.god = false;
-		ud.cashman = ud.eog = ud.showallmap = 0;
-		ud.clipping = ud.scrollmode = false;
-		ud.overhead_on = 0;
-		ud.recstat = 2;
+        ud.god = false;
+        ud.cashman = ud.eog = ud.showallmap = 0;
+        ud.clipping = ud.scrollmode = false;
+        ud.overhead_on = 0;
+        ud.recstat = DEMOSTAT_PLAYING;
 
-		GameInfo addon = levelGetEpisode(ini);
-		if(demfile.addon != null)
-			addon = demfile.addon;
+        GameInfo addon = levelGetEpisode(ini);
+        if (demfile.addon != null) {
+            addon = demfile.addon;
+        }
 
-		gDemoScreen.newgame(mFakeMultiplayer, addon, ud.volume_number, ud.level_number, ud.player_skill);
+        gDemoScreen.newgame(mFakeMultiplayer, addon, ud.volume_number, ud.level_number, ud.player_skill);
 
-		Console.Println("Playing demo " + name);
+        Console.out.println("Playing demo " + entry.getName());
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	protected void startboard(final Runnable startboard)
-	{
-		gPrecacheScreen.init(false, new Runnable() {
-			@Override
-			public void run() {
-				startboard.run(); //call faketimehandler
-				pNet.ResetTimers(); //reset ototalclock
-				lockclock = 0;
-				pNet.ready2send = false;
-			}
-		});
-		game.changeScreen(gPrecacheScreen);
-	}
+    public List<Entry> checkDemoEntry(Group group) {
+        if (demofiles.containsKey(group)) {
+            return demofiles.get(group);
+        }
 
-	@Override
-	public void KeyHandler() {
-		pEngine.handleevents();
+        nDemonum = -1;
+        List<Entry> demos = group.stream()
+                .filter(this::isDemoFile)
+                .sorted(Entry::compareTo)
+                .collect(Collectors.toList());
 
-		RRMenuHandler menu = game.menu;
-		if (menu.gShowMenu) {
-			menu.mKeyHandler(game.pInput, BuildGdx.graphics.getDeltaTime());
-			return;
-		}
+        if (demos.isEmpty()) { //try to find it in mainGrp
+            int k;
+            int which_demo = 1;
+            do {
+                k = which_demo;
 
-		if(Console.IsShown())
-			return;
+                char[] d = "demo_.dmo".toCharArray();
+                if (which_demo == 10) {
+                    d[4] = 'x';
+                } else {
+                    d[4] = (char) ('0' + which_demo);
+                }
+                String name = String.copyValueOf(d);
+                Entry entry = game.getCache().getEntry(name, true);
+                if (isDemoFile(entry)) {
+                    demos.add(entry);
+                } else {
+                    break;
+                }
+                which_demo++;
+            } while (k != which_demo);
+        }
 
-		BuildControls input = game.pInput;
-		if (input.ctrlGetInputKey(GameKeys.Menu_Toggle, true))
-			menu.mOpen(menu.mMenus[MAIN], -1);
-		if (input.ctrlGetInputKey(RRKeys.Show_Sounds, true))
-			menu.mOpen(menu.mMenus[SOUNDSET], -1);
+        demofiles.put(group, demos);
+        Console.out.println("There are " + demos.size() + " demo(s) in the loop", OsdColor.YELLOW);
 
-		if (input.ctrlGetInputKey(RRKeys.Show_Options, true))
-			menu.mOpen(menu.mMenus[OPTIONS], -1);
+        if (cfg.gDemoSeq == 2) {
+            int nextnum = nDemonum;
+            if (demos.size() > 1) {
+                while (nextnum == nDemonum) nextnum = (int) (Math.random() * (demos.size()));
+            }
+            nDemonum = nextnum;
+        }
 
-		if (input.ctrlGetInputKey(RRKeys.Gamma, true))
-			openGamma(menu);
+        return demos;
+    }
 
-		if (input.ctrlGetInputKey(RRKeys.Quit, true))
-			menu.mOpen(menu.mMenus[QUIT], -1);
+    @Override
+    protected void startboard(final Runnable startboard) {
+        game.doPrecache(() -> {
+            startboard.run(); //call faketimehandler
+            pNet.ResetTimers(); //reset ototalclock
+            lockclock = 0;
+            pNet.ready2send = false;
+        });
+    }
 
-		if (input.ctrlGetInputKey(RRKeys.Screenshot, true))
-			makeScreenshot();
+    @Override
+    public boolean gameKeyDown(GameKey gameKey) {
+        if (gameKeyDownCommon(gameKey, false)) {
+            return true;
+        }
 
-		if(input.ctrlGetInputKey(RRKeys.See_Coop_View, true))
-		{
-			if(ud.coop == 1 || mFakeMultiplayer)
-			{
-				screenpeek = connectpoint2[screenpeek];
-				if (screenpeek < 0) screenpeek = connecthead;
+        if (GameKeys.Enlarge_Screen.equals(gameKey)) {
+            if (ud.screen_size > 0) {
+                sound(THUD);
+                enlargeScreen();
+            }
+            return true;
+        }
+        if (GameKeys.Shrink_Screen.equals(gameKey)) {
+            if (ud.screen_size < 3) {
+                sound(THUD);
+                shrinkScreen();
+            }
+            return true;
+        }
+        return true;
+    }
 
-				changepalette = 1; //if player has other palette
-			}
-		}
+    @Override
+    public void render(float delta) {
+        if (numplayers > 1) {
+            pNet.GetPackets();
+        }
 
-		 if ( input.ctrlGetInputKey(GameKeys.Enlarge_Screen, true) )
-		 {
-			 if(ud.screen_size > 0) {
-				 sound(THUD);
-				 ud.screen_size--;
-				 if(ud.screen_size < 0) ud.screen_size = 0;
-				 vscrn(ud.screen_size);
-			 }
-		 }
-		 if ( input.ctrlGetInputKey(GameKeys.Shrink_Screen, true) )
-		 {
-			 if(ud.screen_size < 4) {
-				 sound(THUD);
-				 ud.screen_size++;
-				 if(ud.screen_size > 5) ud.screen_size = 5;
-				 vscrn(ud.screen_size);
-			 }
-		 }
-	}
+        DemoRender();
 
-	@Override
-	public void render(float delta) {
-		KeyHandler();
+        float smoothratio = 65536;
+        if (!game.gPaused) {
+            smoothratio = pEngine.getTimer().getsmoothratio(delta);
+            if (smoothratio < 0 || smoothratio > 0x10000) {
+                smoothratio = BClipRange(smoothratio, 0, 0x10000);
+            }
+        }
 
-		if(mFakeMultiplayer)
-			pEngine.faketimerhandler();
+        game.pInt.dointerpolations(smoothratio);
+        DrawWorld(smoothratio);
 
-		if (numplayers > 1)
-			pNet.GetPackets();
+        DrawHud(smoothratio);
+        game.pInt.restoreinterpolations();
 
-		DemoRender();
+        operatefta();
 
-		float smoothratio = 65536;
-		if (!game.gPaused) {
-			smoothratio = pEngine.getsmoothratio();
-			if (smoothratio < 0 || smoothratio > 0x10000) {
-				smoothratio = BClipRange(smoothratio, 0, 0x10000);
-			}
-		}
+        if (ud.last_camsprite != ud.camerasprite) {
+            ud.last_camsprite = ud.camerasprite;
+        }
 
-		game.pInt.dointerpolations(smoothratio);
-		DrawWorld(smoothratio);
+        if (pMenu.gShowMenu) {
+            pMenu.mDrawMenu();
+        }
 
-		DrawHud(smoothratio);
-		game.pInt.restoreinterpolations();
-
-		operatefta();
-
-		if (ud.last_camsprite != ud.camerasprite) {
-			ud.last_camsprite = ud.camerasprite;
-			ud.camera_time = totalclock + (TICRATE * 2);
-		}
-
-		if(pMenu.gShowMenu)
-			pMenu.mDrawMenu();
-
-		PostFrame(pNet);
-
-		if (pCfg.gShowFPS)
-			pEngine.printfps(pCfg.gFpsScale);
-
-		pEngine.sampletimer();
-		pEngine.nextpage();
-	}
+        PostFrame(pNet);
+        pEngine.nextpage(delta);
+    }
 
 
-	private void DemoRender() {
-		pNet.ready2send = false;
+    private void DemoRender() {
+        pNet.ready2send = false;
 
-		if(!game.isCurrentScreen(this))
-			return;
+        if (!game.isCurrentScreen(this)) {
+            return;
+        }
 
-		if(!game.gPaused && demfile != null) {
-			while (totalclock >= (lockclock + TICSPERFRAME)) {
-				for (int j = connecthead; j >= 0; j = connectpoint2[j]) {
-					pNet.gFifoInput[pNet.gNetFifoHead[j] & 0xFF][j].Copy(demfile.recsync[demfile.rcnt][j]);
-					pNet.gNetFifoHead[j]++;
-					demfile.reccnt--;
-				}
+        if (!game.gPaused && demfile != null) {
+            while (engine.getTotalClock() >= (lockclock + TICSPERFRAME)) {
+                for (int j = connecthead; j >= 0; j = connectpoint2[j]) {
+                    pNet.gFifoInput[pNet.gNetFifoHead[j] & 0xFF][j].Copy(demfile.recsync[demfile.rcnt][j]);
+                    pNet.gNetFifoHead[j]++;
+                    demfile.reccnt--;
+                }
 
-				if (demfile.reccnt <= 0) {
-					if(!showDemo())
-						game.changeScreen(gMenuScreen);
-					return;
-				}
+                if (demfile.reccnt <= 0) {
+                    demfile = null;
 
-				demfile.rcnt++;
-				engine.updatesmoothticks();
-				game.pInt.clearinterpolations();
-				ProcessFrame(pNet);
-			}
-		} else lockclock = totalclock;
-	}
+                    Group group = lastDemoEntry.getParent();
+                    if (!showDemo(group)) {
+                        game.changeScreen(gMenuScreen);
+                    }
+                    return;
+                }
 
-	public boolean showDemo()
-	{
-		switch(cfg.gDemoSeq)
-		{
-		case 0: //OFF
-			return false;
-		case 1: //Consistently
-			if (nDemonum < (demofiles.size() - 1))
-				nDemonum++;
-			else
-				nDemonum = 0;
-			break;
-		case 2: //Accidentally
-			int nextnum = nDemonum;
-			if(demofiles.size() > 1) {
-				while(nextnum == nDemonum)
-					nextnum = (int) (Math.random() * (demofiles.size()));
-			}
-			nDemonum = nextnum;
-			break;
-		}
+                demfile.rcnt++;
+                game.pInt.clearinterpolations();
+                ProcessFrame(pNet);
+            }
+        } else {
+            lockclock = engine.getTotalClock();
+        }
+    }
 
-		if(demofiles != null && demofiles.size() > 0)
-			return showDemo(demofiles.get(nDemonum), null);
+    public boolean showDemo(Group group) {
+        List<Entry> list = checkDemoEntry(group);
+        switch (cfg.gDemoSeq) {
+            case 0: //OFF
+                return false;
+            case 1: //Consistently
+                if (nDemonum < (list.size() - 1)) nDemonum++;
+                else {
+                    nDemonum = 0;
+                    // throw new RuntimeException("Done");
+                }
+                break;
+            case 2: //Accidentally
+                int nextnum = nDemonum;
+                if (list.size() > 1) {
+                    while (nextnum == nDemonum) nextnum = (int) (Math.random() * (list.size()));
+                }
+                nDemonum = nextnum;
+                break;
+        }
 
-		return false;
-	}
+        if (!list.isEmpty()) {
+            boolean result = showDemo(list.get(nDemonum), null);
+            if (!result) {
+                list.remove(nDemonum);
+                return showDemo(group);
+            }
 
-	public void demoscan() {
-		byte[] buf = new byte[4];
+            return true;
+        }
 
-		Resource fil = null;
-		for (Iterator<FileEntry> it = BuildGdx.compat.getDirectory(Path.Game).getFiles().values().iterator(); it.hasNext();) {
-			FileEntry file = it.next();
-			if (file.getExtension().equals("dmo")) {
-				String name = file.getFile().getName();
-				if ((fil = BuildGdx.compat.open(file)) != null) {
-					fil.read(buf, 0, 4);
-					fil.read(buf, 0, 1);
-					int version = buf[0] & 0xFF;
-					if (version == BYTEVERSIONRR || version == GDXBYTEVERSION)
-						demofiles.add(name);
-					fil.close();
-				}
-			}
-		}
+        return false;
+    }
 
-		if(demofiles.size() == 0) //try to find it in redneck.grp
-		{
-			fil = null;
-			int which_demo = 1;
-			do {
-				char[] d = "demo_.dmo".toCharArray();
-			    if(which_demo == 10)
-			        d[4] = 'x';
-			    else d[4] = (char) ('0' + which_demo);
-			    String name = new String(d);
-			    if ((fil = BuildGdx.cache.open(name, 0)) != null) {
-			    	fil.read(buf, 0, 4);
-					fil.read(buf, 0, 1);
-					int version = buf[0] & 0xFF;
-					if (version == BYTEVERSIONRR || version == GDXBYTEVERSION)
-						demofiles.add(name);
-					fil.close();
-				}
-			    which_demo++;
-			} while(fil != null);
-		}
+    @Override
+    public boolean IsOriginalGame() {
+        return (demfile.version <= BYTEVERSIONRR);
+    }
 
-		if (demofiles.size() != 0)
-			Collections.sort(demofiles);
-		Console.Println("There are " + demofiles.size() + " demo(s) in the loop", OSDTEXT_GOLD);
-	}
+    public boolean isDemoFile(Entry file) {
+        if (file.exists()) {
+            if (file.isExtension("dmo")) {
+                try (InputStream is = file.getInputStream()) {
+                    StreamUtils.skip(is, 4); //rcnt
+                    int version = StreamUtils.readUnsignedByte(is);
+                    if (version == BYTEVERSIONRR || version == GDXBYTEVERSION) {
+                        return true;
+                    }
+                } catch (Exception ignore) {
+                }
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public boolean IsOriginalGame() {
-		return (demfile.version <= BYTEVERSIONRR);
-	}
+    public boolean isRecordEnabled() {
+        return ud.m_recstat == DEMOSTAT_RECORD;
+    } // ok
+
+    public void onPrepareboard(GameScreen screen) {
+        if (screen != this && isDemoPlaying()) {
+            gDemoScreen.onStopPlaying();
+        }
+
+        if (isDemoPlaying()) {
+            if (demfile != null && demfile.version >= GDXBYTEVERSION) {
+                for (int i = connecthead; i >= 0; i = connectpoint2[i]) {
+                    PlayerStruct p = ps[i];
+                    demfile.playerInfos[i].restore(p);
+                }
+            }
+        }
+
+        if (screen != this && gDemoScreen.isRecordEnabled()) {
+            ud.m_recstat = DEMOSTAT_NULL;
+
+            int a, b, c, d, democount = 0;
+            do {
+                a = ((democount / 1000) % 10);
+                b = ((democount / 100) % 10);
+                c = ((democount / 10) % 10);
+                d = (democount % 10);
+
+                String fn = "demo" + a + b + c + d + ".dmo";
+                if (!game.getCache().getGameDirectory().getEntry(fn).exists()) {
+                    try {
+                        Path path = game.getCache().getGameDirectory().getPath().resolve(fn);
+                        ud.rec = new DemoRecorder(new FileOutputStream(path.toFile()), path, GDXBYTEVERSION); // JFBYTEVERSION
+                        Console.out.println("Start recording to " + fn);
+                        ud.recstat = DEMOSTAT_RECORD;
+                    } catch (Exception e) {
+                        Console.out.println("Can't start demo record: " + e, OsdColor.RED);
+                    }
+                    break;
+                }
+
+                democount++;
+            } while (democount < 9999);
+        }
+    } // ok
+
+    public static boolean isDemoPlaying() { // ok
+        return ud.recstat == DEMOSTAT_PLAYING;
+    }
+
+    public static boolean isDemoScreen(Screen screen) { // ok
+        return screen == gDemoScreen;
+    }
+
+    public boolean isDemoRecording() { // ok
+        return ud.recstat == DEMOSTAT_RECORD;
+    }
+
+    public void onLoad() {
+        onStopRecord();
+        demfile = null;
+        ud.recstat = DEMOSTAT_NULL;
+    }
+
+    public void onStopPlaying() {
+        demfile = null;
+        ud.recstat = DEMOSTAT_NULL;
+    }
+
+    public void onRecord() { // ok
+        if (ud.rec != null) {
+            ud.rec.record();
+        }
+    }
+
+    public void onStopRecord() {
+        if (ud.rec == null) {
+            return;
+        }
+
+//        CompareService.close();
+        ud.rec.close();
+        ud.rec = null;
+        ud.recstat = DEMOSTAT_NULL;
+    }
+
 }

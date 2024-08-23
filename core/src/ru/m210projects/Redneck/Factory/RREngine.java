@@ -16,73 +16,35 @@
 
 package ru.m210projects.Redneck.Factory;
 
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Screen.*;
-
-import com.badlogic.gdx.Screen;
-
-import ru.m210projects.Build.Pattern.BuildEngine;
+import ru.m210projects.Build.BoardService;
+import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildGame;
-import ru.m210projects.Build.Pattern.ScreenAdapters.GameAdapter;
-import ru.m210projects.Build.Render.Renderer;
-import ru.m210projects.Build.Render.Renderer.RenderType;
-import ru.m210projects.Redneck.Fonts.StandartFont;
+import ru.m210projects.Build.Types.PaletteManager;
 
-public class RREngine extends BuildEngine {
+import java.io.IOException;
 
-	public RREngine(BuildGame game) throws Exception {
-		super(game, TICSPERFRAME);
-	}
+import static ru.m210projects.Redneck.Globals.TICRATE;
+import static ru.m210projects.Redneck.Globals.TICSPERFRAME;
 
-	@Override
-	public boolean setgamemode(int davidoption, int daxdim, int daydim)
-	{
-		boolean out = super.setgamemode(davidoption, daxdim, daydim);
-		gViewXScaled = (xdim << 16) / 320;
-		gViewYScaled = (ydim << 16) / 200;
+public class RREngine extends Engine {
 
-		return out;
-	}
+    public RREngine(BuildGame game) throws Exception {
+        super(game);
+        inittimer(game.pCfg.isLegacyTimer(), TICRATE, TICSPERFRAME);
+    }
 
-	@Override
-	public boolean setrendermode(Renderer render) {
-		if(this.render != null && this.render != render)
-		{
-			if(render.getType() != RenderType.Software)
-			{
-				((StandartFont) game.getFont(3)).reinit();
-				final Screen screen = game.getScreen();
-				if(screen instanceof GameAdapter) {
-					gPrecacheScreen.init(true, new Runnable() {
-						@Override
-						public void run() {
-							game.changeScreen(screen);
-							if(game.isCurrentScreen(gGameScreen))
-								game.net.ready2send = true;
-						}
-					});
-					game.changeScreen(gPrecacheScreen);
-				}
-			}
-		}
+    @Override
+    protected BoardService createBoardService() {
+        return new RRBoardService();
+    }
 
-		return super.setrendermode(render);
-	}
+    @Override
+    public PaletteManager loadpalette() throws IOException {
+        return new RRPaletteManager(this, game.getCache().getEntry("palette.dat", true));
+    }
 
-//	@Override
-//	public void sampletimer() {
-//		if (timerfreq == 0)
-//			return;
-//
-//		long n = (getticks() * timerticspersec / timerfreq) - timerlastsample;
-//		if (n > 0) {
-//			if(game.isCurrentScreen(gDemoScreen)) {
-//				totalclock += 4;
-//			} else totalclock += n;
-//
-//			timerlastsample += n;
-//		}
-//	}
-
+    @Override
+    public RRPaletteManager getPaletteManager() {
+        return (RRPaletteManager) paletteManager;
+    }
 }

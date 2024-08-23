@@ -16,95 +16,100 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Build.Engine.*;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.gDemoScreen;
-import static ru.m210projects.Build.Strhandler.*;
-
+import ru.m210projects.Build.EngineUtils;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuPicnum;
-import ru.m210projects.Redneck.Main;
+import ru.m210projects.Build.Render.Renderer;
 import ru.m210projects.Redneck.Factory.RRMenuHandler;
+import ru.m210projects.Redneck.Main;
+import ru.m210projects.Redneck.Screens.DemoScreen;
+
+import static ru.m210projects.Build.net.Mmulti.numplayers;
+import static ru.m210projects.Build.Strhandler.toCharArray;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Names.INGAMELNRDTHREEDEE;
 
 public class MainMenu extends BuildMenu {
 
-	public MainMenu(final Main app)
-	{
-		final RRMenuHandler menu = (RRMenuHandler) app.menu;
-		
-		menu.mMenus[USERCONTENT] = new RUserContent(app);
-		menu.mMenus[QUIT] = new QuitMenu(app);
-		menu.mMenus[NEWGAME] = new NewGameMenu(app);
-		menu.mMenus[DIFFICULTY] = new DifficultyMenu(app);
-		menu.mMenus[NEWADDON] = new NewAddonMenu(app);
-		menu.mMenus[MULTIPLAYER] = new RMenuMultiplayer(app);
-		menu.mMenus[NETWORKGAME] = new NetworkMenu(app);
-		menu.mMenus[HELP] = new HelpMenu(app);
-		menu.mMenus[QUITTITLE] = new QTitleMenu(app);
-		menu.mMenus[LOADGAME] = new RMenuLoad(app);
-		menu.mMenus[SAVEGAME] = new RMenuSave(app);
-		menu.mMenus[SOUNDSET] = new SoundMenu(app);
-		menu.mMenus[OPTIONS] = new OptionsMenu(app);
+    public MainMenu(final Main app) {
+        super(app.pMenu);
+        final RRMenuHandler menu = app.menu;
 
-		MenuPicnum bLogo = new MenuPicnum(app.pEngine, 160, 28, INGAMELNRDTHREEDEE, INGAMELNRDTHREEDEE, 65536) {
-			@Override
-			public void draw(MenuHandler handler) {
-				if (currentGame.getCON().type == RRRA)
-					draw.rotatesprite(x<<16,(y+27)<<16,16384,0,1686,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
-				draw.rotatesprite(x << 16, y << 16, 24000, 0, nTile, 0, 0, 10, 0, 0, xdim - 1, ydim - 1);
-			}
-		};
-		
-		int posy = 56;
+        menu.mMenus[USERCONTENT] = new RUserContent(app);
+        menu.mMenus[QUIT] = new QuitMenu(app);
+        menu.mMenus[NEWGAME] = new NewGameMenu(app);
+        menu.mMenus[DIFFICULTY] = new DifficultyMenu(app);
+        menu.mMenus[NEWADDON] = new NewAddonMenu(app);
+        menu.mMenus[MULTIPLAYER] = new RMenuMultiplayer(app);
+        menu.mMenus[NETWORKGAME] = new NetworkMenu(app);
+        menu.mMenus[HELP] = new HelpMenu(app);
+        menu.mMenus[QUITTITLE] = new QTitleMenu(app);
+        menu.mMenus[LOADGAME] = new RMenuLoad(app);
+        menu.mMenus[SAVEGAME] = new RMenuSave(app);
+        menu.mMenus[SOUNDSET] = new SoundMenu(app);
+        menu.mMenus[OPTIONS] = new OptionsMenu(app);
 
-		MenuButton NewGame = new MenuButton("New Game", app.getFont(2), 0, posy, 320, 1, 0, menu.mMenus[NEWGAME], -1, null, 0);
-		MenuButton Multiplayer = new MenuButton("Multiplayer", app.getFont(2), 0, posy += 18, 320, 1, 0, null, -1, null, 0) {
-			@Override
-			public void draw(MenuHandler handler) {
-				if (!app.isCurrentScreen(gDemoScreen) && (numplayers > 1 || mFakeMultiplayer))
-					nextMenu = menu.mMenus[NETWORKGAME];
-				else
-					nextMenu = menu.mMenus[MULTIPLAYER];
-				super.draw(handler);
-			}
-		};
-		MenuButton Options = new MenuButton("Options", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[OPTIONS], -1, null, 0);
-		MenuButton Load = new MenuButton("Load Game", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[LOADGAME], -1, null, 0) {
-			@Override
-			public void draw(MenuHandler handler) {
-				mCheckEnableItem(app.isCurrentScreen(gDemoScreen) || numplayers < 2 && !mFakeMultiplayer);
-				super.draw(handler);
-			}
-		};
+        MenuPicnum bLogo = new MenuPicnum(app.pEngine, 160, 28, INGAMELNRDTHREEDEE, INGAMELNRDTHREEDEE, 65536) {
+            @Override
+            public void draw(MenuHandler handler) {
+                Renderer renderer = game.getRenderer();
+                if (currentGame.getCON().type == RRRA) {
+                    renderer.rotatesprite(x << 16, (y + 27) << 16, 16384, 0, 1686, (EngineUtils.sin((engine.getTotalClock() << 4) & 2047) >> 11), 0, 2 + 8);
+                }
+                renderer.rotatesprite(x << 16, y << 16, 24000, 0, nTile, 0, 0, 10);
+            }
+        };
 
-		MenuButton Help = new MenuButton("Help", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[HELP], -1, null, 0);
-		MenuButton Credits = new MenuButton("Credits", app.getFont(2), 0, posy += 18, 320, 1, 0, new CreditsMenu(app), -1, null, 0);
-		MenuButton Quit = new MenuButton("Quit game", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[QUIT], -1, null, 0) {
-			@Override
-			public void draw(MenuHandler handler) {
-				if (!app.isCurrentScreen(gDemoScreen) && (numplayers > 1 || mFakeMultiplayer)) {
-					text = toCharArray("Disconnect");
-					nextMenu = menu.mMenus[QUITTITLE];
-				} else {
-					text = toCharArray("Quit game");
-					nextMenu = menu.mMenus[QUIT];
-				}
-				super.draw(handler);
-			}
-		};
-	
-		addItem(bLogo, false);
-		addItem(NewGame, true);
-		addItem(Multiplayer, false);
-		addItem(Options, false);
-		addItem(Load, false);
-		addItem(Help, false);
-		addItem(Credits, false);
-		addItem(Quit, false);
-	}
+        int posy = 56;
+
+        MenuButton NewGame = new MenuButton("New Game", app.getFont(2), 0, posy, 320, 1, 0, menu.mMenus[NEWGAME], -1, null, 0);
+        MenuButton Multiplayer = new MenuButton("Multiplayer", app.getFont(2), 0, posy += 18, 320, 1, 0, null, -1, null, 0) {
+            @Override
+            public void draw(MenuHandler handler) {
+                if (!DemoScreen.isDemoPlaying() && (numplayers > 1 || mFakeMultiplayer)) {
+                    nextMenu = menu.mMenus[NETWORKGAME];
+                } else {
+                    nextMenu = menu.mMenus[MULTIPLAYER];
+                }
+                super.draw(handler);
+            }
+        };
+        MenuButton Options = new MenuButton("Options", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[OPTIONS], -1, null, 0);
+        MenuButton Load = new MenuButton("Load Game", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[LOADGAME], -1, null, 0) {
+            @Override
+            public void draw(MenuHandler handler) {
+                mCheckEnableItem(DemoScreen.isDemoPlaying() || numplayers < 2 && !mFakeMultiplayer);
+                super.draw(handler);
+            }
+        };
+
+        MenuButton Help = new MenuButton("Help", app.getFont(2), 0, posy += 18, 320, 1, 0, menu.mMenus[HELP], -1, null, 0);
+        MenuButton Credits = new MenuButton("Credits", app.getFont(2), 0, posy += 18, 320, 1, 0, new CreditsMenu(app), -1, null, 0);
+        MenuButton Quit = new MenuButton("Quit game", app.getFont(2), 0, posy + 18, 320, 1, 0, menu.mMenus[QUIT], -1, null, 0) {
+            @Override
+            public void draw(MenuHandler handler) {
+                if (!DemoScreen.isDemoPlaying() && (numplayers > 1 || mFakeMultiplayer)) {
+                    text = toCharArray("Disconnect");
+                    nextMenu = menu.mMenus[QUITTITLE];
+                } else {
+                    text = toCharArray("Quit game");
+                    nextMenu = menu.mMenus[QUIT];
+                }
+                super.draw(handler);
+            }
+        };
+
+        addItem(bLogo, false);
+        addItem(NewGame, true);
+        addItem(Multiplayer, false);
+        addItem(Options, false);
+        addItem(Load, false);
+        addItem(Help, false);
+        addItem(Credits, false);
+        addItem(Quit, false);
+    }
 }

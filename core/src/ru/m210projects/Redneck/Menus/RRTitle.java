@@ -16,27 +16,29 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Names.MENUBAR;
-
-import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Build.Types.ConvertType;
+import ru.m210projects.Build.Types.Transparent;
+import ru.m210projects.Build.Types.font.TextAlign;
+
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Names.MENUBAR;
 
 public class RRTitle extends MenuTitle {
 
-	public RRTitle(Object text) {
-		super(engine, text, game.getFont(2), 160, 19, MENUBAR);
-	}
-	
-	@Override
-	public void draw(MenuHandler handler) {
-		if ( text != null )
-		{
-			draw.rotatesprite(160 << 16, y << 16, 65536, 0, nTile, 16, 0, 78, 0, 0, xdim - 1, ydim - 1);
-			font.drawText(x, y - font.getHeight() / 2, text, -128, 0, TextAlign.Center, 2, fontShadow);
-		}
-	}
+    public RRTitle(Object text) {
+        super(engine, text, game.getFont(2), 160, 19, MENUBAR);
+    }
+
+    @Override
+    public void draw(MenuHandler handler) {
+        if (text != null) {
+            Renderer renderer = game.getRenderer();
+            renderer.rotatesprite(160 << 16, y << 16, 65536, 0, nTile, 16, 0, 78);
+            font.drawTextScaled(renderer, x, y - font.getSize() / 2, text, 1.0f, -128, 0, TextAlign.Center, Transparent.None, ConvertType.Normal, fontShadow);
+        }
+    }
 }
