@@ -16,320 +16,194 @@
 
 package ru.m210projects.Redneck;
 
+import ru.m210projects.Build.Script.DefScript;
+import ru.m210projects.Build.exceptions.AssertException;
+import ru.m210projects.Build.exceptions.WarningException;
+import ru.m210projects.Build.filehandle.Entry;
+import ru.m210projects.Build.filehandle.Group;
+import ru.m210projects.Build.filehandle.fs.FileEntry;
+import ru.m210projects.Build.filehandle.grp.GrpFile;
+import ru.m210projects.Build.osd.Console;
+import ru.m210projects.Build.osd.OsdColor;
+import ru.m210projects.Redneck.Fonts.GameFont;
+import ru.m210projects.Redneck.Fonts.MenuFont;
+import ru.m210projects.Redneck.Types.EpisodeManager;
+import ru.m210projects.Redneck.Types.GameInfo;
+import ru.m210projects.Redneck.Types.Script;
+import ru.m210projects.Redneck.filehandle.EpisodeEntry;
+import ru.m210projects.Redneck.filehandle.UserEntry;
+
+import java.util.List;
+
+import static ru.m210projects.Build.filehandle.CacheResourceMap.CachePriority.HIGHEST;
+import static ru.m210projects.Build.filehandle.fs.Directory.DUMMY_DIRECTORY;
 import static ru.m210projects.Redneck.Actors.BowlReset;
 import static ru.m210projects.Redneck.Gamedef.error;
 import static ru.m210projects.Redneck.Gamedef.loaduserdef;
-import static ru.m210projects.Redneck.Globals.Sound;
-import static ru.m210projects.Redneck.Globals.currentGame;
-import static ru.m210projects.Redneck.Globals.defGame;
-import static ru.m210projects.Redneck.Globals.episodes;
-import static ru.m210projects.Redneck.Globals.kMaxTiles;
-import static ru.m210projects.Redneck.Main.appdef;
-import static ru.m210projects.Redneck.Main.engine;
-import static ru.m210projects.Redneck.Main.game;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.*;
 import static ru.m210projects.Redneck.Names.GRID;
 import static ru.m210projects.Redneck.Names.MIRROR;
 import static ru.m210projects.Redneck.Sounds.NUM_SOUNDS;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-
-import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.FileHandle.Cache1D.PackageType;
-import ru.m210projects.Build.FileHandle.Compat.Path;
-import ru.m210projects.Build.FileHandle.DirectoryEntry;
-import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.FileHandle.Group;
-import ru.m210projects.Build.FileHandle.GroupResource;
-import ru.m210projects.Build.FileHandle.PackedZipGroup;
-import ru.m210projects.Build.FileHandle.Resource;
-import ru.m210projects.Build.FileHandle.UserGroup;
-import ru.m210projects.Build.FileHandle.ZipGroup;
-import ru.m210projects.Build.Script.DefScript;
-import ru.m210projects.Redneck.Types.GameInfo;
-
 public class ResourceHandler {
 
-	private static UserGroup usergroup;
-	public static boolean usecustomarts;
+    public final static EpisodeManager episodeManager = new EpisodeManager();
 
-//	public static final int[][] replace = {
-//		{ 3363, 9217, 0x7dbfeb81 },
-//		{ 3364, 9218, 0x2cc3f6c9 },
-//		{ 3415, 9219, 0xc1230767 },
-//		{ 3416, 9220, 0xacaaa49c },
-//		{ 3417, 9221, 0x237f9b83 },
-//		{ 3418, 9222, 0x7508a5b9 },
-//		{ 3453, 9223, 0x40870de8 },
-//		{ 3454, 9224, 0x5d46d512 },
-//		{ 3455, 9225, 0xdc2832ef },
-//		{ 3456, 9226, 0x92ee2add },
-//		{ 3457, 9227, 0x6ff18f18 },
-//		{ 3458, 9228, 0xd4a5ae9a },
-//
-//		{ 3483, 9231, 0x5f540506 }, //RA
-//		{ 3484, 9229, 0x5d46d512 },
-//		{ 3485, 9230, 0xdc2832ef },
-//		{ 3486, 9232, 0xdad4bf27 },
-//		{ 3487, 9233, 0xb4072cdd },
-//		{ 3488, 9234, 0x74adda9e },
-//		{ 3511, 9235, 0x7ecf8467 },
-//		{ 3515, 9236, 0x5c078007 },
-//		{ 7170, 9240, 0x3ec225f2 },
-//		{ 7171, 9241, 0xadd86032 },
-//		{ 7172, 9242, 0x48a62a19 },
-//		{ 7173, 9243, 0x9e6d81ef },
-//		{ 7174, 9244, 0x7533bf87 },
-//		{ 7175, 9245, 0x4839e578 },
-//		{ 7176, 9246, 0xc3361622 },
-//		{ 7177, 9247, 0xf2023e92 },
-//		{ 7178, 9248, 0x69ccdc8 },
-//		{ 7179, 9249, 0x4f858cef },
-//		{ 7180, 9250, 0xe2e2dcd7 },
-//		{ 7181, 9251, 0x70991197 },
-//		{ 7182, 9252, 0x507a5475 },
-//		{ 7183, 9253, 0xa91a2178 },
-//	};
+    public static boolean usecustomarts;
+    private static GrpFile usergroup;
 
-//	public static void LoadUserRes()
-//	{
-//		FileHandle fil = Gdx.files.internal("RedneckGDX.ART");
-//		if(fil != null)
-//		{
-//			ByteBuffer bb = ByteBuffer.wrap(fil.readBytes());
-//	    	bb.order( ByteOrder.LITTLE_ENDIAN);
-//
-//			int artversion = bb.getInt();
-//			if (artversion != 1)
-//				return;
-//
-//			numtiles = bb.getInt();
-//			int localtilestart = bb.getInt();
-//			int localtileend = bb.getInt();
-//			if(localtilestart >= MAXTILES || localtileend >= MAXTILES)
-//				return;
-//
-//			for (int i = localtilestart; i <= localtileend; i++)
-//				tilesizx[i] = bb.getShort();
-//			for (int i = localtilestart; i <= localtileend; i++)
-//				tilesizy[i] = bb.getShort();
-//			for (int i = localtilestart; i <= localtileend; i++)
-//				picanm[i] = bb.getInt();
-//
-//			for (int tilenume = localtilestart; tilenume <= localtileend; tilenume++) {
-//				if(bb.position() == bb.capacity())
-//					break;
-//				int dasiz = tilesizx[tilenume] * tilesizy[tilenume];
-//				waloff[tilenume] = new byte[dasiz];
-//				bb.get(waloff[tilenume]);
-//			}
-//			bb.clear();
-//			bb = null;
-//
-//			ReplaceUserTiles();
-//		}
-//	}
+    public static void resetEpisodeResources() {
+        Console.out.println("Resetting custom resources", OsdColor.GREEN);
+        if (usergroup != null) {
+            game.getCache().removeGroup(usergroup);
+        }
+        usergroup = null;
+        currentGame = defGame;
 
-	public static void resetEpisodeResources()
-	{
-		BuildGdx.cache.clearDynamicResources();
+        for (int i = 0; i < NUM_SOUNDS; i++) {
+            Sound[i].ptr = null;
+            Sound[i].setGlobalSound((currentGame.getCON().soundm[i] & 16) != 0);
+        }
 
-		usergroup = null;
-		currentGame = defGame;
+        if (!usecustomarts) {
+            game.setDefs(game.baseDef);
+            return;
+        }
 
-		for(int i = 0; i < NUM_SOUNDS; i++)
-			Sound[i].ptr = null;
+        System.err.println("Reset to default resources");
+        if (engine.loadpics() == 0) {
+            throw new AssertException("ART files not found " + game.getCache().getGameDirectory().getPath().resolve(engine.getTileManager().getTilesPath()));
+        }
 
-		if(!usecustomarts) {
-			game.setDefs(game.baseDef);
-			return;
-		}
+        if(!game.setDefs(game.baseDef)) {
+            game.baseDef.apply();
+            ((GameFont) game.getFont(1)).update();
+            ((MenuFont) game.getFont(2)).update();
+        }
 
-		System.err.println("Reset to default resources");
-		for(int i = 0; i < kMaxTiles; i++) //don't touch usertiles
-			engine.getTile(i).clear();
+        InitSpecialTextures();
+        BowlReset();
 
-		if(engine.loadpics() == 0)
-			game.dassert("ART files not found " + new File(Path.Game.getPath() + "TILES###.ART").getAbsolutePath());
+        usecustomarts = false;
+    }
 
-		game.setDefs(game.baseDef);
+    public static void InitSpecialTextures() {
+        engine.allocatepermanenttile(MIRROR, 0, 0);
+        engine.allocatepermanenttile(13, 0, 0); //ROR tile
+        engine.allocatepermanenttile(GRID, 0, 0);
+    }
 
-		InitSpecialTextures();
-		BowlReset();
+    private static void InitGroupResources(List<Entry> list) {
+        for (Entry res : list) {
+            if (res.isExtension("art")) {
+                engine.loadpic(res);
+                usecustomarts = true;
+            }
+        }
+    }
 
-	    usecustomarts = false;
-	}
+    private static void searchEpisodeResources(Group container, GrpFile resourceHolder) {
+        for (Entry file : container.getEntries()) {
+            Group subContainer = DUMMY_DIRECTORY;
+            if (file.isDirectory() && file instanceof FileEntry) {
+                subContainer = ((FileEntry) file).getDirectory();
+            } else if (file.isExtension("pk3") || file.isExtension("zip") || file.isExtension("grp") || file.isExtension("rff")) {
+                subContainer = game.getCache().newGroup(file);
+            }
 
-	public static void InitGroupResources(List<GroupResource> list)
-	{
-		for(GroupResource res : list) {
-			if(res.getExtension().equals("art")) {
-				engine.loadpic(res.getFullName());
-				usecustomarts = true;
-			}
-		}
-	}
+            if (!subContainer.equals(DUMMY_DIRECTORY)) {
+                searchEpisodeResources(subContainer, resourceHolder);
+            } else {
+                resourceHolder.addEntry(new UserEntry(file));
+            }
+        }
+    }
 
-	public static GameInfo levelGetEpisode(String filepath)
-	{
-		if(filepath == null) return null;
+    public static void checkEpisodeResources(GameInfo addon) {
+        if (addon == null) {
+            return;
+        }
 
-		String fullname = filepath;
-		String conName = null;
-		int filenameIndex = -1;
-		if((filenameIndex = fullname.indexOf(":")) != -1)
-		{
-			filepath = fullname.substring(0, filenameIndex);
-			conName = fullname.substring(filenameIndex+1);
-		}
+        if (addon.equals(currentGame)) {
+            return;
+        }
 
-		FileEntry file = BuildGdx.compat.checkFile(filepath);
-		if(file != null)
-		{
-			GameInfo ini = null;
-			if(filenameIndex == -1 && (ini = episodes.get(file.getPath())) == null)
-			{
-				if(file.getExtension().equals("con")) {
-					ini = new GameInfo(file, file.getName());
-					ini.init();
-					if(ini.isInited)
-						episodes.put(file.getPath(), ini);
-				}
-			}
-			else if(filenameIndex != -1 && (ini = episodes.get(fullname)) == null)
-			{
-				if(file.getExtension().equals("zip")
-					|| file.getExtension().equals("grp"))
-				{
-					try {
-						Group res = BuildGdx.cache.isGroup(file.getPath());
-						if(res != null)
-						{
-							ini = new GameInfo(res, file, conName);
-							if(ini.isInited) {
-								System.err.println("load: put " + fullname);
-								episodes.put(fullname, ini);
-							}
-							else ini = null;
-						}
-						res.dispose();
-						res = null;
-					} catch (Exception e) {
-						e.printStackTrace();
-						return null;
-					}
-				}
-			}
-			return ini;
-		}
-		return null;
-	}
+        resetEpisodeResources();
 
-	public static void prepareusergroup(Group group, boolean removable) throws Exception
-	{
-		if(group.type == PackageType.Zip) //Correct path in archive (files shouldn't be in a subfolder)
-			((ZipGroup) group).removeFolders();
-		else if(group.type == PackageType.PackedZip)
-			((PackedZipGroup) group).removeFolders();
+        usergroup = new GrpFile("RemovableGroup");
+        EpisodeEntry addonEntry = addon.getEpisodeEntry(); // redneck.grp
+        Group parent = addonEntry.getGroup();
+        DefScript addonScript;
+        if (addonEntry.isPackageEpisode()) {
+            addonScript = new DefScript(game.baseDef, addonEntry.getFileEntry());
+            try {
+                Entry res = parent.getEntry(appdef); // load def scripts
+                if (res.exists()) {
+                    addonScript.loadScript(parent.getName() + " script", res);
+                }
+                searchEpisodeResources(parent, usergroup);
+            } catch (Exception e) {
+                throw new AssertException("Error found in " + ((EpisodeEntry.Pack) addonEntry).getName() + "\r\n" + e);
+            }
+        } else {
+            addonScript = new DefScript(game.baseDef, addonEntry.getFileEntry());
+            if (!game.getCache().isGameDirectory(parent)) {
+                searchEpisodeResources(parent, usergroup);
+                Entry def = parent.getEntry(appdef);
+                if (def.exists()) {
+                    addonScript.loadScript(def);
+                }
+            }
+        }
 
-		List<GroupResource> list = group.getList();
-		for(GroupResource res : list) {
-			if(res.getExtension().equals("grp") || res.getExtension().equals("zip"))
-			{
-				BuildGdx.cache.add(res, removable);
-			}
+        if (addon.title.equals("Route 66")) { // official addon
+            engine.loadpic(parent.getEntry("TILESA66.ART"));
+            engine.loadpic(parent.getEntry("TILESB66.ART"));
+            usecustomarts = true;
+        }
 
-//			if(res.fileformat.equals("cue")) {
-//				Console.Println("Cd tracks found...");
-//				parserfs(removable?group:-1, res.filename, res.getBytes());
-//			}
-		}
-	}
+        error = 0;
+        // Loading user package files
+        game.getCache().addGroup(usergroup, HIGHEST);
+        InitGroupResources(usergroup.getEntries());
+        if (addon.getCON() == null) {
+            Script script = loaduserdef(addonEntry.getConFile());
+            addon.setCON(script);
+        }
 
-	private static void searchEpisodeResources(DirectoryEntry cache)
-	{
-		if(cache.getDirectories().size() > 0)
-		{
-			for (Iterator<DirectoryEntry> it = cache.getDirectories().values().iterator(); it.hasNext(); ) {
-				DirectoryEntry dir = it.next();
-				dir.InitDirectory(dir.getAbsolutePath());
-				if(!dir.getName().equals("<userdir>"))
-					searchEpisodeResources(dir);
-			}
-		}
+        if (error == 0) {
+            currentGame = addon;
+            for (int i = 0; i < NUM_SOUNDS; i++) {
+                Sound[i].setGlobalSound((currentGame.getCON().soundm[i] & 16) != 0);
+            }
+            game.setDefs(addonScript);
+        } else {
+            throw new WarningException("\nErrors found in " + addonEntry.getConFile().getName() + " file.");
+        }
+    }
 
-		if(usergroup == null)
-			usergroup = BuildGdx.cache.add("User", true);
+    public static GameInfo levelGetEpisode(Entry entry) {
+        if (entry == null || !entry.exists()) {
+            return null;
+        }
 
-		for (Iterator<FileEntry> it = cache.getFiles().values().iterator(); it.hasNext(); ) {
-			FileEntry file = it.next();
-			if(!file.getExtension().equals("zip")
-					&& !file.getExtension().equals("grp"))
-				usergroup.add(file, -1);
-	    }
-	}
+        if (entry instanceof FileEntry) {
+            List<EpisodeEntry> list = episodeManager.getEpisodeEntries((FileEntry) entry);
+            if (!list.isEmpty()) {
+                // grp is for official addons searching...
+                if (entry.isDirectory() || entry.isExtension("grp")) {
+                    return episodeManager.getEpisode(list.get(0));
+                }
 
-	public static void checkEpisodeResources(GameInfo addon)
-	{
-		resetEpisodeResources();
+                for (EpisodeEntry episodeEntry : list) {
+                    if (episodeEntry.getConFile().equals(entry)) {
+                        return episodeManager.getEpisode(episodeEntry);
+                    }
+                }
+            }
+        }
 
-		DefScript addonScript = new DefScript(game.baseDef, addon.getFile());
-		if(addon.isPackage())
-		{
-			FileEntry fil = addon.getFile();
-			try {
-				Group gr = BuildGdx.cache.add(fil.getPath());
-				gr.setFlags(true, true);
-
-				Resource res = gr.open(appdef); //load def scripts before delete folders
-				if(res != null)
-				{
-					addonScript.loadScript(gr.name + " script", res.getBytes());
-					res.close();
-				}
-
-				prepareusergroup(gr, true);
-			} catch(Exception e) {
-				game.GameCrash("Error found in " + fil.getPath() + "\r\n" + e.getMessage());
-				return;
-			}
-		} else
-		if(!addon.getDirectory().getName().equals("<main>")) {
-			searchEpisodeResources(addon.getDirectory());
-
-			if(addon.getDirectory() != null) {
-				FileEntry def = addon.getDirectory().checkFile(appdef);
-				if(def != null) {
-					addonScript.loadScript(def);
-				}
-			}
-		}
-		else if(addon.Title.equals("Route 66")) {
-			engine.loadpic("TILESA66.ART");
-			engine.loadpic("TILESB66.ART");
-			usecustomarts = true;
-		}
-
-		error = 0;
-		//Loading user package files
-		InitGroupResources(BuildGdx.cache.getDynamicResources());
-		if(addon.getCON() == null)
-			addon.setCON(loaduserdef(addon.ConName));
-
-		if(error == 0) {
-			currentGame = addon;
-			game.setDefs(addonScript);
-		}
-		else {
-			game.GameCrash("\nErrors found in " + addon.ConName + " file.");
-		}
-	}
-
-	public static void InitSpecialTextures()
-	{
-		engine.getTile(MIRROR).clear();
-		engine.getTile(13).clear(); //ROR tile
-		engine.getTile(GRID).clear();
-	}
+        return null;
+    }
 }

@@ -16,95 +16,93 @@
 
 package ru.m210projects.Redneck.Types;
 
-import ru.m210projects.Build.FileHandle.Resource;
-import ru.m210projects.Build.Types.LittleEndian;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-public class Weaponhit {
-	
-	public static final int sizeof = 78;
-	
-	public short cgg;
-	public int picnum,ang,extra,owner,movflag;
-	public int tempang,actorstayput,dispicnum;
-	public int timetosleep;
-	public int floorz,ceilingz,lastvx,lastvy;
-	public int temp_data[] = new int[6];
-	 
-	private byte buf[] = new byte[sizeof];
-	public byte[] getBytes()
-	{
-		 int ptr = 0;
-		 LittleEndian.putShort(buf, ptr, cgg); ptr += 2;
-		 LittleEndian.putInt(buf, ptr, picnum); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, ang); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, extra); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, owner); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, movflag); ptr += 4; 
-		 
-		 LittleEndian.putInt(buf, ptr, tempang); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, actorstayput); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, dispicnum); ptr += 4; 
-		 
-		 LittleEndian.putInt(buf, ptr, timetosleep); ptr += 4; 
-		 
-		 LittleEndian.putInt(buf, ptr, floorz); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, ceilingz); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, lastvx); ptr += 4; 
-		 LittleEndian.putInt(buf, ptr, lastvy); ptr += 4;  
-		 
-		 for(int i = 0; i < 6; i++) {
-			 LittleEndian.putInt(buf, ptr, temp_data[i]); ptr += 4; 
-		 }
-			 
-		 return buf;
-	}
-	
-	 public void set(Resource bb)
-	 {
-		 cgg = bb.readShort();
-		 picnum = bb.readInt();
-		 
-		 ang = bb.readInt();
-		 extra = bb.readInt();
-		 owner = bb.readInt();
-		 movflag = bb.readInt();
-		 
-		 tempang = bb.readInt();
-		 actorstayput = bb.readInt();
-		 dispicnum = bb.readInt();
-		 
-		 timetosleep = bb.readInt();
-		 
-		 floorz = bb.readInt();
-		 ceilingz = bb.readInt();
-		 lastvx = bb.readInt();
-		 lastvy = bb.readInt();
+import ru.m210projects.Build.Types.Serializable;
+import ru.m210projects.Build.filehandle.StreamUtils;
 
-		 for(int i = 0; i < 6; i++) 
-			 temp_data[i] = bb.readInt();
-	 }
-	 
-	 public void copy(Weaponhit src)
-	 {
-		 cgg = src.cgg;
-		 picnum = src.picnum;
-		 
-		 ang = src.ang;
-		 extra = src.extra;
-		 owner = src.owner;
-		 movflag = src.movflag;
-		 
-		 tempang = src.tempang;
-		 actorstayput = src.actorstayput;
-		 dispicnum = src.dispicnum;
-		 
-		 timetosleep = src.timetosleep;
-		 
-		 floorz = src.floorz;
-		 ceilingz = src.ceilingz;
-		 lastvx = src.lastvx;
-		 lastvy = src.lastvy;
+public class Weaponhit implements Serializable<Weaponhit> {
 
-		 System.arraycopy(src.temp_data, 0, temp_data, 0, 6);
-	 }
+    public short cgg;
+    public int picnum, ang, extra, owner, movflag;
+    public int tempang, actorstayput, dispicnum;
+    public int timetosleep;
+    public int floorz, ceilingz, lastvx, lastvy;
+    public final int[] temp_data = new int[6];
+
+    public void set(Weaponhit src) {
+        cgg = src.cgg;
+        picnum = src.picnum;
+
+        ang = src.ang;
+        extra = src.extra;
+        owner = src.owner;
+        movflag = src.movflag;
+
+        tempang = src.tempang;
+        actorstayput = src.actorstayput;
+        dispicnum = src.dispicnum;
+
+        timetosleep = src.timetosleep;
+
+        floorz = src.floorz;
+        ceilingz = src.ceilingz;
+        lastvx = src.lastvx;
+        lastvy = src.lastvy;
+
+        System.arraycopy(src.temp_data, 0, temp_data, 0, 6);
+    }
+
+    @Override
+    public Weaponhit readObject(InputStream is) throws IOException {
+        cgg = StreamUtils.readShort(is);
+        picnum = StreamUtils.readInt(is);
+
+        ang = StreamUtils.readInt(is);
+        extra = StreamUtils.readInt(is);
+        owner = StreamUtils.readInt(is);
+        movflag = StreamUtils.readInt(is);
+
+        tempang = StreamUtils.readInt(is);
+        actorstayput = StreamUtils.readInt(is);
+        dispicnum = StreamUtils.readInt(is);
+
+        timetosleep = StreamUtils.readInt(is);
+
+        floorz = StreamUtils.readInt(is);
+        ceilingz = StreamUtils.readInt(is);
+        lastvx = StreamUtils.readInt(is);
+        lastvy = StreamUtils.readInt(is);
+
+        for (int i = 0; i < 6; i++) {
+            temp_data[i] = StreamUtils.readInt(is);
+        }
+
+        return this;
+    }
+
+    @Override
+    public Weaponhit writeObject(OutputStream os) throws IOException {
+        StreamUtils.writeShort(os, cgg);
+        StreamUtils.writeInt(os, picnum);
+        StreamUtils.writeInt(os, ang);
+        StreamUtils.writeInt(os, extra);
+        StreamUtils.writeInt(os, owner);
+        StreamUtils.writeInt(os, movflag);
+        StreamUtils.writeInt(os, tempang);
+        StreamUtils.writeInt(os, actorstayput);
+        StreamUtils.writeInt(os, dispicnum);
+        StreamUtils.writeInt(os, timetosleep);
+        StreamUtils.writeInt(os, floorz);
+        StreamUtils.writeInt(os, ceilingz);
+        StreamUtils.writeInt(os, lastvx);
+        StreamUtils.writeInt(os, lastvy);
+        for (int i = 0; i < 6; i++) {
+            StreamUtils.writeInt(os, temp_data[i]);
+        }
+
+        return this;
+    }
 }

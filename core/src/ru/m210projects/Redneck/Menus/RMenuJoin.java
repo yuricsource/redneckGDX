@@ -16,29 +16,30 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Redneck.Main.*;
-
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuJoin;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
 import ru.m210projects.Build.Pattern.ScreenAdapters.ConnectAdapter.NetFlag;
 
+import static ru.m210projects.Redneck.Main.gNetScreen;
+import static ru.m210projects.Redneck.Main.game;
+
 public class RMenuJoin extends MenuJoin {
 
-	public RMenuJoin(BuildGame app) {
-		super(app, 46, 45, 12, 240, app.getFont(1));
-		
-		mConnect.font = app.getFont(2);
-	}
+    public RMenuJoin(BuildGame app) {
+        super(app, 46, 45, 12, 240, app.getFont(1));
 
-	@Override
-	public MenuTitle getTitle(BuildGame app, String text) {
-		return new RRTitle(text);
-	}
+        mConnect.font = app.getFont(2);
+    }
 
-	@Override
-	public void joinGame(String[] param) {
-		game.changeScreen(gNetScreen.setFlag(NetFlag.Connect, param));
-	}
-	
+    @Override
+    public MenuTitle getTitle(BuildGame app, String text) {
+        return new RRTitle(text);
+    }
+
+    @Override
+    public void joinGame(String[] param) {
+        game.changeScreen(gNetScreen.setFlag(NetFlag.Connect, param));
+    }
+
 }

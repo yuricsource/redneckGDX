@@ -16,50 +16,41 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static java.lang.Math.max;
-import static ru.m210projects.Build.Engine.palette;
-import static ru.m210projects.Build.Engine.totalclock;
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Build.Input.Keymap.ANYKEY;
-import static ru.m210projects.Build.Net.Mmulti.connecthead;
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
-import static ru.m210projects.Build.Strhandler.Bitoa;
-import static ru.m210projects.Build.Strhandler.buildString;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Actors.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.SoundDefs.BONUS_SPEECH1;
-import static ru.m210projects.Redneck.SoundDefs.BONUS_SPEECH2;
-import static ru.m210projects.Redneck.SoundDefs.BONUS_SPEECH3;
-import static ru.m210projects.Redneck.SoundDefs.BONUS_SPEECH4;
-import static ru.m210projects.Redneck.Sounds.StopAllSounds;
-import static ru.m210projects.Redneck.Sounds.clearsoundlocks;
-import static ru.m210projects.Redneck.Sounds.sndStopMusic;
-import static ru.m210projects.Redneck.Sounds.sound;
-
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import ru.m210projects.Build.Architecture.common.audio.Source;
 
-import ru.m210projects.Build.Architecture.BuildGdx;
-import ru.m210projects.Build.Audio.Source;
-import ru.m210projects.Build.FileHandle.FileEntry;
-import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
-import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
+import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Build.Types.ConvertType;
+import ru.m210projects.Build.Types.Transparent;
+import ru.m210projects.Build.Types.font.TextAlign;
+import ru.m210projects.Build.input.GameKey;
+import ru.m210projects.Build.input.GameProcessor;
+import ru.m210projects.Build.input.InputListener;
 import ru.m210projects.Redneck.Main;
 import ru.m210projects.Redneck.Types.MapInfo;
 
-public class StatisticScreen extends ScreenAdapter {
+import static ru.m210projects.Build.net.Mmulti.*;
+import static ru.m210projects.Build.Strhandler.Bitoa;
+import static ru.m210projects.Build.Strhandler.buildString;
+import static ru.m210projects.Redneck.Actors.isPsychoSkill;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Names.INGAMELNRDTHREEDEE;
+import static ru.m210projects.Redneck.Names.MENUSCREEN;
+import static ru.m210projects.Redneck.SoundDefs.*;
+import static ru.m210projects.Redneck.Sounds.*;
 
-    protected char[] bonusbuf = new char[128];
-    protected int bonuscnt = 0;
+public class StatisticScreen extends ScreenAdapter implements InputListener {
 
-    private int[] checkSound = {
+    private final int[] checkSound = {
             8, 23, 24, 26 //Bubba pain
     };
-
-    protected Main app;
+    protected final char[] bonusbuf = new char[128];
+    protected int bonuscnt = 0;
+    protected final Main app;
+    private boolean disconnected;
 
     public StatisticScreen(Main app) {
         this.app = app;
@@ -67,14 +58,21 @@ public class StatisticScreen extends ScreenAdapter {
 
     @Override
     public void show() {
-        engine.setbrightness(ud.brightness >> 2, palette, GLInvalidateFlag.All);
-        totalclock = 0;
+        engine.setbrightness(cfg.getPaletteGamma(), engine.getPaletteManager().getBasePalette());
+        engine.getTimer().reset();
 
-        for (int s = 0; s < checkSound.length; s++) {
-            int num = checkSound[s];
-            if (Sound[num].num == 0) continue;
-            Source voice = SoundOwner[num][Sound[num].num - 1].voice;
-            while (voice != null && voice.isActive()) ;
+        for (int num : checkSound) {
+            if (Sound[num].getSoundOwnerCount() == 0) {
+                continue;
+            }
+
+            Source voice =  Sound[num].getSoundOwner(Sound[num].getSoundOwnerCount() - 1).voice;
+            long startTime = System.currentTimeMillis();
+            while (voice != null && voice.isActive()) {
+                if (System.currentTimeMillis() - startTime > 2000) {
+                    break;
+                }
+            }
         }
 
         StopAllSounds();
@@ -132,85 +130,67 @@ public class StatisticScreen extends ScreenAdapter {
             }
         }
 
+        game.getProcessor().resetPollingStates();
         bonuscnt = 0;
-        game.pInput.ctrlResetKeyStatus();
     }
 
     @Override
     public void render(float delta) {
-        engine.clearview(0);
-        engine.sampletimer();
-
-        if (kGameCrash) {
-            game.show();
-            return;
-        }
-
-        if (numplayers > 1)
+        game.getRenderer().clearview(0);
+        if (numplayers > 1) {
             game.pNet.GetPackets();
-
-        if (dobonus(false)) {
-            BuildGdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    if ((uGameFlags & MODE_END) != 0 || mUserFlag == UserFlag.UserMap) {
-                        if ((uGameFlags & MODE_END) != 0 && ud.volume_number == 0) {
-                            ud.volume_number = 1;
-                            ud.level_number = 0;
-                            gGameScreen.enterlevel(gGameScreen.getTitle());
-                            return;
-                        }
-
-                        game.show();
-                    } else gGameScreen.enterlevel(gGameScreen.getTitle());
-                }
-            });
         }
 
-        engine.nextpage();
+        dobonus(false);
+
+        engine.nextpage(delta);
     }
 
-    public boolean dobonus(boolean disconnect) {
+    public void dobonus(boolean disconnect) {
+        if (game.getProcessor().isKeyJustPressed(Input.Keys.ANY_KEY)) {
+            anyKeyPressed();
+        }
+
         int t, gfx;
         int i, y, xfragtotal, yfragtotal;
-        int clockpad = 2;
-
+        this.disconnected = disconnect;
+        Renderer renderer = game.getRenderer();
         if (ud.multimode > 1 && ud.coop != 1 || disconnect) {
-            engine.rotatesprite(0, 0, 65536, 0, MENUSCREEN, 16, 0, 2 + 8 + 16 + 64, 0, 0, xdim - 1, ydim - 1);
-            engine.rotatesprite(160 << 16, 34 << 16, 65536, 0, INGAMELNRDTHREEDEE, 0, 0, 10, 0, 0, xdim - 1, ydim - 1);
+            renderer.rotatesprite(0, 0, 65536, 0, MENUSCREEN, 16, 0, 2 + 8 + 16 + 64);
+            renderer.rotatesprite(160 << 16, 34 << 16, 65536, 0, INGAMELNRDTHREEDEE, 0, 0, 10);
 
-            app.getFont(1).drawText(160, 58 + 2, "MULTIPLAYER TOTALS", 0, 0, TextAlign.Center, 2, false);
-            buildString(bonusbuf, 0, currentGame.episodes[ud.volume_number].gMapInfo[ud.level_number].title);
-            app.getFont(1).drawText(160, 58 + 10, bonusbuf, 0, 0, TextAlign.Center, 2, false);
+            app.getFont(1).drawTextScaled(renderer, 160, 58 + 2, "MULTIPLAYER TOTALS", 1.0f, 0, 0, TextAlign.Center, Transparent.None, ConvertType.Normal, false);
+            buildString(bonusbuf, 0, currentGame.episodes[ud.volume_number].getMapTitle(ud.level_number));
+            app.getFont(1).drawTextScaled(renderer, 160, 58 + 10, bonusbuf, 1.0f, 0, 0, TextAlign.Center, Transparent.None, ConvertType.Normal, false);
 
             t = 0;
-            app.getFont(0).drawText(23, 80, "   NAME                                           KILLS", 0, 0, TextAlign.Left, 2, false);
+            app.getFont(0).drawTextScaled(renderer, 23, 80, "   NAME                                           KILLS", 1.0f, 0, 0, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
             for (i = 0; i < numplayers; i++) {
                 Bitoa(i + 1, bonusbuf);
-                app.getFont(0).drawText(92 + (i * 23), 80, bonusbuf, 0, 3, TextAlign.Left, 2, false);
+                app.getFont(0).drawTextScaled(renderer, 92 + (i * 23), 80, bonusbuf, 1.0f, 0, 3, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
             }
 
             for (i = 0; i < numplayers; i++) {
                 xfragtotal = 0;
                 Bitoa(i + 1, bonusbuf);
 
-                app.getFont(0).drawText(30, 90 + t, bonusbuf, 0, 3, TextAlign.Left, 2, false);
-                app.getFont(0).drawText(38, 90 + t, ud.user_name[i], 0, ps[i].palookup, TextAlign.Left, 2, false);
+                app.getFont(0).drawTextScaled(renderer, 30, 90 + t, bonusbuf, 1.0f, 0, 3, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
+                app.getFont(0).drawTextScaled(renderer, 38, 90 + t, ud.user_name[i], 1.0f, 0, ps[i].palookup, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
                 for (y = 0; y < numplayers; y++) {
                     if (i == y) {
                         Bitoa(ps[y].fraggedself, bonusbuf);
-                        app.getFont(0).drawText(92 + (y * 23), 90 + t, bonusbuf, 0, 2, TextAlign.Left, 2, false);
+                        app.getFont(0).drawTextScaled(renderer, 92 + (y * 23), 90 + t, bonusbuf, 1.0f, 0, 2, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                         xfragtotal -= ps[y].fraggedself;
                     } else {
                         Bitoa(frags[i][y], bonusbuf);
-                        app.getFont(0).drawText(92 + (y * 23), 90 + t, bonusbuf, 0, 0, TextAlign.Left, 2, false);
+                        app.getFont(0).drawTextScaled(renderer, 92 + (y * 23), 90 + t, bonusbuf, 1.0f, 0, 0, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                         xfragtotal += frags[i][y];
                     }
                 }
 
                 Bitoa(xfragtotal, bonusbuf);
-                app.getFont(0).drawText(101 + (8 * 23), 90 + t, bonusbuf, 0, 2, TextAlign.Left, 2, false);
+                app.getFont(0).drawTextScaled(renderer, 101 + (8 * 23), 90 + t, bonusbuf, 1.0f, 0, 2, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
                 t += 7;
             }
@@ -218,36 +198,23 @@ public class StatisticScreen extends ScreenAdapter {
             for (y = 0; y < numplayers; y++) {
                 yfragtotal = 0;
                 for (i = 0; i < numplayers; i++) {
-                    if (i == y)
+                    if (i == y) {
                         yfragtotal += ps[i].fraggedself;
+                    }
                     yfragtotal += frags[i][y];
                 }
                 Bitoa(yfragtotal, bonusbuf);
-                app.getFont(0).drawText(92 + (y * 23), 96 + (8 * 7), bonusbuf, 0, 2, TextAlign.Left, 2, false);
+                app.getFont(0).drawTextScaled(renderer, 92 + (y * 23), 96 + (8 * 7), bonusbuf, 1.0f, 0, 2, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
             }
 
-            app.getFont(0).drawText(45, 96 + (8 * 7), "DEATHS", 0, 8, TextAlign.Left, 2, false);
-            app.getFont(1).drawText(160, 165, "PRESS ANY KEY TO CONTINUE", 0, 2, TextAlign.Center, 2, false);
-
-            if ((game.pInput.ctrlKeyStatusOnce(ANYKEY)) && totalclock > (60 * 2))
-                return true;
+            app.getFont(0).drawTextScaled(renderer, 45, 96 + (8 * 7), "DEATHS", 1.0f, 0, 8, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
+            app.getFont(1).drawTextScaled(renderer, 160, 165, "PRESS ANY KEY TO CONTINUE", 1.0f, 0, 2, TextAlign.Center, Transparent.None, ConvertType.Normal, false);
         }
 
         if (!disconnect && (ud.multimode < 2 || ud.coop == 1)) {
-            MapInfo gMapInfo = currentGame.episodes[ud.volume_number].gMapInfo[ud.last_level - 1];
-            if (gMapInfo != null) {
-                int ii, ij;
-
-                for (ii = ps[myconnectindex].player_par / (26 * 60), ij = 1; ii > 9; ii /= 10, ij++) ;
-                clockpad = max(clockpad, ij);
-                for (ii = gMapInfo.partime / (26 * 60), ij = 1; ii > 9; ii /= 10, ij++) ;
-                clockpad = max(clockpad, ij);
-                for (ii = gMapInfo.designertime / (26 * 60), ij = 1; ii > 9; ii /= 10, ij++) ;
-                clockpad = max(clockpad, ij);
-            }
-
-            if (totalclock >= (1000000000) && totalclock < (1000000320)) {
-                if (((totalclock >> 4) % 15) == 0 && bonuscnt == 6) {
+            MapInfo gMapInfo = currentGame.episodes[ud.volume_number].getMapInfo(ud.last_level - 1);
+            if (engine.getTotalClock() >= (1000000000) && engine.getTotalClock() < (1000000320)) {
+                if (((engine.getTotalClock() >> 4) % 15) == 0 && bonuscnt == 6) {
                     bonuscnt++;
                     sound(425);
                     Source voice = null;
@@ -265,56 +232,65 @@ public class StatisticScreen extends ScreenAdapter {
                             voice = sound(BONUS_SPEECH4);
                             break;
                     }
-                    while (voice != null && voice.isActive()) ;
+                    long startTime = System.currentTimeMillis();
+                    while (voice != null && voice.isActive()) {
+                        if (System.currentTimeMillis() - startTime > 2000) {
+                            break;
+                        }
+                    }
                 }
-            } else if (totalclock > (10240 + 120)) {
-                if (currentGame.getCON().type == RRRA)
-                    gAnmScreen.anmClose();
-                return true;
+            } else if (engine.getTotalClock() > (10240 + 120)) {
+                onSkip();
+                return;
             }
 
-            String lastmapname = null;
+            String lastmapname = "null";
             if (ud.volume_number == 2 && ud.last_level == 4 && boardfilename != null) {
-                FileEntry file = BuildGdx.compat.checkFile(boardfilename);
-                lastmapname = file.getName();
-            } else if (gMapInfo != null)
-                lastmapname = gMapInfo.title;
+                lastmapname = boardfilename.getName();
+            } else if (gMapInfo != null) {
+                lastmapname = gMapInfo.getTitle();
+            }
 
             int pal = 0;
             if (currentGame.getCON().type != RRRA) {
                 int level = ud.level_number;
-                if (ud.volume_number != 0)
+                if (ud.volume_number != 0) {
                     gfx = 408 + level;
-                else {
-                    if (level == 0) level = 1;
+                } else {
+                    if (level == 0) {
+                        level = 1;
+                    }
                     gfx = 402 + level;
                 }
 
                 if (mUserFlag == UserFlag.UserMap && boardfilename != null && ud.level_number == 3 && ud.volume_number == 2) {
-                    engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2 + 8 + 16 + 64, 0, 0, xdim - 1, ydim - 1);
+                    renderer.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2 + 8 + 16 + 64);
                 } else {
-                    engine.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2 + 8 + 16 + 64, 0, 0, xdim - 1, ydim - 1);
+                    renderer.rotatesprite(0, 0, 65536, 0, gfx, 0, 0, 2 + 8 + 16 + 64);
                 }
             } else {
-                if (gAnmScreen.isInited())
-                    gAnmScreen.anmPlay();
-                else engine.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2 + 8 + 16 + 64, 0, 0, xdim - 1, ydim - 1);
+                if (gAnmScreen.isInited()) {
+                    gAnmScreen.play();
+                } else {
+                    renderer.rotatesprite(0, 0, 65536, 0, 403, 0, 0, 2 + 8 + 16 + 64);
+                }
                 pal = 2;
             }
 
-            app.getFont(2).drawText(160, 10 - 8, lastmapname, 0, pal, TextAlign.Center, 2, false);
-            app.getFont(2).drawText(160, 180, "PRESS ANY KEY TO CONTINUE", 0, pal, TextAlign.Center, 2, false);
+            app.getFont(2).drawTextScaled(renderer, 160, 10 - 8, lastmapname, 1.0f, 0, pal, TextAlign.Center, Transparent.None, ConvertType.Normal, false);
+            app.getFont(2).drawTextScaled(renderer, 160, 180, "PRESS ANY KEY TO CONTINUE", 1.0f, 0, pal, TextAlign.Center, Transparent.None, ConvertType.Normal, false);
 
             int pos = 30;
-            if (totalclock > (60 * 3)) {
-                app.getFont(2).drawText(10, pos, "Yer Time:", 0, pal, TextAlign.Left, 2, false);
-                app.getFont(2).drawText(10, pos += 19, "Par time:", 0, pal, TextAlign.Left, 2, false);
-                app.getFont(2).drawText(10, pos += 19, "Xatrix Time:", 0, pal, TextAlign.Left, 2, false);
+            if (engine.getTotalClock() > (60 * 3)) {
+                app.getFont(2).drawTextScaled(renderer, 10, pos, "Yer Time:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
+                app.getFont(2).drawTextScaled(renderer, 10, pos += 19, "Par time:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
+                app.getFont(2).drawTextScaled(renderer, 10, pos + 19, "Xatrix Time:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
-                if (bonuscnt == 0)
+                if (bonuscnt == 0) {
                     bonuscnt++;
+                }
 
-                if (totalclock > (60 * 4)) {
+                if (engine.getTotalClock() > (60 * 4)) {
                     if (bonuscnt == 1) {
                         bonuscnt++;
                         sound(404);
@@ -323,81 +299,124 @@ public class StatisticScreen extends ScreenAdapter {
                     pos = 30;
                     int num = Bitoa(ps[myconnectindex].player_par / (26 * 60), bonusbuf, 2);
                     buildString(bonusbuf, num, " : ", (ps[myconnectindex].player_par / 26) % 60, 2);
-                    app.getFont(2).drawText(211, pos, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                    app.getFont(2).drawTextScaled(renderer, 211, pos, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
                     if (gMapInfo != null) {
                         num = Bitoa(gMapInfo.partime / (26 * 60), bonusbuf, 2);
                         buildString(bonusbuf, num, " : ", (gMapInfo.partime / 26) % 60, 2);
-                        app.getFont(2).drawText(211, pos += 19, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                        app.getFont(2).drawTextScaled(renderer, 211, pos += 19, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
                         num = Bitoa(gMapInfo.designertime / (26 * 60), bonusbuf, 2);
                         buildString(bonusbuf, num, " : ", (gMapInfo.designertime / 26) % 60, 2);
-                        app.getFont(2).drawText(211, pos += 19, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                        app.getFont(2).drawTextScaled(renderer, 211, pos + 19, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                     }
                 }
             }
-            if (totalclock > (60 * 6)) {
+            if (engine.getTotalClock() > (60 * 6)) {
                 pos = 95;
-                app.getFont(2).drawText(10, pos, "Varmints Killed:", 0, pal, TextAlign.Left, 2, false);
-                app.getFont(2).drawText(10, pos += 19, "Varmints Left:", 0, pal, TextAlign.Left, 2, false);
+                app.getFont(2).drawTextScaled(renderer, 10, pos, "Varmints Killed:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
+                app.getFont(2).drawTextScaled(renderer, 10, pos + 19, "Varmints Left:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
                 if (bonuscnt == 2) {
                     bonuscnt++;
                 }
 
-                if (totalclock > (60 * 7)) {
+                if (engine.getTotalClock() > (60 * 7)) {
                     if (bonuscnt == 3) {
                         bonuscnt++;
                         sound(422);
                     }
 
-                    pos = 95;
                     Bitoa(ps[connecthead].actors_killed, bonusbuf);
-                    app.getFont(2).drawText(251, pos, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                    app.getFont(2).drawTextScaled(renderer, 251, pos, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                     if (isPsychoSkill()) {
                         buildString(bonusbuf, 0, "N/A");
-                        app.getFont(2).drawText(251, pos += 19, "N/A", 0, pal, TextAlign.Left, 2, false);
+                        app.getFont(2).drawTextScaled(renderer, 251, pos + 19, "N/A", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                     } else {
-                        if ((ps[connecthead].max_actors_killed - ps[connecthead].actors_killed) < 0)
-                            Bitoa(0, bonusbuf);
-                        else Bitoa(ps[connecthead].max_actors_killed - ps[connecthead].actors_killed, bonusbuf);
-                        app.getFont(2).drawText(251, pos += 19, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                        Bitoa(Math.max((ps[connecthead].max_actors_killed - ps[connecthead].actors_killed), 0), bonusbuf);
+                        app.getFont(2).drawTextScaled(renderer, 251, pos + 19, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                     }
                 }
             }
-            if (totalclock > (60 * 9)) {
+            if (engine.getTotalClock() > (60 * 9)) {
                 pos = 133;
-                app.getFont(2).drawText(10, pos, "Secrets Found:", 0, pal, TextAlign.Left, 2, false);
-                app.getFont(2).drawText(10, pos += 19, "Secrets Missed:", 0, pal, TextAlign.Left, 2, false);
+                app.getFont(2).drawTextScaled(renderer, 10, pos, "Secrets Found:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
+                app.getFont(2).drawTextScaled(renderer, 10, pos + 19, "Secrets Missed:", 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
-                if (bonuscnt == 4) bonuscnt++;
+                if (bonuscnt == 4) {
+                    bonuscnt++;
+                }
 
-                if (totalclock > (60 * 10)) {
+                if (engine.getTotalClock() > (60 * 10)) {
                     if (bonuscnt == 5) {
                         bonuscnt++;
                         sound(404);
                     }
-                    pos = 133;
                     Bitoa(ps[connecthead].secret_rooms, bonusbuf);
-                    app.getFont(2).drawText(251, pos, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                    app.getFont(2).drawTextScaled(renderer, 251, pos, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
 
                     Bitoa(ps[connecthead].max_secret_rooms - ps[connecthead].secret_rooms, bonusbuf);
-                    app.getFont(2).drawText(251, pos += 19, bonusbuf, 0, pal, TextAlign.Left, 2, false);
+                    app.getFont(2).drawTextScaled(renderer, 251, pos + 19, bonusbuf, 1.0f, 0, pal, TextAlign.Left, Transparent.None, ConvertType.Normal, false);
                 }
             }
 
-            if (totalclock > 10240 && totalclock < 10240 + 10240)
-                totalclock = 1024;
-
-            if ((game.pInput.ctrlKeyStatusOnce(ANYKEY)) && totalclock > (60 * 2))    // JBF 20030809
-            {
-                if (totalclock < (60 * 13))
-                    totalclock = (60 * 13);
-                else if (totalclock < (1000000000))
-                    totalclock = (1000000000);
+            if (engine.getTotalClock() > 10240 && engine.getTotalClock() < 10240 + 10240) {
+                engine.getTimer().setTotalClock(1024);
             }
         }
-
-        return false;
     }
+
+    @Override
+    public boolean gameKeyDown(GameKey gameKey) {
+        return true;
+    }
+
+    public void onSkip() {
+        Gdx.app.postRunnable(() -> {
+            if (currentGame.getCON().type == RRRA) {
+                gAnmScreen.skip();
+            }
+
+            if ((uGameFlags & MODE_END) != 0 || mUserFlag == UserFlag.UserMap) {
+                if ((uGameFlags & MODE_END) != 0 && ud.volume_number == 0) {
+                    ud.volume_number = 1;
+                    ud.level_number = 0;
+                    gGameScreen.enterlevel(gGameScreen.getTitle());
+                    return;
+                }
+
+                game.show();
+            } else {
+                gGameScreen.enterlevel(gGameScreen.getTitle());
+            }
+        });
+    }
+
+    public void anyKeyPressed() {
+        game.getProcessor().prepareNext();
+        if (ud.multimode > 1 && ud.coop != 1 || disconnected) {
+            if (engine.getTotalClock() > (60 * 2)) {
+                onSkip();
+            }
+        } else {
+            if (engine.getTotalClock() > (60 * 2)) {// JBF 20030809
+                if (engine.getTotalClock() < (60 * 13)) {
+                    engine.getTimer().setTotalClock(60 * 13);
+                } else if (engine.getTotalClock() < (1000000000)) {
+                    engine.getTimer().setTotalClock(1000000000);
+                }
+            }
+        }
+    }
+
+    @Override
+    public InputListener getInputListener() {
+        return this;
+    }
+
+    @Override
+    public void processInput(GameProcessor processor) {
+        processor.prepareNext();
+    }
+
 }

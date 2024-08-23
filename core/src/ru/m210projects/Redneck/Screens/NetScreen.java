@@ -16,47 +16,51 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.Player.InitPlayers;
-import static ru.m210projects.Redneck.Factory.RRMenuHandler.*;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Sounds.*;
-import static ru.m210projects.Build.Net.Mmulti.*;
-
-import ru.m210projects.Redneck.Main;
 import ru.m210projects.Build.Pattern.ScreenAdapters.ConnectAdapter;
+import ru.m210projects.Redneck.Main;
+
+import static ru.m210projects.Build.net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.net.Mmulti.numplayers;
+import static ru.m210projects.Redneck.Factory.RRMenuHandler.NETWORKGAME;
+import static ru.m210projects.Redneck.Globals.screenpeek;
+import static ru.m210projects.Redneck.Globals.ud;
+import static ru.m210projects.Redneck.Main.gDisconnectScreen;
+import static ru.m210projects.Redneck.Main.gMenuScreen;
+import static ru.m210projects.Redneck.Names.LOADSCREEN;
+import static ru.m210projects.Redneck.Player.InitPlayers;
+import static ru.m210projects.Redneck.Sounds.StopAllSounds;
 
 public class NetScreen extends ConnectAdapter {
 
-	private Main app;
-	public NetScreen(Main game) {
-		super(game, LOADSCREEN, game.getFont(1));
-		this.app = game;
-	}
+    private final Main app;
 
-	@Override
-	public void show() {
-		super.show();
-		StopAllSounds();
-	}
+    public NetScreen(Main game) {
+        super(game, LOADSCREEN, game.getFont(1));
+        this.app = game;
+    }
 
-	@Override
-	public void back() {
-		game.changeScreen(gMenuScreen);
-	}
+    @Override
+    public void show() {
+        super.show();
+        StopAllSounds();
+    }
 
-	@Override
-	public void connect() {
-		gDisconnectScreen.updateList();
-		screenpeek = myconnectindex;
-		ud.multimode = numplayers;
-        
-		InitPlayers();
+    @Override
+    public void back() {
+        game.changeScreen(gMenuScreen);
+    }
 
-		app.changeScreen(gMenuScreen);
+    @Override
+    public void connect() {
+        gDisconnectScreen.updateList();
+        screenpeek = myconnectindex;
+        ud.multimode = numplayers;
 
-		app.menu.mClose();
-		app.menu.mOpen(app.menu.mMenus[NETWORKGAME], -1);
-	}
+        InitPlayers();
+
+        app.changeScreen(gMenuScreen);
+
+        app.menu.mClose();
+        app.menu.mOpen(app.menu.mMenus[NETWORKGAME], -1);
+    }
 }

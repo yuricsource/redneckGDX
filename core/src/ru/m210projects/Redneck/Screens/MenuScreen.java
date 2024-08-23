@@ -16,65 +16,70 @@
 
 package ru.m210projects.Redneck.Screens;
 
-import static ru.m210projects.Build.Engine.palette;
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
+import ru.m210projects.Build.Pattern.ScreenAdapters.MenuAdapter;
+
+import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Redneck.Factory.RRMenuHandler;
+import ru.m210projects.Redneck.Main;
+import ru.m210projects.Build.filehandle.art.ArtEntry;
+
+import static ru.m210projects.Build.net.Mmulti.numplayers;
 import static ru.m210projects.Redneck.Factory.RRMenuHandler.MAIN;
-import static ru.m210projects.Redneck.Globals.ud;
 import static ru.m210projects.Redneck.Names.BACKGROUND;
 import static ru.m210projects.Redneck.Names.FRAGBAR;
 import static ru.m210projects.Redneck.View.displayfragbar;
 
-import ru.m210projects.Build.Pattern.ScreenAdapters.MenuAdapter;
-import ru.m210projects.Build.Render.GLRenderer.GLInvalidateFlag;
-import ru.m210projects.Build.Types.Tile;
-import ru.m210projects.Redneck.Main;
-import ru.m210projects.Redneck.Factory.RRMenuHandler;
-
 public class MenuScreen extends MenuAdapter {
 
-	private RRMenuHandler menu;
-	public MenuScreen(Main game) {
-		super(game, game.menu.mMenus[MAIN]);
-		this.menu = game.menu;
-	}
+    private final RRMenuHandler menu;
 
-	@Override
-	public void show() {
-		engine.setbrightness(ud.brightness>>2, palette, GLInvalidateFlag.All);
-		if(!menu.gShowMenu)
-			menu.mOpen(menu.mMenus[MAIN], -1);
-	}
+    public MenuScreen(Main game) {
+        super(game, game.menu.mMenus[MAIN]);
+        this.menu = game.menu;
+    }
 
-	@Override
-	public void process(float delta) {
-		if (numplayers > 1)
-			displayfragbar(200 - engine.getTile(FRAGBAR).getHeight() / 2, false);
+    @Override
+    public void show() {
+        engine.setbrightness(cfg.getPaletteGamma(), engine.getPaletteManager().getBasePalette());
+        if (!menu.gShowMenu) {
+            menu.mOpen(menu.mMenus[MAIN], -1);
+        }
+    }
 
-		if (!game.gPaused)
-			game.pNet.GetPackets();
-	}
+    @Override
+    public void process(float delta) {
+        if (numplayers > 1) {
+            displayfragbar(200 - engine.getTile(FRAGBAR).getHeight() / 2, false);
+        }
 
-	@Override
-	public void draw(float delta) {
-		Tile pic = engine.getTile(BACKGROUND);
+        if (!game.gPaused) {
+            game.pNet.GetPackets();
+        }
+    }
 
-		if(!pic.hasSize())
-			return;
+    @Override
+    public void draw(float delta) {
+        ArtEntry pic = engine.getTile(BACKGROUND);
 
-		int framesx = xdim / pic.getWidth();
-		int framesy = ydim / pic.getHeight();
+        if (!pic.hasSize()) {
+            return;
+        }
+        Renderer renderer = game.getRenderer();
+        int xdim = renderer.getWidth();
+        int ydim = renderer.getHeight();
 
-		int x, y = 0;
-		for(int j = 0; j <= framesy; j++) {
-		    x = 0;
-			for(int i = 0; i <= framesx; i++) {
-		    	engine.rotatesprite(x<<16, y<<16, 0x10000, 0, BACKGROUND, 0, 0, 8 | 16 | 256, 0, 0, xdim-1, ydim-1);
-		    	x += pic.getWidth();
-		    }
-		    y += pic.getHeight();
-		}
-	}
+        int framesx = xdim / pic.getWidth();
+        int framesy = ydim / pic.getHeight();
+
+        int x, y = 0;
+        for (int j = 0; j <= framesy; j++) {
+            x = 0;
+            for (int i = 0; i <= framesx; i++) {
+                renderer.rotatesprite(x << 16, y << 16, 0x10000, 0, BACKGROUND, 0, 0, 8 | 16 | 256, 0, 0, xdim - 1, ydim - 1);
+                x += pic.getWidth();
+            }
+            y += pic.getHeight();
+        }
+    }
 
 }

@@ -16,17 +16,18 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import ru.m210projects.Build.Pattern.BuildFont;
 import ru.m210projects.Build.Pattern.MenuItems.MenuButton;
 import ru.m210projects.Build.Pattern.MenuItems.MenuProc;
+import ru.m210projects.Build.Types.font.Font;
 import ru.m210projects.Redneck.Types.GameInfo;
 
 public class EpisodeButton extends MenuButton {
 
-	public GameInfo game;
-	public EpisodeButton(GameInfo game, Object text, BuildFont font, int x, int y, int width, MenuProc specialCall, int specialOpt) {
-		super(text, font, x, y, width, 1, 0, null, 3, specialCall, specialOpt);
-		this.game = game;
-	}
+    public final GameInfo game;
+
+    public EpisodeButton(GameInfo game, Object text, Font font, int x, int y, int width, MenuProc specialCall, int specialOpt) {
+        super(text, font, x, y, width, 1, 0, null, 3, specialCall, specialOpt);
+        this.game = game;
+    }
 
 }

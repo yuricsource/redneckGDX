@@ -16,31 +16,31 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Redneck.Globals.RRRA;
-import static ru.m210projects.Redneck.Globals.currentGame;
-import static ru.m210projects.Redneck.Names.*;
-
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Redneck.Main;
 
-public class HelpMenu extends BuildMenu {
-	
-	public HelpMenu(Main app)
-	{
-		MenuPage mPage1 = new MenuPage(0, 0, TEXTSTORY);
-		mPage1.flags |= 10;
-		MenuPage mPage2 = new MenuPage(0, 0, F1HELP);
-		mPage2.flags |= 10;
+import static ru.m210projects.Redneck.Globals.RRRA;
+import static ru.m210projects.Redneck.Globals.currentGame;
+import static ru.m210projects.Redneck.Names.F1HELP;
+import static ru.m210projects.Redneck.Names.TEXTSTORY;
 
-		addItem(mPage2, true);
-		addItem(mPage1, false);
-		
-		if(currentGame.getCON().type == RRRA) 
-		{
-			MenuPage mPage3 = new MenuPage(0, 0, 1636);
-			mPage3.flags |= 10;
-			addItem(mPage3, false);
-		}
-	}
+public class HelpMenu extends BuildMenu {
+
+    public HelpMenu(Main app) {
+        super(app.pMenu);
+        MenuPage mPage1 = new MenuPage(0, 0, TEXTSTORY);
+        mPage1.flags |= 10;
+        MenuPage mPage2 = new MenuPage(0, 0, F1HELP);
+        mPage2.flags |= 10;
+
+        addItem(mPage2, true);
+        addItem(mPage1, false);
+
+        if (currentGame.getCON().type == RRRA) {
+            MenuPage mPage3 = new MenuPage(0, 0, 1636);
+            mPage3.flags |= 10;
+            addItem(mPage3, false);
+        }
+    }
 
 }

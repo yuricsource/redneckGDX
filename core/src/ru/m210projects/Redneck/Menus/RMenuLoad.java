@@ -16,94 +16,117 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Redneck.Main.*;
-import static ru.m210projects.Redneck.Names.*;
-import static ru.m210projects.Redneck.LoadSave.*;
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
-
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Pattern.BuildGame;
-import ru.m210projects.Build.Pattern.BuildFont.TextAlign;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuLoadSave;
-import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
-import ru.m210projects.Build.Pattern.MenuItems.MenuItem;
-import ru.m210projects.Build.Pattern.MenuItems.MenuPicnum;
-import ru.m210projects.Build.Pattern.MenuItems.MenuProc;
-import ru.m210projects.Build.Pattern.MenuItems.MenuSlotList;
-import ru.m210projects.Build.Pattern.MenuItems.MenuText;
-import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Build.Pattern.MenuItems.*;
+import ru.m210projects.Build.Render.Renderer;
+import ru.m210projects.Build.Types.ConvertType;
+import ru.m210projects.Build.Types.Sprite;
+import ru.m210projects.Build.Types.Transparent;
+import ru.m210projects.Build.Types.font.TextAlign;
+import ru.m210projects.Build.filehandle.fs.FileEntry;
+import ru.m210projects.Redneck.Premap;
+import ru.m210projects.Redneck.Screens.PrecacheScreen;
+import ru.m210projects.Redneck.Types.PlayerStruct;
+
+import static ru.m210projects.Build.net.Mmulti.myconnectindex;
+import static ru.m210projects.Redneck.Globals.*;
+import static ru.m210projects.Redneck.LoadSave.*;
+import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Names.LOADSCREEN;
+import static ru.m210projects.Redneck.Premap.resetinventory;
+import static ru.m210projects.Redneck.Premap.resetweapons;
 
 public class RMenuLoad extends MenuLoadSave {
 
-	public RMenuLoad(final BuildGame app) {
-		super(app, app.getFont(0), 75, 50, 185, 240, 13, 12, 2, LOADSCREEN, new MenuProc() {
-			@Override
-			public void run(MenuHandler handler, MenuItem pItem) {
-				final MenuSlotList item = (MenuSlotList) pItem;
-				if(canLoad(item.FileName())) {
-					app.changeScreen(gLoadingScreen);
-					gLoadingScreen.init(new Runnable() {
-						public void run() {
-							if(!loadgame(item.FileName())) {
-								app.setPrevScreen();
-								if(app.isCurrentScreen(gGameScreen)) {
-									app.pNet.ready2send = true;
-								}
-							}
-						}
-					});
-				}
-			}
-			
-		}, false);
-		
-		list.questionFont = app.getFont(1);
-		list.nListOffset = 15;
-		list.backgroundPal = 4;
-	}
+    public RMenuLoad(final BuildGame app) {
+        super(app, app.getFont(0), 75, 50, 185, 240, 13, 12, 2, LOADSCREEN, (handler, pItem) -> {
+            final MenuSlotList item = (MenuSlotList) pItem;
+            if (canLoad(item.getFileEntry()) && (!app.isCurrentScreen(gLoadingScreen)
+                    && !(app.getScreen() instanceof PrecacheScreen))) {
+                app.changeScreen(gLoadingScreen);
+                gLoadingScreen.init(() -> {
+                    if (!loadgame(item.getFileEntry())) {
+                        app.setPrevScreen();
+                        if (app.isCurrentScreen(gGameScreen)) {
+                            app.pNet.ready2send = true;
+                        }
+                    } else if (item.getFileEntry().getName().equalsIgnoreCase("autosave.sav") && gDemoScreen.isRecordEnabled()) {
+                        PlayerStruct p = ps[myconnectindex];
+                        Premap.PlayerInfo info = new Premap.PlayerInfo();
+                        info.set(p);
+                        Sprite psp = boardService.getSprite(p.i);
+                        int health = 100;
+                        if (psp != null) {
+                            health = psp.getExtra();
+                        }
 
-	@Override
-	public boolean loadData(String filename) {
-		return lsReadLoadData(filename) != -1;
-	}
+                        resetweapons(myconnectindex);
+                        resetinventory(myconnectindex);
 
-	@Override
-	public MenuTitle getTitle(BuildGame app, String text) {
-		return new RRTitle(text);
-	}
+                        if (psp != null) {
+                            psp.setExtra(health);
+                        }
 
-	@Override
-	public MenuPicnum getPicnum(Engine draw, int x, int y) {
-		return new MenuPicnum(draw, x - 65, y - 3, LOADSCREEN, LOADSCREEN, 0) {
-			@Override
-			public void draw(MenuHandler handler) {
-				if(nTile != defTile)
-					draw.rotatesprite(x + 4 << 16, y << 16, 0x11A00, 0, nTile, 0, 0, 10 | 16, 0, 0, xdim - 1, ydim - 1);
-				else 
-					draw.rotatesprite(x + 4 << 16, y << 16, 0x8D00, 0, nTile, 0, 0, 10 | 16, 0, 0, xdim - 1, ydim - 1);
-			}
-		};
-	}
+                        info.restore(p);
 
-	@Override
-	public MenuText getInfo(BuildGame app, int x, int y) {
-		return new MenuText(lsInf.info, app.getFont(0), x - 53, y + 100, 0) {
-			@Override
-			public void draw(MenuHandler handler) {
-				int ty = y;
-				if (lsInf.addonfile != null && !lsInf.addonfile.isEmpty()) {
-					font.drawText(x, ty, lsInf.addonfile, -128, 12, TextAlign.Left, 2, true);
-					ty -= 10;
-				}
-				if (lsInf.date != null && !lsInf.date.isEmpty()) {
-					font.drawText(x, ty, lsInf.date, -128, 12, TextAlign.Left, 2, true);
-					ty -= 10;
-				}
-				if (lsInf.info != null)
-					font.drawText(x, ty, lsInf.info, -128, 12, TextAlign.Left, 2, true);
-			}
-		};
-	}
+                        uGameFlags |= MODE_EOL;
+                    }
+                });
+            }
+        }, false);
+
+        list.questionFont = app.getFont(1);
+        list.nListOffset = 15;
+        list.backgroundPal = 4;
+    }
+
+    @Override
+    public boolean loadData(FileEntry filename) {
+        return lsReadLoadData(filename) != -1;
+    }
+
+    @Override
+    public MenuTitle getTitle(BuildGame app, String text) {
+        return new RRTitle(text);
+    }
+
+    @Override
+    public MenuPicnum getPicnum(Engine draw, int x, int y) {
+        return new MenuPicnum(draw, x - 65, y - 3, LOADSCREEN, LOADSCREEN, 0) {
+            @Override
+            public void draw(MenuHandler handler) {
+                Renderer renderer = game.getRenderer();
+                if (nTile != defTile) {
+                    renderer.rotatesprite(x + 4 << 16, y << 16, 0x11A00, 0, nTile, 0, 0, 10 | 16);
+                } else {
+                    renderer.rotatesprite(x + 4 << 16, y << 16, 0x8D00, 0, nTile, 0, 0, 10 | 16);
+                }
+            }
+        };
+    }
+
+    @Override
+    public MenuText getInfo(BuildGame app, int x, int y) {
+        return new MenuText(lsInf.info, app.getFont(0), x - 53, y + 100, 0) {
+            @Override
+            public void draw(MenuHandler handler) {
+                Renderer renderer = handler.getRenderer();
+                int ty = y;
+                if (lsInf.addonfile != null && !lsInf.addonfile.isEmpty()) {
+                    font.drawTextScaled(renderer, x, ty, lsInf.addonfile, 1.0f, -128, 12, TextAlign.Left, Transparent.None, ConvertType.Normal, true);
+                    ty -= 10;
+                }
+                if (lsInf.date != null && !lsInf.date.isEmpty()) {
+                    font.drawTextScaled(renderer, x, ty, lsInf.date, 1.0f, -128, 12, TextAlign.Left, Transparent.None, ConvertType.Normal, true);
+                    ty -= 10;
+                }
+                if (lsInf.info != null) {
+                    font.drawTextScaled(renderer, x, ty, lsInf.info, 1.0f, -128, 12, TextAlign.Left, Transparent.None, ConvertType.Normal, true);
+                }
+            }
+        };
+    }
 
 }

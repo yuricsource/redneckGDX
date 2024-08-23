@@ -16,46 +16,47 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Build.Engine.xdim;
-import static ru.m210projects.Build.Engine.ydim;
-import static ru.m210projects.Redneck.Main.engine;
-
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
-import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler.MenuOpt;
+import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Build.Render.Renderer;
+
+import static ru.m210projects.Redneck.Main.engine;
+import static ru.m210projects.Redneck.Main.game;
 
 public class MenuPage extends MenuTitle {
-	
-	public MenuPage(int x, int y, int nTile) {
-		super(engine, null, null, x, y, nTile);
-	}
-	
-	@Override
-	public void draw(MenuHandler handler) {
-		engine.rotatesprite(x << 16, y << 16, 65536, 0, nTile, -128, 0, 10 | 16, 0, 0, xdim - 1, ydim - 1);
-	}
-	
-	@Override
-	public boolean callback(MenuHandler handler, MenuOpt opt) {
-		switch(opt) {
-		case LEFT:
-		case BSPACE:
-		case RMB:
-			m_pMenu.mNavUp();
-			return false;
-		case RIGHT:
-		case ENTER:
-		case SPACE:
-		case LMB:
-			m_pMenu.mNavDown();
-			return false;
-		case UP:
-		case DW:
-		case ESC:
-		case DELETE:
-		    return m_pMenu.mNavigation(opt);
-		default:
-			return false;
-		}
-	}
+
+    public MenuPage(int x, int y, int nTile) {
+        super(engine, null, null, x, y, nTile);
+    }
+
+    @Override
+    public void draw(MenuHandler handler) {
+        Renderer renderer = game.getRenderer();
+        renderer.rotatesprite(x << 16, y << 16, 65536, 0, nTile, -128, 0, 10 | 16);
+    }
+
+    @Override
+    public boolean callback(MenuHandler handler, MenuOpt opt) {
+        switch (opt) {
+            case LEFT:
+            case BSPACE:
+            case RMB:
+                m_pMenu.mNavUp();
+                return false;
+            case RIGHT:
+            case ENTER:
+            case SPACE:
+            case LMB:
+                m_pMenu.mNavDown();
+                return false;
+            case UP:
+            case DW:
+            case ESC:
+            case DELETE:
+                return m_pMenu.mNavigation(opt);
+            default:
+                return false;
+        }
+    }
 }

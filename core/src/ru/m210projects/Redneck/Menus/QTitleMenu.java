@@ -16,39 +16,37 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
-import static ru.m210projects.Build.Net.Mmulti.numplayers;
-import static ru.m210projects.Redneck.Globals.*;
-import static ru.m210projects.Redneck.Main.*;
-
-import ru.m210projects.Build.Architecture.BuildGdx;
+import com.badlogic.gdx.Gdx;
 import ru.m210projects.Build.Pattern.MenuItems.BuildMenu;
 import ru.m210projects.Build.Pattern.MenuItems.MenuHandler;
 import ru.m210projects.Build.Pattern.MenuItems.MenuText;
 import ru.m210projects.Build.Pattern.MenuItems.MenuVariants;
 import ru.m210projects.Redneck.Main;
+import ru.m210projects.Redneck.Screens.DemoScreen;
+
+import static ru.m210projects.Build.net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.net.Mmulti.numplayers;
+import static ru.m210projects.Redneck.Globals.mFakeMultiplayer;
+import static ru.m210projects.Redneck.Main.gDemoScreen;
 
 public class QTitleMenu extends BuildMenu {
 
-	public QTitleMenu(final Main app)
-	{
-		MenuText QuitQuestion = new MenuText("Quit to title?", app.getFont(1), 160, 90, 1);
-		MenuVariants QuitVariants = new MenuVariants(app.pEngine, "[Y/N]", app.getFont(1), 160, 105) {
-			@Override
-			public void positive(MenuHandler menu) {
-				if (!app.isCurrentScreen(gDemoScreen) && (numplayers > 1 || mFakeMultiplayer)) {
-					BuildGdx.app.postRunnable(new Runnable() {
-						@Override
-						public void run() {
-							app.net.NetDisconnect(myconnectindex);
-						}
-					});
-				} else app.show();
-				menu.mClose();
-			}
-		};
+    public QTitleMenu(final Main app) {
+        super(app.pMenu);
+        MenuText QuitQuestion = new MenuText("Quit to title?", app.getFont(1), 160, 90, 1);
+        MenuVariants QuitVariants = new MenuVariants(app.pEngine, "[Y/N]", app.getFont(1), 160, 105) {
+            @Override
+            public void positive(MenuHandler menu) {
+                if (!DemoScreen.isDemoPlaying() && (numplayers > 1 || mFakeMultiplayer)) {
+                    Gdx.app.postRunnable(() -> app.net.NetDisconnect(myconnectindex));
+                } else {
+                    app.show();
+                }
+                menu.mClose();
+            }
+        };
 
-		addItem(QuitQuestion, false);
-		addItem(QuitVariants, true);
-	}
+        addItem(QuitQuestion, false);
+        addItem(QuitVariants, true);
+    }
 }

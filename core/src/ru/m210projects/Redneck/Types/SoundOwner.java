@@ -16,9 +16,17 @@
 
 package ru.m210projects.Redneck.Types;
 
-import ru.m210projects.Build.Audio.Source;
+import ru.m210projects.Build.Architecture.common.audio.Source;
 
 public class SoundOwner {
-	public int i;
+    public int i = -1;
     public Source voice;
+
+    @Override
+    public String toString() {
+        return "SoundOwner{" +
+                "i=" + i +
+                ", voice=" + voice +
+                '}';
+    }
 }

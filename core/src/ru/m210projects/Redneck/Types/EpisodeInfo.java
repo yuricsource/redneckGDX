@@ -16,31 +16,46 @@
 
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Redneck.Globals.*;
+import java.util.Arrays;
+
+import static ru.m210projects.Redneck.Globals.nMaxMaps;
+import static ru.m210projects.Redneck.Globals.ud;
 
 public class EpisodeInfo {
 
-	public String Title;
-	public int nMaps;
-	
-	public MapInfo[] gMapInfo;
+    public final String Title;
+    public int nMaps;
+    private final MapInfo[] gMapInfo;
 
-	public EpisodeInfo() {
-		gMapInfo = new MapInfo[nMaxMaps + 1];
-	}
-	
-	public EpisodeInfo(String title) {
-		this.Title = title;
-		gMapInfo = new MapInfo[nMaxMaps + 1];
-	}
+    public EpisodeInfo(String title) {
+        this.Title = title;
+        gMapInfo = new MapInfo[nMaxMaps + 1];
+    }
 
-	public void clear()
-	{
-		Title = null;
-		nMaps = 0;
+    public void setMapInfo(int mapnum, MapInfo gMapInfo) {
+        this.gMapInfo[mapnum] = gMapInfo;
+    }
 
-		for(int i = 0; i <= nMaxMaps; i++)
-			if(gMapInfo[i] != null) 
-				gMapInfo[i].clear();
-	}
+    public MapInfo getMapInfo(int mapnum) {
+        if (ud.level_number < gMapInfo.length) {
+            return gMapInfo[mapnum];
+        }
+        return null;
+    }
+
+    public String getMapTitle(int mapnum) {
+        if (ud.level_number < gMapInfo.length && gMapInfo[mapnum] != null) {
+            return gMapInfo[mapnum].getTitle();
+        }
+        return "null";
+    }
+
+    @Override
+    public String toString() {
+        return "EpisodeInfo {" +
+                "Title='" + Title + '\'' +
+                ", nMaps=" + nMaps +
+                ", gMapInfo=" + Arrays.toString(gMapInfo) +
+                '}';
+    }
 }

@@ -18,10 +18,32 @@ package ru.m210projects.Redneck.Factory;
 
 import ru.m210projects.Build.Engine;
 import ru.m210projects.Build.Render.Polymost.Polymost;
+import ru.m210projects.Build.Render.Polymost.Polymost2D;
+import ru.m210projects.Build.settings.GameConfig;
 
-public class RRPolymost extends Polymost {
+public class RRPolymost extends Polymost implements RRRenderer {
 
-	public RRPolymost(Engine engine) {
-		super(engine, new RRMapSettings());
-	}
+    public RRPolymost(GameConfig config) {
+        super(config);
+    }
+
+    @Override
+    protected Polymost2D allocOrphoRenderer(Engine engine) {
+        return new Polymost2D(this, new RRMapSettings());
+    }
+
+    @Override
+    public void setaspect(int daxrange, int daaspect) {
+        super.setaspect(daxrange, daaspect);
+    }
+
+    @Override
+    public int getViewingRange() {
+        return viewingrange;
+    }
+
+    @Override
+    public int getYXAspect() {
+        return yxaspect;
+    }
 }

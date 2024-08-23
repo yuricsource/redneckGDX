@@ -16,25 +16,46 @@
 
 package ru.m210projects.Redneck.Types;
 
+import java.nio.file.Path;
+
+import static ru.m210projects.Build.filehandle.fs.FileEntry.DUMMY_PATH;
+
 public class MapInfo {
-	
-	public String path;
-	public String title;
-	public int partime;
-	public int designertime;
-	
-	public MapInfo(String path, String title, int partime, int designertime) {
-		this.path = path;
-		this.title = title;
-		this.partime = partime;
-		this.designertime = designertime;
-	}
-	
-	public void clear()
-	{
-		path = null;
-		title = null;
-		partime = 0;
-		designertime = 0;
-	}
+
+    public int partime;
+    public int designertime;
+    private Path path;
+    private String title;
+
+    public MapInfo(Path path, String title, int partime, int designertime) {
+        this.path = path;
+        this.title = title;
+        this.partime = partime;
+        this.designertime = designertime;
+    }
+
+    public void clear() {
+        path = DUMMY_PATH;
+        title = "";
+        partime = 0;
+        designertime = 0;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    @Override
+    public String toString() {
+        return "MapInfo{" +
+                "path='" + path + '\'' +
+                ", title='" + title + '\'' +
+                ", partime=" + partime +
+                ", designertime=" + designertime +
+                '}';
+    }
 }

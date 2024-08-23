@@ -16,40 +16,41 @@
 
 package ru.m210projects.Redneck.Menus;
 
-import static com.badlogic.gdx.Input.Keys.BACKSPACE;
-
-import ru.m210projects.Redneck.Main;
-import ru.m210projects.Build.Input.Keymap;
+import ru.m210projects.Build.input.keymap.Keymap;
 import ru.m210projects.Build.Pattern.BuildGame;
 import ru.m210projects.Build.Pattern.CommonMenus.MenuKeyboard;
 import ru.m210projects.Build.Pattern.MenuItems.MenuTitle;
+import ru.m210projects.Redneck.Main;
+
+import static com.badlogic.gdx.Input.Keys.BACKSPACE;
 
 public class RMenuMenuKeyboard extends MenuKeyboard {
 
-	public RMenuMenuKeyboard(Main app) {
-		super(app, 20, 40, 280, 14, app.getFont(0));
-		
-		mList.pal_left = 2;
-		mList.pal_right = 12;
-		mList.fontShadow = true;
-		
-		mText.y -= 10;
-		mText2.y -= 10;
-		mText.fontShadow = mText2.fontShadow = true;
-	}
+    public RMenuMenuKeyboard(Main app) {
+        super(app, 20, 40, 280, 14, app.getFont(0));
 
-	@Override
-	public MenuTitle getTitle(BuildGame app, String text) {
-		return new RRTitle(text);
-	}
+        mList.pal_left = 2;
+        mList.pal_right = 12;
+        mList.fontShadow = true;
 
-	@Override
-	public String keyNames(int keycode) {
-		
-		if(keycode == BACKSPACE)
-			return "BKSPACE";
-		
-		return Keymap.toString(keycode);
-	}
+        mText.y -= 10;
+        mText2.y -= 10;
+        mText.fontShadow = mText2.fontShadow = true;
+    }
+
+    @Override
+    public MenuTitle getTitle(BuildGame app, String text) {
+        return new RRTitle(text);
+    }
+
+    @Override
+    public String keyNames(int keycode) {
+
+        if (keycode == BACKSPACE) {
+            return "BKSPACE";
+        }
+
+        return Keymap.toString(keycode);
+    }
 
 }

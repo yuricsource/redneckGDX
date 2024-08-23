@@ -16,66 +16,65 @@
 
 package ru.m210projects.Redneck.Types;
 
-import static ru.m210projects.Build.Net.Mmulti.myconnectindex;
+import static ru.m210projects.Build.net.Mmulti.myconnectindex;
 import static ru.m210projects.Redneck.Globals.ps;
-import static ru.m210projects.Redneck.Main.*;
+import static ru.m210projects.Redneck.Main.game;
 
 public class PLocation {
-	
-	public int x, y, z;
-	public int xvel, yvel, zvel;
-	public float horiz, ang;
-	public short sectnum, horizoff; 
-	public short lookang;
-	public short rotscrnang;
-	
-	public short jumpingcounter;
-	public byte jumpingtoggle, hardlanding, returntocenter;
-	public boolean onground;
-	
-	public void copy(PLocation src)
-	{
-		this.x = src.x;
-		this.y = src.y;
-		this.z = src.z;
-		this.xvel = src.xvel;
-		this.yvel = src.yvel;
-		this.zvel = src.zvel;
-		this.horiz = src.horiz;
-		this.horizoff = src.horizoff;
-		this.ang = src.ang;
-		this.sectnum = src.sectnum;
-		this.lookang = src.lookang;
-		this.rotscrnang = src.rotscrnang;
-		this.jumpingcounter = src.jumpingcounter;
-		this.jumpingtoggle = src.jumpingtoggle;
-		this.hardlanding = src.hardlanding;
-		this.returntocenter = src.returntocenter;
-		this.onground = src.onground;
-	}
-	
-	public void reset() {
-		PlayerStruct p = ps[myconnectindex];
-		
-		x = p.posx;
-		xvel = p.posxv;
-		y = p.posy;
-		yvel = p.posyv;
-		z = p.posz;
-		zvel = p.poszv;
-		ang = p.ang;
-		sectnum = p.cursectnum;
-		lookang = p.look_ang;
-		rotscrnang = p.rotscrnang;
-		horiz = p.horiz;
-		horizoff = p.horizoff;
-		jumpingcounter = p.jumping_counter;
-		jumpingtoggle = (byte) p.jumping_toggle;
-		onground = p.on_ground;
-		hardlanding = (byte) p.hard_landing;
-		returntocenter = (byte) p.return_to_center;
-		
-		game.net.predictOld.copy(this);
-	}
+
+    public int x, y, z;
+    public int xvel, yvel, zvel;
+    public float horiz, ang;
+    public int sectnum, horizoff;
+    public int lookang;
+    public int rotscrnang;
+
+    public int jumpingcounter;
+    public byte jumpingtoggle, hardlanding, returntocenter;
+    public boolean onground;
+
+    public void copy(PLocation src) {
+        this.x = src.x;
+        this.y = src.y;
+        this.z = src.z;
+        this.xvel = src.xvel;
+        this.yvel = src.yvel;
+        this.zvel = src.zvel;
+        this.horiz = src.horiz;
+        this.horizoff = src.horizoff;
+        this.ang = src.ang;
+        this.sectnum = src.sectnum;
+        this.lookang = src.lookang;
+        this.rotscrnang = src.rotscrnang;
+        this.jumpingcounter = src.jumpingcounter;
+        this.jumpingtoggle = src.jumpingtoggle;
+        this.hardlanding = src.hardlanding;
+        this.returntocenter = src.returntocenter;
+        this.onground = src.onground;
+    }
+
+    public void reset() {
+        PlayerStruct p = ps[myconnectindex];
+
+        x = p.posx;
+        xvel = p.posxv;
+        y = p.posy;
+        yvel = p.posyv;
+        z = p.posz;
+        zvel = p.poszv;
+        ang = p.ang;
+        sectnum = p.cursectnum;
+        lookang = p.look_ang;
+        rotscrnang = p.rotscrnang;
+        horiz = p.horiz;
+        horizoff = p.horizoff;
+        jumpingcounter = p.jumping_counter;
+        jumpingtoggle = (byte) p.jumping_toggle;
+        onground = p.on_ground;
+        hardlanding = (byte) p.hard_landing;
+        returntocenter = (byte) p.return_to_center;
+
+        game.net.predictOld.copy(this);
+    }
 
 }
