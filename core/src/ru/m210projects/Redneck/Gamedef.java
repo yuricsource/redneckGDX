@@ -3783,7 +3783,9 @@ public class Gamedef {
             defGame.episodes[i].nMaps = con.nMaps[i];
             for (int j = 0; j < con.nMaps[i]; j++) {
                 Path path = FileUtils.getPath(new String(con.level_file_names[i * 11 + j]).trim());
-                defGame.episodes[i].setMapInfo(j, new MapInfo(path, new String(con.level_names[i * 11 + j]).trim(), con.partime[i * 11 + j], con.designertime[i * 11 + j]));
+                if (!defGame.episodes[i].setMapInfo(j, new MapInfo(path, new String(con.level_names[i * 11 + j]).trim(), con.partime[i * 11 + j], con.designertime[i * 11 + j]))) {
+                    Console.out.println("Warning! Can't set map info for index " + j, OsdColor.YELLOW); // #GDX 31.12.2024
+                }
             }
         }
 

@@ -621,10 +621,6 @@ public class GameScreen extends GameAdapter {
             return true;
         } catch (Exception e) {
             Console.out.println("Load map exception: " + e);
-            if (entry != null && entry.exists()) {
-                game.getLogSender().send("Load map exception: " + e);
-            }
-
             if (e.getMessage() != null) {
                 game.GameMessage("Load map exception:\n" + e.getMessage());
             } else {

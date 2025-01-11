@@ -75,7 +75,7 @@ public class RRMenuHandler extends MenuHandler {
             vscrn(0);
         }
         Renderer renderer = game.getRenderer();
-        if (!(app.getScreen() instanceof MenuScreen) && !(app.pMenu.getCurrentMenu() instanceof MenuRendererSettings) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
+        if (!(app.getScreen() instanceof MenuScreen) && !(app.pMenu.getCurrentMenu() instanceof BuildMenuList) && !(app.pMenu.getCurrentMenu() instanceof InterfaceMenu)) {
             int tile = LOADSCREEN;
             ArtEntry pic = renderer.getTile(tile);
             int xdim = renderer.getWidth();

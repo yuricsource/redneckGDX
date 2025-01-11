@@ -184,7 +184,12 @@ public class GameInfo {
                 i++;
             }
 
-            episodes[j] = new EpisodeInfo(new String(buf, startptr, i - 1).toUpperCase());
+            String title = new String(buf, startptr, i - 1).toUpperCase();
+            if (episodes[j] != null) {
+                episodes[j].Title = title;
+            } else {
+                episodes[j] = new EpisodeInfo(title);
+            }
             nEpisodes = Math.max(nEpisodes, j + 1);
         }
 
@@ -216,7 +221,12 @@ public class GameInfo {
             }
 
             Path path = FileUtils.getPath(new String(buf, ptr, i));
-            if (episodes[epnum] != null) {
+            if (episodes[epnum] == null) {
+                episodes[epnum] = new EpisodeInfo("Episode " + epnum);
+                nEpisodes = Math.max(nEpisodes, epnum + 1);
+            }
+
+//            if (episodes[epnum] != null) {
                 while (buf[textptr] == ' ') {
                     textptr++;
                 }
@@ -245,7 +255,7 @@ public class GameInfo {
                 String title = new String(buf, textptr, i - 1);
                 episodes[epnum].setMapInfo(mapnum, new MapInfo(path, title, partime, designertime));
                 episodes[epnum].nMaps = Math.max(episodes[epnum].nMaps, mapnum + 1);
-            }
+//            }
         }
     }
 

@@ -7,6 +7,8 @@ import ru.m210projects.Build.Types.DefaultPaletteManager;
 import ru.m210projects.Build.Types.PaletteManager;
 import ru.m210projects.Build.filehandle.Entry;
 import ru.m210projects.Build.filehandle.StreamUtils;
+import ru.m210projects.Build.osd.Console;
+import ru.m210projects.Build.osd.OsdColor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,6 +59,8 @@ public class RRPaletteManager extends DefaultPaletteManager {
             basePalette[765] = basePalette[766] = basePalette[767] = 0;
             slimepal[765] = slimepal[766] = slimepal[767] = 0;
             waterpal[765] = waterpal[766] = waterpal[767] = 0;
+        } catch (Exception e) {
+            Console.out.println("Warning! File 'LOOKUP.DAT' reading error!", OsdColor.YELLOW);
         }
         System.arraycopy(basePalette, 1, drugpal, 0, 767);
 

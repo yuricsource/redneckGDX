@@ -210,7 +210,7 @@ public class Sounds {
         }
 
         if (userMusicEntry != null) {
-            if (currMusic != null && currMusic.isPlaying() && currSongEntry.equals(userMusicEntry)) {
+            if (currMusic != null && currMusic.isPlaying() && userMusicEntry.equals(currSongEntry)) {
                 return;
             }
 

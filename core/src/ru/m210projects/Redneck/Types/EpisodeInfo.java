@@ -23,7 +23,7 @@ import static ru.m210projects.Redneck.Globals.ud;
 
 public class EpisodeInfo {
 
-    public final String Title;
+    public String Title;
     public int nMaps;
     private final MapInfo[] gMapInfo;
 
@@ -32,8 +32,12 @@ public class EpisodeInfo {
         gMapInfo = new MapInfo[nMaxMaps + 1];
     }
 
-    public void setMapInfo(int mapnum, MapInfo gMapInfo) {
+    public boolean setMapInfo(int mapnum, MapInfo gMapInfo) {
+        if (mapnum >= nMaxMaps + 1 || mapnum < 0) {
+            return false;
+        }
         this.gMapInfo[mapnum] = gMapInfo;
+        return true;
     }
 
     public MapInfo getMapInfo(int mapnum) {
