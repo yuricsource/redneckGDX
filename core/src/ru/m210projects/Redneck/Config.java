@@ -180,7 +180,7 @@ public class Config extends GameConfig {
     public int showMapInfo = 1;
     public final boolean AmbienceToggle = true;
     public final boolean VoiceToggle = true;
-    public int gDemoSeq = 0;
+    public int gDemoSeq = 1;
     public boolean gAutoAim = true;
     public int screen_size = 2;
     public int crosshair = 1;
@@ -194,12 +194,7 @@ public class Config extends GameConfig {
 
     public Config(Path path) {
         super(path);
-    }
-
-    @Override
-    public void load(Properties prop) {
         setpName("Leonard");
-        super.load(prop);
     }
 
     @Override

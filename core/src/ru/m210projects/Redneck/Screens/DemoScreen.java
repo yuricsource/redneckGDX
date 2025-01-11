@@ -304,9 +304,11 @@ public class DemoScreen extends GameScreen {
             case 2: //Accidentally
                 int nextnum = nDemonum;
                 if (list.size() > 1) {
-                    while (nextnum == nDemonum) nextnum = (int) (Math.random() * (list.size()));
+                    while (nextnum == nDemonum) {
+                        nextnum = (int) (Math.random() * (list.size()));
+                    }
                 }
-                nDemonum = nextnum;
+                nDemonum = BClipRange(nextnum, 0, list.size() - 1); // #GDX 28.12.2024
                 break;
         }
 
