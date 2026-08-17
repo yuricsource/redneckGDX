@@ -1,0 +1,18 @@
+services:
+  web:
+    # Pull the CI-published image. To run against a local build instead,
+    # comment `image` and uncomment `build`.
+    image: ghcr.io/yuricsource/redneckgdx-web:web
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: redneckgdx-web
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
