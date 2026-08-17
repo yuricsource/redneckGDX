@@ -29,11 +29,64 @@ Without this, `:gdx-teavm-plugin:compileKotlin` fails with
 `html/build.gradle` evaluation because the `plugins { id 'com.github.xpenatan.gdx-teavm' }`
 block forces the plugin to compile.
 
-## Manual patches needed for `:html:assembleWeb` (real TeaVM game compile)
+## Also applied by `patch-vendored.sh` (partial coverage of `:html:assembleWeb`)
 
-These are NOT applied by the script yet — they need per-site engineering
-work and are only required if you're iterating on the real browser game
-build (not the CI placeholder).
+The script now also drops in three replacement files under `scripts/patches/BuildGDX/`:
+
+### 2. `MD4.java` — MessageDigest dropped
+
+`core/src/ru/m210projects/Build/Types/MD4.java`.
+`MD4Digest` no longer `extends java.security.MessageDigest`; adds thin
+`update(byte[])` / `digest()` wrappers, drops the `super("MD4")` call,
+strips four `@Override` annotations. Fixes the hard
+"class extends missing supertype" TeaVM error.
+
+### 3. `WaifUPnp/GatewayFinder.java` — stub
+
+Skeleton `abstract class GatewayFinder { public abstract void gatewayFound(Gateway g); }`,
+constructor is a no-op. Eliminates NetworkInterface / DatagramSocket /
+DatagramPacket / Inet4Address as reachable classes.
+
+### 4. `WaifUPnp/UPnP.java` — stub
+
+All static methods (`waitInit`, `isUPnPAvailable`, `openPortTCP`,
+`openPortUDP`, `closePortTCP`, `closePortUDP`, `isMappedTCP`,
+`isMappedUDP`, `getExternalIP`, `getLocalIP`) return the "not available"
+answer (false / null). Multiplayer is disabled in the browser build.
+
+## Still-blocking TeaVM compile errors (not yet patched)
+
+Even with the patches above, `./gradlew :html:generateJavaScript`
+currently fails on:
+
+| Missing symbol | BuildGDX site |
+| --- | --- |
+| `java.util.StringJoiner` | `filehandle/grp/GrpFile.toString:169`, `settings/InputContext.save:161,169` (4 sites) |
+| `java.net.InetAddress` / `InetSocketAddress` | `net/Mmulti` — 5 sites in `netinit`, `initmultiplayersparms` (multiplayer bootstrap paths) |
+| `java.lang.System.exit(int)` | `Pattern/BuildGame.ThrowError:397`, `Pattern/ScreenAdapters/InitScreen.forceExit:294`, `Types/MemLog` |
+| `java.lang.Runtime.maxMemory()` | `Types/MemLog.total` (debug logging) |
+| `java.lang.ClassLoader.getResource` | `filehandle/Cache.loadGdxDef:215` |
+| `java.io.FileInputStream.getChannel` | `filehandle/StreamUtils:233`, `Redneck/filehandle/MVEFile:1213` |
+
+Each is a one-file surgery — mostly sed'able (System.exit,
+Runtime.maxMemory, ClassLoader.getResource), with GrpFile / InputContext
+needing manual StringJoiner→StringBuilder rewrites and Mmulti needing
+specific line-level patches to guard the networking paths. Add to
+`scripts/patches/BuildGDX/` and re-run `patch-vendored.sh`.
+
+## Beyond compile-time: runtime blockers
+
+Even after compile succeeds, the compiled `app.js` will surface
+additional TeaVM issues at runtime that will need per-symptom debugging
+in the browser console:
+- Threading — TeaVM ignores `Thread.start()` silently, but `InitScreen`
+  precache thread and networking threads may deadlock on `.join()`.
+- Asset paths — Grp file upload flow needs to wire IndexedDB bytes into
+  TeaVM virtual FS at `/rrgdx/redneck.grp` before `Main` constructs.
+- Renderer — even with `RRPolygdx` forced, first-frame GL calls may
+  reveal WebGL-incompatible pipeline setup deep in BuildGDX.
+- Sound — Howler.js integration is auto-wired by gdx-teavm but
+  BuildGDX's audio codec chain (VOC / MVE / OggDecoder) needs testing.
 
 ## 2. `external/BuildGDX` (game engine) — MD4 inherits from missing class
 
