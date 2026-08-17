@@ -10,17 +10,35 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
+    environment:
+      # Xvfb inside the container has no real GPU. Force LLVMpipe (Mesa
+      # software rasterizer) so LWJGL/GLFW always gets a valid GL context.
+      # Set to 0 (or drop this line) if you're running on a host with a
+      # GPU + a container runtime that exposes /dev/dri.
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      # Fluxbox and some libs whine on missing locale; a UTF-8 default is
+      # baked into eclipse-temurin but reasserting keeps output clean.
+      LANG: C.UTF-8
     # Uploaded redneck.grp lives here; named volume so it survives
     # `docker compose down`. Remove `docker volume rm rrgdx-data` if you
     # want to force a fresh upload.
     volumes:
       - rrgdx-data:/data
+    # wget/curl aren't in the eclipse-temurin:17-jre-jammy base image, but
+    # python3 is (we install it for the upload endpoint). Use it as the
+    # healthcheck instead of adding another apt package.
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/healthz"]
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=2).status==200 else 1)"
       interval: 30s
-      timeout: 3s
+      timeout: 5s
       retries: 3
-      start_period: 15s
+      # First-boot is JVM + Xvfb + nginx + websockify + fluxbox; comfortably
+      # under 60s but 15s was too tight if the host is warm-caching.
+      start_period: 60s
 
 volumes:
   rrgdx-data:
