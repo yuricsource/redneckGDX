@@ -1,11 +1,11 @@
 services:
   web:
-    # Pull the CI-published image. To run against a local build instead,
-    # comment `image` and uncomment `build`.
+    # Pull the CI-published image. To build locally against your working tree
+    # instead, comment `image:` and uncomment the `build:` block.
     image: ghcr.io/yuricsource/redneckgdx-web:web
     # build:
     #   context: .
-    #   dockerfile: Dockerfile
+    #   dockerfile: Dockerfile.stream
     container_name: redneckgdx-web
     ports:
       - "8080:8080"
