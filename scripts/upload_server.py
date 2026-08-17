@@ -12,7 +12,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 DATA_DIR = "/data"
 DEST = os.path.join(DATA_DIR, "redneck.grp")
-MAX_BYTES = 64 * 1024 * 1024  # 64 MiB is well over the ~40 MB grp size
+MAX_BYTES = 1024 * 1024 * 1024  # 1 GiB — same ceiling as nginx
 
 
 class Handler(BaseHTTPRequestHandler):
