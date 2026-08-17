@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+allprojects {
+    group = 'ru.m210projects'
+    version = '1.18-web'
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+
+ext {
+    gdxVersion = '1.13.0'
+    annotationsVersion = '24.1.0'
+    jinputVersion = '2.0.10'
+    lwjglVersion = '3.3.3'
+    teavmBackendVersion = '1.6.1'
+}
+
+subprojects {
+    apply plugin: 'java-library'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        // BuildGDX has warnings galore; don't fail the build on them.
+        options.compilerArgs += ['-Xlint:none', '-nowarn']
+    }
+}

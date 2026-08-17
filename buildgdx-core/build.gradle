@@ -1,0 +1,38 @@
+// Shim project pointing at the vendored BuildGDX submodule.
+// Source lives at ../external/BuildGDX/core/src; keeping the build.gradle here
+// avoids polluting the submodule.
+
+sourceSets {
+    main {
+        java {
+            // BuildGDX's DummyAudio (nested in core/.../BuildAudio.java) references
+            // OggDecoder, which physically lives under lwjgl3/src but is a leaf
+            // utility that only needs libGDX's OggInputStream. Pulling that one
+            // file into :buildgdx-core resolves the circular dep without
+            // patching the submodule; :buildgdx-lwjgl3 excludes it below.
+            srcDirs = [
+                '../external/BuildGDX/core/src',
+                '../external/BuildGDX/lwjgl3/src'
+            ]
+            include 'ru/**'
+            include 'com/badlogic/gdx/backends/lwjgl3/audio/OggDecoder.java'
+        }
+        resources {
+            srcDirs = ['../external/BuildGDX/core/resources']
+        }
+    }
+}
+
+ext {
+    gdxControllersVersion = '2.2.3'
+}
+
+dependencies {
+    api "com.badlogicgames.gdx:gdx:${gdxVersion}"
+    api "org.jetbrains:annotations:${annotationsVersion}"
+    api "com.badlogicgames.gdx-controllers:gdx-controllers-core:${gdxControllersVersion}"
+
+    // BuildAudio.java reaches into the lwjgl3 backend for OggDecoder.
+    // compileOnly so :html (TeaVM) can substitute a stub without dragging LWJGL in.
+    compileOnly "com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}"
+}

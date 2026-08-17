@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedneckGDX</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: #ddd;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        h1 { color: #d9793a; margin-bottom: 0.25em; }
+        p { max-width: 40em; line-height: 1.5; text-align: center; padding: 0 1em; }
+        #grp-picker {
+            margin-top: 1.5em;
+            padding: 1em 1.5em;
+            border: 2px dashed #444;
+            border-radius: 6px;
+            background: #1a1a1a;
+        }
+        #grp-picker.hidden { display: none; }
+        input[type=file] { color: #ddd; }
+        canvas#gameCanvas {
+            display: none;
+            background: #000;
+            image-rendering: pixelated;
+        }
+        canvas#gameCanvas.active { display: block; }
+        code { background: #222; padding: 0.1em 0.35em; border-radius: 3px; }
+        small { color: #888; }
+    </style>
+</head>
+<body>
+    <h1>RedneckGDX</h1>
+    <p>
+        Browser port of the libGDX Redneck Rampage source port.
+        You must supply your own <code>redneck.grp</code> (from a legal copy of
+        the game) &mdash; it is not distributed here.
+    </p>
+
+    <div id="grp-picker">
+        <label for="grp-file">Choose your <code>redneck.grp</code>:</label>
+        <input type="file" id="grp-file" accept=".grp,application/octet-stream">
+    </div>
+
+    <canvas id="gameCanvas" width="640" height="480"></canvas>
+
+    <p><small>
+        Status: build pipeline scaffold. Full in-browser rendering pending
+        completion of the TeaVM libGDX backend integration.
+    </small></p>
+
+    <script>
+        // Grp picker: stashes bytes into IndexedDB so the second load skips
+        // the picker. When the TeaVM game bootstraps it reads from the same
+        // store via the AssetLoader JSObject bridge.
+        const DB_NAME = 'rrgdx';
+        const STORE = 'assets';
+        const KEY = 'redneck.grp';
+
+        function openDb() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, 1);
+                req.onupgradeneeded = () => req.result.createObjectStore(STORE);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function hasGrp() {
+            const db = await openDb();
+            return new Promise((resolve) => {
+                const tx = db.transaction(STORE, 'readonly');
+                const req = tx.objectStore(STORE).getKey(KEY);
+                req.onsuccess = () => resolve(req.result !== undefined);
+                req.onerror = () => resolve(false);
+            });
+        }
+
+        async function storeGrp(arrayBuffer) {
+            const db = await openDb();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE, 'readwrite');
+                tx.objectStore(STORE).put(new Uint8Array(arrayBuffer), KEY);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        // Exposed globally so the TeaVM AssetLoader JSObject can call it.
+        window.__rrgdxLoadGrp = async function () {
+            const db = await openDb();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE, 'readonly');
+                const req = tx.objectStore(STORE).get(KEY);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        };
+
+        (async function init() {
+            if (await hasGrp()) {
+                document.getElementById('grp-picker').classList.add('hidden');
+                // TODO: bootstrap TeaVM game module once the pipeline lands.
+            }
+        })();
+
+        document.getElementById('grp-file').addEventListener('change', async (ev) => {
+            const file = ev.target.files[0];
+            if (!file) return;
+            const buf = await file.arrayBuffer();
+            await storeGrp(buf);
+            document.getElementById('grp-picker').classList.add('hidden');
+            location.reload();
+        });
+    </script>
+</body>
+</html>

@@ -56,11 +56,14 @@ nb-configuration.xml
 .nb-gradle/
 
 ## Gradle
+# NOTE: build.gradle and settings.gradle used to be ignored back when this
+# project was IntelliJ-only. The browser port introduces a real Gradle build
+# so they are tracked now; only Gradle's local caches remain ignored.
 
-.gradle
-build.gradle
-settings.gradle
+.gradle/
 gradle-app.setting
+!/gradle/
+!/gradle/wrapper/**
 
 ## OS Specific
 .DS_Store

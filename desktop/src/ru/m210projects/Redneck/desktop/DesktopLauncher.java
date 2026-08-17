@@ -23,6 +23,8 @@ import ru.m210projects.Redneck.Main;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class DesktopLauncher {
@@ -33,6 +35,7 @@ public class DesktopLauncher {
         cfg.load();
         cfg.setGamePath(cfg.getCfgPath().getParent());
         cfg.addMidiDevices(LwjglLauncherUtil.getMidiDevices());
-        LwjglLauncherUtil.launch(new Main(cfg, appname, "?.??",false), null);
+        List<String> args = Arrays.asList(arg);
+        LwjglLauncherUtil.launch(new Main(args, cfg, appname, "?.??", false), null);
     }
 }

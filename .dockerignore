@@ -1,0 +1,14 @@
+.git
+.gitignore
+.gitmodules
+.gitattributes
+.idea
+*.iml
+*.ipr
+*.iws
+.gradle
+build/
+*/build/
+**/build/
+.DS_Store
+CLAUDE.md

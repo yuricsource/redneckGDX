@@ -1,0 +1,73 @@
+// -------------------------------------------------------------------
+// :html — browser build.
+//
+// STATUS: SCAFFOLD ONLY.
+//
+// The intended pipeline is xpenatan's gdx-teavm backend (compiles the
+// libGDX game to JS/WASM). The runtime artifact
+// (com.github.xpenatan.gdx-teavm:backend-teavm) is on Maven Central at
+// 1.2.0 as of this writing, but the accompanying Gradle plugin is NOT
+// published to the Gradle Plugin Portal or Maven Central, so it must
+// currently be loaded from source or awaited in a future release.
+//
+// Until that lands, this module just packages a placeholder landing page
+// so the Docker/CI pipeline is end-to-end runnable. The TeaVM wiring is
+// documented below (commented) and the HtmlLauncher.java class is written
+// against the target API so activation is a small delta.
+// -------------------------------------------------------------------
+
+plugins {
+    id 'base'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+configurations {
+    teavmClasspath
+}
+
+dependencies {
+    // Compile the launcher against the TeaVM backend classes so the code is
+    // ready when we activate the full pipeline.
+    compileOnly project(':core')
+    compileOnly 'com.github.xpenatan.gdx-teavm:backend-teavm:1.2.0'
+    compileOnly 'com.github.xpenatan.gdx-teavm:asset-loader:1.2.0'
+
+    teavmClasspath project(':core')
+    teavmClasspath 'com.github.xpenatan.gdx-teavm:backend-teavm:1.2.0'
+    teavmClasspath 'com.github.xpenatan.gdx-teavm:asset-loader:1.2.0'
+}
+
+/*
+ * TO ACTIVATE FULL TEAVM COMPILE (once the gdx-teavm gradle plugin ships):
+ *
+ * apply plugin: 'com.github.xpenatan.gdx-teavm'
+ * gdxTeaVM {
+ *     assets(file('../core/res').absolutePath)
+ *     webDefaults {
+ *         mainClass.set('ru.m210projects.Redneck.html.HtmlLauncher')
+ *         htmlTitle.set('RedneckGDX')
+ *     }
+ *     js {}
+ * }
+ *
+ * That will register a `gdx_teavm_web_js_build` task that produces
+ * build/dist/. Point the `dist` task below at it and delete the placeholder
+ * copy step.
+ */
+
+// Placeholder pipeline: copy webapp/ to build/dist/ so :html:dist works today
+// and the Docker/CI pipeline has something to serve.
+task dist(type: Copy) {
+    from 'webapp'
+    from('../core/res') { into 'assets' }
+    into layout.buildDirectory.dir('dist')
+}
+
+build.dependsOn dist

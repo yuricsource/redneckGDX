@@ -1,0 +1,15 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven { url 'https://central.sonatype.com/repository/maven-snapshots/' }
+    }
+}
+
+rootProject.name = 'RedneckGDX'
+
+include ':buildgdx-core'
+include ':buildgdx-lwjgl3'
+include ':core'
+include ':desktop'
+include ':html'

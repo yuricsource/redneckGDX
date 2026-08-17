@@ -1,0 +1,3 @@
+[submodule "external/BuildGDX"]
+	path = external/BuildGDX
+	url = https://gitlab.com/m210/BuildGDX.git

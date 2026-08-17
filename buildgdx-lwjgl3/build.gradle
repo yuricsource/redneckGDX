@@ -1,0 +1,24 @@
+// Shim project for BuildGDX's LWJGL3 desktop backend module.
+// Consumes bundled jars from external/BuildGDX/lwjgl3/libs/ because several
+// (jinput-platform natives, XInput plugin) are not published to Maven Central.
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['../external/BuildGDX/lwjgl3/src']
+            // OggDecoder is compiled by :buildgdx-core to break a circular
+            // reference. Exclude it here to avoid a duplicate class error.
+            exclude 'com/badlogic/gdx/backends/lwjgl3/audio/OggDecoder.java'
+        }
+    }
+}
+
+dependencies {
+    api project(':buildgdx-core')
+    api fileTree(file('../external/BuildGDX/lwjgl3/libs')) {
+        include '*.jar'
+        include 'libgdx*/*.jar'
+        include 'lwjgl*/*.jar'
+        exclude '**/*-sources.jar'
+    }
+}

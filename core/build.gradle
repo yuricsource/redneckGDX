@@ -1,0 +1,16 @@
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['res']
+        }
+    }
+}
+
+dependencies {
+    api project(':buildgdx-core')
+    api "com.badlogicgames.gdx:gdx:${gdxVersion}"
+    api "org.jetbrains:annotations:${annotationsVersion}"
+}

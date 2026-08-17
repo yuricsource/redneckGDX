@@ -1,0 +1,27 @@
+plugins {
+    id 'application'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+application {
+    mainClass = 'ru.m210projects.Redneck.desktop.DesktopLauncher'
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':buildgdx-lwjgl3')
+}
+
+run {
+    // DesktopLauncher expects arg[0] to be the directory containing redneck.grp.
+    // Override with: ./gradlew :desktop:run --args="/absolute/path/to/grpdir"
+    args = [file('.').absolutePath]
+    standardInput = System.in
+}
