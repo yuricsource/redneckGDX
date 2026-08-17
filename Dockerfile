@@ -19,6 +19,10 @@ COPY core/             ./core/
 COPY desktop/          ./desktop/
 COPY html/             ./html/
 COPY external/         ./external/
+COPY scripts/          ./scripts/
+
+# Apply required out-of-tree patches to vendored submodules. See PATCHES.md.
+RUN sh ./scripts/patch-vendored.sh
 
 RUN ./gradlew :html:dist --no-daemon
 

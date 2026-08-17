@@ -1,24 +1,39 @@
-# Vendored-Submodule Patches Needed for `:html:assembleWeb`
+# Vendored-Submodule Patches
 
-The CI/CD pipeline (`:html:dist` → Dockerfile → GHA) ships a placeholder landing
-page. Compiling the real game to JS via `:html:assembleWeb` currently requires
-two local patches to vendored submodules. Both are one-liner-ish and blocked
-on getting them merged upstream.
+Some patches to vendored submodules are required for the build to succeed on
+modern Gradle/Kotlin. They live out-of-tree so the submodules stay at their
+official upstream SHAs and can be updated cleanly. Apply them by running:
 
-## 1. `external/gdx-teavm` (plugin) — Gradle 8 Kotlin nullability
+```sh
+./scripts/patch-vendored.sh
+```
+
+The Dockerfile runs this automatically before invoking Gradle. Local dev
+should run it once after `git submodule update --init --recursive`, and any
+time you `git submodule update`.
+
+## Applied by `patch-vendored.sh` (required for `:html:dist` — CI-critical)
+
+### 1. `external/gdx-teavm` (plugin) — Gradle 8 Kotlin nullability
 
 `tools/gdx-teavm-plugin/src/main/kotlin/com/github/xpenatan/gdx/teavm/gradle/GdxTeaVMGradlePlugin.kt`,
-around line 526:
+two sites (~lines 288, 526 in tag 1.6.1):
 
 ```diff
- val pathingJar = project.tasks.register<Jar>(DEV_SERVER_CLASSPATH_TASK_NAME) {
--    group = null
-+    group = ""  // Gradle 8's Kotlin API types `group` as non-null String
-     description = "Creates a short TeaVM development-server classpath for Windows."
+-group = null
++group = ""  // Gradle 8's Kotlin API types `group` as non-null String
 ```
 
 Without this, `:gdx-teavm-plugin:compileKotlin` fails with
-`Null can not be a value of a non-null type String`.
+`Null can not be a value of a non-null type String`, which cascades into any
+`html/build.gradle` evaluation because the `plugins { id 'com.github.xpenatan.gdx-teavm' }`
+block forces the plugin to compile.
+
+## Manual patches needed for `:html:assembleWeb` (real TeaVM game compile)
+
+These are NOT applied by the script yet — they need per-site engineering
+work and are only required if you're iterating on the real browser game
+build (not the CI placeholder).
 
 ## 2. `external/BuildGDX` (game engine) — MD4 inherits from missing class
 
