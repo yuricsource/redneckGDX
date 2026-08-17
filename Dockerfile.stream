@@ -1,0 +1,77 @@
+# syntax=docker/dockerfile:1
+#
+# Streaming container: runs the actual desktop JVM game against a virtual X
+# display inside the container, and streams the display to the browser over
+# WebSocket VNC (noVNC + websockify + tigervnc). Users upload their
+# redneck.grp through a landing page; the game starts once it lands in /data.
+
+# ---------- Stage 1: build the fat jar ----------
+FROM eclipse-temurin:17-jdk-jammy AS build
+
+WORKDIR /src
+
+COPY gradle/ ./gradle/
+COPY gradlew settings.gradle build.gradle gradle.properties ./
+RUN chmod +x ./gradlew && ./gradlew --version --no-daemon
+
+COPY buildgdx-core/    ./buildgdx-core/
+COPY buildgdx-lwjgl3/  ./buildgdx-lwjgl3/
+COPY core/             ./core/
+COPY desktop/          ./desktop/
+COPY html/             ./html/
+COPY external/         ./external/
+COPY scripts/          ./scripts/
+
+# The gdx-teavm plugin gets built as a Gradle included build even when we only
+# want :desktop:shadowJar (html/build.gradle applies it at configure time).
+# Patch it before running Gradle.
+RUN sh ./scripts/patch-vendored.sh
+
+RUN ./gradlew :desktop:shadowJar --no-daemon
+RUN mv desktop/build/libs/desktop-*-all.jar /tmp/game.jar
+
+# ---------- Stage 2: streaming runtime ----------
+FROM eclipse-temurin:17-jre-jammy
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:1
+
+# Base system: Xvfb for headless display, tigervnc-scraping-server exports it,
+# websockify bridges VNC to WebSocket, noVNC is the HTML5 client, fluxbox is a
+# minimal WM (some games hate running with no WM), nginx fronts the whole
+# thing, python3 runs the tiny upload server, inotify-tools lets the entrypoint
+# supervisor wait for the grp file to appear without polling.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        xvfb \
+        x11vnc \
+        novnc \
+        websockify \
+        fluxbox \
+        nginx \
+        python3 \
+        inotify-tools \
+        ca-certificates \
+        libopenal1 \
+        libglu1-mesa \
+        libgl1-mesa-dri \
+        mesa-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Make sure noVNC's vnc.html is at a stable path.
+RUN ln -sf /usr/share/novnc/vnc.html /usr/share/novnc/index.html
+
+RUN mkdir -p /opt/rrgdx /data
+COPY --from=build /tmp/game.jar /opt/rrgdx/game.jar
+
+COPY scripts/container-start.sh   /opt/rrgdx/container-start.sh
+COPY scripts/upload_server.py     /opt/rrgdx/upload_server.py
+COPY scripts/nginx.conf           /etc/nginx/nginx.conf
+COPY html/webapp/index.html       /opt/rrgdx/landing/index.html
+
+RUN chmod +x /opt/rrgdx/container-start.sh
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s CMD wget -q -O - http://localhost:8080/healthz >/dev/null || exit 1
+
+ENTRYPOINT ["/opt/rrgdx/container-start.sh"]

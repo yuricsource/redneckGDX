@@ -8,11 +8,19 @@ services:
     #   dockerfile: Dockerfile
     container_name: redneckgdx-web
     ports:
-      - "8080:80"
+      - "8080:8080"
     restart: unless-stopped
+    # Uploaded redneck.grp lives here; named volume so it survives
+    # `docker compose down`. Remove `docker volume rm rrgdx-data` if you
+    # want to force a fresh upload.
+    volumes:
+      - rrgdx-data:/data
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/healthz"]
       interval: 30s
       timeout: 3s
       retries: 3
-      start_period: 5s
+      start_period: 15s
+
+volumes:
+  rrgdx-data:

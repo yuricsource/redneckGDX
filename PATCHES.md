@@ -1,5 +1,16 @@
 # Vendored-Submodule Patches
 
+> **NOTE (2026-08-17):** The runnable browser experience is now delivered
+> via streaming — see `Dockerfile.stream`, `scripts/container-start.sh`,
+> and the noVNC front-end. The TeaVM route documented below is preserved
+> for anyone who wants to pick it back up, but is **not** on the critical
+> path for `docker compose up`. The streaming path does not need any of
+> these patches applied at runtime; the plugin patch (§1 below) is still
+> required today because `html/build.gradle` applies the plugin during
+> configuration for the placeholder `:html:dist` task, which the build
+> stage still evaluates.
+
+
 Some patches to vendored submodules are required for the build to succeed on
 modern Gradle/Kotlin. They live out-of-tree so the submodules stay at their
 official upstream SHAs and can be updated cleanly. Apply them by running:
