@@ -15,11 +15,28 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            padding: 1em;
         }
         h1 { color: #d9793a; margin-bottom: 0.25em; }
-        p { max-width: 40em; line-height: 1.5; text-align: center; padding: 0 1em; }
+        p { max-width: 40em; line-height: 1.5; text-align: center; }
+        code { background: #222; padding: 0.1em 0.35em; border-radius: 3px; }
+        small { color: #888; }
+
+        .banner {
+            max-width: 44em;
+            margin: 1em 0 1.5em;
+            padding: 0.8em 1em;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .banner.info    { background: #1e2a3a; color: #b6d1ee; border: 1px solid #2c3f57; }
+        .banner.warn    { background: #3a2a12; color: #f3c58c; border: 1px solid #5a3f1c; }
+        .banner.success { background: #14351d; color: #9ee0a3; border: 1px solid #1e5028; }
+        .banner.hidden  { display: none; }
+
         #grp-picker {
-            margin-top: 1.5em;
+            margin-top: 0.5em;
             padding: 1em 1.5em;
             border: 2px dashed #444;
             border-radius: 6px;
@@ -27,14 +44,25 @@
         }
         #grp-picker.hidden { display: none; }
         input[type=file] { color: #ddd; }
-        canvas#gameCanvas {
+
+        .actions { margin-top: 1em; display: flex; gap: 0.6em; flex-wrap: wrap; justify-content: center; }
+        .actions.hidden { display: none; }
+        button {
+            background: #d9793a; color: #111; border: 0;
+            padding: 0.6em 1.2em; border-radius: 4px; font-weight: 600;
+            cursor: pointer;
+        }
+        button.secondary { background: #333; color: #ddd; }
+        button:hover { filter: brightness(1.1); }
+
+        canvas#canvas {
             display: none;
             background: #000;
             image-rendering: pixelated;
         }
-        canvas#gameCanvas.active { display: block; }
-        code { background: #222; padding: 0.1em 0.35em; border-radius: 3px; }
-        small { color: #888; }
+        canvas#canvas.active { display: block; }
+
+        a { color: #d9793a; }
     </style>
 </head>
 <body>
@@ -45,25 +73,47 @@
         the game) &mdash; it is not distributed here.
     </p>
 
+    <div id="scaffold-banner" class="banner warn hidden">
+        <strong>This container ships a scaffold build.</strong>
+        The TeaVM libGDX compile of the game is not complete yet, so no
+        <code>app.js</code> is served. Your <code>redneck.grp</code> is
+        stored in your browser's IndexedDB and will be picked up
+        automatically once a container is deployed with the compiled game.
+        Progress and remaining work is tracked in
+        <code>PATCHES.md</code> in the repo.
+    </div>
+
     <div id="grp-picker">
         <label for="grp-file">Choose your <code>redneck.grp</code>:</label>
         <input type="file" id="grp-file" accept=".grp,application/octet-stream">
     </div>
 
+    <div id="stored-actions" class="actions hidden">
+        <button id="btn-launch">Try to launch</button>
+        <button id="btn-clear" class="secondary">Clear stored grp</button>
+    </div>
+
     <canvas id="canvas" width="640" height="480"></canvas>
 
     <p><small id="status-note">
-        Status: build pipeline scaffold. Full in-browser rendering pending
-        completion of the TeaVM libGDX backend integration.
+        Waiting for <code>redneck.grp</code>&hellip;
     </small></p>
 
     <script>
-        // Grp picker: stashes bytes into IndexedDB so the second load skips
-        // the picker. When the TeaVM game bootstraps it reads from the same
-        // store via the AssetLoader JSObject bridge.
         const DB_NAME = 'rrgdx';
         const STORE = 'assets';
         const KEY = 'redneck.grp';
+
+        const els = {
+            banner:  document.getElementById('scaffold-banner'),
+            picker:  document.getElementById('grp-picker'),
+            actions: document.getElementById('stored-actions'),
+            note:    document.getElementById('status-note'),
+            canvas:  document.getElementById('canvas'),
+            file:    document.getElementById('grp-file'),
+            launch:  document.getElementById('btn-launch'),
+            clear:   document.getElementById('btn-clear'),
+        };
 
         function openDb() {
             return new Promise((resolve, reject) => {
@@ -73,27 +123,33 @@
                 req.onerror = () => reject(req.error);
             });
         }
-
         async function hasGrp() {
             const db = await openDb();
             return new Promise((resolve) => {
                 const tx = db.transaction(STORE, 'readonly');
                 const req = tx.objectStore(STORE).getKey(KEY);
                 req.onsuccess = () => resolve(req.result !== undefined);
-                req.onerror = () => resolve(false);
+                req.onerror  = () => resolve(false);
             });
         }
-
         async function storeGrp(arrayBuffer) {
             const db = await openDb();
             return new Promise((resolve, reject) => {
                 const tx = db.transaction(STORE, 'readwrite');
                 tx.objectStore(STORE).put(new Uint8Array(arrayBuffer), KEY);
                 tx.oncomplete = () => resolve();
-                tx.onerror = () => reject(tx.error);
+                tx.onerror    = () => reject(tx.error);
             });
         }
-
+        async function clearGrp() {
+            const db = await openDb();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE, 'readwrite');
+                tx.objectStore(STORE).delete(KEY);
+                tx.oncomplete = () => resolve();
+                tx.onerror    = () => reject(tx.error);
+            });
+        }
         // Exposed globally so the TeaVM AssetLoader JSObject can call it.
         window.__rrgdxLoadGrp = async function () {
             const db = await openDb();
@@ -101,46 +157,79 @@
                 const tx = db.transaction(STORE, 'readonly');
                 const req = tx.objectStore(STORE).get(KEY);
                 req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
+                req.onerror  = () => reject(req.error);
             });
         };
 
         async function appJsAvailable() {
-            try {
-                const r = await fetch('app.js', { method: 'HEAD' });
-                return r.ok;
-            } catch (_) { return false; }
+            try { return (await fetch('app.js', { method: 'HEAD' })).ok; }
+            catch (_) { return false; }
         }
 
-        async function bootGame() {
+        function setNote(text, ok) {
+            els.note.textContent = text;
+            els.note.style.color = ok ? '#9ee0a3' : '#888';
+        }
+
+        function showStoredActions() {
+            els.picker.classList.add('hidden');
+            els.actions.classList.remove('hidden');
+        }
+        function showPicker() {
+            els.picker.classList.remove('hidden');
+            els.actions.classList.add('hidden');
+        }
+
+        async function tryLaunch() {
             if (!(await appJsAvailable())) {
-                // Placeholder mode: TeaVM output not present in this build.
-                document.getElementById('status-note').textContent =
-                    'Grp saved. This build only ships the scaffold — ' +
-                    'run `./gradlew :html:assembleWeb` locally to compile the game.';
+                els.banner.classList.remove('hidden');
+                els.banner.classList.remove('info', 'success');
+                els.banner.classList.add('warn');
+                setNote('No compiled game bundle in this container. Grp stays saved for next time.', false);
                 return;
             }
-            document.getElementById('grp-picker').classList.add('hidden');
-            document.getElementById('canvas').classList.add('active');
+            setNote('Loading game bundle…', true);
+            els.picker.classList.add('hidden');
+            els.actions.classList.add('hidden');
+            els.canvas.classList.add('active');
             if (typeof main === 'function') main();
             else {
                 const s = document.createElement('script');
                 s.src = 'app.js';
-                s.onload = () => (typeof main === 'function') && main();
+                s.onload  = () => (typeof main === 'function') && main();
+                s.onerror = () => setNote('Failed to load app.js.', false);
                 document.body.appendChild(s);
             }
         }
 
         (async function init() {
-            if (await hasGrp()) bootGame();
+            if (await hasGrp()) {
+                setNote('Grp already stored in this browser.', true);
+                showStoredActions();
+                // Attempt an auto-launch so users don't need to click when the
+                // compiled build is present. Falls back gracefully if not.
+                if (await appJsAvailable()) tryLaunch();
+                else els.banner.classList.remove('hidden');
+            } else {
+                els.banner.classList.remove('hidden');
+            }
         })();
 
-        document.getElementById('grp-file').addEventListener('change', async (ev) => {
+        els.file.addEventListener('change', async (ev) => {
             const file = ev.target.files[0];
             if (!file) return;
             const buf = await file.arrayBuffer();
             await storeGrp(buf);
-            bootGame();
+            setNote('Grp saved (' + Math.round(buf.byteLength / 1024) + ' KiB).', true);
+            showStoredActions();
+            tryLaunch();
+        });
+
+        els.launch.addEventListener('click', tryLaunch);
+        els.clear.addEventListener('click', async () => {
+            await clearGrp();
+            setNote('Stored grp cleared. Choose a new one.', false);
+            showPicker();
         });
     </script>
 </body>
