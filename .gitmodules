@@ -1,3 +1,7 @@
 [submodule "external/BuildGDX"]
 	path = external/BuildGDX
 	url = https://gitlab.com/m210/BuildGDX.git
+[submodule "external/gdx-teavm"]
+	path = external/gdx-teavm
+	url = https://github.com/xpenatan/gdx-teavm.git
+	branch = master

@@ -50,9 +50,9 @@
         <input type="file" id="grp-file" accept=".grp,application/octet-stream">
     </div>
 
-    <canvas id="gameCanvas" width="640" height="480"></canvas>
+    <canvas id="canvas" width="640" height="480"></canvas>
 
-    <p><small>
+    <p><small id="status-note">
         Status: build pipeline scaffold. Full in-browser rendering pending
         completion of the TeaVM libGDX backend integration.
     </small></p>
@@ -105,11 +105,34 @@
             });
         };
 
-        (async function init() {
-            if (await hasGrp()) {
-                document.getElementById('grp-picker').classList.add('hidden');
-                // TODO: bootstrap TeaVM game module once the pipeline lands.
+        async function appJsAvailable() {
+            try {
+                const r = await fetch('app.js', { method: 'HEAD' });
+                return r.ok;
+            } catch (_) { return false; }
+        }
+
+        async function bootGame() {
+            if (!(await appJsAvailable())) {
+                // Placeholder mode: TeaVM output not present in this build.
+                document.getElementById('status-note').textContent =
+                    'Grp saved. This build only ships the scaffold — ' +
+                    'run `./gradlew :html:assembleWeb` locally to compile the game.';
+                return;
             }
+            document.getElementById('grp-picker').classList.add('hidden');
+            document.getElementById('canvas').classList.add('active');
+            if (typeof main === 'function') main();
+            else {
+                const s = document.createElement('script');
+                s.src = 'app.js';
+                s.onload = () => (typeof main === 'function') && main();
+                document.body.appendChild(s);
+            }
+        }
+
+        (async function init() {
+            if (await hasGrp()) bootGame();
         })();
 
         document.getElementById('grp-file').addEventListener('change', async (ev) => {
@@ -117,8 +140,7 @@
             if (!file) return;
             const buf = await file.arrayBuffer();
             await storeGrp(buf);
-            document.getElementById('grp-picker').classList.add('hidden');
-            location.reload();
+            bootGame();
         });
     </script>
 </body>

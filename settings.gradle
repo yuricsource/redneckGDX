@@ -1,8 +1,14 @@
 pluginManagement {
+    // Build the gdx-teavm gradle plugin from vendored source (the plugin
+    // is NOT published to Maven Central or the Gradle Plugin Portal; only
+    // the runtime backend-teavm jar is).
+    includeBuild('external/gdx-teavm/tools/gdx-teavm-plugin')
+
     repositories {
         gradlePluginPortal()
         mavenCentral()
         maven { url 'https://central.sonatype.com/repository/maven-snapshots/' }
+        maven { url 'https://teavm.org/maven/repository/' }
     }
 }
 

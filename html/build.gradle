@@ -1,23 +1,30 @@
-// -------------------------------------------------------------------
 // :html — browser build.
 //
-// STATUS: SCAFFOLD ONLY.
+// The gdx-teavm plugin (vendored at external/gdx-teavm and wired via
+// pluginManagement { includeBuild(...) } in root settings.gradle) is
+// active: `./gradlew :html:generateJavaScript` compiles the game to JS.
 //
-// The intended pipeline is xpenatan's gdx-teavm backend (compiles the
-// libGDX game to JS/WASM). The runtime artifact
-// (com.github.xpenatan.gdx-teavm:backend-teavm) is on Maven Central at
-// 1.2.0 as of this writing, but the accompanying Gradle plugin is NOT
-// published to the Gradle Plugin Portal or Maven Central, so it must
-// currently be loaded from source or awaited in a future release.
+// However, TeaVM 0.15.0's classlib is missing several java.* classes/
+// methods that BuildGDX reaches into (StringJoiner, NetworkInterface,
+// DatagramSocket, System.exit, ClassLoader.getResource, Runtime.maxMemory,
+// FileInputStream.getChannel). TeaVM treats these as SEVERE and refuses
+// to emit output. Each needs a per-site patch or stub in BuildGDX.
 //
-// Until that lands, this module just packages a placeholder landing page
-// so the Docker/CI pipeline is end-to-end runnable. The TeaVM wiring is
-// documented below (commented) and the HtmlLauncher.java class is written
-// against the target API so activation is a small delta.
-// -------------------------------------------------------------------
+// So we ship two tasks:
+//   :html:dist        — placeholder bundle (grp picker + landing page).
+//                       Used by the Dockerfile / CI; stays green.
+//   :html:assembleWeb — real TeaVM compile + overlay. Locally-invokable;
+//                       currently fails until BuildGDX compat is patched.
 
 plugins {
-    id 'base'
+    id 'com.github.xpenatan.gdx-teavm'
+}
+
+// The gdx-teavm plugin's runtime jars are Java 17+; :html itself compiles
+// against them, so override the root Java 8 default just for this module.
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 sourceSets {
@@ -28,46 +35,38 @@ sourceSets {
     }
 }
 
-configurations {
-    teavmClasspath
-}
-
 dependencies {
-    // Compile the launcher against the TeaVM backend classes so the code is
-    // ready when we activate the full pipeline.
-    compileOnly project(':core')
-    compileOnly 'com.github.xpenatan.gdx-teavm:backend-teavm:1.2.0'
-    compileOnly 'com.github.xpenatan.gdx-teavm:asset-loader:1.2.0'
-
-    teavmClasspath project(':core')
-    teavmClasspath 'com.github.xpenatan.gdx-teavm:backend-teavm:1.2.0'
-    teavmClasspath 'com.github.xpenatan.gdx-teavm:asset-loader:1.2.0'
+    implementation project(':core')
 }
 
-/*
- * TO ACTIVATE FULL TEAVM COMPILE (once the gdx-teavm gradle plugin ships):
- *
- * apply plugin: 'com.github.xpenatan.gdx-teavm'
- * gdxTeaVM {
- *     assets(file('../core/res').absolutePath)
- *     webDefaults {
- *         mainClass.set('ru.m210projects.Redneck.html.HtmlLauncher')
- *         htmlTitle.set('RedneckGDX')
- *     }
- *     js {}
- * }
- *
- * That will register a `gdx_teavm_web_js_build` task that produces
- * build/dist/. Point the `dist` task below at it and delete the placeholder
- * copy step.
- */
+gdxTeaVM {
+    // rrgdx.dat (BuildGDX's patch data) is baked in. The user-supplied
+    // redneck.grp is NOT bundled — the browser overlay prompts for upload
+    // on first load; the file is persisted in IndexedDB.
+    assets.from(file('../core/res'))
 
-// Placeholder pipeline: copy webapp/ to build/dist/ so :html:dist works today
-// and the Docker/CI pipeline has something to serve.
+    js {
+        mainClass.set('ru.m210projects.Redneck.html.HtmlLauncher')
+    }
+}
+
+// -------- Placeholder pipeline (green today, used by Docker/CI) --------
 task dist(type: Copy) {
+    group = 'gdx teavm'
+    description = 'Assembles the placeholder browser bundle (grp picker + landing page).'
     from 'webapp'
     from('../core/res') { into 'assets' }
     into layout.buildDirectory.dir('dist')
 }
-
 build.dependsOn dist
+
+// -------- Real TeaVM pipeline (locally iterable) --------
+task assembleWeb(type: Copy, dependsOn: 'generateJavaScript') {
+    group = 'gdx teavm'
+    description = 'Runs the TeaVM compile, overlays the grp picker, produces build/dist-web/.'
+    from 'build/dist/js/webapp'
+    from 'webapp/index.html'
+    exclude 'WEB-INF/**'
+    into layout.buildDirectory.dir('dist-web')
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
