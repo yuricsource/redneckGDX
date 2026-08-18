@@ -25,6 +25,8 @@ LOG_FILES = [
     "/tmp/kasmvnc.log",
     "/tmp/game.log",
     "/tmp/pulseaudio.log",
+    "/tmp/pactl-sources.log",
+    "/tmp/gst-audio.log",
     "/tmp/fluxbox.log",
     "/tmp/upload.log",
 ]
@@ -89,10 +91,13 @@ class Handler(BaseHTTPRequestHandler):
     def _audio(self):
         # Spawn a per-connection gstreamer pipe. When the client
         # disconnects, wfile.write raises and we kill the child.
+        # gstreamer stderr goes to /tmp/gst-audio.log so /logs can
+        # surface pipeline errors (missing device, codec, etc).
+        gst_err = open("/tmp/gst-audio.log", "ab", buffering=0)
         proc = subprocess.Popen(
             GST_AUDIO_CMD,
             stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
+            stderr=gst_err,
             preexec_fn=os.setsid,
         )
         try:

@@ -14,16 +14,32 @@ KASM_PORT=6901
 
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 
-# ---- 1. pulseaudio (KasmVNC captures for browser audio) ------------------
-log "starting pulseaudio (null_sink)"
-mkdir -p /var/run/pulse /var/lib/pulse
-pulseaudio --system --disallow-exit --disallow-module-loading=false \
-    --exit-idle-time=-1 --daemonize=yes --log-target=file:/tmp/pulseaudio.log \
-    --load="module-native-protocol-unix" \
-    --load="module-null-sink sink_name=null_out sink_properties=device.description=NullSink" \
-    --load="module-suspend-on-idle" >/dev/null 2>&1 || \
+# ---- 1. pulseaudio (in per-user mode, not --system which needs D-Bus) ---
+# System mode requires /run/dbus + cookie auth + a `pulse` user's
+# runtime dir; none of that is set up in this container. User mode is
+# simpler and works for a single-process container: pick a socket path,
+# start it with anonymous auth, and export PULSE_SERVER so every child
+# (Xvnc, the game, the Python server that spawns gstreamer) picks it
+# up automatically.
+export XDG_RUNTIME_DIR=/tmp/xdg
+mkdir -p "$XDG_RUNTIME_DIR" && chmod 700 "$XDG_RUNTIME_DIR"
+export PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse-native
+
+log "starting pulseaudio (user mode, socket=${XDG_RUNTIME_DIR}/pulse-native)"
+pulseaudio \
+    --exit-idle-time=-1 \
+    --daemonize=yes \
+    --log-target=file:/tmp/pulseaudio.log \
+    --disable-shm=true \
+    --disallow-exit=true \
+    -L "module-native-protocol-unix socket=${XDG_RUNTIME_DIR}/pulse-native auth-anonymous=1" \
+    -L "module-null-sink sink_name=null_out sink_properties=device.description=NullSink" \
+    >/dev/null 2>&1 || \
     log "pulseaudio failed to start (game will run silently)"
-export PULSE_SERVER=unix:/var/run/pulse/native
+
+# Verify the source we care about is available; log for /logs diagnostics.
+sleep 0.5
+pactl list sources short 2>&1 | tee /tmp/pactl-sources.log | while read line; do log "pactl: $line"; done
 
 # ---- 2. nginx + upload server -------------------------------------------
 log "starting upload server (8081)"
