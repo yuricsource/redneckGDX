@@ -100,28 +100,33 @@ class Handler(BaseHTTPRequestHandler):
     def _audio(self):
         # Spawn a per-connection gstreamer pipe. When the client
         # disconnects, wfile.write raises and we kill the child.
-        # gstreamer stderr goes to /tmp/gst-audio.log so /logs can
-        # surface pipeline errors (missing device, codec, etc).
+        # bufsize=0 -> unbuffered stdout; combined with read1() below
+        # we forward each opus frame the moment gstreamer emits it
+        # rather than waiting to fill a 4096-byte block (~340ms at
+        # 96kbps, previously the dominant latency source).
         gst_err = open("/tmp/gst-audio.log", "ab", buffering=0)
         proc = subprocess.Popen(
             GST_AUDIO_CMD,
             stdout=subprocess.PIPE,
             stderr=gst_err,
             preexec_fn=os.setsid,
+            bufsize=0,
         )
         try:
             self.send_response(200)
-            # OGG container carrying Opus. Browsers accept audio/ogg for
-            # this even though the codec inside changed from vorbis.
             self.send_header("Content-Type", "audio/ogg; codecs=opus")
             self.send_header("Cache-Control", "no-cache, no-store")
             self.send_header("Connection", "close")
             self.end_headers()
+            self.wfile.flush()
             while True:
-                chunk = proc.stdout.read(4096)
+                # read1() returns whatever is immediately available
+                # (up to N bytes) without waiting to fill the buffer.
+                chunk = proc.stdout.read1(4096)
                 if not chunk:
                     break
                 self.wfile.write(chunk)
+                self.wfile.flush()
         except (BrokenPipeError, ConnectionResetError):
             pass  # client disconnected — normal
         finally:

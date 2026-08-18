@@ -72,11 +72,9 @@
         window.addEventListener('touchstart',   () => enter('touchstart'), { passive: true });
 
         // Keep the audio element near the live edge — HTMLAudioElement
-        // will happily buffer many seconds ahead of playback, which
-        // stacks with server-side buffering and gives 1-2s latency.
-        // Every second, if we're more than ~0.4s behind the buffered
-        // end, jump forward to (end - 0.15s) so we stay close to real
-        // time without stuttering.
+        // buffers ahead of the playhead, which stacks with server-side
+        // and network buffering. Poll aggressively and jump forward if
+        // we've fallen more than 200 ms behind the buffered end.
         setInterval(() => {
             if (!entered) return;
             if (audio.readyState < 2) return;
@@ -84,10 +82,10 @@
             if (b.length === 0) return;
             const end = b.end(b.length - 1);
             const behind = end - audio.currentTime;
-            if (behind > 0.4) {
-                audio.currentTime = Math.max(end - 0.15, 0);
+            if (behind > 0.2) {
+                audio.currentTime = Math.max(end - 0.05, 0);
             }
-        }, 1000);
+        }, 250);
     </script>
 </body>
 </html>
