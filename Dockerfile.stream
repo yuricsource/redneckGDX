@@ -2,7 +2,7 @@
 #
 # Streaming container: runs the actual desktop JVM game against a virtual X
 # display inside the container, and streams the display + audio to the
-# browser over WebSocket via Xpra HTML5. Users upload their redneck.grp
+# browser over WebSocket via KasmVNC. Users upload their redneck.grp
 # through a landing page; the game starts once it lands in /data.
 
 # ---------- Stage 1: build the fat jar ----------
@@ -22,9 +22,6 @@ COPY html/             ./html/
 COPY external/         ./external/
 COPY scripts/          ./scripts/
 
-# The gdx-teavm plugin gets built as a Gradle included build even when we only
-# want :desktop:shadowJar (html/build.gradle applies it at configure time).
-# Patch it before running Gradle.
 RUN sh ./scripts/patch-vendored.sh
 
 RUN ./gradlew :desktop:shadowJar --no-daemon
@@ -35,64 +32,73 @@ FROM eclipse-temurin:17-jre-jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:1
+ENV HOME=/root
 
-# Base system: Xvfb for headless display, fluxbox as a minimal WM, nginx
-# fronts the whole thing on :8080, python3 runs the tiny upload server,
-# inotify-tools lets the entrypoint supervisor wait for the grp file to
-# appear without polling.
+# Base system + KasmVNC deps.
+#
+# KasmVNC is a TigerVNC fork by Kasm Technologies purpose-built for
+# containerised browser sessions. It bundles a noVNC-fork HTML5 client
+# with mouse-capture and WebSocket-audio channels — no wrestling with
+# Xpra auth semantics or missing jquery.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        xvfb \
-        fluxbox \
-        nginx \
-        python3 \
-        inotify-tools \
+        wget \
         ca-certificates \
         curl \
+        # Runtime deps for the game
         libopenal1 \
         libglu1-mesa \
         libgl1-mesa-dri \
         mesa-utils \
+        # Window management (KasmVNC replaces Xvfb entirely; we still
+        # need a WM inside the session so the game window is placed
+        # and can be forced fullscreen)
+        fluxbox \
         xdotool \
         wmctrl \
-        # Xpra: HTML5 display server that streams the framebuffer AND audio
-        # to the browser over WebSocket. Replaces the previous x11vnc +
-        # websockify + noVNC chain and brings sound to the browser tab.
-        # jammy ships xpra 4.x; the HTML5 client is bundled in this package
-        # (a separate `xpra-html5` deb exists only on xpra.org's newer 5.x
-        # apt source, which we're not using).
-        xpra \
-        # GStreamer codecs for Xpra's audio pump (opus preferred for its
-        # low-latency web-audio playback in the HTML5 client).
-        gstreamer1.0-plugins-base \
-        gstreamer1.0-plugins-good \
-        gstreamer1.0-plugins-bad \
-        gstreamer1.0-plugins-ugly \
-        gstreamer1.0-libav \
-        gstreamer1.0-pulseaudio \
-        # PulseAudio still runs the null_sink; Xpra captures from it.
+        # Front-end
+        nginx \
+        python3 \
+        inotify-tools \
+        # Audio (KasmVNC reads from pulseaudio for the browser audio
+        # channel)
         pulseaudio \
         pulseaudio-utils \
-        # jammy's xpra deb is missing jquery from its bundled HTML5 client
-        # (packaging oversight — no dependency on libjs-jquery). Symlink
-        # below patches it in.
-        libjs-jquery \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -sf /usr/share/javascript/jquery/jquery.js /usr/share/xpra/www/js/lib/jquery.js \
-    # Hard-code the default password so we never rely on URL params being
-    # carried through nginx/proxy layers. The server runs --auth=allow
-    # (accept-any-password), so this "x" is purely a challenge-response
-    # placeholder, not a real credential. Two edits: the init default and
-    # any subsequent overwrite in init_settings.
-    && sed -i 's|this\.password *= *null;|this.password = "x";|g' /usr/share/xpra/www/js/Client.js \
-    && sed -i 's|this\.password *= *"";|this.password = "x";|g' /usr/share/xpra/www/js/Client.js
+        # KasmVNC runtime deps
+        xauth \
+        libjpeg-turbo8 \
+        libxfont2 \
+        libxdmcp6 \
+        libxkbfile1 \
+        libtinfo6 \
+        libssl3 \
+        libpixman-1-0 \
+        libavcodec58 \
+        libavutil56 \
+        libswscale5 \
+        libxcursor1 \
+        libxi6 \
+        libxinerama1 \
+        libxrandr2 \
+        libxtst6 \
+        libgbm1 \
+        libgomp1 \
+        libpciaccess0 \
+        libdrm2 \
+    && wget -q -O /tmp/kasmvnc.deb \
+        https://github.com/kasmtech/KasmVNC/releases/download/v1.3.4/kasmvncserver_jammy_1.3.4_f2fbd13_amd64.deb \
+    && apt-get install -y --no-install-recommends /tmp/kasmvnc.deb \
+    && rm /tmp/kasmvnc.deb \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt/rrgdx /data
+RUN mkdir -p /opt/rrgdx /data /root/.vnc
+
 COPY --from=build /tmp/game.jar /opt/rrgdx/game.jar
 
 COPY scripts/container-start.sh   /opt/rrgdx/container-start.sh
 COPY scripts/wait-and-launch.sh   /opt/rrgdx/wait-and-launch.sh
 COPY scripts/upload_server.py     /opt/rrgdx/upload_server.py
 COPY scripts/nginx.conf           /etc/nginx/nginx.conf
+COPY scripts/kasmvnc.yaml         /root/.vnc/kasmvnc.yaml
 COPY html/webapp/index.html       /opt/rrgdx/landing/index.html
 
 RUN chmod +x /opt/rrgdx/container-start.sh /opt/rrgdx/wait-and-launch.sh

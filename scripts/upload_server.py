@@ -21,10 +21,11 @@ DEST = os.path.join(DATA_DIR, "redneck.grp")
 MAX_BYTES = 1024 * 1024 * 1024  # 1 GiB — same ceiling as nginx
 
 LOG_FILES = [
-    "/tmp/xpra.log",
+    "/tmp/kasmvnc.log",
+    "/tmp/game.log",
     "/tmp/pulseaudio.log",
-    "/tmp/upload.log",
     "/tmp/fluxbox.log",
+    "/tmp/upload.log",
 ]
 
 
@@ -114,8 +115,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(303)
         self.send_header(
             "Location",
-            "/xpra/index.html?password=x&sound=on"
-            "&audio_codec=opus&clipboard=true&keyboard_layout=us&scaling=auto",
+            "/kasm/index.html?path=kasm/websockify&resize=remote&reconnect=1&autoconnect=1",
         )
         self.end_headers()
 

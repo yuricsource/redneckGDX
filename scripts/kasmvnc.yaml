@@ -1,0 +1,40 @@
+# KasmVNC server config. Loaded from ~/.vnc/kasmvnc.yaml.
+# Docs: https://kasmweb.com/docs/latest/how_to/kasmvncserver.html
+#
+# Single-user demo: no auth, HTTP only (nginx TLS-terminates if the
+# outside world is meant to see this).
+
+network:
+  # HTTP-only; disable KasmVNC's built-in TLS since nginx is in front.
+  protocol: http
+  websocket_port: auto
+  use_ipv4: true
+  use_ipv6: false
+  # Bind to loopback only — nginx proxies from :8080.
+  interface: 127.0.0.1
+
+runtime_configuration:
+  # No auth at all.
+  allow_client_to_override_kasm_server_settings: true
+
+logging:
+  log_writer_name: all
+  log_dest: logfile
+  level: 30
+
+encoding:
+  # Video-codec fallback ordering. h264 gives the smoothest gameplay
+  # when the browser can decode it; jpeg is the fallback.
+  video_encoder: auto
+  jpeg_quality: 7
+  webp_quality: 7
+
+# One-tap default password. --auth is disabled below, but KasmVNC still
+# writes a password file at startup; give it a known value in case any
+# code path checks it.
+desktop:
+  resolution:
+    width: 1280
+    height: 720
+  allow_resize: true
+  pixel_depth: 24

@@ -1,24 +1,21 @@
 #!/bin/bash
-# Container supervisor. Xpra owns display + WM + audio pump + HTML5 client
-# on port 14500 and manages the game process directly via --start-child
-# (which invokes wait-and-launch.sh, blocking until the grp arrives).
-# Nginx fronts everything on :8080 (landing page, upload endpoint, /xpra/
-# proxy).
+# Container supervisor. KasmVNC (Xvnc) owns the X display + noVNC-fork
+# HTML5 client + audio channel. Nginx fronts everything on 8080.
 
 set -euo pipefail
 
 DATA=/data
 INI="$DATA/redneckgdx.ini"
 
-DISPLAY_NUM=100
+DISPLAY_NUM=1
 DISPLAY_W=${DISPLAY_W:-1280}
 DISPLAY_H=${DISPLAY_H:-720}
-XPRA_PORT=14500
+KASM_PORT=6901
 
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 
-# ---- 1. pulseaudio (Xpra will capture from it) ---------------------------
-log "starting pulseaudio (null_sink; Xpra captures for browser audio)"
+# ---- 1. pulseaudio (KasmVNC captures for browser audio) ------------------
+log "starting pulseaudio (null_sink)"
 mkdir -p /var/run/pulse /var/lib/pulse
 pulseaudio --system --disallow-exit --disallow-module-loading=false \
     --exit-idle-time=-1 --daemonize=yes --log-target=file:/tmp/pulseaudio.log \
@@ -35,15 +32,10 @@ python3 /opt/rrgdx/upload_server.py >/tmp/upload.log 2>&1 &
 log "starting nginx (8080)"
 nginx -g 'daemon off;' &
 
-# ---- 3. seed redneckgdx.ini so the game boots fullscreen ----------------
+# ---- 3. seed redneckgdx.ini ---------------------------------------------
 mkdir -p "$DATA"
 if [ ! -f "$INI" ]; then
-    log "seeding $INI (Fullscreen=true, ${DISPLAY_W}x${DISPLAY_H})"
-    # Start windowed: Xpra HTML5 handles regular resizable windows more
-    # reliably than override-redirect/fullscreen requests. The window
-    # manager (fluxbox) then maximises the game to the whole desktop
-    # via the fullscreen enforcer loop below, which achieves the same
-    # visible-fullscreen effect without confusing the Xpra client.
+    log "seeding $INI (Fullscreen=false, ${DISPLAY_W}x${DISPLAY_H})"
     cat > "$INI" <<EOF
 [Screen]
 Fullscreen = false
@@ -57,9 +49,47 @@ RawMouseInput = true
 EOF
 fi
 
-# ---- 4. fullscreen enforcer (background loop) ---------------------------
-# Belt-and-suspenders for the seeded Fullscreen=true: force the game
-# window fullscreen once it appears.
+# ---- 4. KasmVNC (Xvnc) -- direct binary invocation ----------------------
+# We call Xvnc directly (not the kasmvncserver wrapper) so we can pin
+# every flag explicitly. -SecurityTypes None + -disableBasicAuth means
+# no password challenge and no HTTP Basic-Auth on the built-in webserver.
+# -websocketPort serves the HTML5 client + WS on one port. -httpd points
+# at the KasmVNC-bundled noVNC-fork HTML5 client.
+log "starting KasmVNC on :${DISPLAY_NUM} (HTTP+WS on :${KASM_PORT})"
+Xvnc ":${DISPLAY_NUM}" \
+    -SecurityTypes None \
+    -disableBasicAuth \
+    -websocketPort ${KASM_PORT} \
+    -interface 127.0.0.1 \
+    -sslOnly 0 \
+    -PublicIP 0.0.0.0 \
+    -httpd /usr/share/kasmvnc/www \
+    -depth 24 \
+    -geometry "${DISPLAY_W}x${DISPLAY_H}" \
+    -desktop RedneckGDX \
+    -pn \
+    -localhost 0 \
+    +extension GLX \
+    +extension RANDR \
+    +extension Composite \
+    -noreset \
+    >/tmp/kasmvnc.log 2>&1 &
+KASM_PID=$!
+
+# Wait for KasmVNC to be ready before we start the WM and the game.
+for i in $(seq 1 60); do
+    if curl -sf "http://127.0.0.1:${KASM_PORT}/" >/dev/null 2>&1; then
+        log "KasmVNC HTTP ready"
+        break
+    fi
+    sleep 0.5
+done
+
+# ---- 5. fluxbox WM inside the KasmVNC display ---------------------------
+log "starting fluxbox inside :${DISPLAY_NUM}"
+DISPLAY=":${DISPLAY_NUM}" fluxbox >/tmp/fluxbox.log 2>&1 &
+
+# ---- 6. fullscreen enforcer (background) --------------------------------
 (
     for _ in $(seq 1 120); do
         if DISPLAY=":${DISPLAY_NUM}" wmctrl -l 2>/dev/null | grep -qi redneck; then
@@ -73,43 +103,9 @@ fi
     done
 ) &
 
-# ---- 5. Xpra: display + WM + HTML5 client + audio + game ----------------
-# --start=fluxbox: WM the game requests fullscreen against.
-# --start-child=wait-and-launch.sh: blocks until grp is uploaded, then
-#   exec's the JVM. Xpra owns the process and its stdout/stderr are
-#   captured in the Xpra log.
-# --exit-with-children=no: keep the Xpra session alive if the game
-#   exits (crash or user quit) so the container stays up and a refresh
-#   works.
-log "starting Xpra on :${DISPLAY_NUM}, HTML5 on :${XPRA_PORT}"
-# xpra start-desktop (not `start`) hands the browser the entire virtual
-# desktop as one framebuffer — same UX as classic VNC. This side-steps
-# Xpra's seamless-mode default of hiding override-redirect / fullscreen
-# windows, which is how the game vanished last iteration.
-# Redirect stdout+stderr so /logs can surface xpra's own output.
-xpra start-desktop ":${DISPLAY_NUM}" \
-    --daemon=no \
-    --bind-tcp="0.0.0.0:${XPRA_PORT}" \
-    --html=on \
-    --auth=allow \
-    --tcp-auth=allow \
-    --mdns=no \
-    --pulseaudio=no \
-    --speaker=on \
-    --speaker-codec=opus \
-    --microphone=off \
-    --webcam=no \
-    --notifications=no \
-    --system-tray=no \
-    --clipboard=yes \
-    --file-transfer=no \
-    --printing=no \
-    --pixel-depth=24 \
-    --sharing=yes \
-    --xvfb="Xvfb +extension GLX +extension RANDR +extension Composite -screen 0 ${DISPLAY_W}x${DISPLAY_H}x24+32 -nolisten tcp -noreset" \
-    --start-child="fluxbox" \
-    --start-child="/opt/rrgdx/wait-and-launch.sh" \
-    --exit-with-children=no \
-    >/tmp/xpra.log 2>&1 &
-XPRA_PID=$!
-wait "$XPRA_PID"
+# ---- 7. wait-and-launch (blocks on grp then execs game) -----------------
+log "spawning wait-and-launch (blocks until grp arrives, then exec's the game)"
+DISPLAY=":${DISPLAY_NUM}" /opt/rrgdx/wait-and-launch.sh >/tmp/game.log 2>&1 &
+
+# ---- 8. block on KasmVNC so the container stays up ----------------------
+wait "$KASM_PID"
