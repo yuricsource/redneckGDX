@@ -17,6 +17,9 @@
 package ru.m210projects.Redneck.desktop;
 
 import com.badlogic.gdx.backends.LwjglLauncherUtil;
+import com.badlogic.gdx.backends.lwjgl3.audio.OpenALAudio;
+import ru.m210projects.Build.Architecture.common.audio.AudioDriver;
+import ru.m210projects.Build.Architecture.common.audio.BuildAudio;
 import ru.m210projects.Build.settings.GameConfig;
 import ru.m210projects.Redneck.Config;
 import ru.m210projects.Redneck.Main;
@@ -35,6 +38,23 @@ public class DesktopLauncher {
         cfg.load();
         cfg.setGamePath(cfg.getCfgPath().getParent());
         cfg.addMidiDevices(LwjglLauncherUtil.getMidiDevices());
+
+        // Register at least one audio driver — BuildGDX's ApplicationContext
+        // throws "No audio drivers registered in config file" from
+        // setAudioDriver() otherwise (called during Sounds.SoundStartup at
+        // Main.init:197). LwjglLauncherUtil disables libGDX's audio and
+        // expects the caller to register drivers. Register DUMMY as a
+        // guaranteed fallback and OpenAL for real audio when the platform
+        // supports it (OpenAL falls back to DUMMY at run-time internally if
+        // no device is available).
+        cfg.registerAudioDriver(AudioDriver.DUMMY_AUDIO, new BuildAudio.DummyAudio(cfg));
+        try {
+            cfg.registerAudioDriver(AudioDriver.OPENAL_AUDIO, new OpenALAudio(cfg));
+        } catch (Throwable t) {
+            System.err.println("[DesktopLauncher] OpenAL unavailable, falling back to DUMMY_AUDIO: " + t);
+            cfg.setAudioDriver(AudioDriver.DUMMY_AUDIO);
+        }
+
         List<String> args = Arrays.asList(arg);
         LwjglLauncherUtil.launch(new Main(args, cfg, appname, "?.??", false), null);
     }
