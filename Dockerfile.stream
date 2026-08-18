@@ -85,7 +85,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpciaccess0 \
         libdrm2 \
     && wget -q -O /tmp/kasmvnc.deb \
-        https://github.com/kasmtech/KasmVNC/releases/download/v1.3.4/kasmvncserver_jammy_1.3.4_f2fbd13_amd64.deb \
+        https://github.com/kasmtech/KasmVNC/releases/download/v1.3.4/kasmvncserver_jammy_1.3.4_amd64.deb \
     && apt-get install -y --no-install-recommends /tmp/kasmvnc.deb \
     && rm /tmp/kasmvnc.deb \
     && rm -rf /var/lib/apt/lists/*
