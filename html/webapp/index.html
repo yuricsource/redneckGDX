@@ -95,7 +95,7 @@
         // If a grp is already present in the container, skip the form and go
         // straight to noVNC. `nginx.conf` serves /grp-status as static JSON.
         fetch('/grp-status').then(r => r.json()).then(s => {
-            if (s.present) location.replace('/xpra/connect.html?autoconnect=true&sound=on&audio_codec=opus&clipboard=true&keyboard_layout=us&scaling=auto&password=x');
+            if (s.present) location.replace('/xpra/index.html?password=x&sound=on&audio_codec=opus&clipboard=true&keyboard_layout=us&scaling=auto');
         }).catch(() => { /* fall through to upload UI */ });
 
         function upload(file) {
@@ -118,7 +118,7 @@
                 if (xhr.status === 200 || xhr.status === 303 || xhr.status === 204) {
                     els.label.textContent = 'Upload complete. Connecting…';
                     els.fill.style.width = '100%';
-                    setTimeout(() => location.replace('/xpra/connect.html?autoconnect=true&sound=on&audio_codec=opus&clipboard=true&keyboard_layout=us&scaling=auto&password=x'), 400);
+                    setTimeout(() => location.replace('/xpra/index.html?password=x&sound=on&audio_codec=opus&clipboard=true&keyboard_layout=us&scaling=auto'), 400);
                 } else {
                     els.error.textContent = `Upload failed (${xhr.status}): ${xhr.responseText || 'no detail'}`;
                     els.progress.classList.remove('active');
