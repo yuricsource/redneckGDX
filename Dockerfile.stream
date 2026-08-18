@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 #
 # Streaming container: runs the actual desktop JVM game against a virtual X
-# display inside the container, and streams the display to the browser over
-# WebSocket VNC (noVNC + websockify + tigervnc). Users upload their
-# redneck.grp through a landing page; the game starts once it lands in /data.
+# display inside the container, and streams the display + audio to the
+# browser over WebSocket via Xpra HTML5. Users upload their redneck.grp
+# through a landing page; the game starts once it lands in /data.
 
 # ---------- Stage 1: build the fat jar ----------
 FROM eclipse-temurin:17-jdk-jammy AS build
@@ -36,11 +36,10 @@ FROM eclipse-temurin:17-jre-jammy
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:1
 
-# Base system: Xvfb for headless display, tigervnc-scraping-server exports it,
-# websockify bridges VNC to WebSocket, noVNC is the HTML5 client, fluxbox is a
-# minimal WM (some games hate running with no WM), nginx fronts the whole
-# thing, python3 runs the tiny upload server, inotify-tools lets the entrypoint
-# supervisor wait for the grp file to appear without polling.
+# Base system: Xvfb for headless display, fluxbox as a minimal WM, nginx
+# fronts the whole thing on :8080, python3 runs the tiny upload server,
+# inotify-tools lets the entrypoint supervisor wait for the grp file to
+# appear without polling.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb \
         fluxbox \
@@ -75,9 +74,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pulseaudio-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Make sure noVNC's vnc.html is at a stable path.
-RUN ln -sf /usr/share/novnc/vnc.html /usr/share/novnc/index.html
-
 RUN mkdir -p /opt/rrgdx /data
 COPY --from=build /tmp/game.jar /opt/rrgdx/game.jar
 
@@ -90,6 +86,6 @@ RUN chmod +x /opt/rrgdx/container-start.sh
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=3s CMD wget -q -O - http://localhost:8080/healthz >/dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=5s CMD curl -sf http://localhost:8080/healthz >/dev/null || exit 1
 
 ENTRYPOINT ["/opt/rrgdx/container-start.sh"]
