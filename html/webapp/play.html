@@ -70,6 +70,24 @@
         overlay.addEventListener('click',       () => enter('click'));
         window.addEventListener('keydown',      () => enter('keydown'));
         window.addEventListener('touchstart',   () => enter('touchstart'), { passive: true });
+
+        // Keep the audio element near the live edge — HTMLAudioElement
+        // will happily buffer many seconds ahead of playback, which
+        // stacks with server-side buffering and gives 1-2s latency.
+        // Every second, if we're more than ~0.4s behind the buffered
+        // end, jump forward to (end - 0.15s) so we stay close to real
+        // time without stuttering.
+        setInterval(() => {
+            if (!entered) return;
+            if (audio.readyState < 2) return;
+            const b = audio.buffered;
+            if (b.length === 0) return;
+            const end = b.end(b.length - 1);
+            const behind = end - audio.currentTime;
+            if (behind > 0.4) {
+                audio.currentTime = Math.max(end - 0.15, 0);
+            }
+        }, 1000);
     </script>
 </body>
 </html>

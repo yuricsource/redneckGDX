@@ -31,18 +31,27 @@ LOG_FILES = [
     "/tmp/upload.log",
 ]
 
-# gstreamer pipeline: pull PCM from pulseaudio's null-sink monitor,
-# convert, encode to Vorbis, mux to OGG, write to stdout. Streams
-# forever until the process is killed (i.e. client disconnects).
+# gstreamer pipeline: pull PCM from pulseaudio's null-sink monitor at
+# low latency, encode as Opus in an OGG container (Opus is designed
+# for realtime — 20ms frames vs Vorbis's ~200ms lookahead), write to
+# stdout. Streams forever until client disconnects.
+#
+# `pulsesrc buffer-time=40000 latency-time=10000` = 40ms buffer, 10ms
+# period, keeping the input pipeline tight.
+# `opusenc bitrate=96000 frame-size=20` gives 20ms frames at 96 kbps
+# which is plenty for game audio and low-latency.
+# `oggmux max-delay=20000000 max-page-duration=20000000` (20ms in ns)
+# forces small pages so nothing accumulates in the muxer.
 GST_AUDIO_CMD = [
     "gst-launch-1.0", "-q",
     "pulsesrc", "device=null_out.monitor",
+        "buffer-time=40000", "latency-time=10000",
     "!", "audioconvert",
     "!", "audioresample",
-    "!", "audio/x-raw,rate=44100,channels=2",
-    "!", "vorbisenc", "quality=0.4",
-    "!", "oggmux",
-    "!", "fdsink", "fd=1",
+    "!", "audio/x-raw,rate=48000,channels=2",
+    "!", "opusenc", "bitrate=96000", "frame-size=20", "audio-type=generic",
+    "!", "oggmux", "max-delay=20000000", "max-page-duration=20000000",
+    "!", "fdsink", "fd=1", "sync=false",
 ]
 
 
@@ -102,8 +111,9 @@ class Handler(BaseHTTPRequestHandler):
         )
         try:
             self.send_response(200)
-            self.send_header("Content-Type", "audio/ogg")
-            # Long-lived stream; no Content-Length, no keep-alive.
+            # OGG container carrying Opus. Browsers accept audio/ogg for
+            # this even though the codec inside changed from vorbis.
+            self.send_header("Content-Type", "audio/ogg; codecs=opus")
             self.send_header("Cache-Control", "no-cache, no-store")
             self.send_header("Connection", "close")
             self.end_headers()
