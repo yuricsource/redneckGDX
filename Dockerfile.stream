@@ -58,9 +58,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         # Xpra: HTML5 display server that streams the framebuffer AND audio
         # to the browser over WebSocket. Replaces the previous x11vnc +
         # websockify + noVNC chain and brings sound to the browser tab.
-        # jammy ships xpra 4.x which has a stable HTML5 client.
+        # jammy ships xpra 4.x; the HTML5 client is bundled in this package
+        # (a separate `xpra-html5` deb exists only on xpra.org's newer 5.x
+        # apt source, which we're not using).
         xpra \
-        xpra-html5 \
         # GStreamer codecs for Xpra's audio pump (opus preferred for its
         # low-latency web-audio playback in the HTML5 client).
         gstreamer1.0-plugins-base \
