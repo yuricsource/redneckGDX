@@ -43,25 +43,33 @@ ENV DISPLAY=:1
 # supervisor wait for the grp file to appear without polling.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb \
-        x11vnc \
-        novnc \
-        websockify \
         fluxbox \
         nginx \
         python3 \
         inotify-tools \
         ca-certificates \
+        curl \
         libopenal1 \
         libglu1-mesa \
         libgl1-mesa-dri \
         mesa-utils \
-        # xdotool: force the game window fullscreen post-launch when the ini
-        # doesn't stick (belt-and-suspenders with the seeded Fullscreen=true).
         xdotool \
         wmctrl \
-        # pulseaudio in system-daemon mode: the game boots OpenAL cleanly.
-        # NOTE: noVNC has no audio channel, so sound is not browser-audible
-        # today. A future switch to Xpra HTML5 or KasmVNC would carry it.
+        # Xpra: HTML5 display server that streams the framebuffer AND audio
+        # to the browser over WebSocket. Replaces the previous x11vnc +
+        # websockify + noVNC chain and brings sound to the browser tab.
+        # jammy ships xpra 4.x which has a stable HTML5 client.
+        xpra \
+        xpra-html5 \
+        # GStreamer codecs for Xpra's audio pump (opus preferred for its
+        # low-latency web-audio playback in the HTML5 client).
+        gstreamer1.0-plugins-base \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
+        gstreamer1.0-libav \
+        gstreamer1.0-pulseaudio \
+        # PulseAudio still runs the null_sink; Xpra captures from it.
         pulseaudio \
         pulseaudio-utils \
     && rm -rf /var/lib/apt/lists/*
