@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
-# Tiny grp-upload + /logs endpoint. Listens on 127.0.0.1:8081; nginx
-# proxies /upload and /logs to this.
+# Tiny multi-endpoint server on 127.0.0.1:8081. nginx proxies /upload,
+# /logs, and /audio.ogg to this.
 #
-#   POST /upload : multipart form-data with field "grp" -> atomic write
-#                  to /data/redneck.grp, then 303 to /xpra/index.html
-#   GET  /logs   : concatenated tails of /tmp/xpra.log, /tmp/pulseaudio.log,
-#                  /tmp/upload.log, plus /data listing and process tree.
-#                  Purely a debug convenience, exposed on the same port
-#                  as /upload so users can share state via URL.
+#   POST /upload   : multipart form-data with field "grp" -> atomic
+#                    write to /data/redneck.grp, then 303 to /play.
+#   GET  /logs     : container-side diagnostics dump.
+#   GET  /audio.ogg: OGG/Vorbis audio stream sourced by gstreamer from
+#                    PulseAudio's null_out.monitor. Chunked HTTP; the
+#                    browser's <audio> element streams it forever.
 
 import cgi
 import os
 import shutil
+import signal
 import subprocess
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 DATA_DIR = "/data"
 DEST = os.path.join(DATA_DIR, "redneck.grp")
-MAX_BYTES = 1024 * 1024 * 1024  # 1 GiB — same ceiling as nginx
+MAX_BYTES = 1024 * 1024 * 1024
 
 LOG_FILES = [
     "/tmp/kasmvnc.log",
@@ -26,6 +27,20 @@ LOG_FILES = [
     "/tmp/pulseaudio.log",
     "/tmp/fluxbox.log",
     "/tmp/upload.log",
+]
+
+# gstreamer pipeline: pull PCM from pulseaudio's null-sink monitor,
+# convert, encode to Vorbis, mux to OGG, write to stdout. Streams
+# forever until the process is killed (i.e. client disconnects).
+GST_AUDIO_CMD = [
+    "gst-launch-1.0", "-q",
+    "pulsesrc", "device=null_out.monitor",
+    "!", "audioconvert",
+    "!", "audioresample",
+    "!", "audio/x-raw,rate=44100,channels=2",
+    "!", "vorbisenc", "quality=0.4",
+    "!", "oggmux",
+    "!", "fdsink", "fd=1",
 ]
 
 
@@ -36,8 +51,7 @@ def tail(path: str, n: int = 200) -> str:
             size = fh.tell()
             fh.seek(max(0, size - 64 * 1024))
             data = fh.read().decode("utf-8", errors="replace")
-        lines = data.splitlines()[-n:]
-        return "\n".join(lines)
+        return "\n".join(data.splitlines()[-n:])
     except FileNotFoundError:
         return "(file not found)"
     except Exception as exc:  # noqa: BLE001
@@ -46,9 +60,7 @@ def tail(path: str, n: int = 200) -> str:
 
 def run(cmd: list[str]) -> str:
     try:
-        return subprocess.run(
-            cmd, capture_output=True, text=True, timeout=3,
-        ).stdout
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=3).stdout
     except Exception as exc:  # noqa: BLE001
         return f"(command failed: {exc})"
 
@@ -57,15 +69,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):  # noqa: N802
         if self.path == "/logs":
             self._logs()
-            return
-        self.send_error(404, "not found")
+        elif self.path == "/audio.ogg":
+            self._audio()
+        else:
+            self.send_error(404, "not found")
 
     def _logs(self):
-        parts = []
-        parts.append("=== /data contents ===\n" + run(["ls", "-la", DATA_DIR]))
-        parts.append("=== ps -ef ===\n" + run(["ps", "-eo", "pid,user,cmd"]))
+        parts = ["=== /data ===\n" + run(["ls", "-la", DATA_DIR]),
+                 "=== ps ===\n" + run(["ps", "-eo", "pid,user,cmd"])]
         for path in LOG_FILES:
-            parts.append(f"=== tail {path} ===\n" + tail(path))
+            parts.append(f"=== {path} ===\n" + tail(path))
         body = "\n\n".join(parts).encode("utf-8", errors="replace")
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
@@ -73,24 +86,51 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _audio(self):
+        # Spawn a per-connection gstreamer pipe. When the client
+        # disconnects, wfile.write raises and we kill the child.
+        proc = subprocess.Popen(
+            GST_AUDIO_CMD,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            preexec_fn=os.setsid,
+        )
+        try:
+            self.send_response(200)
+            self.send_header("Content-Type", "audio/ogg")
+            # Long-lived stream; no Content-Length, no keep-alive.
+            self.send_header("Cache-Control", "no-cache, no-store")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            while True:
+                chunk = proc.stdout.read(4096)
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # client disconnected — normal
+        finally:
+            try:
+                os.killpg(proc.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            proc.wait(timeout=2)
+
     def do_POST(self):  # noqa: N802
         if self.path != "/upload":
             self.send_error(404, "not found")
             return
-
         length = int(self.headers.get("content-length", "0"))
         if length <= 0 or length > MAX_BYTES:
             self.send_error(413, "payload too large or missing")
             return
-
         ctype = self.headers.get("content-type", "")
         if not ctype.startswith("multipart/form-data"):
             self.send_error(415, "expected multipart/form-data")
             return
 
         form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
+            fp=self.rfile, headers=self.headers,
             environ={"REQUEST_METHOD": "POST", "CONTENT_TYPE": ctype},
         )
         field = form["grp"] if "grp" in form else None
@@ -113,18 +153,15 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         self.send_response(303)
-        self.send_header(
-            "Location",
-            "/kasm/index.html?path=kasm/websockify&resize=remote&reconnect=1&autoconnect=1&audio=1",
-        )
+        self.send_header("Location", "/play")
         self.end_headers()
 
-    def log_message(self, fmt, *args):  # quieter default logs
+    def log_message(self, fmt, *args):
         self.log_date_time_string()
         print("upload:", fmt % args)
 
 
 if __name__ == "__main__":
     server = ThreadingHTTPServer(("127.0.0.1", 8081), Handler)
-    print("upload server listening on 127.0.0.1:8081")
+    print("upload/audio/logs server listening on 127.0.0.1:8081")
     server.serve_forever()
