@@ -72,7 +72,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         # PulseAudio still runs the null_sink; Xpra captures from it.
         pulseaudio \
         pulseaudio-utils \
-    && rm -rf /var/lib/apt/lists/*
+        # jammy's xpra deb is missing jquery from its bundled HTML5 client
+        # (packaging oversight — no dependency on libjs-jquery). Symlink
+        # below patches it in.
+        libjs-jquery \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/share/javascript/jquery/jquery.js /usr/share/xpra/www/js/lib/jquery.js
 
 RUN mkdir -p /opt/rrgdx /data
 COPY --from=build /tmp/game.jar /opt/rrgdx/game.jar

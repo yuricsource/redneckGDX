@@ -39,9 +39,14 @@ nginx -g 'daemon off;' &
 mkdir -p "$DATA"
 if [ ! -f "$INI" ]; then
     log "seeding $INI (Fullscreen=true, ${DISPLAY_W}x${DISPLAY_H})"
+    # Start windowed: Xpra HTML5 handles regular resizable windows more
+    # reliably than override-redirect/fullscreen requests. The window
+    # manager (fluxbox) then maximises the game to the whole desktop
+    # via the fullscreen enforcer loop below, which achieves the same
+    # visible-fullscreen effect without confusing the Xpra client.
     cat > "$INI" <<EOF
 [Screen]
-Fullscreen = true
+Fullscreen = false
 ScreenWidth = ${DISPLAY_W}
 ScreenHeight = ${DISPLAY_H}
 
@@ -77,7 +82,12 @@ fi
 #   exits (crash or user quit) so the container stays up and a refresh
 #   works.
 log "starting Xpra on :${DISPLAY_NUM}, HTML5 on :${XPRA_PORT}"
-exec xpra start ":${DISPLAY_NUM}" \
+# xpra start-desktop (not `start`) hands the browser the entire virtual
+# desktop as one framebuffer — same UX as classic VNC. This side-steps
+# Xpra's seamless-mode default of hiding override-redirect / fullscreen
+# windows, which is how the game vanished last iteration.
+# Redirect stdout+stderr so /logs can surface xpra's own output.
+xpra start-desktop ":${DISPLAY_NUM}" \
     --daemon=no \
     --bind-tcp="0.0.0.0:${XPRA_PORT}" \
     --html=on \
@@ -96,10 +106,10 @@ exec xpra start ":${DISPLAY_NUM}" \
     --printing=no \
     --pixel-depth=24 \
     --sharing=yes \
-    --resize-display="${DISPLAY_W}x${DISPLAY_H}" \
     --xvfb="Xvfb +extension GLX +extension RANDR +extension Composite -screen 0 ${DISPLAY_W}x${DISPLAY_H}x24+32 -nolisten tcp -noreset" \
-    --start=fluxbox \
-    --start-child=/opt/rrgdx/wait-and-launch.sh \
+    --start-child="fluxbox" \
+    --start-child="/opt/rrgdx/wait-and-launch.sh" \
     --exit-with-children=no \
-    --log-dir=/tmp \
-    --log-file=xpra.log
+    >/tmp/xpra.log 2>&1 &
+XPRA_PID=$!
+wait "$XPRA_PID"
