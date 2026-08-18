@@ -47,19 +47,29 @@
         const overlay = document.getElementById('unmute-overlay');
         const iframe = document.getElementById('kasm');
 
-        // Browser autoplay policy requires a user gesture before the
-        // <audio> element can start. The overlay's click handler both
-        // satisfies that requirement and forwards focus into the iframe
-        // so keyboard/mouse go to the game.
-        overlay.addEventListener('click', async () => {
-            try {
-                await audio.play();
-            } catch (err) {
-                console.warn('audio.play() failed:', err);
-            }
+        // Fire on the first user gesture (any of click / keydown / touch).
+        // Overlay disappears immediately; audio starts asynchronously.
+        // Previously we did `await audio.play()` before hiding — but with
+        // preload="none" and a live stream, the play Promise can sit
+        // pending until enough data has been buffered, which meant the
+        // overlay never disappeared. Fire-and-forget instead.
+        let entered = false;
+        function enter(reason) {
+            if (entered) return;
+            entered = true;
+            console.log('[play] entering via', reason);
             overlay.classList.add('hidden');
             iframe.focus();
-        });
+            audio.play().then(
+                () => console.log('[play] audio.play() OK'),
+                (err) => console.warn('[play] audio.play() failed:', err),
+            );
+        }
+
+        overlay.addEventListener('pointerdown', () => enter('pointerdown'));
+        overlay.addEventListener('click',       () => enter('click'));
+        window.addEventListener('keydown',      () => enter('keydown'));
+        window.addEventListener('touchstart',   () => enter('touchstart'), { passive: true });
     </script>
 </body>
 </html>
