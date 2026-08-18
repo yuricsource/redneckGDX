@@ -429,7 +429,12 @@ public class Main extends BuildGame {
 
     @Override
     public void dispose() {
-        gDemoScreen.onStopRecord();
+        // Null-safe: dispose runs from ThrowError even when init() threw
+        // before gDemoScreen was assigned (Main.init:255). Without this
+        // guard the NPE here would hide the actual root exception.
+        if (gDemoScreen != null) {
+            gDemoScreen.onStopRecord();
+        }
         super.dispose();
     }
 
