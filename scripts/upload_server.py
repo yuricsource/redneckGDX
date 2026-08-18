@@ -50,7 +50,7 @@ GST_AUDIO_CMD = [
     "!", "audioresample",
     "!", "audio/x-raw,rate=48000,channels=2",
     "!", "opusenc", "bitrate=96000", "frame-size=20", "audio-type=generic",
-    "!", "oggmux", "max-delay=20000000", "max-page-duration=20000000",
+    "!", "oggmux", "max-delay=20000000",
     "!", "fdsink", "fd=1", "sync=false",
 ]
 
