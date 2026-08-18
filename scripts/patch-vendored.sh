@@ -21,6 +21,20 @@ if [ -f "$plugin_kt" ] && grep -q 'group = null' "$plugin_kt"; then
 fi
 
 # ------------------------------------------------------------------
+# BuildGame.dispose: two unconditional accessor.dispose() calls that
+# NPE when init() throws before audio/midi are configured, hiding the
+# real init failure. Guard both with null checks.
+# ------------------------------------------------------------------
+buildgame_java="$repo_root/external/BuildGDX/core/src/ru/m210projects/Build/Pattern/BuildGame.java"
+if [ -f "$buildgame_java" ] && grep -q 'pCfg.getAudio().dispose();' "$buildgame_java"; then
+    sed -i \
+        -e 's|if (pCfg.getMidiDevice().isOpen())|if (pCfg.getMidiDevice() != null \&\& pCfg.getMidiDevice().isOpen())|' \
+        -e 's|pCfg.getAudio().dispose();|if (pCfg.getAudio() != null) pCfg.getAudio().dispose();|' \
+        "$buildgame_java"
+    echo "patched: BuildGDX BuildGame.dispose (null-safe audio/midi teardown)"
+fi
+
+# ------------------------------------------------------------------
 # BuildGDX: file-replacement patches for TeaVM classlib gaps.
 # Copies each file from scripts/patches/BuildGDX/<path> to
 # external/BuildGDX/<path>, preserving the tree.
