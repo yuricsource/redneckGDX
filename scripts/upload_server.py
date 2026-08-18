@@ -114,8 +114,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(303)
         self.send_header(
             "Location",
-            "/xpra/index.html?server=&keyboard_layout=us&sound=on"
-            "&audio_codec=opus&clipboard=1&scaling=auto",
+            "/xpra/connect.html?autoconnect=true&sound=on"
+            "&audio_codec=opus&clipboard=true&keyboard_layout=us&scaling=auto",
         )
         self.end_headers()
 
