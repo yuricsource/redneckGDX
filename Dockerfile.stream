@@ -78,11 +78,12 @@ RUN mkdir -p /opt/rrgdx /data
 COPY --from=build /tmp/game.jar /opt/rrgdx/game.jar
 
 COPY scripts/container-start.sh   /opt/rrgdx/container-start.sh
+COPY scripts/wait-and-launch.sh   /opt/rrgdx/wait-and-launch.sh
 COPY scripts/upload_server.py     /opt/rrgdx/upload_server.py
 COPY scripts/nginx.conf           /etc/nginx/nginx.conf
 COPY html/webapp/index.html       /opt/rrgdx/landing/index.html
 
-RUN chmod +x /opt/rrgdx/container-start.sh
+RUN chmod +x /opt/rrgdx/container-start.sh /opt/rrgdx/wait-and-launch.sh
 
 EXPOSE 8080
 
