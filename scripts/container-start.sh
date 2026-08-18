@@ -91,8 +91,8 @@ xpra start-desktop ":${DISPLAY_NUM}" \
     --daemon=no \
     --bind-tcp="0.0.0.0:${XPRA_PORT}" \
     --html=on \
-    --auth=none \
-    --tcp-auth=none \
+    --auth=allow \
+    --tcp-auth=allow \
     --mdns=no \
     --pulseaudio=no \
     --speaker=on \
