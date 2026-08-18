@@ -55,6 +55,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libglu1-mesa \
         libgl1-mesa-dri \
         mesa-utils \
+        # xdotool: force the game window fullscreen post-launch when the ini
+        # doesn't stick (belt-and-suspenders with the seeded Fullscreen=true).
+        xdotool \
+        wmctrl \
+        # pulseaudio in system-daemon mode: the game boots OpenAL cleanly.
+        # NOTE: noVNC has no audio channel, so sound is not browser-audible
+        # today. A future switch to Xpra HTML5 or KasmVNC would carry it.
+        pulseaudio \
+        pulseaudio-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Make sure noVNC's vnc.html is at a stable path.
