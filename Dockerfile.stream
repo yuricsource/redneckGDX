@@ -59,10 +59,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         nginx \
         python3 \
         inotify-tools \
-        # Audio (KasmVNC reads from pulseaudio for the browser audio
-        # channel)
+        # Audio: pulseaudio + gstreamer pipeline. KasmVNC's audio path
+        # captures PulseAudio via `gst-launch-1.0 pulsesrc` and streams
+        # Opus frames over a WebSocket to the browser.
         pulseaudio \
         pulseaudio-utils \
+        gstreamer1.0-tools \
+        gstreamer1.0-plugins-base \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-pulseaudio \
         # KasmVNC runtime deps
         xauth \
         libjpeg-turbo8 \

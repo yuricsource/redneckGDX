@@ -115,7 +115,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(303)
         self.send_header(
             "Location",
-            "/kasm/index.html?path=kasm/websockify&resize=remote&reconnect=1&autoconnect=1",
+            "/kasm/index.html?path=kasm/websockify&resize=remote&reconnect=1&autoconnect=1&audio=1",
         )
         self.end_headers()
 

@@ -38,3 +38,11 @@ desktop:
     height: 720
   allow_resize: true
   pixel_depth: 24
+
+# Audio channel: KasmVNC serves an Opus-encoded WebSocket alongside the
+# RFB one, sourcing frames from pulseaudio via gstreamer. The default
+# monitor source (`null_out.monitor` from module-null-sink) is what the
+# game plays into.
+audio:
+  enabled: true
+  input_device: null_out.monitor
