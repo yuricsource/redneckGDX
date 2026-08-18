@@ -77,7 +77,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         # below patches it in.
         libjs-jquery \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -sf /usr/share/javascript/jquery/jquery.js /usr/share/xpra/www/js/lib/jquery.js
+    && ln -sf /usr/share/javascript/jquery/jquery.js /usr/share/xpra/www/js/lib/jquery.js \
+    # Hard-code the default password so we never rely on URL params being
+    # carried through nginx/proxy layers. The server runs --auth=allow
+    # (accept-any-password), so this "x" is purely a challenge-response
+    # placeholder, not a real credential. Two edits: the init default and
+    # any subsequent overwrite in init_settings.
+    && sed -i 's|this\.password *= *null;|this.password = "x";|g' /usr/share/xpra/www/js/Client.js \
+    && sed -i 's|this\.password *= *"";|this.password = "x";|g' /usr/share/xpra/www/js/Client.js
 
 RUN mkdir -p /opt/rrgdx /data
 COPY --from=build /tmp/game.jar /opt/rrgdx/game.jar
